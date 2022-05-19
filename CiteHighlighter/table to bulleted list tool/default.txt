@@ -1,0 +1,2129 @@
+{{Shortcut|WP:VG/S|WP:VG/RS|WP:GAMESOURCES|}}
+{{Wikipedia:WikiProject Video games/Sidebar}}
+Articles related to video games need [[WP:RS|reliable sources]] like any other Wikipedia article—content must be [[WP:V|verifiable]]. Due to the nature of video game journalism, however, editors writing articles within the scope of this project may encounter problems finding or [[WP:CITE|citing sources]]. This guideline aims to discuss some of the most common problem areas. None of the following directions apply in every single instance so always use reason and [[WP:UCS|common sense]] when citing sources.
+
+Because the fields of video game journalism, research, criticism, and commentary are relatively new compared to similar coverage of traditional media, traditional means of sourcing can be somewhat rare. In addition, the simultaneous development and expansion of Internet-based sources alongside the modern video-game scene has led to a much higher degree of exclusive online coverage than is the case with other media. These factors make the determination of reliable video-game sources a complex issue. To address this problem, this guideline provides a few general [[rules of thumb]] and presents the current [[WP:CONS|consensus]] regarding the reliability and usability of specific video game-related sources. Any questions regarding specific sources not covered in this guideline may be directed to the [[WT:VG/S|talk page]]. Remember to search the talk page archives before starting a new topic. New sources should not be added to this page until the talk page discussion has been archived.
+
+==Locating reliable sources==
+{{Shortcut|WP:VG/LRS}}
+* '''The Internet.''' One of the first places that many editors look for video game sources is the internet. After using one of several [[search engine]]s to locate information on a subject, the search results must be scrutinized for [[WP:RS|reliability]]. A list of sources that have been identified by the WP:VG community as reliable appears lower in this page at the [[#List|Sources list]]. This list is neither complete nor can it be used as definitive proof regarding a listed source's reliability determination, but it provides a good rough guide on which to base the scrutiny of sources for reliability.
+* '''Custom Google search engine.''' Tools are available to filter search results to target reliable sources. Editors can use '''[https://cse.google.com/cse/publicurl?cx=003516479746865699832:leawcwkqifq Reliable Sources for Video Games]''' ([[WP:VGSE|list]]), a [[custom Google search engine]] focusing on the below-listed reliable sites and filtering out many bad or non-RS sites. A second custom Google search engine, '''[https://cse.google.com/cse/publicurl?cx=003516479746865699832:qdq1uk9p1ua Situational Sources for Video Games]''', is also available to search for reliable sources on a topic. There is no guarantee a specific source is reliable even if it is listed in the search engine. Forum posts, for example, are usually non-reliable. Also, be sure to take note of the conditions and limitations required for proper use of all sources (as listed in the tables below) before relying on them. The template {{tl|find video game sources}} also includes a link to these custom search engines.
+* '''The WP:VG Reference Library.''' The [[WP:VG/RL|WP:VG reference library]] can provide access to print-based video game reference material and include indices of covered video games. Editors listed as contacts at the Reference Library have volunteered to make information from these magazines available on request, which can be used to reference claims in articles as well as to verify references and to establish [[WP:N|notability]]. [[WP:TWL|The Wikipedia Library]] provides a similar function.
+
+==Promote broad coverage and reduce POV==
+For many of the articles under the aegis of [[WP:VG]], sources are plentiful and easily located. Because not every source needs to be cited, editorial discretion will play a part in the exclusion of redundant and unnecessary sources. A few of the more important considerations when reviewing sources for inclusion are listed here.
+* Negative as well as positive reviews - It is exceptionally rare for a video game to receive ''universal'' critical praise or condemnation. For this reason, reasonable efforts should be made to reduce undue bias by presenting both perspectives on the game. For the few cases where reception is universally slanted in one direction (either positive or negative), remember that [[WP:EXCEPTIONAL|exceptional claims require exceptional sourcing]].
+* Contemporary as well as modern coverage - As a general rule, reviewers of video games are inextricably tied to their temporal vantage point and because advancements in video game technology increase by leaps and bounds every few years, it is unfair to review a game in light of the game scene 20 years later. Likewise, hindsight can lead to revisionist reviews and nostalgia may lead to unduly positive scores. An effort should be made to include contemporary coverage of games if available in order to maintain [[WP:NPOV|a neutral point of view]] untainted by modern perceptions.
+* Domestic as well as foreign coverage - Because video games are [[cultural artifact]]s, when a game [[:Category:Video games by country|comes from X country]], then reviews from X country can provide cultural insight that might escape foreign reviewers. Relatedly, when a game [[:Category:Video games by country of setting|depicts Y country or aspects of it]], then reviews from Y country can provide reliable, detailed, and direct reaction to the depiction. At the same time, however, when a game comes from Z country, reviews from X and Y countries will help to reduce POV and to provide an international response thereby eliminating systemic cultural biases.
+* Metareviews as well as individual reviews - Although metareviews tend to provide an average and roughly neutral review for games, the specific views of influential and/or well-respected individual reviewers may be of equal importance and should be presented with proper attribution despite the probability of containing a POV-heavy review. Care must be taken to avoid skewing the apparent reception by presenting disproportionate numbers of positive or negative individual reviews.
+* Reviews for multiple different platforms - When video games are released on more than one platform, reviews of all different versions allow readers to gain an insight on the differing perceptions of the game within different gaming subcultures. When games are rereleased or remade for later systems, reviews of all different versions allow readers to grasp the degree to which later ports and remakes were successful in evoking the original. Efforts to report reception in a [[WP:DUE|due]] manner can often be enhanced by using a prose format to explain why scores on one platform are lower than those of another.
+The above considerations should also be taken when seeking out sources to add content such as reception sections to video game articles.
+
+==Print sources==
+Print sources can improve coverage dramatically, but are often difficult to locate for video game topics—especially true when searching for sources covering the pre-Internet period (generally prior to 2000) before online sources became as established and reliable as they are in some cases today. Although it is incorrect to uncritically assume [[WP:RS|reliability]] for a source simply because it exists or existed in printed form, print sources cost money to produce and are therefore likely to make more of an effort at quality and accuracy than most low-cost fan sites. As the length of time a print source remains in continuous publication increases, the source gains in [[reputation]], [[Goodwill (accounting)|goodwill]], and [[brand strength]], which tends to indicate that longer-lasting and more-established print sources are more likely to be accurate than brief fly-by-night operations. Internationally registered periodicals (as identified by an [[International Standard Serial Number|ISSN number]]) are generally preferred over unregistered journals.
+
+While there is [[WP:SOURCEACCESS|no proscription against hard-to-access sources]], the fact that print sources are more difficult to verify means that it is often a good idea to include additional web-based reliable sourcing if it is available. Editors adding print-based references should also make an effort to substantiate or at least double-check their claims if they are challenged.
+
+==Fansites==
+Many video games have sites devoted to them that are not affiliated with the developers or publishers. These fansites enable fans to read about and discuss the game. When checked against Wikipedia guidelines such as [[WP:Reliable sources#What is a reliable source?]], these fansites usually do not qualify as a reliable source. They frequently have little or no editorial oversight, and may be self-published (i.e., the person hosting the website is also the one writing its content). Fact-checking is often of lesser importance than publishing the latest rumours. Quoting the rule of thumb: ''"...the greater the degree of scrutiny involved in checking facts, analyzing legal issues, and scrutinizing the evidence and arguments of a particular work, the more reliable it is."''
+
+Some fansites provide forum excerpts by developers from the game's forums. Favour citing the forum post itself over the fansite's article and commentary about it. When citing a forum post on a fansite's own forum, special scrutiny is advised. Make it clear that it is the post that is cited, not the thread or forum in general. Consider forum posts like journal articles, except that in this case the "journal" is unreliable (see [[WP:SPS]]), but the "article" may be, because of its author. Use real names over forum nicknames where the real name is available.
+
+''Tools: {{tl|cite web}} and {{tl|citation}}''
+
+==Video games==
+In articles about video games, citing the game itself is often attractive. Wikipedia [[WP:PSTS|favours secondary sources]], and the use of primary sources should be minimised. Games are primary sources in articles about themselves. Whether it is good to use them as a source varies by perspective, subject and game. For a reader, it is usually very hard to use a video game to check facts. Provide transcripts wherever possible, and enable readers to check the facts themselves by noting which area, level or episode is cited. Using the later levels of games with a linear level progression as sources (without transcripts) should be avoided. The same applies to bonus levels or [[Easter egg (media)|easter eggs]].
+
+It is very hard to find proper sources for sections about the plot or setting of a video game without using the game itself. In many of these sections, the game itself is used as a source, but make sure that it is not the only source. Furthermore, the kind of statements that can be backed up with a reference to the game itself is limited. For example, it is impossible to use the game itself to back up that it "''... takes place in a [[high fantasy]] setting''".
+
+Statements of a technical or critical nature should never contain references to the game itself. Technical details (like the type of [[texture mapping]] used) are impossible to discern for the layperson. Using the game itself as a source for critical content is [[WP:OR|original research]]. Criticism should not be the editor's own, but for example a reviewer's.
+
+However, instruction booklets, player's guides, and other game-related publications may be cited as normal.
+
+''Tools: {{tl|cite video game}} and {{tl|cite AV media}}''
+
+==Review sites==
+The most important sources for most video game articles are the reviews of the game itself.
+
+Aggregate review sites such as [[Metacritic]] and [[GameRankings]] are useful in the critical reception portion of a video game article, as these list numerous reviews for a game, more than can readily be included in Wikipedia. Aggregate review sites should be handled carefully. Individual reviews should cite their original publication, not the truncated aggregator summary. Because aggregators choose which publications to include in their score, they often include reviews from less reliable sites. Additionally, the score is averaged between reviewers without regard for the different rating systems used.
+
+Aggregated user-submitted content (e.g. "user scores" and "user polls") available on Metacritic, GameRankings, and other aggregators is not considered reliable because it is susceptible to vote-stacking and demographic skew, and because the general public has no proven expertise or credibility in the field. Similarly, sites allowing [[WP:USERG|users to submit content]], like Wikipedia itself, are often not ''independent'', and are not ''reliable'' because they have not been checked for factual accuracy by an editor. It is also important to make a distinction between review sites and directory listings. The latter often repeat information from press releases and the game's official website, and do not constitute a reliable source for establishing notability. Their use should generally be avoided as well.
+
+The [[Template:Video game reviews|review table template]] allows for an organized presentation of all relevant review scores. Only include reviews in this table if they are cited within the text.
+
+==Retailers==
+Retailers are only considered [[WP:RS|reliable sources]] for games that have already been released, and even then, only for information regarding release dates and the existence of games on a particular platform. However other secondary or primary sources should be used if available. Retailers posting future dates for games not yet released raise a [[WP:REDFLAG|red flag]] as to the legitimacy of the statement, and should not be used unless confirmed by a more reliable source.
+
+==Official information==
+{{Shortcut|WP:VG/OFFICIAL}}
+In video gaming communities, the adjective "official" is often used to describe information released by the game developer. It denotes that the information is definitive, reliable and sometimes important. This is without regard to whether said information is deemed [[Canon (fiction)|canonical]].
+
+Merely being "official" does not guarantee that information is usable under Wikipedia's editorial standards. Information deriving from official sources but published in generally un[[WP:Reliable sources|reliable ones]] such as blogs, fansites, or forum posts is likely unusable. Much of what is called official often stems from primary sources such as the game itself, which should largely not be used (see above). Additionally, not all reliably sourced official information merits inclusion, and in fact the bulk of the article may be unofficial. An example of this is the release date: when the official date is at 1998 according to accurate but unreliable (by Wikipedia policy standards) information, but a reliable source writes that it is 1999, Wikipedia should include the latter. Even if one has the knowledge of memory or the word of a trustworthy individual, original research is off-limits.
+
+The crux is that "official" is not relevant to Wikipedia standards. In fan communities, all information released by the game developers is official and important. In a Wikipedia article, information released by game developers is no different from any other reliable source; in fact, it may be ''less reliable'' under possible interpretations of the policy regarding self-published or primary sources.
+
+{{Shortcut|WP:VGINT}} Interviews from any source are typically allowed as a "[[WP:ABOUTSELF|self-published source about self]]". As long as the interview's authenticity can be reasonably ascertained, we allow the developer's own words as a primary source when the claims are (1) not exceptional, and (2) about the team or individual making the claim. Greater claims require a secondary source with a reputation for editorial quality. Whenever possible, prefer the editorial distance of a reliable, secondary source over a primary source interview.
+
+==Sourcing style==
+{{main|MOS:TITLE|MOS:ITALICS}}
+When citing a print magazine, the name of the magazine should be written in italics. Likewise for the video games themselves. The usage of italics for an online source depends on the nature of its content, and is detailed in the [[WP:ITALICS|Manual of Style]]. When citing a particular article published by a magazine or website, or when citing a chapter within a video game, the title should be surrounded by quotes. The various citation sub-templates of {{tl|cite}} handle this sort of thing for you automatically.
+
+==Reliable sources==
+{{anchor|List}}
+{{Seealso|Wikipedia:WikiProject Video games/Reference library}}
+
+The following is a list of sources that have been established as reliable ''in the field of video gaming'' per past consensus. If you know of a source that is not listed and you cannot find any previous discussion regarding a source's reliability, start a discussion on the [[{{TALKSPACE}}:{{PAGENAME}}|talk page]] before adding them below. Remember to examine the limitations listed for each situational source in the tables below. "Media" refers to the publication's ''principal'' means of content delivery.
+
+This list is not meant to be exhaustive and only covers works that regularly report on video games and the industry. Sources that otherwise are considered [[WP:RS|reliable sources]] in general, such as newspapers like ''[[The New York Times]]'' and ''[[The Wall Street Journal]]'', magazines like ''[[Time (magazine)|Time]]'' and ''[[Fortune (magazine)|Fortune]]'', and news networks like [[BBC]] and [[CNN]], are also reliable for coverage of topics related video games when they do report on these topics. Note that any source in {{Section link||Reliable checklist}} is considered just as reliable as those on this list. Video games may also be discussed in peer-reviewed scientific papers; editors should review details of identifying [[WP:SCIRS|appropriate journals for natural sciences]] and, if involving human health, [[WP:MEDRS|accurate information for medical sciences]].
+
+[[WP:CCC|Consensus can change]], so any sources on this page may be upgraded or downgraded based on further discussion.
+
+===General gaming===
+{| class="wikitable sortable"  style="font-size:80%; background:#efe; width:100%; line-height: 1.1em"
+|-
+  ! scope="col" | Name
+  ! scope="col" | Media
+  ! scope="col" | Dates
+  ! scope="col" | Type
+  ! scope="col" | Notes and limitations
+  ! scope="col" | Owner
+  ! scope="col" | Quick links &<br />discussions
+|-
+  | id="arstechnica" | ''[[Ars Technica]]''
+  | [https://arstechnica.com/gaming/ online]
+  | 1998–
+  | news, reviews
+  |
+  | [[Condé Nast]]
+  | {{find video game sources short|Ars Technica|linksearch=arstechnica.com/gaming/}}<br />[[WP:Reliable sources/Noticeboard/Archive 2#Ars Technica news?|1]], [[WP:Reliable sources/Noticeboard/Archive 136#Ars Technica a Reliable Source?|2]]
+|-
+  | ''Blue's News''
+  | [https://www.bluesnews.com/ online]
+  | 1996–
+  |
+  |
+  | [[UGO Networks]]
+  | {{find video game sources short|Blue's News|linksearch=www.bluesnews.com}}<br />[[WT:WikiProject Video games/Archive 90#Blue's News as a reliable source|1]]
+|-
+  | ''[[Den of Geek]]''
+  | print & [https://www.denofgeek.com/ online]
+  | 2007–
+  | news, features, reviews
+  | Features other forms of entertainment as well, such as television, film and literature
+  | [[Dennis Publishing|Dennis Publishing, Ltd.]] & DoG Tech LLC
+  | {{find video game sources short|Den of Geek|linksearch=https://www.denofgeek.com/}}<br />[[Wikipedia talk:WikiProject Video games/Sources/Archive 23#Den of Geek|1]], [[Wikipedia talk:WikiProject Video games/Sources/Archive 14#Den of Geek|2]], [[Wikipedia talk:WikiProject Video games/Sources/Archive 17#Den of Geek|3]]
+|-
+  | ''Digitally Downloaded''
+  | [https://www.digitallydownloaded.net/ online]
+  | 2010–
+  | news, reviews
+  | Features other forms of entertainment as well, such as anime, manga, literature, film, and gadgets
+  | Independent
+  | {{find video game sources short|Digitally Downloaded|linksearch=www.digitallydownloaded.net/}}
+|-
+  | ''[[Easy Allies]]''
+  | [https://easyallies.com online]
+  | 2016–
+  | features, reviews
+  | Formed by the previous crew of [[Game Trailers]]
+  | Independent
+  | {{find video game sources short|Easy Allies|linksearch=www.easyallies.com}}<br />[[WT:WikiProject Video games/Sources/Archive 15#Easy Allies|1]], [[Wikipedia talk:WikiProject Video games/Sources/Archive 22#Easy Allies|2]]
+|-
+  | ''[[Edge (magazine)|Edge]]'' (UK)
+  | [[WP:WikiProject Video games/Magazines/Edge|print]], [https://www.gamesradar.com/edge/ online]
+  | 1993–
+  | features, news, reviews
+  |
+  | [[Future plc|Future Publishing]]
+  | {{find video game sources short|Edge Magazine|linksearch=www.edge-online.com}}<br />[[WT:VG/S/A3#Andriasang|1]], [[WT:WikiProject Video games/Archive 40#Task Force Proposal|2]], [[WT:WikiProject Video games/Archive 8#Critical reaction in computer games|3]], [[WT:WikiProject Video games/Archive 77#Idea for article - "top 100 lists"|4]], [[WT:WikiProject Video games/Archive 44#TopTenReviews is a shitty source for games reception data, and shouldn't be touched|5]], [[WT:WikiProject Video games/Archive 10#Review Scores in game articles|6]], [[WT:WikiProject Video games/Archive 87#Number of reviews in Final Fantasy XII review table|7]]
+|-
+  | ''[[Electronic Gaming Monthly]]'' (US)
+  | [[WP:WikiProject Video games/Magazines/Electronic Gaming Monthly|print]], [https://www.egmnow.com online]
+  | 1989–
+  | console gaming
+  | Temporarily ended in 2009 before returning to publication under new management in 2010.
+  | [[Ziff Davis]]; part of [[1UP.com]] Network (1989-2009); EGM Media, LLC (2010-)
+  | {{find video game sources short|Electronic Gaming Monthly|linksearch=}}<br />[[WT:WikiProject Video games/Newsletter/Archive 1#4th edition|1]], [[WT:WikiProject Video games/Archive 10#Review Scores in game articles|2]], [[WT:WikiProject Video games/Archive 46#Reliable sources for DLC|3]], [[WT:VG/S/A5#Screwattack again|4]]
+|-
+  | ''[[Eurogamer]]''
+  | [https://www.eurogamer.net/ online]
+  | 1999–
+  | features, news, reviews
+  | Includes their American branch, [[WT:VG/S/A8#USGamer.net|USgamer]]
+  | [[Gamer Network]]
+  | {{find video game sources short|Eurogamer|linksearch=www.eurogamer.net}}<br />[[WT:VG/S/A5#Source questions|1]], [[WT:WikiProject Video games/Archive 87#Number of reviews in Final Fantasy XII review table|2]], [[WT:WikiProject Video games/Indie/Archive 1#One thing I would like to see...|3]], [[WT:WikiProject Video games/Archive 38#GameFAQs a reliable source?|4]], [[WT:WikiProject Video games/Archive 44#Notability/Relevance of Template:VG Reviews Sites|5]], [[WT:WikiProject Video games/Archive 28#Naming conventions reform.|6]], [[WT:VG/S/A4#Disagreement about reliability of Eurogamer articles for OnLive article|7]], [[WP:Reliable sources/Noticeboard/Archive 103#Reliability of Eurogamer in a specific case|8]], [[WT:VG/S/A6#Un-discussed reliability determinations|9]], [[WT:VG/S/A8#Gamer Network|10]], [[WT:VG/S/A8#USGamer.net|11]]
+|-
+  | ''[[Game Informer]]''
+  | print, [https://www.gameinformer.com/ online]
+  | 1991–
+  | features, news, reviews
+  |
+  | [[GameStop]]
+  | {{find video game sources short|Game Informer|linksearch=www.gameinformer.com/}}<br />[[WT:WikiProject Video games/Archive 79#VG reviews publications|1]], [[WT:WikiProject Video games/Archive 86#Videogame Magazines Should Not Automatically Be Regarded as a Reliable Source|2]], [[WT:VG/S/A5#Screwattack again|3]], [[WT:WikiProject Video games/Archive 38#VGChartz re-visited|4]], [[WP:Reliable sources/Noticeboard/Archive 32#Youtube|5]]
+|-
+  | ''[[GameRevolution]]''
+  | [https://www.gamerevolution.com online]
+  | 1996–
+  | features, news, reviews
+  | Site has been cited by [[WT:VG/S/A1#A few sources for your consideration|numerous scholarly works]].
+  | AtomicOnline
+  | {{find video game sources short|Game Revolution|linksearch=www.gamerevolution.com}}<br />[[WT:VG/S/A1#A few sources for your consideration|1]], [[WT:WikiProject Video games/Archive 56#Reliability of Game Revolution|2]], [[WT:VG/S/A2#Game Revolution and Green Pixels, two separate bits|3]], [[WT:WikiProject Video games/Archive 79#VG reviews publications|4]], [[WT:WikiProject Video games/Archive 68#Sources|5]]
+|-
+  | ''[[GameSpot]]''
+  | [https://www.gamespot.com/ online]
+  | 1996–
+  | news, features, reviews
+  | Ensure that the content is staff authored, not user generated.  Older reviews and reviews by freelancers may look as though they are by "members" and not "staff" - this is misleading, all their main reviews are by staff, user generated content are marked in the URL as "user-reviews". Do not use release dates from their game overview pages, as their database is shared by [[#Unreliable sources|GameFAQs]], which is unreliable. Belgium, China, Netherlands, UK, USA.
+  | [[CBS Corporation]] &gt; [[CBS Interactive]]
+  | {{find video game sources short|GameSpot|linksearch=www.gamespot.com}}<br />[[WT:WikiProject Video games/Archive 36#Release dates|1]], [[WT:VG/S/A2#Gamespot|2]], [[WT:VG/S/A5#Gamespot|3]], [[WT:WikiProject Video games/Archive 91#Gamespot/GameFAQs|4]], [[WT:WikiProject Video games/Archive 37#Release Date Problem|5]], [[WT:WikiProject Video games/Archive 79#Gamespot, okay as reference or not?|6]], [[WT:WikiProject Video games/Archive 34#Gamespot/Gerstmann fallout and "reliable sources"|7]], [[WP:Reliable sources/Noticeboard/Archive 4#GameSpot and CNET|8]], [[WP:Reliable sources/Noticeboard/Archive 106#GameFAQs and Gamespot shared database|9]], [[WP:Reliable sources/Noticeboard/Archive 37#GameSpot video game strategy guide|10]], [[WP:Reliable sources/Noticeboard/Archive 113#I have these references for my article yet administrators keep saying they are not relabile enough|11]], [[WP:Reliable sources/Noticeboard/Archive 70#Video Game Reporting|12]], [[WP:Reliable sources/Noticeboard/Archive 16#Help!!!|13]], [[WT:WikiProject Video games/Archive 66#Union pages on Gamespot|14]], [[WT:VG/S/A8#The New GameSpot|15]]<!--Many more smaller discussions on GameSpot exist in the archives as well-->
+|-
+  | ''GameZone'' (US, DE)
+  | [https://www.gamezone.com/ online]
+  | 1994–
+  | features, news, reviews
+  | Recommended as an objective and reliable gaming site in books, and referenced for several of its articles in various books and scholarly works.
+  |
+  | {{find video game sources short|GameZone|linksearch=www.gamezone.com}}<br />[[WT:VG/S/A1#GameZone|1]], [[WT:WikiProject Video games/Archive 79#VG reviews publications|2]], [[WT:WikiProject Video games/Archive 81#GameZone.com|3]], [[WT:WikiProject Video games/Archive 82#Gamezone.com|4]], [[WP:Reliable sources/Noticeboard/Archive 16#Help!!!|5]]
+|-
+  | ''[[GamesRadar+]]''
+  | [https://www.gamesradar.com/ online]
+  | 2005–
+  | features, news, reviews
+  | This became [[Future Publishing]]'s main web portal in 2015, succeeding https://computerandvideogames.com, https://edge-online.com & https://totalxbox.com
+  | [[Future plc|Future Publishing]]
+  | {{find video game sources short|GamesRadar|linksearch=www.gamesradar.com}}<br />[[WT:VG/S/A1#Games Radar|1]], [[WT:VG/S/A2#Games Radar and Gaming Target|2]]
+|-
+  | ''Gematsu''
+  | [https://gematsu.com online]
+  | 2011–
+  | news
+  | Specializes in Japanese game news.
+  | Independent
+  | {{find video game sources short|Gematsu|linksearch=https://gematsu.com}}<br />[[WT:VG/S/A7#Gematsu|1]], [[WT:VG/S/A6#Operation Rainfall|2]], [[WT:WikiProject Video games/Archive 116#Situational Sources|3]]
+|-
+  | ''Hardcore Gamer''
+  | print, [https://www.hardcoregamer.com/ online]
+  | 2005–
+  |
+  |
+  | [[DoubleJump Publishing]]
+  | {{find video game sources short|Hardcore Gamer|linksearch=www.hardcoregamer.com}}<br />[[WT:WikiProject Video games/Magazines/Archive 1#Hardcore Gamer Magazine|1]]
+|-
+  | id="hg101" | ''Hardcore Gaming 101''
+  | [https://www.hardcoregaming101.net/ online]
+  | 2004–
+  | Video game articles
+  | Head editor is ''Gamasutra'' author Kurt Kalata. Content written by him or Retro Gamer's John Szczepaniak are very reliable. All content is edited by Kalata before publishing, and should be considered acceptable, but take additional care with claims made by other authors and in older articles. HCG101 has been cited by many other reliable sources.
+  | Independent
+  | {{find video game sources short|Hardcore Gaming 101|linksearch=www.hardcoregaming101.net}}<br />[[WT:WikiProject Video games/Archive 65#Hardcore Gaming 101|1]], [[Wikipedia:Reliable sources/Noticeboard/Archive 91#hardcoregaming101.net|2]], [[WT:VG/S/A6#Refinement to Hardcore Gaming 101|3]], [[WT:WikiProject Video games/Archive 122#Hardcore Gaming 101|4]], [[WT:WikiProject Video games/Sources/Archive 16#Hardcore Gaming 101|5]], [[Wikipedia:Reliable sources/Noticeboard#HG101 possibly "laundering" unsourced Japanese Wikipedia info?|6]]
+|-
+  | ''[[IGN]]''
+  | [https://www.ign.com/ online]
+  | 1996–
+  | features, news, reviews
+  | Shared database with GameSpy. Make sure news items are not user-submitted info or blog postings; blog postings from site staff are most likely acceptable. Articles submitted by N-Sider (such as [https://www.ign.com/articles/2000/12/15/gamecube-developer-profile-ead]) should be avoided per [[WT:WikiProject Video games/Sources/Archive 4#N-Sider as situational source (2nd)|this discussion]].
+  | [[J2 Global]] &gt; [[Ziff Davis]]
+  | {{find video game sources short|IGN|linksearch=www.ign.com}}<br />[[WT:VG/S/A5#IGN editorials|1]], [[WT:WikiProject Video games/Archive 83#What to do with conflicting IGN scores?|2]], [[WT:VG/S/A1#Talk:4X|3]], [[WT:VG/S/A3#IGN reviews - unverifiable?|4]], [[WT:WikiProject Video games/Archive 75#Help on confirming IGN as a reliable source|5]], [[WT:WikiProject Video games/Archive 81#IGN Review scores|6]], [[WT:WikiProject Video games/Archive 51#Unreliable sources|7]], [[WP:Reliable sources/Noticeboard/Archive 47#IGN - Awards|8]], [[WP:Reliable sources/Noticeboard/Archive 118#Mass Effect 3 IGN Review/Jessica Chobot|9]], [[WP:Reliable sources/Noticeboard/Archive 58#IGN's "Pokemon of the Day Chick"|10]], [[WP:Reliable sources/Noticeboard/Archive 88#Feature articles and what they can be used for|11]], [[WP:Reliable sources/Noticeboard/Archive 12#Is ign.com a RS ?|12]], [[WP:Reliable sources/Noticeboard/Archive 16#Help!!!|13]], [[WT:WikiProject Video games/Sources/Archive 17#IGN|14]]
+|-
+  | ''[[Kotaku]]''
+  | [https://kotaku.com/ online]
+  | 2004–
+  | features, news, reviews, blog
+  | News posts after 2010 are considered reliable. Editors are cautioned of blog/geeky posts that have little news or reporting significance (such as [https://kotaku.com/5891133/what-is-this-sonic-or-mirrors-edge]).
+  | [[Univision Communications]]<br />[[Allure Media]] (AU)<br />[[Future Publishing]] (UK)
+  | {{find video game sources short|Kotaku|linksearch=kotaku.com}}<br />[[WT:WikiProject Video games/Archive 42#Joystiq and Kotaku|1]], [[WT:VG/S/A1#Kotaku|2]], [[WT:VG/S/A1#Why is "blogs" a useful category for the list of sources? Why do we have categories anyway?|3]], [[WT:VG/S/A4#Promoting Kotaku|4]], [[WT:VG/S/A7#Sourcing the games, official sources, and Kotaku|5]], [[WT:WikiProject Video games/Sources/Archive 16#www.kotaku.com.au|6]]
+|-
+  | ''[[Polygon (website)|Polygon]]''
+  | [https://polygon.com/ online]
+  | 2012–
+  | news, features, reviews
+  | Includes ''[[The Verge]]''
+  | [[Vox Media]]
+  | {{find video game sources short|Polygon|linksearch=polygon.com}}<br />[[WT:VG/S/A7#Additions to VGReviews|1]], [[WT:VG/S/A9#Legends of Localization, Polygon|2]], [[WT:WikiProject Video games/Sources/Archive 10#Polygon|3]]
+|-
+  | ''[[Siliconera]]''
+  | [https://www.siliconera.com/ online]
+  | 2003–
+  | news
+  | Specializes in Japanese game news.
+  | [[Curse, Inc.]]
+  | {{find video game sources short|Silliconera|linksearch=www.siliconera.com}}<br />[[WT:VG/S/A4#Siliconera|1]], [[WT:VG/S/A2#Insert credit|2]], [[WT:WikiProject Video games/Archive 84#Shin Megami Tensei: Persona 4|3]], [[WT:WikiProject Video games/Indie#One thing I would like to see...|4]], [[WT:VG/S/A5#Defunct Games as a situational source?|5]], [[WP:Reliable sources/Noticeboard/Archive 99#Siliconera|6]], [[WT:WikiProject Video games/Archive 116#Situational Sources|7]]
+|-
+  | ''[[Shacknews]]''
+  | [https://www.shacknews.com/ online]
+  | 1996–
+  | features, news, reviews
+  | Full-time staff and editorial processes. [https://www.shacknews.com/about about]
+  | Gamerhub
+  | {{find video game sources short|Shacknews|linksearch=www.shacknews.com}}<br />[[WT:VG/S/A1#Set this up and knock it down|1]], [[WT:WikiProject Video games/Archive 63#Mother 3|2]], [[WT:WikiProject Video games/Archive 84#Dota as a genre|3]], [[WT:WikiProject Video games/Archive 42#Joystiq and Kotaku|4]]
+|-
+  | ''[[SVG.com]]''
+  | [https://www.svg.com/ online]
+  | 2011–
+  | features, news, reviews
+  | Strict fact-checking and quotation policy, firewall between advertising and editorial. [https://www.svg.com/policies/ about]
+  | [[ZergNet]]
+  | {{find video game sources short|SVG.com|linksearch=www.svg.com}}<br />[[Wikipedia_talk:WikiProject_Video_games/Sources#SVG.com|1]]
+|-
+  | ''[[Variety (magazine)|Variety]]''
+  | print and [https://www.variety.com/ online]
+  | 1998-
+  | features, news
+  | General entertainment industry magazine. Video game-specific coverage has editorial oversight by Brian Crecente, formally of ''Kotaku'' and ''Rolling Stone''{{'}}s ''Glixel''
+  | [[Penske Media Corporation]]
+  | {{find video game sources short|Variety|linksearch=www.variety.com}}
+|-
+  | ''[[VentureBeat]]''
+  | [https://venturebeat.com/ online]
+  | 2006–
+  | features, news, reviews
+  |
+  | Independent
+  | {{find video game sources short|VentureBeat|linksearch=www.venturebeat.com}}<br />[[WT:VG/S/A6#Venture Beat|1]], [[WT:WikiProject Video games/Sources/Archive 12#Venturebeat/Gamesbeat|2]]
+|-
+  | ''[[VG247]]''
+  | [https://www.vg247.com/ online]
+  | 2008–
+  | features, news
+  | Operated by industry veteran Patrick Garratt in collaboration with [[Gamer Network]]. Won best gaming blog at the Games Media Awards 2009.
+  | Videogaming247 Ltd. (owned by Garratt), in collaboration with [[Gamer Network]]
+  | {{find video game sources short|VG247|linksearch=www.vg247.com}}<br />[[WT:VG/S/A4#VG247 as a reliable source|1]], [[WT:WikiProject Video games/Archive 85#Requesting commentary on new potential reliable sources.|2]], [[WT:WikiProject Video games/Archive 86#Videogame Magazines Should Not Automatically Be Regarded as a Reliable Source|3]], [[WT:WikiProject Video games/Archive 87#Gamepro/G4TV/VGChartz Spam|4]], [[WT:VG/S/A8#Gamer Network|5]]
+|-
+  | ''[[Video Games Chronicle]]''
+  | [https://www.videogameschronicle.com/ online]
+  | 2019–
+  | features, news
+  | From former editors of ''[[Computer and Video Games]]''
+  | 1981 Media Ltd. (editor-owned), in collaboration with [[Gamer Network]]
+  | {{find video game sources short|Video Games Chronicle|linksearch=videogameschronicle.com}}<br />[[WT:WikiProject Video games/Sources/Archive 21#Video Games Chronicle|1]], [[WT:WikiProject Video games/Sources/Archive 21#Gamer Network sites|2]]
+|-
+  | ''VideoGamer.com''
+  | [https://www.videogamer.com/ online]
+  | 2004–
+  |
+  | Full-time staff includes industry veterans.[https://www.pro-gmedia.com/news/13/] [https://www.pro-gmedia.com/aboutus/history]
+  | Resero Network
+  | {{find video game sources short|VideoGamer.com|linksearch=www.videogamer.com}}<br />[[WT:WikiProject Video games/Archive 79#VG reviews publications|1]]
+|-
+  | ''[[Wired (magazine)|Wired]]''
+  | [https://www.wired.com/ online]
+  | 1993–
+  | features, news
+  |
+  | [[Condé Nast Publications]]
+  | {{find video game sources short|Wired|linksearch=www.wired.com}}<br />[[WT:WikiProject Video games/Archive 86#Videogame Magazines Should Not Automatically Be Regarded as a Reliable Source|1]], [[WT:WikiProject Video games/Indie#One thing I would like to see...|2]], [[WT:WikiProject Video games/Archive 43#One suggestion... (re: reliable sources)|3]], [[WT:VG/S/A2#Home of the Underdogs|4]], [[WT:VG/S/A4#Wired|5]], [[WP:Reliable sources/Noticeboard/Archive 103#wired.com and whosnews.usaweekend.com|6]]
+|}
+
+===Foreign language===
+Wikipedia makes no restriction on the use of foreign-language sources (see [[WP:NOENG]]), but editors should take care to verify any translation into English and not simply rely on something like Google Translate, particularly for potentially contentious information.
+
+{| class="wikitable sortable"  style="font-size:80%; background:#efe; width:100%;"
+|-
+  ! scope="col" | Name
+  ! scope="col" | Media
+  ! scope="col" | Dates
+  ! scope="col" | Type
+  ! scope="col" | Language
+  ! scope="col" | Notes and limitations
+  ! scope="col" | Owner
+  ! scope="col" | Quick links &<br />discussions
+|-
+  | ''[[4Gamer.net]]''
+  | [https://www.4gamer.net/ online]
+  | 2000–
+  |
+  | [[Japanese language|Japanese]]
+  |
+  | Aetas
+  | {{find video game sources short|4Gamer|linksearch=www.4gamer.net}}<br />[[WT:VG/S/A2#4Gamer.net|1]]
+|-
+  | ''[[Comptiq]]'' / ''MeadiaMixx Gaming Magazine''
+  | print, [https://www.comptiq.com/ online]
+  | 1983–
+  |
+  | [[Japanese language|Japanese]]
+  | Older issues deal with computers in general as the magazine transitioned to computer/video gaming. As of September 2003 the print magazine is known as ''MeadiaMixx Gaming Magazine''.
+  | [[Kadokawa Shoten]]
+  | {{find video game sources short|Comptiq|linksearch=www.comptiq.com}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''Dengeki''
+  | print, [https://news.dengeki.com/ online]
+  | 2008–
+  |
+  | [[Japanese language|Japanese]]
+  |
+  | [[ASCII Media Works]]
+  | {{find video game sources short|Dengeki|linksearch=news.dengeki.com}}<br />[[WT:WikiProject Video games/Archive 66#Reliable sources for Japanese games|1]]
+|-
+  | ''[[Famitsu]]''
+  | print, [https://www.famitsu.com/ online]
+  | 1986–
+  | news, reviews, etc.
+  | [[Japanese language|Japanese]]
+  | Includes several spin-off publications dealing with specific platforms.
+  | [[Enterbrain]]
+  | {{find video game sources short|Famitsu|linksearch=www.famitsu.com}}<br />[[WT:WikiProject Video games/Archive 34#The broader issue|1]], [[WT:WikiProject Video games/Archive 44#TopTenReviews is a shitty source for games reception data, and shouldn't be touched|2]], [[WT:WikiProject Video games/Archive 8#Critical reaction in computer games|3]], [[WT:WikiProject Video games/Archive 18#List of best-selling computer and video games|4]], [[WT:WikiProject Video games/Archive 43#Giant Bomb as reliable source?|5]], [[WT:WikiProject Video games/Visual novels/2007#VN sales info/reviews|6]], [[WT:WikiProject Video games/Archive 68#VG Chartz - reliable source or not?|7]], [[WT:WikiProject Video games/Archive 66#Reliable sources for Japanese games|8]]
+|-
+  | ''Gamekult''
+  | [https://gamekult.com online]
+  | 2000–
+  | news, reviews, etc.
+  | [[French language|French]]
+  |
+  | CUP Interactive
+  | {{find video game sources short|Gamekult|linksearch=gamekult.com}}<br />[[WT:WikiProject Video games/Sources/Archive 21#Gamekult|1]]
+|-
+  | ''GamesWirtschaft''
+  | [https://www.gameswirtschaft.de/ online]
+  | 2016–
+  | industry news
+  | [[German language|German]]
+  | Operated by veteran journalist Petra Fröhlich
+  | Funfair Media (owned by Fröhlich)
+  | {{find video game sources short|GamesWirtschaft|linksearch=gameswirtschaft.de}}<br />[[WT:WikiProject Video games/Sources/Archive 21#GamesWirtschaft|1]]
+|-
+  | ''Gamer.nl''
+  | [https://gamer.nl/ online]
+  | 1999–
+  | news, reviews, etc.
+  | [[Dutch language|Dutch]]
+  |
+  | [https://www.reshiftmedia.com/ Reshift Media]
+  | {{find video game sources short|Gamer.nl|linksearch=gamer.nl}}<br />[[WT:VG/S/A5#Source questions|1]], [[WT:VG/S/A2#9 Statis|2]], [[WP:Reliable sources/Noticeboard/Archive 108#gs.inside-games, generation-nt.com and Gamer.nl|3]], [[WT:VG/S/A5#Gamer.nl|4]], [[WT:VG/S/A20#gamer.nl|5]]
+|-
+  | ''[[The Games Machine (Italy)|The Games Machine]]''
+  | print, [https://www.thegamesmachine.it/ online]
+  | 1988–
+  | news, esports, etc.
+  | [[Italian language|Italian]]
+  | Formed as an Italian version of the British magazine [[The Games Machine]], which ended production in 1990
+  | Aktia srl
+  | {{find video game sources short|The Games Machine|linksearch=thegamesmachine.it/}}<br />[[WT:VG/S/A21#The Games Machine (Italy)|1]]
+|-
+  | ''[[Hobby Consolas]]''
+  | print, [https://www.hobbyconsolas.com/ online]
+  | 1991–
+  | news, esports, features
+  | [[Spanish language|Spanish]]
+  |
+  | [[Axel Springer SE]]
+  | {{find video game sources short|Hobby Consolas|linksearch=www.hobbyconsolas.com}}<br />[[WT:VG/S/A22#Hobby Consolas|1]]
+|-
+  | ''Impress Watch''
+  | [https://www.watch.impress.co.jp/ online]
+  |
+  |
+  | [[Japanese language|Japanese]]
+  |
+  | [https://www.impressholdings.com/index.htm Impress Group]
+  | {{find video game sources short|Impress Watch|linksearch=www.watch.impress.co.jp}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''ITmedia''
+  | [https://www.itmedia.co.jp/ online]
+  |
+  |
+  | [[Japanese language|Japanese]]
+  |
+  | [https://corp.itmedia.co.jp/corp/information/profile.html ITmedia]
+  | {{find video game sources short|ITmedia|linksearch=www.itmedia.co.jp}}<br />[[WT:WikiProject Video games/Magazines/Archive 1#Japanese|1]]
+|-
+  | ''[[Jeuxvideo.com]]''
+  | [https://www.jeuxvideo.com online]
+  | 1997–
+  | news, reviews, etc.
+  | [[French language|French]]
+  |
+  | {{Interlanguage link multi|Webedia|fr}}
+  | {{find video game sources short|Jeuxvideo.com|linksearch=www.jeuxvideo.com}}<br />[[WT:WikiProject Video games/Archive 44#Notability/Relevance of Template:VG Reviews Sites|1]], [[WT:VG/S/A6#JeuxVideo.com|2]]
+|-
+  | ''[[Media Create]]''
+  | print, [https://www.m-create.com/ online]
+  |
+  | rankings, analysis, trends, etc.
+  | [[Japanese language|Japanese]]
+  | When citing their [https://www.m-create.com/ranking/ ranking page] use [[Webcitation]] or another instant archiving resource as their pages change weekly and are not archived.<br />Some of their older [https://web.archive.org/web/*/https://www.m-create.com/eng/e_ranking.html English] and [https://web.archive.org/web/*/https://www.m-create.com/jpn/s_ranking.html Japanese] pages are archived.
+  | Media Create Co.
+  | {{find video game sources short|Media Create|linksearch=www.m-create.com}}<br />[[WT:WikiProject Video games/Archive 81#Media Create Sales: 2009 Software Top 1000|1]], [[WT:VG/S/A4#The magicbox|2]], [[WT:WikiProject Video games/Archive 38#the-magicbox.com - RS?|3]], [[WT:WikiProject Video games/Archive 92#Succession boxes|4]], [[WT:WikiProject Video games/Archive 74#Archiving old game reviews|5]], [[WT:WikiProject Video games/Archive 18#List of best-selling computer and video games|6]], [[WT:WikiProject Video games/Archive 75#Using VGChartz as a sales figure source - should we?|7]], [[WP:Reliable sources/Noticeboard/Archive 90#The Magicbox|8]]
+|-
+  | ''[[Power Unlimited]]''
+  | [[WP:WikiProject Video games/Magazines/Power Unlimited|print]], [https://www.pu.nl online]
+  | 1993–
+  |
+  | [[Dutch language|Dutch]]
+  |
+  | Reshift Digital
+  | {{find video game sources short|Power Unlimited|linksearch=www.pu.nl}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''[[SKOAR!]]''
+  | print, [https://skoar.digit.in/ online]
+  | 2003–
+  |
+  | [[Hindi]]
+  | Spinoff from technology magazine, ''[[Digit (magazine)|Digit]]''.
+  | 9.9 Mediaworx
+  | {{find video game sources short|SKOAR|linksearch=skoar.digit.in}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|}
+
+===Games industry-related/academic/other===
+{| class="wikitable sortable"  style="font-size:80%; background:#efe; width:100%;"
+|-
+  ! scope="col" | Name
+  ! scope="col" | Media
+  ! scope="col" | Dates
+  ! scope="col" | Type
+  ! scope="col" | Notes and limitations
+  ! scope="col" | Owner
+  ! scope="col" | Quick links &<br />discussions
+|-
+  | [[Chart-Track]]
+  | [https://www.chart-track.co.uk/index.jsp online]
+  | 1996–
+  | Monitors sales of software for the UK, Ireland and Denmark.
+  |
+  | Controlled by research institute [[GfK]].[https://216.92.236.126/php-bin/news_index.php?story=19310] [https://www.forbes.com/afxnewslimited/feeds/afx/2008/07/15/afx5215099.html]
+  | {{find video game sources short|Chart-Track|linksearch=www.chart-track.co.uk}}<br />[[WT:VG/S/A1#Sales information|1]]
+|-
+  | [[ELSPA]]
+  | [https://www.elspa.com/ online]
+  |
+  | Sales and ratings organization for Europe.
+  | Includes ''Famitsu'' (Japan) sales, ranging from 2005 to 2008.[https://www.elspa.com/?c=/charts/japanese.jsp] Full name Entertainment and Leisure Software Publishers Association
+  |
+  | {{find video game sources short|ELSPA|linksearch=www.elspa.com}}<br />[[WT:WikiProject Video games/Archive 5#GameRankings (or similar)|1]]
+|-
+  | ''[[Gamasutra]]''
+  | [https://www.gamasutra.com/ online]
+  | 1997–
+  | Focus on video game development, for video game developers.
+  |
+  | [[United Business Media]]; sister publication to ''[[Game Developer (magazine)|Game Developer]]'' magazine
+  | {{find video game sources short|Gamasutra|linksearch=www.gamasutra.com}}<br />[[WT:WikiProject Video games/Archive 35#Video Game sales charts|1]], [[WT:WikiProject Video games/Article guidelines/Archive 2#Glitches notable?|2]], [[WT:WikiProject Video games/Archive 36#Notability of NeoGAF?|3]], [[WT:VG/S/A4#Gamasutra link's use disputed|4]], [[WT:WikiProject Video games/Archive 67#Are these credible secondary sources|5]], [[WP:Reliable sources/Noticeboard/Archive 88#Feature articles and what they can be used for|6]], [[WP:Reliable sources/Noticeboard/Archive 83#gamasutra.com|7]]
+|-
+  | ''[[GamesIndustry.biz]]''
+  | [https://www.gamesindustry.biz/ online]
+  |
+  | News, features, market and industry info
+  | Sister site of ''[[Eurogamer]]''
+  | [[Gamer Network]]
+  | {{find video game sources short|GamesIndustry.biz|linksearch=www.gamesindustry.biz}}<br />[[WT:VG/S/A1#Article on GamesIndustry.biz|1]], [[WT:VG/S/A7#Gamesindustry.biz reference for Grand Theft Auto V|2]], [[WT:VG/S/A8#Gamer Network|3]]
+|-
+  | Game Studies
+  | [https://gamestudies.org online]
+  |
+  | peer-reviewed, scholarly journal
+  | Has a [https://gamestudies.org/0801/board board of reviewers] from academic institutes, a [https://gamestudies.org/0801/team team of editors], and is [https://www.doaj.org/doaj?func=byTitle&hybrid=&query=G listed] on the [[Directory of Open Access Journals]].
+  |
+  | {{find video game sources short|Game Studies|linksearch=gamestudies.org}}<br />[[WT:WikiProject Video games/Archive 86#Videogame Magazines Should Not Automatically Be Regarded as a Reliable Source|1]], [[WT:WikiProject Video games/Archive 61#Reliabe video game sources|2]]
+|-
+  | ''[[MCV/Develop]]''
+  | print, [https://www.mcvuk.com/ online]
+  | 1998–
+  | Industry news, for industry insiders
+  | Formerly known as ''MCV''. ''[[Develop (magazine)|Develop]]'' and ''Esports Pro'' articles were merged into this magazine in 2018.
+  | Biz Media ([[Datateam]])
+  | {{find video game sources short|MCV|linksearch=www.mcvuk.com}}<br />[[WT:WikiProject Video games/Archive 90#Sales figures for Playstation Network titles|1]]
+|-
+  | The MagicBox
+  | [https://www.the-magicbox.com/ online]
+  |
+  | Translates industry news and sales figures, notably [[Famitsu]] and [[Media Create]]
+  | Also combines sales figures from sources for yearly figures (nothing we can't do per [[WP:CALC]]) [[WP:Reliable sources/Noticeboard/Archive 90#The Magicbox|WP:RS/N]]
+  | Independent
+  | [[WT:VG/S/A2#The Magic Box|1]], [[WP:Reliable sources/Noticeboard/Archive 9#Magic Box?|2]], [[WT:WikiProject Video games/Archive 38#the-magicbox.com - RS?|3]], [[WP:Reliable sources/Noticeboard/Archive 90#The Magicbox|4]]
+|}
+
+===Platform-specific===
+{| class="wikitable sortable"  style="font-size:80%; background:#efe; width:100%;"
+|-
+  ! scope="col" | Name
+  ! scope="col" | Media
+  ! scope="col" | Dates
+  ! scope="col" | Type
+  ! scope="col" | Notes and limitations
+  ! scope="col" | Owner
+  ! scope="col" | Quick links &<br />discussions
+|-
+  | ''AMIGA Magazine RACK''
+  | print, [https://amr.abime.net/magazines online]
+  |
+  | Amiga gaming
+  | Use {{tl|Cite magazine}} when citing anything from a magazine page and do not directly link the site with the url parameter.
+  | Independent
+  | {{find video game sources short|AMIGA Magazine RACK|linksearch=amr.abime.net/magazines}}<br />[[WT:WikiProject Video games/Archive 31#Old Computer Mags|1]], [[WT:WikiProject Video games/Archive 51#Links to copyvio|2]], [[WT:VG/S/A2#Another sources?|3]]
+|-
+  | ''[[GameStar]]'' (DE, HU, CZ, IT, CN, PL, US)
+  | print. [https://www.gamestar.de/ online]
+  | 1997–
+  | PC gaming
+  | Sister magazine of ''[[GamePro]]''
+  | [[IDG Entertainment]]
+  | {{find video game sources short|GameStar|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | [[Killer List of Videogames]]
+  | [https://www.arcade-museum.com online]
+  | 1991–
+  | Arcade games
+  | Has been cited and mentioned in [[WP:Featured article candidates/Marble Madness|several publications]]: magazines, websites, and books
+  | International Arcade Museum
+  | {{find video game sources short|Killer List of Videogames|linksearch=www.klov.com}}<br />[[WT:WikiProject Video games/Archive 56#The Sega/Nintendo WikiProject|1]], [[WT:WikiProject Video games/Arcade#Killer List of Videogames|2]], [[WT:WikiProject Video games/Archive 61#Reliabe video game sources|3]], [[WT:WikiProject Video games/Archive 54#Arcade games|4]], [[WT:WikiProject Video games/Archive 63#Mother 3|5]], [[WT:WikiProject Video games/Archive 53#Move warring: Donkey Kong (Game Boy) vs. Donkey Kong (handheld game)|6]], [[WT:WikiProject Video games/Archive 24#MobyGames policy?|7]], [[WT:WikiProject Video games/Archive 67#Requests page getting constipated|8]], [[WT:VG/S/A2#Lost Garden|9]], [[WT:WikiProject Video games/Arcade#Killer List of Videogames as a source|10]]
+|-
+  | [[NF Magazine]]
+  | [https://www.nintendoforcemagazine.com online]
+  | 2013–
+  | Nintendo news, features, reviews. AKA Nintendo Force
+  |
+  | NF Publishing, LLC
+  | {{find video game sources short|NF Magazine|linksearch=nintendoforcemagazine.com}}<br />[[WT:WikiProject Video games/Sources/Archive 14#Nintendo Force|1]]
+
+|-
+  | ''[[Nintendo Life]]''
+  | [https://www.nintendolife.com online]
+  | 2006–
+  | Nintendo
+  | Factual information (especially release dates); for editorial content, author reliability is needed.  Director Damien McFerran has also written for [[Eurogamer]], [[Retro Gamer]], [[Games TM]] and others.
+  | [https://nlife.com/ NLife Media], part of [[Gamer Network]]
+  | {{find video game sources short|Nintendo Life|linksearch=www.nintendolife.com}}<br />[[WT:VG/S/A3#Nintendo Life|1]], [[WT:VG/S/A4#Nintendo Life|2]], [[WT:VG/S/A5#NintendoLife for release dates|3]], [[WT:VG/S/A8#Gamer Network|4]], [[WT:WikiProject Video games/Sources/Archive 17#Nintendo Life|5]]
+|-
+  | ''Nintendo World Report''
+  | [https://www.nintendoworldreport.com/ online]
+  | 1999–
+  | Nintendo news, features, reviews
+  | Formerly known as PlanetN2000 and Planet GameCube
+  | Independent
+  | {{find video game sources short|Nintendo World Report|linksearch=nintendoworldreport.com}}<br />[[WT:VG/S/A4#Nintendo World Report|1]], [[WT:WikiProject Video games/Archive 79#VG reviews publications|2]], [[WT:WikiProject Video games/Archive 88#Sources|3]]
+|-
+  | ''[[Official U.S. PlayStation Magazine]]''
+  | print
+  | 1997–2007
+  | PlayStation
+  |
+  | [[Ziff Davis Media]]
+  | {{find video game sources short|Official U.S. PlayStation Magazine|linksearch=}}<br />Official PlayStation Magazine (OPM)/Playstation Magazine (PSM)/PlayStation: The Official Magazine (PTOM) (Norway, UK, USA) [[WT:WikiProject Video games/Archive 44#Notability/Relevance of Template:VG Reviews Sites|1]], [[WT:VG/S/A2#Abandonia Reloaded|2]], [[WT:WikiProject Video games/Archive 79#VG reviews publications|3]], [[WT:WikiProject Video games/Archive 46#Reliable sources for DLC|4]], [[WT:VG/S/A5#Playstation Magazine (PSM)|5]], [[WT:VG/S/A6#Un-discussed reliability determinations|6]]
+|-
+  | ''[[PC Gamer]]'' (UK, US)
+  | [[WP:WikiProject Video games/Magazines/PC Gamer (US)|print]]
+  | 1993–
+  | PC gaming
+  |
+  | [[Future Publishing]]
+  | {{find video game sources short|PC Gamer|linksearch=}}<br />[[WT:WikiProject Video games/Archive 43#Giant Bomb as reliable source?|1]], [[WT:WikiProject Video games/Sources/Archive 5#Tales of the Rampant Coyote|2]], [[WT:WikiProject Video games/Archive 10#Review Scores in game articles|3]], [[WT:WikiProject Video games/Archive 86#Nehrim: At Fate's Edge|4]], [[WT:WikiProject Video games/Archive 8#Critical reaction in computer games|5]], [[WT:VG/S/A5#Screwattack again|6]], [[WP:Reliable sources/Noticeboard/Archive 32#Youtube|7]], [[WT:WikiProject Video games/Archive 69#Computer "and" video games|8]]
+|-
+  | ''[[PCGamesN]]''
+  | [https://www.pcgamesn.com/ online]
+  | 2012–
+  | PC gaming
+  |
+  | Network N
+  | {{find video game sources short|PCGamesN|linksearch=}}<br />[[WT:WikiProject Video games/Sources/Archive 11#PC Games N|1]], [[WT:WikiProject Video games/Sources/Archive 18#PCGamesN|2]]
+|-
+  | ''[[PC PowerPlay]]'' (AU)
+  | [[WP:WikiProject Video games/Magazines/PC PowerPlay|print]]
+  | 1996–
+  | PC gaming
+  |
+  | [[Next Media Pty Ltd]]
+  | {{find video game sources short|PC PowerPlay|linksearch=}}<br />[[WT:WikiProject Video games/Archive 86#Nehrim: At Fate's Edge|1]], [[WT:WikiProject Video games/Archive 79#VG reviews publications|2]]
+|-
+  | ''[[PlayStation Official Magazine – UK]]''
+  | print
+  | 2006–
+  | PlayStation
+  |
+  | [[Future Publishing]]
+  | {{find video game sources short|PlayStation Official Magazine – UK|linksearch=}}<br />Official PlayStation Magazine (OPM)/Playstation Magazine (PSM)/PlayStation: The Official Magazine (PTOM) (Norway, UK, USA) [[WT:WikiProject Video games/Archive 44#Notability/Relevance of Template:VG Reviews Sites|1]], [[WT:VG/S/A2#Abandonia Reloaded|2]], [[WT:WikiProject Video games/Archive 79#VG reviews publications|3]], [[WT:WikiProject Video games/Archive 46#Reliable sources for DLC|4]], [[WT:VG/S/A5#Playstation Magazine (PSM)|5]], [[WT:VG/S/A6#Un-discussed reliability determinations|6]]
+|-
+  | ''[[Pure Xbox]]''
+  | [https://www.purexbox.com/ online]
+  | 2010–2016 / 2020–
+  | Xbox
+  |
+  | [https://nlife.com/ NLife Media], a part of [[Gamer Network]]
+  | {{find video game sources short|Pure Xbox|linksearch=www.purexbox.com}}<br />[[WT:WikiProject Video games/Sources/Archive 24#Pure Xbox|1]]
+|-
+  | ''[[Push Square]]''
+  | [https://www.pushsquare.com/ online]
+  | 2009–
+  | PlayStation
+  |
+  | [https://nlife.com/ NLife Media], a part of [[Gamer Network]]
+  | {{find video game sources short|Push Square|linksearch=www.pushsquare.com}}<br />[[WP:Articles for deletion/Don't Die, Mr. Robot!|1]], [[WT:WikiProject Video games/Sources/Archive 17#Likely reliable|2]]
+|-
+  | ''[[Rock, Paper, Shotgun]]''
+  | [https://www.rockpapershotgun.com/ online]
+  | 2007–
+  | PC gaming
+  | Acquired by Gamer Network in 2017
+  | [[Gamer Network]]
+  | {{find video game sources short|Rock, Paper, Shotgun|linksearch=www.rockpapershotgun.com}}<br />[[WT:VG/S/A3#General clean up|1]], [[WT:VG/S/A8#Gamer Network|2]]
+|-
+  | [[Sega Saturn Magazine]]
+  | print
+  | 1994–1998
+  | Sega Saturn
+  | Successor to Sega Magazine, [[WT:VG/S/A9#Sega Saturn Magazine|1]]
+  | [[EMAP]]
+  | {{find video game sources short|Sega Saturn Magazine|linksearch=}}<br />[[WT:VG/S/A9#Sega Saturn Magazine|1]]
+|-
+  | ''[[TouchArcade]]''
+  | [https://www.toucharcade.com/ online]
+  | 2008–
+  | mobile game news
+  |
+  |
+  | {{find video game sources short|Touch Arcade|linksearch=www.toucharcade.com}}<br />[[WT:VG/S/A5#Reliability of sources|1]], [[WT:VG/S/A8#TouchArcade|2]], [[WT:WikiProject Video games/Sources/Archive 10#Source reliability homework|3]]
+|}
+
+===Genre-specific===
+{| class="wikitable sortable"  style="font-size:80%; background:#efe; width:100%;"
+|-
+  ! scope="col" | Name
+  ! scope="col" | Media
+  ! scope="col" | Dates
+  ! scope="col" | Type
+  ! scope="col" | Notes and limitations
+  ! scope="col" | Owner
+  ! scope="col" | Quick links &<br />discussions
+|-
+  | [[Adventure Gamers]]
+  | [https://www.adventuregamers.com/ online]
+  | 1998–
+  | Adventure games
+  |
+  | Independent
+  | {{find video game sources short|Adventure Gamers|linksearch=www.adventuregamers.com}}<br />[[WT:WikiProject Video games/Archive 64#Help! Reliable sources at FAC|1]], [[WT:VG/S/A5#Possible sources for consideration|2]]
+|-
+  | [[Just Adventure]]
+  | [https://www.justadventure.com/ online]
+  | 1997–
+  | Adventure games (mostly)
+  | The site and its staff have been cited in numerous publications and have been the subject of multiple interviews by online gaming news sites with several of its members receiving prestigious awards for their work. (See [[WT:VG/S/A2#justadventure.com / adventureclassicgaming.com|1]])
+  | Independent
+  | {{find video game sources short|Just Adventure|linksearch=www.justadventure.com}}<br />[[WT:VG/S/A2#justadventure.com / adventureclassicgaming.com|1]]
+|-
+  | RPGamer
+  | [https://www.rpgamer.com/ online]
+  | 1995–
+  | Role-playing games
+  |
+  | [https://www.craveonline.com/gaming/ CraveOnline Gaming]
+  | {{find video game sources short|RPGamer|linksearch=www.rpgamer.com}}<br />[[WT:VG/S/A1#RPGamer and RPGFan|1]], [[WT:VG/S/A2#Insert credit|2]], [[WT:WikiProject Video games/Archive 82#Curious question about reader reviews|3]], [[WT:WikiProject Video games/Archive 83#FF template edit war|4]], [[WT:WikiProject Video games/Archive 85#unofficial translations|5]], [[WT:VG/S/A4#Siliconera|6]], [[WT:WikiProject Video games/Archive 66#Reliable sources for Japanese games|7]]
+|-
+  | RPGFan
+  | [https://www.rpgfan.com/ online]
+  | 1999–
+  | Role-playing games
+  |
+  | Independent
+  | {{find video game sources short|RPGFan|linksearch=www.rpgfan.com}}<br />[[WT:VG/S/A1#RPGamer and RPGFan|1]], [[WP:Articles for deletion/RPGFan|2]], [[WT:VG/S/A6#RPGFan|3]]
+|-
+  | RPG Site
+  | [https://www.rpgsite.net/ online]
+  | 2006–
+  | Role-playing games
+  |
+  | [https://www.mistengine.com/ MIST Network]
+  | {{find video game sources short|RPG Site|linksearch=www.rpgsite.net}}<br />[[WT:WikiProject Video games/Sources/Archive 15#RPG Site|1]]
+|-
+  | [[Wargamer.com]]
+  | [https://www.wargamer.com online]
+  | 1995–
+  | Wargames (strategy and tactics)
+  | Staffed by experts on war-related and editorial fields,[https://www.wargamer.com/about/management.asp] [https://www.wargamer.com/about/staff.asp] and received several accolades from established sites.[https://www.wargamer.com/about/history.asp] [https://www.wargamer.com/about/awards.asp]
+  | Independent
+  | {{find video game sources short|Wargamer.com|linksearch=www.wargamer.com}}<br />[[WT:VG/S/A1#Wargamer.com|1]]
+|}
+
+===General computing/technology===
+{| class="wikitable sortable"  style="font-size:80%; background:#efe; width:100%;"
+|-
+  ! scope="col" | Name
+  ! scope="col" | Media
+  ! scope="col" | Dates
+  ! scope="col" | Type
+  ! scope="col" | Notes and limitations
+  ! scope="col" | Owner
+  ! scope="col" | Quick links &<br />discussions
+|-
+  | ''Abacus''
+  | [https://www.abacusnews.com/ online]
+  | 2018–
+  | features, news, reviews
+  | English-language website that focuses on gaming, technology, and other general consumer news from China
+  | [[South China Morning Post]]
+  | {{find video game sources short|Abacus|linksearch=https://www.abacusnews.com/}}<br />[[WT:VG/S#Abacus|1]]
+|-
+  | [[CNET]]
+  | [https://www.cnet.com/ online]
+  | 1994–
+  | features, news, reviews
+  | Includes [[CNET Gamecenter]]. Do not use information from CNET's product pages.
+  | [[CBS Corporation]] &gt; [[CBS Interactive]]
+  | {{find video game sources short|CNET|linksearch=www.cnet.com}}<br />[[WT:WikiProject Video games/Article guidelines/Archive 2#Glitches notable?|1]], [[WT:WikiProject Video games/Archive 63#Mother 3|2]], [[WP:Reliable sources/Noticeboard/Archive 4#GameSpot and CNET|3]], [[WP:Reliable sources/Noticeboard/Archive 101#CNET|4]], [[WP:Reliable sources/Noticeboard/Archive 180#"Editor Reviews" and affiliate marketing (on CNET)|5]]
+|-
+  | [[Engadget]]
+  | [https://www.engadget.com/ online]
+  | 2004–
+  | features, news
+  | All former ''Joystiq'' content is located here.
+  | [[Oath Inc.]]
+  | {{find video game sources short|Engadget|linksearch=www.engadget.com}}<br />[[WT:WikiProject Video games/Archive 61#Vii|1]], [[WT:WikiProject Video games/RfC on video game console grouping#Possible solution to the problem|2]], [[WP:Reliable sources/Noticeboard/Archive 110#TechCrunch and Engadget|3]], [[WP:Reliable sources/Noticeboard/Archive 2#TV Squad as a reliable source|4]], [[WT:VG/S/A5#Engadget|5]]
+|-
+  | ''[[MacLife]]'' / ''[[MacAddict]]'' (US)
+  | print
+  | 1996–
+  | Macintosh
+  | Formerly a part of ''[[CD-ROM Today]]'', along with ''boot'' (now ''[[Maximum PC]]'').
+  | [[Future US]]
+  | {{find video game sources short|MacLife|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''[[Macworld]]'' (US, CA, AU)
+  | print
+  | 1984–2014
+  | Macintosh
+  |
+  | [[International Data Group]]; formerly in partnership with [[Ziff-Davis]]
+  | {{find video game sources short|Macworld|linksearch=}}<br />[[WP:Reliable sources/Noticeboard/Archive 44#Office Open XML support claims|1]], [[WT:WikiProject Video games/Archive 78#Jewel Box (video game)|2]]
+|-
+  | ''[[Maximum PC]]'' / ''boot'' (US)
+  | [[WP:WikiProject Video games/Magazines/Maximum PC|print]]
+  | 1996–
+  | Windows
+  | Formerly a part of ''[[CD-ROM Today]]'', along with ''[[MacAddict]]'' (now ''[[MacLife|Mac|Life]]'').
+  | [[Future US]]
+  | {{find video game sources short|Maximum PC|linksearch=}}<br />[[WT:WikiProject Video games/Archive 79#VG reviews publications|1]]
+|-
+  | ''[[PC Format]]'' (UK)
+  | [[WP:WikiProject Video games/Magazines/PC Format|print]]
+  | 1991–
+  | Windows
+  |
+  | [[Future Publishing]]
+  | {{find video game sources short|PC Format|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''[[TechRadar]]''
+  | [https://www.techradar.com/gaming online]
+  |
+  | Multi-platform
+  |
+  | [[Future plc]]
+  | [[WT:WikiProject Video games/Archive 132#TechRadar as a source?|1]], [[WP:Reliable sources/Noticeboard/Archive 197#Nokia Lumia 920T GPU|2]]
+|}
+
+===Esports===
+{| class="wikitable sortable"  style="font-size:80%; background:#efe; width:100%;"
+|-
+  ! scope="col" | Name
+  ! scope="col" | Media
+  ! scope="col" | Dates
+  ! scope="col" | Notes and limitations
+  ! scope="col" | Owner
+  ! scope="col" | Quick links &<br />discussions
+|-
+  | ''Dot Esports''
+  | [https://dotesports.com/ online]
+  | 2013–
+  | Was previously part of ''[[The Daily Dot]]'' before being sold off to Gamurs.
+  | [[Gamurs]]
+  | {{find video game sources short|Dot Esports|linksearch=www.dotesports.com}}<br />[[WT:VG/S/A20#The Esports Observer|1]]
+|-
+  | ''The Esports Observer''
+  | [https://esportsobserver.com/ online]
+  | 2015–
+  | In addition to general esports reporting, they also [https://www.hive-conference.com/ produce and organize conferences], as well as [https://database.esportsobserver.com/ publish analytics and data].
+  | [[Advance Publications]]
+  | {{find video game sources short|The Esports Observer|linksearch=https://esportsobserver.com/}}<br />[[WT:VG/S/A20#The Esports Observer|1]]
+|-
+  | ''Heroes Never Die''
+  | [https://www.heroesneverdie.com/ online]
+  | 2017–
+  | ''[[Overwatch (video game)|Overwatch]]'' esport news, written and published by ''[[Polygon (website)|Polygon]]'' staff
+  | [[Vox Media]]
+  | {{find video game sources short|Heroes Never Die|linksearch=heroesneverdie.com}}<br />[[WT:WikiProject Video games/Sources/Archive 17#Polygon's eSports sites|4]]
+|-
+  | ''InvenGlobal''
+  | [https://www.invenglobal.com/ online]
+  | 2015–
+  | Asian-focused esports news, features, and interviews
+  | Inven Communications
+  | {{find video game sources short|InvenGlobal|linksearch=invenglobal.com}}
+|-
+  | ''Metabomb''
+  | [https://www.metabomb.net/ online]
+  | 2015–
+  |
+  | [[Gamer Network]]
+  | {{find video game sources short|Metabomb|linksearch=metabomb.net/}}<br />[[WT:VG/S/A22#Gamer Network sites|1]]
+|-
+  | ''RedBull''
+  | [https://www.redbull.com/us-en/ online]
+  |
+  | Formerly just ''Redbull Games'', former features of the subsite began being published under the main site in 2018
+  | [[RedBull]]
+  | {{find video game sources short|RedBull|linksearch=www.redbull.com}}<br />[[WT:VG/S/A9#RedBull Games|1]], [[WT:WikiProject Video games/Sources/Archive 13#Redbull|2]]
+|-
+  | ''The Rift Herald''
+  | [https://www.riftherald.com/ online]
+  | 2017–
+  | ''[[League of Legends]]'' esport news, written and published by ''[[Polygon (website)|Polygon]]'' staff
+  | [[Vox Media]]
+  | {{find video game sources short|The Rift Herald|linksearch=riftherald.com}}<br />[[WT:WikiProject Video games/Sources/Archive 17#Polygon's eSports sites|4]]
+|-
+  | ''VPEsports''
+  | [https://www.vpesports.com online]
+  |
+  |
+  |
+  | {{find video game sources short|VPEsports|linksearch=www.vpesports.com}}<br />[[WT:VG/S/A20#VPEsports|1]]
+|}
+
+===Aggregate sites===
+Aggregate sites take scores from various publications and provide an aggregated value, which may be weighted based on various internal criteria. Only use aggregators for aggregate scores; scores from individual reliable publications should be retrieved directly from the publication.
+{| class="wikitable sortable"  style="font-size:80%; background:#efe; width:100%;"
+|-
+  ! scope="col" | Name
+  ! scope="col" | Media
+  ! scope="col" | Dates
+  ! scope="col" | Type
+  ! scope="col" | Notes and limitations
+  ! scope="col" | Owner
+  ! scope="col" | Quick links &<br />discussions
+|-
+  | [[Metacritic]]
+  | [https://www.metacritic.com/ online]
+  | 1999–
+  | Aggregate review scores
+  | Weights the scores of publications "based on their quality and overall stature." ([https://www.metacritic.com/about/scoring.shtml]). Do not use their release dates, as their database is shared by [[#Unreliable sources|GameFAQs]], which is unreliable.
+  | [[CBS Corporation]] &gt; [[CBS Interactive]]
+  | {{find video game sources short|Metacritic|linksearch=www.metacritic.com}}<br />[[WT:WikiProject Video games/Archive 93#Mass Effect 3 Metacritic User Reviews|1]], [[WT:VG/S/A4#MetaCritic process|2]], [[WT:WikiProject Video games/Archive 70#Metacritic, GameRankings, MobyGames, TopTenReviews, GameTab, GameStats & Game Ratio|3]], [[WT:WikiProject Video games/Archive 44#Metacritic missing reviews|4]], [[WT:WikiProject Video games/Archive 34#Potential issue with GameRankings/MetaCritic -- add language to guidelines?|5]], [[WT:WikiProject Video games/Archive 33#When it is fair to state "game is #x at gamerankings/metacritic"|6]], [[WP:Reliable sources/Noticeboard/Archive 45#Review aggregator sites|7]], [[WP:Reliable sources/Noticeboard/Archive 27#Metacritic|8]], [[WT:Neutral point of view/Archive 52#Review score aggregators like Rotten Tomatoes, Metacritic and OpenCritic|9]], [[WT:Neutral point of view/Archive 36#Questions regarding NPOV|10]], [[WT:WikiProject Video games/Sources/Archive 17#Metacritic / Play Zine|11]]
+|}
+
+===Primary/affiliate sources===
+Sources are often direct from gaming companies or have close ties to them. Generally very reliable for the facts but should be avoided for opinions, and do not establish [[WP:GNG|notability]].
+
+{| class="wikitable sortable"  style="font-size:80%; background:#efe; width:100%;"
+|-
+  ! scope="col" | Name
+  ! scope="col" | Media
+  ! scope="col" | Dates
+  ! scope="col" | Type
+  ! scope="col" | Notes and limitations
+  ! scope="col" | Owner
+  ! scope="col" | Quick links &<br />discussions
+|-
+  | [[Larry Hryb|Major Nelson's Blog]]
+  | [https://www.majornelson.com/ online]
+  |
+  | blog, news
+  | Xbox-centric news, announcements, videos, and podcasts
+  | Self-published by [[Larry Hryb]] in a semi-professional manner.
+  | {{find video game sources short|Major Nelson's Blog|linksearch=www.majornelson.com}}<br />[[WT:WikiProject Video games/Archive 43#Giant Bomb as reliable source?|1]], [[WT:WikiProject Video games/Sources/Archive 17#Promote Major Nelson|2]]
+|-
+  | [[PlayStation Blog]]
+  | online ([https://blog.us.playstation.com/ US]/[https://blog.eu.playstation.com/ EU])
+  | 2007–
+  | blog
+  | Official PlayStation blog featuring announcement, interviews and preview posts from first- and third-party developers
+  | [[Sony Interactive Entertainment]]
+  | {{find video game sources short|PlayStation Blog|linksearch=blog.us.playstation.com}}<br />[[WT:VG/S/A4#PlayStation Blog as a reliable source|1]], [[WT:WikiProject Video games/Archive 86#Videogame Magazines Should Not Automatically Be Regarded as a Reliable Source|2]], [[WP:Reliable sources/Noticeboard/Archive 103#Akiba Blog|3]]
+|-
+  | [[Prima Games]]
+  | [https://primagames.com/ online], print
+  | 1990–
+  | strategy guide
+  | Officially-sanctioned strategy guides. Prima published physical guides until 2019, when it transitioned to online-only. Some guides contain commentary from and interviews with game developers.
+  | [[DK (publisher)|DK]] (1990–2019); Asteri Holdings (2019–present)
+  | {{find video game sources short|Prima Games|linksearch=https://primagames.com/}}<br />[[Wikipedia_talk:WikiProject_Video_games/Sources/Archive_1#Strategy_guides|1]]
+|}
+
+===Defunct===
+While these sites are defunct, with content either merged into other sites or otherwise lost, they can still appear in web searches, and if you can find a link, you can use Archive.org's Wayback Machine to see if a copy exists there. The content of these are still considered reliable.
+
+{| class="wikitable sortable"  style="font-size:80%; background:#efe; width:100%;"
+|-
+  ! scope="col" | Name
+  ! scope="col" | Media
+  ! scope="col" | Dates
+  ! scope="col" | Type
+  ! scope="col" | Notes and limitations
+  ! scope="col" | Owner
+  ! scope="col" | Quick links &<br />discussions
+|-
+  | [[1UP.com]]
+  | [https://1up.com online]
+  | 2003–2013
+  | features, news, reviews
+  | Formerly ''[[Electronic Gaming Monthly|EGM]]'' online site, merged with UGO in 2009.[https://www.1up.com/do/newsStory?cId=3172156]
+  | [[UGO Networks]]
+  | {{find video game sources short|1up.com|linksearch=www.1up.com}}<br />[[WT:WikiProject Video games/Archive 72#How reliable is 1up.com?|1]], [[WP:Reliable sources/Noticeboard/Archive 61#Neglected Mario Characters|2]]
+|-
+  | Absolute Games (RU)
+  | [https://www.ag.ru/ online]
+  |
+  |
+  | [[Russian language|RU]]
+  |
+  | {{find video game sources short|Absolute Games|linksearch=www.ag.ru}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | [[AllGame]]
+  | [https://www.allgame.com online]
+  | 1998–2014
+  | credits, summaries, synopses
+  | An extension of [[AllMusic]] by the same company for video games. Provides [[IMDb]]-like details for game credits and useful as a source for those within articles. Aka All Game Guide
+  | [[All Media Network]] (formerly [[Macrovision]])
+  | {{find video game sources short|AllGame|linksearch=www.allgame.com}}<br />[[WT:WikiProject Video games/Archive 28#Erasing Contributions.|1]], [[WP:Reliable sources/Noticeboard/Archive 75#Allgame.com|2]], [[WT:WikiProject Video games/Archive 38#Removing MobyGames.com links|3]], [[WT:WikiProject Video games/Article guidelines/Archive 2#Moving MobyGames to "Inappropriate" since it almost always is?|4]], [[WT:WikiProject Video games/Archive 54#Giant Bomb|5]], [[WT:WikiProject Video games/Archive 75#GameFAQs template|6]], [[WT:WikiProject Video games/Archive 51#IMDb but reliable?|7]], [[WT:WikiProject Video games/Archive 82#MobyGames for credits?|8]], [[WT:WikiProject Video games/Archive 60#VG Chartz|9]], [[WT:WikiProject Video games/Archive 76#MobyGames paid Wikipedia?|10]]
+|-
+  | Andriasang
+  | [https://www.andriasang.com online]
+  | 2008–2012
+  | features, news
+  | Focused on the Japanese video games industry, contains weekly updates from Famitsu, Dengeki, Jump and other Japanese Magazines.
+  | Independent
+  | {{find video game sources short|Andriasang|linksearch=www.andriasang.com}}<br />[[WT:VG/S/A3#Andriasang|1]]
+|-
+  | ''CVG Presents'' / ''[[Computer and Video Games]]'' (UK)
+  | print
+  | 1981–2004 / 2008–2009
+  | Multi-platform
+  | The print version of this magazine was suspended for a while and reappeared in a bi-monthly form (''CVG Presents'') focusing each issue on the life history of a single games franchise. Ceased publication sometime during 2009. Website is a separate entity and unaffected by changes.<br />''CVG'' (1981–2004), ''CVG Presents'' (2008–2009)
+  | [[EMAP]], [[Dennis Publishing]], [[Future Publishing]]
+  | {{find video game sources short|Computer and Video Games|linksearch=}}<br />[[WT:WikiProject Video games/Archive 80#Desperately seeking Mega Man 7 release date|1]], [[WT:VG/S/A1#Games Radar|2]], [[WP:Reliable sources/Noticeboard/Archive 32#Youtube|3]], [[WP:Reliable sources/Noticeboard/Archive 29#Twitchfilm.net|4]]
+|-
+  | [[ComputerAndVideoGames.com]] (UK)
+  | online
+  | 1999–2015
+  | Multi-platform
+  | Website version of ''[[Computer and Video Games]]'' that lasted for several years after the magazine.
+  | [[EMAP]], [[Dennis Publishing]], [[Future Publishing]]
+  | {{find video game sources short|Computer and Video Games|linksearch=www.computerandvideogames.com}}<br />[[WT:WikiProject Video games/Archive 80#Desperately seeking Mega Man 7 release date|1]], [[WT:VG/S/A1#Games Radar|2]], [[WP:Reliable sources/Noticeboard/Archive 32#Youtube|3]], [[WP:Reliable sources/Noticeboard/Archive 29#Twitchfilm.net|4]]
+|-
+  | ''[[Computer Games Magazine]]'' / ''Computer Games Strategy Plus'' / ''Strategy Plus'' (US)
+  | print
+  | 1988–2007
+  | Multi-platform
+  | Currently in hiatus. May make a reappearance at some time in the future.
+  | [[theGlobe.com]]
+  | {{find video game sources short|Computer Games Magazine|linksearch=}}<br />[[WT:WikiProject Video games/Archive 63#Protecting redirects of merged articles|1]], [[WT:VG/S/A6#Un-discussed reliability determinations|2]]
+|-
+  | ''[[Computer Gaming World]]'' / ''[[Games for Windows: The Official Magazine|Games for Windows]]'' (US, CA)
+  | [[WP:WikiProject Video games/Magazines/Computer Gaming World|print]]
+  | 1981–2006 / 2006–2008
+  | PC games, later Windows games
+  |
+  | [[Ziff-Davis]], later in partnership with [[Microsoft]]. Staff integrated into [[1UP.com]].
+  | {{find video game sources short|Computer Gaming World|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''Cybersport''
+  | [https://www.cybersport.com online]
+  | 2017–2018
+  | esports
+  | [https://cybersport.com/post/cybersport-com-to-close Closed in November 2018.]
+  | [https://esforce.com/en/ ESforce Holding]
+  | {{find video game sources short|Cybersport|linksearch=www.cybersport.com}}<br />[[WT:VG/S/A20#Cybersport|1]]
+|-
+  | [[Develop (magazine)|Develop]] (UK)
+  | [https://www.develop-online.net online]
+  | ?–2018
+  | Developer news, opinions, analysis, etc.
+  | Merged into [[MCV (magazine)|MCV]] in January 2018.
+  | [[NewBay Media]]
+  | {{find video game sources short|Develop|linksearch=https://www.develop-online.net}}<br />[[WT:WikiProject Video games/Sources/Archive 13#Develop|1]]
+|-
+  | ''[[EGM2]]'' / ''[[Expert Gamer]]'' / ''[[GameNOW]]'' (US)
+  | print
+  | 1994–1998 / 1998–2001 / 2001–2004
+  | Tips, tricks, and guides
+  | Affiliated with ''[[Electronic Gaming Monthly]]''.
+  | Sendai Publishing, [[Ziff-Davis]]
+  | {{find video game sources short|EGM2|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | FiringSquad
+  | [https://www.firingsquad.com online]
+  | 1998–2013
+  |
+  | Started by [[Dennis Fong]] aka "Thresh".  The site's various articles has been cited in many publications and scholarly works. Passed FAC for ''[[WP:Featured article candidates/Giants: Citizen Kabuto|Giants: Citizen Kabuto]]'', ''[[WP:Featured article candidates/Midtown Madness|Midtown Madness]]''.
+  | FS Media Inc.
+  | {{find video game sources short|FiringSquad|linksearch=www.firingsquad.com}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''The Flying Courier''
+  | [https://www.theflyingcourier.com/ online]
+  | 2017–2018
+  | news
+  | ''[[Dota 2]]'' esport news, written and published by ''[[Polygon (website)|Polygon]]'' staff
+  | [[Vox Media]]
+  | {{find video game sources short|The Flying Courier|linksearch=The Flying Courier.com}}<br />[[WT:WikiProject Video games/Sources/Archive 17#Polygon's eSports sites|4]]
+|-
+  | [[GameDaily]]
+  | [https://www.gamedaily.com/ online]
+  | 1995–2011
+  | features, news, reviews
+  |
+  | [[AOL]]
+  | {{find video game sources short|GameDaily|linksearch=www.gamedaily.com}}<br />[[WT:VG/S/A4#RunDLC|1]], [[WT:VG/S/A2#Some MMO Sites|2]], [[WT:WikiProject Video games/Archive 35#Video Game sales charts|3]]
+|-
+  | ''[[GameFan]]'' / ''Diehard GameFan Magazine'' (US, CA)
+  | [[WP:WikiProject Video games/Magazines/GameFan|print]]
+  | 1992–2000
+  | Imports and anime.
+  |
+  | DieHard Gamers Club, Metropolis Media, Shinno Media
+  | {{find video game sources short|GameFan|linksearch=}}<br />[[WT:VG/S/A2#Die Hard GameFAN|1]], [[WT:VG/S/A7#Need help clarifying situationality|2]]
+|-
+  | [[Gameplanet]]
+  | [https://www.gameplanet.co.nz/ online]
+  | 2000–2020
+  | features, news, reviews
+  |
+  |
+  | {{find video game sources short|Gameplanet|linksearch=www.gameplanet.co.nz}}<br />[[WT:WikiProject Video games/Archive 91#Metal Gear Solid 3: Snake Eater|1]], [[WT:VG/S/A3#General clean up|2]]
+|-
+  | ''[[GamePro]]'' (US)
+  | [[WP:WikiProject Video games/Magazines/GamePro|print]], [https://www.gamepro.com/ online]
+  | 1989–2011
+  | console gaming
+  | Sister magazine to ''[[GameStar]]''.
+  | [[IDG Entertainment]]
+  | {{find video game sources short|GamePro|linksearch=www.gamepro.com}}<br />[[WP:Reliable sources/Noticeboard/Archive 32#Youtube|1]], [[WP:Reliable sources/Noticeboard/Archive 110#Dragon's Den|2]], [[WT:WikiProject Video games/Archive 32#Project Exile|3]], [[WT:WikiProject Video games/Archive 86#cultural differences in RPVGs|4]], [[WT:WikiProject Video games#Once again Metal Gear characters|5]], [[WT:WikiProject Video games/Archive 85#Wording|6]], [[WT:WikiProject Video games/Archive 87#Gamepro/G4TV/VGChartz Spam|7]], [[WT:WikiProject Video games/Archive 23#GamePro Reviews = Suckage?|8]]
+|-
+  | [[GameRankings]]
+  | [https://www.gamerankings.com/ online]
+  | 1999–2019
+  | Aggregate review scores
+  | Only counts sites which produce a stipulated minimum volume of output ([https://www.gamerankings.com/itemrankings/help.asp]). Do not use their release dates, as their database is shared by [[#Unreliable sources|GameFAQs]], which is unreliable.
+  | [[CBS Corporation]] &gt; [[CBS Interactive]]
+  | {{find video game sources short|Game Rankings|linksearch=www.gamerankings.com}}<br />[[WT:WikiProject Video games/Archive 8#Critical reaction in computer games|1]], [[WT:VG/S/A1#RPGamer and RPGFan|2]], [[WT:VG/S/A4#gamrReview and gamrFeed as Sources|3]], [[WT:WikiProject Video games/Archive 80#Summary|4]], [[WP:Reliable sources/Noticeboard/Archive 16#Help!!!|5]], [[WT:WikiProject Video games/Archive 5#GameRankings (or similar)|6]]
+|-
+  | [[GameTrailers]]
+  | [https://www.gametrailers.com/ online]
+  | 2002–2016
+  | hosting, reviews, video news
+  | Make sure that you are not sourcing fanmade material. Previously owned by [[Viacom]]. Content is now hosted on an official "GameTrailers" Youtube channel.
+  | [[Defy Media]], archives hosted by [[IGN]] from May 2016 onward.
+  | {{find video game sources short|GameTrailers|linksearch=www.gametrailers.com}}<br />[[WT:WikiProject Video games/Archive 52#Angry video game nerd spam|1]], [[WT:VG/S/A2#Screwattack!!|2]], [[WT:VG/S/A5#Screwattack again|3]], [[WP:Reliable sources/Noticeboard/Archive 104#Screwattack|4]]
+|-
+  | [[GamerBytes]]
+  | [https://www.gamerbytes.com/ online]
+  | 2006–2011
+  | Gaming commentary for online marketplace games
+  | Covers online marketplace games such as WiiWare, Xbox Live Arcade, and PlayStation Network.  Merged into [[Gamasutra]]. (See [[WT:VG/S/A3#Gamerbytes|1]])
+  | [[Gamasutra]]
+  | {{find video game sources short|GamerBytes|linksearch=www.gamerbytes.com}}<br />[[WT:WikiProject Video games/Archive 84#Help at WT:WikiProject Video games/Sources|1]], [[WT:VG/S/A3#Gamerbytes|2]]
+|-
+  | ''[[GamesMaster (magazine)|GamesMaster]]'' (UK, PH)
+  | print
+  | 1993–2018
+  | features, news, reviews
+  |
+  | [[Future Publishing]]
+  | {{find video game sources short|GamesMaster|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | [[GameSetWatch]]
+  | [https://www.gamesetwatch.com/ online]
+  | ?–2011
+  | Gaming commentary
+  | Material is generally stuff that has already been published at [[Gamasutra]] but will often contain features that are published on its site before it reaches [[Gamasutra]]. (See [[WT:VG/S/A2#GameSetWatch|1]])
+  | Sister site of [[Gamasutra]], Think Services
+  | {{find video game sources short|GameSetWatch|linksearch=www.gamesetwatch.com}}<br />[[WT:VG/S/A2#GameSetWatch|1]]
+|-
+  | [[GameSpy]]
+  | [https://www.gamespy.com/ online]
+  | 1996–2013
+  | features, news, reviews
+  | Shared database with [[IGN]].
+  | [[IGN]]
+  | {{find video game sources short|GameSpy|linksearch=www.gamespy.com}}<br />[[WT:WikiProject Video games/Archive 44#Notability/Relevance of Template:VG Reviews Sites|1]], [[WT:WikiProject Video games/Archive 32#Project Exile|2]], [[WT:WikiProject Video games/Archive 62#Arb. Break: Dealing with multi-platform releases|3]], [[WT:VG/S/A1#Talk:4X|4]], [[WT:WikiProject Video games/Archive 63#Protecting redirects of merged articles|5]], [[WT:WikiProject Video games/Archive 68#Blue Dragon...Again|6]], [[WP:Reliable sources/Noticeboard/Archive 16#Help!!!|7]]
+|-
+  | ''[[GamesTM]]''
+  | [[WP:WikiProject Video games/Magazines/games TM|print]]
+  | 2002–2018
+  | news, reviews, features
+  | UK print magazine. USA, DE, NL and BE versions available.
+  | [[Future Publishing]]
+  | {{find video game sources short|GamesTM|linksearch=}}<br />[[WT:WikiProject Video games/Archive 40#Task Force Proposal|1]], [[WT:WikiProject Video games/Magazines/Archive 1#Hardcore Gamer Magazine|2]]
+|-
+  | ''[[Good Game (TV program)|Good Game]]''
+  | [https://www.abc.net.au/tv/goodgame/ online]
+  | 2006–2016
+  |
+  | Australian television show that reviewed video games.
+  | [[Australian Broadcasting Corporation]]
+  | {{find video game sources short|Good Game|linksearch=www.abc.net.au/tv/goodgame}}<br />[[WT:WikiProject Video games/Archive 70#Heads up on out-of-universe source location|1]]
+|-
+  | ''HookShot Inc.''
+  | [https://www.hookshotinc.com online]
+  | ?–2013
+  | Downloadable games under $15
+  |
+  | Independent
+  | {{find video game sources short|HookShot Inc.|linksearch=}}<br />[[WT:VG/S/A5#Hookshot Inc.|1]]
+|-
+  | IndustryGamers
+  | [https://www.industrygamers.com/ online]
+  | 2010–2012
+  | features, news, reviews
+  | Acquired by [[Gamesindustry.biz]]
+  | Independently owned
+  | {{find video game sources short|IndustryGamers|linksearch=www.industrygamers.com}}<br />[[WT:VG/S/A3#Industry Gamers|1]]
+|-
+  | [[Inside Mac Games]]
+  | [https://www.insidemacgames.com/ online]
+  | 1993–
+  | Mac-focused gaming
+  | 
+  | Independent
+  | {{find video game sources short|Inside Mac Games|linksearch=www.insidemacgames.com}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | [[Joystiq]]
+  | [https://www.joystiq.com/ online]
+  | 2004–2015
+  | multi-author blog
+  | AOL property with salaried staff.  [[GameDaily]] was merged with Joystiq following the former's closure.  Closed in 2015, a cut down version was merged into [[Engadget]].
+  | [[AOL]] &gt; [[Weblogs, Inc.]]
+  | {{find video game sources short|Joystiq|linksearch=www.joystiq.com}}<br />[[WT:VG/S/A1#Why is "blogs" a useful category for the list of sources? Why do we have categories anyway?|1]], [[WT:VG/S/A4#Promoting Joystiq|2]], [[WT:WikiProject Video games/Archive 42#Joystiq and Kotaku|3]], [[WT:VG/S/A5#Massively.com - Joystiq|4]], [[WT:WikiProject Video games/Archive 91#Reliability of Joystiq|5]], [[WP:Reliable sources/Noticeboard/Archive 111#Beau Hindman articles on joystiq reliable source for a videogame.|6]], [[WT:VG/S/A7#Additions to VGReviews|7]]
+|-
+  | [[Kill Screen]]
+  | print, [https://killscreendaily.com/ online]
+  | 2009–2017
+  | features, news, reviews
+  | Scores from reviews not recommended to use.
+  | Independent
+  | {{find video game sources short|Kill Screen|linksearch=https://killscreendaily.com/}}<br />[[WT:VG/S/A9#Kill Screen and (The) Absolute|1]], [[WT:WikiProject Video games/Archive 115#WP:VGRS question|2]]
+|-
+  | ''[[MMO Games Magazine]]'' / ''Massive Magazine'' (US)
+  | print
+  | 2006–2007
+  | MMO gaming
+  | Sister publication to ''[[Computer Games Magazine]]''.
+  | [[Theglobe.com]]
+  | {{find video game sources short|MMO Games Magazine|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | [[Music4Games]]
+  | [https://www.music4games.net online]
+  | 1999–2009
+  | Focus on video game music, music industry, etc.
+  | Established editorial policies, major supporter/media partner of [[Game Developers Conference|GDC]] and trade shows.
+  | Independent
+  | {{find video game sources short|Music4Games|linksearch=www.music4games.net}}<br />[[WT:WikiProject Video games/Archive 80#Music4Games|1]]
+|-
+  | ''[[Next Generation Magazine]]'' (UK)
+  | [[WP:WikiProject Video games/Magazines/Next Generation Magazine|print]]
+  | 1995–2002
+  | Games, games industry.
+  | Affiliated with ''[[Edge (magazine)|Edge]]''.
+  | [[Future Publishing]]
+  | {{find video game sources short|Next Generation Magazine|linksearch=}}<br />[[WT:WikiProject Video games/Reference library/Online print archive#Next Generation Magazine review differences|1]], [[WT:WikiProject Video games/Archive 68#Legacy of Kain: Soul Reaver print reviews|2]], [[WT:WikiProject Video games/Nintendo/Archive 5#Super Mario RPG: Legend of the Seven Stars|3]], [[WT:WikiProject Video games/Archive 31#Super Mario RPG lists|4]]
+|-
+  | ''[[NGC Magazine]]'' / ''N64 Magazine'' (UK)
+  | print
+  | 1997–2001 / 2001–2006
+  | Nintendo 64, GameCube
+  | Successor to ''[[Super Play]]''.
+  | [[Future Publishing]]
+  | {{find video game sources short|NGC Magazine|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]], [[WT:WikiProject Video games/Archive 79#VG reviews publications|2]]
+|-
+  | ''NGamer'' / ''[[Nintendo Gamer]]'' (UK)
+  | print
+  | 2006–2012
+  | Nintendo
+  | Successor to ''[[NGC Magazine]]''. Formally known as NGamer.
+  | [[Future Publishing]]
+  | {{find video game sources short|NGamer|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''[[Nintendo Power]]'' (US)
+  | [[WP:WikiProject Video games/Magazines/Nintendo Power|print]]
+  | 1988–2012
+  | Nintendo
+  | Published by Nintendo before 2007.
+  | [[Future US]]
+  | {{find video game sources short|Nintendo Power|linksearch=}}<br />[[WT:WikiProject Video games/Archive 71#Old Nintendo Power scoring system|1]], [[WT:WikiProject Video games/Archive 79#VG reviews publications|2]], [[WT:WikiProject Video games/Archive 31#Super Mario RPG lists|3]], [[WT:WikiProject Video games/Archive 44#Metacritic missing reviews|4]], [[WT:WikiProject Video games/Archive 45#Music of Super Smash Bros. Brawl article?|5]], [[WT:WikiProject Video games/Archive 32#Project Exile|6]], [[WT:WikiProject Video games/Archive 86#Videogame Magazines Should Not Automatically Be Regarded as a Reliable Source|7]], [[WT:VG/S/A2#Platform-Specific Media reliability??|8]], [[WT:WikiProject Video games/Nintendo/Archive 5#Super Mario RPG: Legend of the Seven Stars|9]]
+|-
+  | ''[[Official Dreamcast Magazine (UK)]]''
+  | print
+  | 1999–2001
+  | Sega Dreamcast
+  |
+  | [[Dennis Publishing]]
+  | {{find video game sources short|Official Dreamcast Magazine|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''[[Official Dreamcast Magazine (US)]]''
+  | [[WP:WikiProject Video games/Magazines/Official Dreamcast Magazine (US)|print]]
+  | 1999–2001
+  | Sega Dreamcast
+  |
+  | [[Imagine Media]]
+  | {{find video game sources short|Official Dreamcast Magazine|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''[[Official Xbox Magazine]]'' (US, UK)
+  | print
+  | 2001–2020
+  | Xbox
+  |
+  | [[Future Publishing]]
+  | {{find video game sources short|Official Xbox Magazine|linksearch=}}<br />[[WT:WikiProject Video games/Archive 79#VG reviews publications|1]]
+|-
+  | ''[[PALGN]]''
+  | [https://palgn.com.au/ online]
+  | 2003–2014
+  | news and reviews
+  | Aka PAL Gaming Network
+  | Independent
+  | {{find video game sources short|PALGN|linksearch=https://palgn.com.au/}}<br />[[WT:VG/S/A1#A few sources for your consideration|1]], [[WT:VG/S/A2#Is PALGN reliable?|2]]
+|-
+  | ''[[PC Zone]]'' (UK)
+  | [[WP:WikiProject Video games/Magazines/PC Zone|print]]
+  | 1993–2010
+  | PC gaming
+  | [[Charlie Brooker]] and [[Stuart Campbell (game journalist)|Stuart Campbell]] have previously written for the magazine.  Originally published by [[Dennis Publishing]].
+  | [[Future Publishing]]
+  | {{find video game sources short|PC Zone|linksearch=}}<br />[[WT:WikiProject Video games/Archive 58#GamesRadar|1]]
+|-
+  | [[Penny Arcade Report]]
+  | [https://penny-arcade.com/report online]
+  | 2012–2013
+  | news, features, reviews
+  | Full-time staff and editorial processes. [https://penny-arcade.com/report/about about]
+  | [[Penny Arcade]]
+  | {{find video game sources short|Penny Arcade Report|linksearch=www.penny-arcade.com/report}}<br />[[WT:VG/S/A5#Penny Arcade Report|1]]
+|-
+  | ''[[Play (US magazine)]]''
+  | print, [https://www.playmagazine.com/ online]
+  | 2001–2010
+  |
+  | Multi-format games magazine founded and edited by [[Dave Halverson]], formerly of [[GameFan]].  Not to be confused with [[Play (UK magazine)]], a PlayStation magazine.
+  | Fusion Publishing
+  | {{find video game sources short|Play Magazine|linksearch=www.playmagazine.com}}
+|-
+  | ''[[Pocket Gamer]]'' (US, CA)
+  | print
+  | 2000–?
+  | Handheld games
+  |
+  | [[Imagine Media]]
+  | {{find video game sources short|Pocket Gamer|linksearch=}}<br />[[WT:VG/S/A2#GameSnob|1]], [[WT:WikiProject Video games/Indie/Archive 1#One thing I would like to see...|2]]
+|-
+  | [[Vault Network|RPG Vault]]
+  | [https://rpgvaultarchive.ign.com online]
+  | 1996–2009
+  | Role-playing games
+  |
+  | [[J2 Global]] &gt; [[Ziff Davis]]
+  | {{find video game sources short|RPG Vault|linksearch=https://rpgvaultarchive.ign.com}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | Slide to Play
+  | [https://www.slidetoplay.com/ online]
+  | –2017
+  | iOS gaming site
+  | Targets [[iOS]] games
+  | Independent
+  | [[WT:VG/S/A6#New sources|1]]
+|-
+  | Sports Gaming Network
+  | [https://www.sgn.cc/ online]
+  | ?–2006
+  | Sports games.
+  | The site has been cited in several publications and scholarly works. (See [[WP:Featured article candidates/Midtown Madness|1]])
+  |
+  | {{find video game sources short|Sports Gaming Network|linksearch=www.sgn.cc}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | Strategy Gaming Online
+  | [https://www.strategy-gaming.com/ online]
+  | ?–2011
+  | Strategy games
+  | Defunct
+  | [[UGO Network]]
+  | {{find video game sources short|Strategy Gaming Online|linksearch=www.strategy-gaming.com}}<br />[[WT:VG/S/A1#Talk:4X|1]]
+|-
+  | Stratos Group
+  | [https://www.stratosgroup.com/ online]
+  | ?–2017
+  |
+  | Acknowledged industry experts. (See [[WT:VG/S/A1#Stratos Group|1]])
+  | Independent
+  | {{find video game sources short|Stratos Group|linksearch=www.stratosgroup.com}}<br />[[WT:VG/S/A1#Stratos Group|1]]
+|-
+  | Technology Tell
+  | [https://www.technologytell.com/ online]
+  |
+  | features, news, reviews
+  | Formerly Gamer Tell. Hasn't updated since 2016.
+  | NAPCO Media
+  | {{find video game sources short|Technology Tell|linksearch=www.technologytell.com}}<br />{{find video game sources short|Gamer Tell|linksearch=www.gamertell.com}}<br />[[WT:WikiProject Video games/Archive 84#Help at WT:WikiProject Video games/Sources|1]], [[WT:VG/S/A3#GamerTell|2]], [[WT:WikiProject Video games/Sources/Archive 15#TechnologyTell|3]]
+|-
+  | [[UGO Networks]]
+  | [https://www.ugo.com/ online]
+  | 1997–2013
+  | features, news
+  | Operate a host of related networked gaming sites.
+  | [[Hearst Corporation]]
+  | {{find video game sources short|UGO Networks|linksearch=www.ugo.com}}<br />[[WP:Reliable sources/Noticeboard/Archive 38#Is celebritywonder.com a WP:RS?|1]], [[WP:Reliable sources/Noticeboard/Archive 84#Fingerpoke of Doom article|2]], [[WT:WikiProject Video games#Once again Metal Gear characters|3]], [[WT:WikiProject Video games/Nintendo/Archive 10#Skull Kid article needs attention please|4]], [[WT:WikiProject Video games/Archive 61#Mortal Kombat characters needing some help|5]], [[WT:VG/S/A1#Talk:4X|6]]
+|-
+  | Voodoo Extreme
+  | [https://ve3d.ign.com online]
+  | ?–2003
+  |
+  | Aka VE3D
+  | [[J2 Global]] &gt; [[Ziff Davis]]
+  | {{find video game sources short|Voodoo Extreme|linksearch=ve3d.ign.com}}<br />[[WT:VG/S/A1#Set this up and knock it down|1]], [[WT:WikiProject Video games/Archive 87#Gamepro/G4TV/VGChartz Spam|2]]
+|-
+  | ''WorldsInMotion''
+  | [https://worldsinmotion.biz/ online] ([https://web.archive.org/web/20110430090058/https://worldsinmotion.biz/ archived])
+  | 2007–2012
+  |
+  | Merged with [[Gamasutra]] as of 2012.
+  |
+  | {{find video game sources short|WorldsInMotion|linksearch=}}<br />[[WT:VG/S/A2#GameSetWatch|1]]
+|-
+  | ''[[X-Play]]'' (US)
+  | television, [https://www.x-play.com/ online]
+  | 1998–2013
+  | features, news, reviews
+  |
+  | [[G4 (TV channel)|G4]]
+  | {{find video game sources short|X-Play|linksearch=www.x-play.com}}<br />[[WT:WikiProject Video games/Archive 80#Remove G4|1]], [[WT:WikiProject Video games/Archive 79#VG reviews publications|2]], [[WT:VG/S/A4#The Electric Playground and Reviews on the Run|3]]
+|-
+  | ''[[Amiga Power]]'' (UK)
+  | [[WP:WikiProject Video games/Magazines/Amiga Power|print]]
+  | 1991–1996
+  | Amiga
+  |
+  | [[Future Publishing]]
+  | {{find video game sources short|Amiga Power|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''[[Amstrad Action]]'' (UK)
+  | [https://www.cpcwiki.eu/mags/AA/ print]
+  | 1985–1995
+  | Amstrad CPC
+  |
+  | [[Future Publishing]]
+  | {{find video game sources short|Amstrad Action|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''[[CRASH (magazine)|CRASH]]'' (UK)
+  | [https://crashonline.org.uk/ print]
+  | 1984–1992
+  | ZX Spectrum
+  |
+  | [[Newsfield Publications Ltd]]
+  | {{find video game sources short|CRASH Magazine|linksearch=}}<br />[[WT:WikiProject Video games/Archive 42#Joystiq and Kotaku|1]]
+|-
+  | ''[[Dragon (magazine)|Dragon]]'' (US)
+  | print
+  | 1976–1997
+  | ZX Spectrum
+  | (See [[WT:WikiProject Video games/Archive 71#The Dragon magazine's "The Electric Eye" column|1]])
+  | TSR / WotC / Paizo
+  | {{find video game sources short|Dragon Magazine|linksearch=}}<br />[[WT:WikiProject Video games/Archive 71#Dragon magazine's "The Role of Computers" column|1]], [[WT:WikiProject Video games/Archive 77#Concluding the Dragon reviews|2]], [[WT:WikiProject Video games/Archive 71#The Dragon magazine's "The Electric Eye" column|3]]
+|-
+  | ''[[Game Developer (magazine)|Game Developer]]'' (US)
+  | print
+  | 1994–2013
+  | Focus on video game development
+  |
+  | [[CMP Media]]
+  | {{find video game sources short|Game Developer|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''[[Gamest]]'' (JP)
+  | print
+  | 1983-1999
+  | news, interviews, awards
+  | Japanese arcade game magazine. Went defunct in 1999 after the sudden bankruptcy of its publisher.
+  | [[Shinseisha]]
+  | {{find video game sources short|gamest}}[[WT:WikiProject Video games/Archive_22#Gamest/Monthly_Arcadia|1]]
+|-
+  | ''[[Mean Machines]]'' (UK)
+  | [https://meanmachinesmag.co.uk/ print]
+  | 1990–1992
+  | Multi-platform
+  | Offshoot of ''[[Computer and Video Games]]''
+  | [[EMAP]]
+  | {{find video game sources short|Mean Machines|linksearch=}}<br />[[WT:WikiProject Video games/Retro games#Getting started|1]], [[WT:WikiProject Video games/Archive 86#Possible ref link problems|2]], [[WT:WikiProject Video games/Archive 59#Discussion|3]]
+|-
+  | ''[[Mega (magazine)|MEGA]]'' (UK)
+  | [[WP:WikiProject Video games/Magazines/Mega|print]]
+  | 1992–1995
+  | Sega Mega Drive
+  |
+  | [[Future Publishing]], [[Maverick Magazines]]
+  | {{find video game sources short|Mega Magazine|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''[[Official Nintendo Magazine]]'' (UK)
+  | [[WP:WikiProject Video games/Magazines/Nintendo Official Magazine|print]], limited [https://www.officialnintendomagazine.co.uk/ online]
+  | 1992–2014
+  | Nintendo
+  | Also known as ''Nintendo Official Magazine'' (NOM) and ''Nintendo Magazine System'' (NMS). The magazine was relaunched with a new first issue after Future plc obtained the publishing rights in 2006.
+  | [[EMAP]], [[Future plc]]
+  | {{find video game sources short|Official Nintendo Magazine|linksearch=www.officialnintendomagazine.co.uk}}<br />[[WT:WikiProject Video games/Archive 15#A Magazine Project|1]], [[WT:WikiProject Video games/Archive 79#VG reviews publications|2]], [[WT:WikiProject Video games/Archive 24#Land of the Legend discussion|3]], [[WT:VG/S/A6#Australian version of Official Nintendo Magazine|4]]
+|-
+  | Play Time (DE)
+  | [[WP:WikiProject Video games/Magazines/Play Time (German)|print]]
+  | 1991–1995
+  | Multi-platform
+  |
+  |
+  | {{find video game sources short|Play Time|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | ''[[Sinclair User]]'' (UK)
+  | print
+  | 1982–1993
+  | ZX Spectrum
+  |
+  | [[EMAP]]
+  | {{find video game sources short|Sinclair User|linksearch=}}<br />[[WT:VG/S/A4#Play This Thing|1]]
+|-
+  | ''[[Super Play]]'' (UK)
+  | print
+  | 1992–1996
+  | Super Nintendo
+  |
+  | [[Future Publishing]]
+  | {{find video game sources short|Super Play|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | [[TeamXbox]]
+  | [https://www.teamxbox.com/ online] ([https://web.archive.org/web/20140101000000*/https://teamxbox.com archived])
+  | 2000–2012
+  | Xbox, Xbox 360
+  |
+  | [[J2 Global]] &gt; [[Ziff Davis]]
+  | {{find video game sources short|TeamXbox|linksearch=www.teamxbox.com}}<br />[[WT:WikiProject Video games/Archive 79#VG reviews publications|1]], [[WP:Reliable sources/Noticeboard/Archive 38#Tucker Max|2]]
+|-
+  | ''[[Your Sinclair]]'' (UK)
+  | [https://www.ysrnry.co.uk/ print]
+  | 1984–1993
+  | ZX Spectrum
+  |
+  | [[Dennis Publishing]], [[Future Publishing]]
+  | {{find video game sources short|Your Sinclair|linksearch=}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|}
+
+===Other reliable===
+{{div col |style=font-size:80% |colwidth=20em}}
+*    ''[[1001 Video Games You Must Play Before You Die]]''[[Wikipedia talk:WikiProject Video games/Sources#1001 Video Games You Must Play Before You Die|1]]
+*    4Players (Germany) [[WT:WikiProject Video games/Sources/Archive 22#Meristation and 4Players|1]]
+*    Android Central [[WT:WikiProject Video games/Sources/Archive 23#Windows Central (+ related)|1]]
+*    Animetric [[WP:Reliable sources/Noticeboard/Archive 104#Animetric|1]], [[WT:VG/S/A5#3DJuegos|2]]
+*    AppSpy (a.k.a. AppSpy.com) [[WT:VG/S/A9#Steel Media: 148Apps and App Spy|1]], [[WT:WikiProject Video games/Sources/Archive 12#App Spy (AppSpy.com)|2]]
+*    Atari Gaming Headquarters (Atari HQ) [[WP:Reliable sources/Noticeboard/Archive 95#Atari HQ|1]], [[WT:VG/S/A4#RS discussion|2]], [[Talk:Somari#Atari HQ discussion|3]], [[WP:Reliable sources/Noticeboard/Archive 110#Atari HQ|4]]
+*    AV Club, The [[WP:Reliable sources/Noticeboard/Archive 82#Advice columns in general, Dan Savage in particular|1]], [[WP:Reliable sources/Noticeboard/Archive 109#Need to know if sources are reliable.|2]], [[WP:Reliable sources/Noticeboard/Archive 9#The A/V Club|3]], [[WP:Reliable sources/Noticeboard/Archive 88#avclub.com|4]], [[WT:VG/S/A5#The A.V. Club|5]]
+*    BEEP! (Japan) [[Wikipedia talk:WikiProject Video games/Sources/Archive 22|1]]
+*    Bit-Tech [[WP:Featured article candidates/Nintendo DSi/archive1|1]]
+*    Bleeding Cool [[WT:WikiProject Video games/Sources/Archive 23#Bleeding Cool|1]]
+*    CD-Action (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], [[:pl:Wikiprojekt:Gry komputerowe/Źródła|2]]
+*    Click! [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], [[:pl:Wikiprojekt:Gry komputerowe/Źródła|2]]
+*    Comicbook.com [[WT:WikiProject Video games/Sources/Archive 22#Did You Know Gaming?|1]]
+*    Complex [[WT:WikiProject Video games/Article guidelines/Archive 2#RfC: Top X lists in video games|1]], [[WT:VG/S/A7#Jill Valentine|2]], [[WT:VG/S/A8#What Culture, Complex, and Crave Online|3]]
+*    Computer Entertainer [[Wikipedia talk:WikiProject Video games/Sources/Archive 22|1]]
+*    Daily Dot [[WT:WikiProject Video games/Sources/Archive 16#Regarding the following eSports sites.|1]]
+*    Digital Spy [[WP:Reliable sources/Noticeboard/Archive 34#are music reviews from digital spy reliable?|1]], [[WP:Reliable sources/Noticeboard/Archive 47#digitalspy.co.uk|2]], [[WP:Reliable sources/Noticeboard/Archive 62#Digital spy|3]], [[WP:Reliable sources/Noticeboard/Archive 57#Digital Spy|4]], [[WP:Reliable sources/Noticeboard/Archive 41#Right balance of sources?|5]], [[WP:Reliable sources/Noticeboard/Archive 96#Daily Mail, Digital Spy, Daily Express, and reliability for Doctor Who|6]], [[WP:Articles for deletion/Silence (Doctor Who)|7]], [[WP:Reliable sources/Noticeboard/Archive 92#blog.tvguide.co.uk|8]], [[WT:VG/S/A5#Digital Spy|9]], [[WT:VG/S/A8#https://www.digitalspy.com/|10]]
+*    Digital Trends - [[WT:VG/S/A8#Digital Trends|1]], [[WT:WikiProject Video games/Sources/Archive 21#Digital Trends|2]]
+*    Electric Playground [[WT:VG/S/A4#The Electric Playground and Reviews on the Run|1]], [[WT:WikiProject Video games/Sources/Archive 16#Electric Playground in the 90s|2]]
+*    Entertainment Weekly [[WP:Reliable sources/Noticeboard/Archive 42#Is Big Brother Network a reliable source for events on the Big Brother reality TV show?|1]], [[WP:Reliable sources/Noticeboard/Archive 50#Self-described guide to "alternative opinion"|2]], [[WT:WikiProject Video games/Archive 86#cultural differences in RPVGs|3]], [[WP:Reliable sources/Noticeboard/Archive 49#TV by the Numbers|4]], [[WT:VG/S/A5#Entertainment Weekly|5]]
+*    ESPN [[WT:WikiProject Video games/Sources/Archive 16#Regarding the following eSports sites.|1]]
+*    Gambler (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], [[:pl:Wikiprojekt:Gry komputerowe/Źródła|2]]
+*    GameDevResearch [[WT:VG/S/A2#GameSetWatch|1]], [[WT:VG/S/A2#GameSetWatch 2|2]]
+*    Game.EXE (Russia) [[WT:VG/S/A8#Russian print magazines|1]]
+*    Gameological Society, The [[WT:VG/S/A5#The Gameological Society|1]]
+*    GameStats [[WT:VG/S/A1#Template:VG Reviews|1]], [[WT:WikiProject Video games/Archive 38#GameFAQs a reliable source?|2]], [[WT:WikiProject Video games/Archive 8#Critical reaction in computer games|3]], [[WT:WikiProject Video games/Archive 70#Metacritic, GameRankings, MobyGames, TopTenReviews, GameTab, GameStats & Game Ratio|4]], [[WT:VG/S/A2#Gamestats question|5]]
+*    GameTab [[WT:VG/S/A2#GameTab|1]], [[WT:WikiProject Video games/Archive 70#Metacritic, GameRankings, MobyGames, TopTenReviews, GameTab, GameStats & Game Ratio|2]], [[WT:WikiProject Video games/Archive 79#VG reviews publications|3]]
+*    GameZebo [[WT:VG/S/A1#Browser/flash/MMOG games|1]], [[WT:WikiProject Video games/Archive 42#Joystiq and Kotaku|2]], [[WT:WikiProject Video games/Archive 79#3. Remove Playr and Gamezebo|3]], [[WT:VG/S/A2#Gamezebo|4]]
+*    Gamezilla [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], [[:pl:Wikiprojekt:Gry komputerowe/Źródła|2]]
+*    Gaming Street - [[WT:WikiProject Video games/Sources/Archive 22#Gaming Street|1]]
+*    Gry OnLine (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], [[:pl:Wikiprojekt:Gry komputerowe/Źródła|2]]
+*    Igromania (Игромания, Russia) [[WT:VG/S/A8#Russian print magazines|1]]
+*    Imperium Gier (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], [[:pl:Wikiprojekt:Gry komputerowe/Źródła|2]]
+*    iMore [[WT:WikiProject Video games/Sources/Archive 23#Windows Central (+ related)|1]]
+*    IndieGames.com [[WT:VG/S/A2#GameSetWatch|1]], [[WT:VG/S/A2#Evaluation of sources covering indie games|2]]
+*    Komputer Świat GRY (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], [[:pl:Wikiprojekt:Gry komputerowe/Źródła|2]]
+*    Legends of Localization [[WT:VG/S/A9#Legends of Localization, Polygon|1]]
+*    Lost Garden [[WT:VG/S/A2#Lost Garden|1]]
+*    Massively [[WT:VG/S/A2#Some MMO Sites|1]], [[WT:VG/S/A5#Massively.com - Joystiq|2]], [[WT:VG/S/A7#Need help clarifying situationality|3]]
+*    Maxim [[WT:VG/S/A2#Abandonia Reloaded|1]], [[WP:Reliable sources/Noticeboard/Archive 25#askmen.com|2]], [[WP:Reliable sources/Noticeboard/Archive 25#Sources|3]], [[WP:Reliable sources/Noticeboard/Archive 42#Adult industry|4]], [[WP:Reliable sources/Noticeboard/Archive 4#GameSpot and CNET|5]], [[WT:VG/S/A5#Maxim|6]]
+*    Megami (Japan) [[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+*    Meristation (Spain) [[WT:VG/S/A2#9 Statis|1]], [[WT:WikiProject Video games/Archive 44#Notability/Relevance of Template:VG Reviews Sites|2]], [[WT:VG/S/A5#3DJuegos|3]], [[WT:VG/S/A5#Meristation|4]], [[WT:VG/S/A15#These Metacritic reviewers|5]], [[WT:WikiProject Video games/Sources/Archive 22#Meristation and 4Players|6]]
+*    Miasto Gier [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], [[:pl:Wikiprojekt:Gry komputerowe/Źródła|2]]
+*    Monthly Arcadia (Japan) [[Wikipedia talk:WikiProject Video games/Sources/Archive 22|1]]
+*    Multiplayer.it (Italy) [[WT:WikiProject Video games/Sources/Archive 14#Multiplayer.it|1]], [[WT:WikiProject Video games/Sources/Archive 15#These Metacritic reviewers|2]], [[WT:WikiProject Video games/Sources/Archive 22#Multiplayer.it|3]]
+*    Neo Geo Freak (Japan) - [[WT:WikiProject Video games/Sources/Archive 22#Neo Geo Freak|1]]
+*    New York Times, The [[WP:Reliable sources/Noticeboard/Archive 117#Published letter to the editor of the New York Times|1]], [[WP:Reliable sources/Noticeboard/Archive 53#New York Times news articles not RS?|2]], [[WP:Reliable sources/Noticeboard/Archive 23#Joe the Plumber New York Times "rejected" as a source|3]], [[WP:Reliable sources/Noticeboard/Archive 42#New York Times Article on Alternative Minimum Tax|4]], [[WP:Reliable sources/Noticeboard/Archive 38#New York Times, Associated Press, etc. as sources on legal questions|5]], [[WP:Reliable sources/Noticeboard/Archive 33#New York Times|6]], [[WP:Reliable sources/Noticeboard/Archive 8#Is the New York Times a WP:RS?|7]], [[WP:Reliable sources/Noticeboard/Archive 71#The New York Times a "local" source?|8]], [[WP:Reliable sources/Noticeboard/Archive 3#Hexayurt - the New York Times not a reliable source?|9]], [[WP:Reliable sources/Noticeboard/Archive 22#Is the New York Times Reliable?|10]], [[WP:Reliable sources/Noticeboard/Archive 50#About two studies re-stated by The New York Times and Las Vegas Sun|11]], [[WP:Reliable sources/Noticeboard/Archive 74#The New York Times and The New Yorker magazine as sources in a WP:BLP|12]], [[WP:Reliable sources/Noticeboard/Archive 104#The New York Times BBC vs. academics|13]], [[WP:Reliable sources/Noticeboard/Archive 109#Economist blogs and New York Times opinion pieces|14]], [[WT:WikiProject Video games/Archive 85#Sega Mega Drive / Genesis sales figures dispute - input needed!|15]], [[WT:WikiProject Video games/Archive 86#Videogame Magazines Should Not Automatically Be Regarded as a Reliable Source|16]], [[WT:WikiProject Video games/Archive 35#Video Game sales charts|17]], [[WT:WikiProject Video games/Archive 87#Are GameFaqs release dates always reliable?|18]], [[WT:WikiProject Video games/Archive 84#Conflict of interest-ed editor|19]], [[WT:WikiProject Video games/Archive 44#Metacritic missing reviews|20]], [[WT:VG/S/A5#The New York Times|21]]
+*    Nightmare Mode [[WT:WikiProject Video games/Sources/Archive 15#Nightmare Mode|1]]
+*    Nintendojo [[WT:VG/S/A2#Nintendojo and Gamesarefun.com (GAF)|1]], [[WT:VG/S/A5#Nintendojo for Reviews|2]]
+*    Official PlayStation 2 Magazine (Australia, Poland, UK) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]]
+*    Original Sound Version [[WT:VG/S/A4#Original Sound Version|1]], [[WT:WikiProject Video games/Sources/Archive 17#Original Sound Version|2]]
+*    Paste [[WT:WikiProject Video games/Sources/Archive 19#Recent update|1]]
+*    PC Gameplay (DE) [[WT:WikiProject Video games/Sources/Archive 14#PC Gameplay|1]]
+*    PC Games (Germany, USA) [[WP:Reliable sources/Noticeboard/Archive 29#Twitchfilm.net|1]]
+*    PC Magazine (PCMag.com) [[WT:WikiProject Video games/Archive 64#Bandit Kings of Ancient China|1]], [[WP:Reliable sources/Noticeboard/Archive 85#How to compile a list of programs|2]], [[WP:Reliable sources/Noticeboard/Archive 70#Analysis of reliability needed at this AfD|3]], [[WP:Reliable sources/Noticeboard/Archive 2#Bose Corporation and the intellexual web page|4]], [[WP:Reliable sources/Noticeboard/Archive 18#Columnists|5]], [[WT:VG/S/A5#PC Magazine (PCMag.com)|6]]
+*    PC World [[WT:WikiProject Video games/Archive 62#When reliable sources cite unreliable sources...what to do?|1]], [[WT:WikiProject Video games/Archive 44#Notability/Relevance of Template:VG Reviews Sites|2]], [[WP:Reliable sources/Noticeboard/Archive 52#Sources for information on the theft|3]], [[WT:VG/S/A5#PC World|4]]
+*    Pelit (Finland) [[WT:WikiProject Video games/Archive 50#non-notable game mods: part 2|1]], [[WT:VG/S/A2#Approval of the Finnish Pelit magazine|2]], [[WT:VG/S/A5#Pelit|3]]
+*    Play (UK) [[WT:WikiProject Video games/Archive 79#VG reviews publications|1]], [[WT:WikiProject Video games/Archive 63#Protecting redirects of merged articles|2]]
+*    Reset (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], [[:pl:Wikiprojekt:Gry komputerowe/Źródła|2]]
+*    Retro Gamer (UK, Italy) [[WT:WikiProject Video games/Archive 85#Second break|1]], [[WT:WikiProject Video games/Archive 78#Anyone get the Retrogamer magazine?|2]]
+*    SBNation [[WT:WikiProject Video games/Sources/Archive 14#eSports revisited|1]]
+*    Secret Service / New S Service (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], [[:pl:Wikiprojekt:Gry komputerowe/Źródła|2]]
+*    Świat Gier Komputerowych (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], [[:pl:Wikiprojekt:Gry komputerowe/Źródła|2]]
+*    Time (Magazine) [[WT:WikiProject Video games/Archive 86#cultural differences in RPVGs|1]], [[WP:Reliable sources/Noticeboard/Archive 109#TIME magazine|2]], [[WP:Reliable sources/Noticeboard/Archive 8#Christopher Hitchens, "Time" magazine and "Washington Post" as RS|3]], [[WP:Reliable sources/Noticeboard/Archive 103#TIME Techland|4]], [[WP:Reliable sources/Noticeboard/Archive 28#Timeline of al-Qaeda attacks|5]], [[WP:Reliable sources/Noticeboard/Archive 27#Advertisements with no apparent connection to subject|6]], [[WT:VG/S/A5#Time Magazine|7]]
+*    Top Secret (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], [[:pl:Wikiprojekt:Gry komputerowe/Źródła|2]]
+*    USA Today [[WT:WikiProject Video games/Archive 23#GamePro Reviews = Suckage?|1]], [[WP:Reliable sources/Noticeboard/Archive 9#USA Today|2]], [[WP:Reliable sources/Noticeboard/Archive 103#wired.com and whosnews.usaweekend.com|3]], [[WP:Reliable sources/Noticeboard/Archive 44#MLM, USAToday quoting a trade organisation in a lifestyle section|4]], [[WP:Reliable sources/Noticeboard/Archive 75#thirteen media challenged|5]], [[WP:Reliable sources/Noticeboard/Archive 47#DVDTalk and DVD Verdict|6]], [[WP:Reliable sources/Noticeboard/Archive 58#Disputed Source: Dog Whisperer|7]], [[WT:VG/S/A5#USA Today|8]]
+*    Vandal (Spain) [[WT:WikiProject Video games/Archive 50#Help my edits are being reverted|1]], [[WT:WikiProject Video games/Sources/Archive 22#Vandal|2]]
+*    Velikij Drakon (Великий Дракон, Russia) [[WT:VG/S/A8#Russian print magazines|1]]
+*    Vice Games (formerly Waypoint) [[WT:WikiProject Video games/Sources/Archive 17#Vice's Waypoint|1]], [[WT:WikiProject Video games/Sources/Archive 20#Waypoint|2]]
+*    Windows Central [[WT:WikiProject Video games/Sources/Archive 23#Windows Central (+ related)|1]]
+{{div col end}}
+
+==Situational sources==
+These sources have been deemed "situational". See individual notes for use circumstances; use them with caution, generally.
+
+{| class="wikitable sortable"  style="font-size:80%; background:#fec; width:100%;"
+|-
+  ! scope="col" | Name
+  ! scope="col" | Media
+  ! scope="col" | Dates
+  ! scope="col" | Type
+  ! scope="col" | Notes and limitations
+  ! scope="col" | Owner
+  ! scope="col" | Quick links &<br />discussions
+|-
+  | ''[[Destructoid]]''
+  | [https://www.destructoid.com/ online]
+  | 2006–
+  | Multi-author blog site, "community blogging"
+  | Like other blog sites, some content may be reliable, but only if the author can be established as such. Community user-blogs fail [[WP:USERG]].
+  | [[Enthusiast Gaming]]
+  | {{find video game sources short|Destructoid|linksearch=www.destructoid.com}}<br />[[WT:WikiProject Video games/Archive 36#Destructoid|1]], [[WT:VG/S/A2#Destructoid.com|2]], [[WT:VG/S/A6#Destructoid editorial review process?|3]], [[WT:WikiProject Video games/Archive 116#Situational Sources|4]], [[WT:WikiProject Video games/Sources/Archive 17#Destructoid staff/community post separation|5]]
+|-
+  | ''[[Escapist Magazine]]''
+  | [https://www.escapistmagazine.com/ online]
+  | 2005–
+  | Features, news, reviews
+  | Between October 2017 and July 2018, most content (except for [[Zero Punctuation]]) was written by volunteers without staff oversight and should be handled with care
+  | Enthusiast Gaming
+  | {{find video game sources short|The Escapist|linksearch=www.escapistmagazine.com}}<br />[[Talk:Video game journalism/Archive 1#Escapist|1]], [[Talk:Super Smash Bros. Brawl/Archive 32#Zero Punctuation not a reliable source?|2]], [[Talk:Stalker: Clear Sky#Removal of Escapist Magazine review from 'reception' section|3]], [[WT:VG/S/A8#The Escapist as situational source|4]], [[WT:WikiProject Video games/Sources/Archive 16#Reevaluating The Escapist|5]], [[WT:WikiProject Video games/Sources/Archive 17#The Escapist revisited|6]], [[WT:WikiProject Video games/Sources/Archive 17#The Escapist|7]]
+|-
+  | ''[[Forbes]]''
+  | [https://www.forbes.com/ online], print
+  | 1917–
+  | News magazine, "contributor" content
+  | ''Forbes'' publishes content from salaried ''Forbes'' staff, and a vetted community of non-salaried ''Forbes'' contributors (indicated by "Contributor" in the author's by-line).  Articles written by ''Forbes'' staff are reliable.  Articles written by ''Forbes'' contributors do not have the same editorial oversight and may not be reliable.  Editors are encouraged to find alternatives to contributor pieces.
+  | Forbes
+  | {{find video game sources short|Forbes|linksearch=www.forbes.com}}
+|-
+  | ''[[Giant Bomb]]''
+  | [https://www.giantbomb.com/ online]
+  | 2008–
+  | news, features, reviews, wiki
+  | Reliable for reviews and news content submitted in the site's blog by the site's editorial staff. Do not use the user-contributed content from the site's wikis for citations. Do not use their release dates, as their database is shared by [[#Unreliable sources|GameFAQs]], which is unreliable.
+  | [[CBS Corporation]] &gt; [[CBS Interactive]]
+  | {{find video game sources short|Giant Bomb|linksearch=www.giantbomb.com}}<br />[[WT:VG/S/A2#Giant Bomb|1]], [[WT:VG/S/A3#Giant Bomb?|2]], [[WT:WikiProject Video games/Archive 54#Giant Bomb|3]], [[WT:VG/S/A7#Additions to VGReviews|4]], [[WT:WikiProject Video games/Archive 116#Situational Sources|5]]
+|-
+  | [[Major League Gaming]] (MLG)
+  | [https://www.mlg.com/ online]
+  | 2002–
+  | Primary site for Major League Gaming, an [[esports]] organizer
+  | As a [[WP:PRIMARY|primary source]] this can be used to verify contest results and other information directly related to MLG, but cannot be used to establish [[WP:N|notability]].
+  | [[Activision Blizzard]]
+  | {{find video game sources short|MLGPro|linksearch=www.majorleaguegaming.com}}<br />[[WT:WikiProject Video games/Archive 89#Discussion of MLGPro as a situational source|1]], [[WT:VG/S/A5#MLGPro as situational|2]]
+|-
+  | ''[[The Mary Sue]]''
+  | [https://www.themarysue.com/ online]
+  | 2011–
+  | news, features, reviews
+  | Blog and original reporting focusing on women in "geek culture". Original reporting is reliable and original blogging may be appropriate for editorial/opinions, but reblogged content is not.
+  | [[Abrams Media]]
+  | {{find video game sources short|The Mary Sue|linksearch=www.themarysue.com}}<br />[[WT:VG/S/A9#The Mary Sue|1]], [[WP:Reliable sources/Noticeboard/Archive 189#The Mary Sue Disclaims Itself as an Unreliable Source|2]], [[WT:WikiProject Video games/Sources/Archive 11#The Mary Sue revisited|3]]
+|-
+  | ''Sega-16''
+  | [https://www.sega-16.com/ online]
+  | 2003–
+  | [[Sega]] "historical research center"
+  | Articles by Ken Horowitz and developer interviews are considered reliable. The rest of the content is volunteer-contributed and should be avoided.
+  | Independent
+  | {{find video game sources short|Sega-16|linksearch=www.sega-16.com}}<br />[[WT:VG/S/A1#Sega-16.com|1]], [[WT:WikiProject Video games/Archive 72#Is Sega-16.com a reliable source?|2]], [[WT:WikiProject Video games/Archive 43#Sega-16 as reliable source?|3]], [[WT:WikiProject Video games/Archive 85#Sega Mega Drive / Genesis sales figures dispute - input needed!|4]], [[WP:Reliable sources/Noticeboard/Archive 13#Two sources listing information - are they reliable?|5]], [[WT:VG/S/A5#Sega-16.com|6]], [[WT:VG/S/A9#Sega-16|7]], [[WT:WikiProject Video games/Sources/Archive 17#Situational|8]]
+|-
+| ''Shmuplations''
+  | [https://shmuplations.com/ online]
+  | 2012–
+  | Interview translations
+  | Shmuplations is a website containing translations of old interviews with Japanese game developers. It is particularly useful for finding interviews that cannot be found anywhere on the internet, and the translations are accurate. However, if the original source can be located, it is preferred to cite that instead of Shmuplations.
+  | Independent
+  | {{find video game sources short|Shmuplations|linksearch=https://shmuplations.com/}}<br />[[Wikipedia_talk:WikiProject_Video_games/Sources/Archive_13#Shmuplations|1]], [[Wikipedia_talk:WikiProject_Video_games/Sources/Archive_16#Shmuplations|2]], [[Talk:Sonic_Team#Newly_translated_1997_Sonic_Team_interview|3]], [[Wikipedia_talk:WikiProject_Video_games/Sources#Shmuplations|4]]
+|-
+  | ''Video Game Music Online'' (VGMO)
+  | [https://www.vgmonline.net/ online]
+  | 2014–
+  | Video game music news, composer interviews, game music soundtrack and concert reviews
+  | All content by the [https://www.vgmonline.net/staff/ site staff] (''except for composer biographies'') is considered reliable. Previously operated as [https://web.archive.org/web/20140331151757/https://www.squareenixmusic.com/ Square Enix Music] (2007–2014).
+  | Independent
+  | {{find video game sources short|Video Game Music Online|linksearch=www.vgmonline.net}}<br />[[WT:VG/S/A4#Square Enix Music Online as situational source|1]], [[WT:VG/S/A5#Square Enix Music Online|2]], [[WT:WikiProject Video games/Archive 58#Video Game Composer Links to Square Enix Music Online|3]], [[WT:WikiProject Video games/Archive 65#New article idea: Individual music articles.|4]], [[WT:WikiProject Video games/Archive 104#Important website message|5]]
+|-
+  | [[Twin Galaxies]]
+  | [https://twingalaxies.com online]
+  | 1981–
+  | news
+  | TG is one of the first authorities on video game record-setting (mainly score attack), having endured a hiatus and change of ownership with a new site. For modern records and for speed runs, consider Speed Demos Archive and Guinness.
+  | Independent
+  | {{find video game sources short|TwinGalaxies.com|linksearch=www.twingalaxies.com}}<br />[[WT:VG/S/A9#Twin Galaxies|1]]
+|-
+  | Xbox.com
+  | [https://www.xbox.com online]
+  | 2000–
+  | Xbox official site
+  | May not be appropriate for opinionated content, such as reviews, since it is owned and operated by Microsoft.
+  | [[Microsoft]]
+  | {{find video game sources short|Xbox.com|linksearch=www.xbox.com}}<br />[[WT:WikiProject Video games/Archive 81#Xbox.com as DLC release date source|1]]
+|-
+  | YouTube
+  | [https://www.youtube.com online]
+  | 2005–
+  | Video hosting site
+  | User-generated content, so normally most content is inappropriate as a reliable source per [[WP:SELFPUB]] as well as often issues with copyright concerns. However, videos that are posted by sources who are confirmed as a reliable source listed on this page (such as ''[[IGN]]'' or ''[[Eurogamer]]''), or as a reliable source in general for Wikipedia (such as [[CNN]] and [[BBC]]) are considered to be appropriate sources that can be used. See {{tl|cite video}} for appropriate citation templating.
+  | [[Google]]
+  | {{find video game sources short|YouTube.com|linksearch=www.youtube.com}}<br /> [[WT:WikiProject Video games/Sources/Archive 10#YouTube add?|1]]
+|}
+
+===Defunct===
+{| class="wikitable sortable"  style="font-size:80%; background:#fec; width:100%;"
+|-
+  ! Name
+  ! Media
+  ! Dates
+  ! Type
+  ! Notes and limitations
+  ! Owner
+  ! Quick links &<br />discussions
+|-
+  | [[About.com]]
+  | [https://www.about.com/ online]
+  | 1997–2017
+  | encyclopedia
+  | The website became [[Dotdash]]. When using archived versions of about.com: This site should generally be used for its sources rather than for its content. Use of this site's content is restricted to signed post-2005 content depending on the reliability of the individual author, and specifically barring its use for fringe theories and BLPs. Articles sourced to Wikipedia are also to be excluded.
+  | [[IAC (company)|IAC]]
+  | {{find video game sources short|About.com|linksearch=www.about.com}}<br />[[WT:Reliable sources/archive13#ABOUT.COM|1]], [[WP:Wikipedia Signpost/2008-06-26/Dispatches|2]], [[WT:VG/S/A3#About.com|3]], [[WP:Reliable sources/Noticeboard/Archive 22#About.com|4]], [[WP:Reliable sources/Noticeboard/Archive 16#Huffington Post, Gawker and About.com|5]], [[WP:Reliable sources/Noticeboard/Archive 112#About.com (again)|6]], [[WP:Reliable sources/Noticeboard/Archive 24#About.com for cannabis info|7]], [[WP:Reliable sources/Noticeboard/Archive 40#About.com news articles|8]], [[WP:Reliable sources/Noticeboard/Archive 104#About.com a reliable source?|9]], [[WP:Reliable sources/Noticeboard/Archive 77#About.com sources from Hyde Flippo|10]], [[WP:Reliable sources/Noticeboard/Archive 27#About.com|11]], [[WP:Reliable sources/Noticeboard/Archive 107#About.com article on the Superman Curse|12]], [[WT:VG/S/A5#About.com|13]], [[WT:VG/S/A7#Need help clarifying situationality|14]]
+|-
+  | [[Yahoo! Voices]] / [[Associated Content]]
+  | online (blacklisted)
+  | 2005–2014
+  |
+  | While content by reliable authors ''could'' be published there, it is highly unlikely. (See [[WT:VG/S/A2#Associated Content|1]])
+  |
+  | {{find video game sources short|Yahoo! Voices|linksearch=www.voices.yahoo.com}}<br />{{find video game sources short|Associated Content|linksearch=}}<br />[[WT:VG/S/A2#Associated Content|1]], [[WP:Reliable sources/Noticeboard/Archive 2#associatedcontent.com|2]], [[WP:Reliable sources/Noticeboard/Archive 157#Yahoo! Voices|3]], [[WP:Reliable sources/Noticeboard/Archive 170#Using Yahoo Voices as a source|4]], [[WP:Reliable sources/Noticeboard/Archive 158#Yahoo Contributor's Network|5]]
+|-
+  | Bitmob
+  | [https://www.bitmob.com/ online]
+  |
+  | Multi-author blog
+  | Content from the site's staff are approved sources given their collective industry experience. Articles where the author is listed as "Community Writer" are not to be used.
+  | Bitmob Media
+  | {{find video game sources short|Crispy Gamer|linksearch=www.bitmob.com}}<br />[[WT:VG/S/A4#Bitmob|1]]
+|-
+  | [[Crispy Gamer]]
+  | [https://www.cripsygamer.com/ online]
+  | 2008–2010
+  | Multi-author blog
+  | Authorship was composed of several independent games journalist, some with a strong history in gaming journalism, working together as a "Game Trust". Reliability should be based on author. (defunct)
+  | Independent
+  | {{find video game sources short|Crispy Gamer|linksearch=www.cripsygamer.com}}<br />[[WT:VG/S/A2#Cripsy Gamer|1]]
+|-
+  | Deaf Gamers
+  | [https://www.deafgamers.com/ online]
+  |
+  | Video game reviews for the hearing imparied
+  | Reliable with regard to [[Game accessibility|accessibility]] issues related to video games.
+  | Independent
+  | {{find video game sources short|Deaf Gamers|linksearch=www.deafgamers.com}}<br />[[WT:VG/S/A1#Deaf Gamers|1]], [[WT:VG/S/A1#A few sources for your consideration|2]], [[WT:VG/S/A2#Situational sources for the disabled|3]]
+|-
+  | [[Jay Is Games]]
+  | [https://www.jayisgames.com online]
+  | 2003–2016
+  | blog
+  | Use of this site should be restricted to casual games and only if the review is written by Jay Bibby. This site cannot be used to demonstrate notability.
+  | Independent
+  | {{find video game sources short|Jay Is Games|linksearch=www.jayisgames.com}}<br />[[WT:VG/S/A1#Browser/flash/MMOG games|1]], [[WT:VG/S/A2#JayIsGames|2]], [[WT:VG/S/A4#JayIsGames|3]], [[WT:VG/S/A4#Jay Is Games|4]], [[WT:VG/S/A5#JayIsGames|5]], [[WT:WikiProject Video games/Archive 67#Requests page getting constipated|6]], [[WT:VG/S/A5#JayIsGames 2|7]], [[WT:VG/S/A7#Need help clarifying situationality|8]]
+|-
+  | ''The Jimquisition''
+  | [https://thejimquisition.com online]
+  | 2014–2020
+  | blog
+  | Use should be restricted to opinions only. Editorial policy/team not present. One man operation by [[Jim Sterling]]. This site cannot be used to demonstrate notability.
+  | Independent
+  | {{find video game sources short|The Jimquisition|linksearch=thejimquisition.com}}<br />[[WT:WikiProject Video games/Sources/Archive 11#The Jimquistion|1]]
+|-
+  | [[MTV Multiplayer]]
+  | [https://multiplayerblog.mtv.com/ online]
+  |
+  | news, features, reviews
+  | Blog-style game reporting from MTV editors. May need to demonstrate reliability of individual authors.
+  | [[MTV Networks]]
+  | {{find video game sources short|MTV Multiplayer|linksearch=multiplayerblog.mtv.com}}<br />[[WT:WikiProject Video games/Archive 78#MTV Multiplayer blog|1]], [[WT:VG/S/A3#General clean up|2]]
+|-
+  | [[Offworld (website)|Offworld]]
+  | [https://www.offworld.com online]
+  | –2016
+  | Blog
+  | Original incarnation (2008-2009) primarily by [[Brandon Boyer]].<br />Relaunched in 2015 by [[Leigh Alexander (journalist)|Leigh Alexander]] ([[Gamasutra]], [[Kotaku]]) and Laura Hudson ([[Wired (magazine)|Wired]]).
+  | [[Boing Boing]], Happy Mutants LLC
+  | {{find video game sources short|Offworld|linksearch=www.offworld.com}}<br />[[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+|-
+  | [[Steam Spy]]
+  | [https://steamspy.com online]
+  | 2015–2018
+  | video game sales estimates (Steam only)
+  | Uses published stats and game ownership information to make educated guesses as to sales numbers on Steam. Should never be used directly to support sales numbers, but may be used if sales estimated by Steam Spy are noted by a third-party. Should never be used if there have been actual sales numbers published by another source (publisher directly, NPD Group, etc.) at some point. Prose analysis of overall purchasing trends in the market based on estimated sales may be usable on case-by-case.
+  | Sergey Galyonkin
+  | {{find video game sources short|Steam Spy|linksearch=www.steamspy.com}}<br />[[WT:WikiProject Video games/Sources/Archive 15#SteamSpy|1]], [[WT:WikiProject Video games/Sources/Archive 17#Steam Spy|2]]
+|-
+  | WomenGamers.com
+  | [https://www.womengamers.com online]
+  |
+  |
+  | A blog; use of this site should be carefully considered. Often, it is best to demonstrate the reliability of the individual authors sourced.
+  |
+  | {{find video game sources short|WomenGamers.com|linksearch=www.womengamers.com}}<br />[[WT:VG/S/A1#WomenGamers.com|1]], [[WT:VG/S/A7#Need help clarifying situationality|2]]
+|}
+
+===Other situational===
+<div style="font-size: 80%">
+*    148Apps [[WT:VG/S/A6#New sources|1]], [[WT:VG/S/A9#Steel Media: 148Apps and App Spy|2]], [[WT:WikiProject Video games/Sources/Archive 13#148Apps revisited|3]]
+*    Cubed3 [[WT:VG/S/A2#Reliability of Cubed3|1]], [[WT:WikiProject Video games/Archive 65#Reliability of Cubed3|2]], [[WT:WikiProject Video games/Archive 44#TopTenReviews is a shitty source for games reception data, and shouldn't be touched|3]], [[WT:VG/S/A5#Cubed3|4]]
+*    GameCrate [[WT:WikiProject Video games/Sources/Archive 17#GameCrate|1]]
+*    Gaming Age [[WT:WikiProject Video games/Archive 56#Reliability of Game Revolution|1]], [[WT:WikiProject Video games/Archive 61#"Proper" Sources|2]], [[WT:VG/S/A6#Reliability of Gaming Age|3]]
+*    HonestGamers [[WT:WikiProject Video games/Sources/Archive 11#HonestGamers|1]]
+*    Retronauts- [[WT:WikiProject Video games/Sources/Archive 22#Some sources I've gathered.|1]]
+*    [[Screen Rant]] [[Wikipedia_talk:WikiProject_Video_games/Sources/Archive_17#Unclear|1]], [[WT:WikiProject Video games/Sources/Archive 21#ScreenRant|2]] (considered "marginally reliable" per [[WP:RSP]] [https://en.wikipedia.org/wiki/Wikipedia:Reliable_sources/Perennial_sources#Screen_Rant])
+*    Softpedia [[WT:VG/S/A3#Can Softpedia be used as a source?|1]], [[WT:VG/S/A2#Abandonia Reloaded|2]], [[WT:VG/S/A5#Reliability of sources|3]], [[WP:Reliable sources/Noticeboard/Archive 52#Softpedia Linux software reviews|4]], [[WP:Reliable sources/Noticeboard/Archive 35#Software review sites|5]], [[WP:Reliable sources/Noticeboard/Archive 40#Download pages as source for notability?|6]], [[WT:VG/S/A5#Softpedia|7]]
+*    Wccftech [[WT:WikiProject Video games/Sources/Archive 21#WCCFtech|1]]
+</div>
+
+==Unreliable sources==
+These sources are considered unreliable. If found in existing articles, try to replace them with a reliable source from the list above.
+{{div col |style=font-size:80% |colwidth=20em}}
+*    Abandonia Reloaded [[WT:VG/S/A2#Abandonia Reloaded|1]], [[WP:Reliable sources/Noticeboard/Archive 198#Abandonia Reloaded as source for Vega Strike|2]]
+*    AceGamez [[WT:VG/S/A5#AceGamez|1]], [[WT:WikiProject Video games/Sources/Archive 14#AceGamez|2]]
+*    ActionTrip [[WP:Reliable sources/Noticeboard/Archive 35#Video game sites|1]], [[WP:Reliable sources/Noticeboard/Archive 31#Video game refs|2]]
+*    Adrenaline Vault, The (AVault) [[WT:VG/S/A1#Set this up and knock it down|1]], [[WT:VG/S/A3#General clean up|2]], [[WT:WikiProject Video games/Sources/Archive 16#Adrenaline Vault/Zone|3]]
+*    Adrenaline Zone (PCM&E) [[WT:WikiProject Video games/Sources/Archive 16#Adrenaline Vault/Zone|1]]
+*    Adventure Classic Gaming [[WT:VG/S/A2#justadventure.com / adventureclassicgaming.com|1]], [[Wikipedia_talk:WikiProject_Video_games/Sources/Archive_14#Adventure_Classic_Gaming|2]], [[Wikipedia_talk:WikiProject_Video_games/Sources/Archive_23#Adventure_Classic_Gaming|3]]
+*    All In [[WT:WikiProject Video games/Sources/Archive 14#eSports revisited|1]]
+*    AllRPG [[WT:VG/S/A5#Reliability of sources|1]], [[WP:Reliable sources/Noticeboard/Archive 11#Supercouple|2]]
+*    Altered Gamer [[WT:VG/S/A9#Altered Gamer guides any good?|1]]
+*    Android Headlines [[WT:WikiProject Video games/Sources/Archive 12#Android Headlines|1]]
+*    Android Police [[WT:WikiProject Video games/Sources/Archive 12#Android Police|1]]
+*    Angry Video Game Nerd (AVGN, cinemassacre.com) [[WT:WikiProject Video games/Archive 52#Angry video game nerd spam|1]], [[WT:WikiProject Video games/Archive 82#Angry Video Game Nerd - reliable under any circumstances?|2]], [[WP:Reliable sources/Noticeboard/Archive 167#Video review shows|3]]
+*    AntKids.com [[WT:WikiProject Video games/Sources/Archive 14#AntKids.com|1]]
+*    Arcade History (arcade-history.com) [[WT:VG/S/A5#Arcade History|1]], [[WT:VG/S/A6#Arcade game websites|2]]
+*    Armchair Empire, The [[WP:Reliable sources/Noticeboard/Archive 35#Video game sites|1]], [[WT:VG/S/A1#Some more sites|2]], [[WT:WikiProject Video games/Archive 34#The broader issue|3]], [[WT:VG/S/A6#Armchair Empire Infinite|4]]
+*    Armed Gamer [[WT:WikiProject Video games/Sources/Archive 11#Armed Gamer|1]]
+*    Attack of the Fanboy [[WT:WikiProject Video games/Sources/Archive 19#Attack of the Fanboy|1]]
+*    BBGSite.com [[WT:VG/S/A3#galaxy-news.net and bbgsite.com|1]]
+*    Brash Games [[WT:WikiProject Video games/Sources/Archive 17#Brash Games|1]]
+*    Blistered Thumbs [[WT:VG/S/A7#Blistered Thumbs|1]]
+*    browser1.de [[WT:VG/S/A3#browser1.de|1]]
+*    CG Magazine [[WT:VG/S/A9#CG Magazine|1]]
+*    Cheat Code Central [[WT:VG/S/A2#9 Statis|1]], [[WP:Reliable sources/Noticeboard/Archive 146#Video game source discussion|2]], [[WT:VG/S/A7#Three sources|3]], [[WT:WikiProject Video games/Sources/Archive 12#Cheat Code Central?|4]]
+*    Cinema Blend (CinemaBlend) [[WP:Reliable sources/Noticeboard/Archive 68#Reference using second-hand information|1]], [[WT:WikiProject Video games/Sources/Archive 11#CinemaBlend|2]], [[WP:Reliable sources/Noticeboard/Archive 188#Cinemablend|3]]
+*    Console Obsession [[WT:VG/S/A5#Reliability of sources|1]]
+*    CPU Gamer (2404.org PC Gaming) [[WT:VG/S/A6#CPUGamer|1]]
+*    Critical Hit (Lazygamer) [[WT:WikiProject Video games/Sources/Archive 15#Lazygamer|1]], [[WT:WikiProject Video games/Sources/Archive_17#Critical Hit|2]]
+*    TheCuttingRoomFloor (TCRF) [[WT:WikiProject Video games/Sources/Archive 20#The Cutting Room Floor|1]]
+*    CVGames [[WP:Reliable sources/Noticeboard/Archive 35#Video game sites|1]]
+*    Darkstation [[WT:WikiProject Video games/Sources/Archive 18#Some Metacritic sources that should be vetted|1]]
+*    DarkZero [[WT:VG/S/A2#DarkZero|1]]
+*    Defunct Games [[WT:VG/S/A5#Defunct Games as a situational source?|1]], [[WT:VG/S/A4#Defunct Games|2]], [[WT:WikiProject Video games/Sources/Archive 11#Defunct Games|3]]
+*    DevMaster.net [[WT:VG/S/A2#DevMaster.net|1]]
+*    Dexerto [[WT:WikiProject Video games/Sources/Archive 23#Dexerto|1]]
+*    Did You Know Gaming? [[WT:WikiProject Video games/Sources/Archive 22#Did You Know Gaming?|1]]
+*    Digital Chumps [[WT:WikiProject Video games/Sources/Archive 18#Some Metacritic sources that should be vetted|1]]
+*    Digital Something [[WT:VG/S/A2#Digital Something|1]]
+*    Dorkly [[WT:WikiProject Video games/Sources/Archive 11#Dorkly|1]]
+*    Droid Gamers [[WT:WikiProject Video games/Sources/Archive 12#Droid Gamers|1]]
+*    Dsogaming.com [[WT:VG/S/A6#dsogaming.com|1]]
+*    DualShockers.com [[WT:VG/S/A3#DualShockers|1]], [[WT:WikiProject Video games/Archive 82#DualShockers - Review spamming?|2]], [[WT:WikiProject Video games/Sources/Archive 11#GameRanx and DualShockers|3]]
+*    Esports Earnings [[WT:WikiProject Video games/Sources/Archive 14#eSports revisited|1]], [[WT:WikiProject Video games/Sources/Archive 18#esportsearnings.com|2]]
+*    Esports Heaven [[WT:WikiProject Video games/Sources/Archive 14#eSports revisited|1]]
+*    EventHubs [[WT:WikiProject Video games/Sources/Archive 14#Event Hub|1]]
+*    Everything2.com [[WT:VG/S/A2#Everything2.com, Wikia, Wikipedia|1]]
+*    Examiner.com [[WP:Reliable sources/Noticeboard/Archive 38#Request to reopen discussion on examiner.com|1]], [[WP:Reliable sources/Noticeboard/Archive 35#examiner.com = paid blogging, no editorial oversight|2]], [[WP:Reliable sources/Noticeboard/Archive 100#Examiner.com and essay contests as sources on subject for which ample scholarly literature exists|3]], [[WP:Reliable sources/Noticeboard/Archive 47#Examiner.com|4]], [[WP:Reliable sources/Noticeboard/Archive 39#Examiner.com|5]], [[WP:Reliable sources/Noticeboard/Archive 43#Sites providing reviews/critiques of comic books|6]]
+*    Frontline Gaming Japan [[WT:WikiProject Video games/Sources/Archive 21#Frontline Gaming Japan|1]]
+*    galaxy-news.net [[WT:VG/S/A3#galaxy-news.net and bbgsite.com|1]]
+*    GameBreaker [[WT:WikiProject Video games/Sources/Archive 10#A few sites for Sonic X, a current FAC|1]]
+*    Game Boyz [[WT:WikiProject Video games/Sources/Archive 8#ProtoGalaxy sources|1]]
+*    Game Chronicles [[WT:VG/S/A1#Game Chronicles Magazine|1]]
+*    Game Classification [[WT:VG/S/A2#Game Classification and Great Games Experiment|1]], [[WT:VG/S/A3#Game Classification and Great Games Experiment (again)|2]]
+*    Gamecorner.pl [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], {{Cross-wiki language oldid|wikipedia|pl|36673252|Wikiprojekt:Gry komputerowe/Źródła|2}}
+*    GameFAQs [[WT:VG/S/A3#GameFAQs|1]], [[WT:VG/S/A4#Gamefaqs|2]], [[WT:WikiProject Video games/Archive 87#Are GameFaqs release dates always reliable?|3]]
+*    Game Interface [[WT:WikiProject Video games/Sources/Archive 8#Game Interface|1]]
+*    GamePlasma [[WT:WikiProject Video games/Archive 41#GamePlasma.com linkspam|1]]
+*    Gameplay (Russia, Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], {{Cross-wiki language oldid|wikipedia|pl|36673252|Wikiprojekt:Gry komputerowe/Źródła|2}}
+*    GamePolitics.com [[WT:VG/S/A2#GamePolitics.com|1]], [[WT:VG/S/A8#GamePolitics|2]], [[WT:VG/S/A9#GamePolitics|3]], [[WT:WikiProject Video games/Sources/Archive 21#GamePolitics.com|4]]
+*    Game Rant (Gamerant) [[WT:VG/S/A3#Gamerant.com|1]], [[WT:WikiProject Video games/Sources/Archive 11#Game Rant|2]], [[WT:WikiProject Video games/Sources/Archive 16#GameRant|3]]
+*    Gameranx [[WT:VG/S/A6#Gameranx|1]], [[WT:WikiProject Video games/Sources/Archive 11#GameRanx and DualShockers|2]], [[WT:WikiProject Video games/Sources/Archive 16#What if Gameranx is cited by the Complex magazine's website?|3]]
+*    GamersHell [[WT:WikiProject Video games/Sources/Archive 11#GamersHell|1]]
+*    Gamervision [[WT:VG/S/A5#Reliability of sources|1]]
+*    Gamers' Temple, The [[WT:VG/S/A2#9 Statis|1]], [[WT:VG/S/A9#Gamers' Temple|2]], [[WT:WikiProject Video games/Sources/Archive 21#The Gamers' Temple|3]]
+*    Games Asylum [[WT:WikiProject Video games/Sources/Archive 10#A few sites for Sonic X, a current FAC|1]], [[WT:WikiProject Video games/Sources/Archive 13#Games Asylum|2]]
+*    GamesFirst! [[WT:WikiProject Video games/Archive 91#GamesFirst|1]], [[WP:Reliable sources/Noticeboard/Archive 87#GamesFirst!|2]], [[WT:WikiProject Video games/Sources/Archive 10#A few sites for Sonic X, a current FAC|3]], [[WT:WikiProject Video games/Sources/Archive 14#Games First!|4]]
+*    GameSkinny [[WT:WikiProject Video games/Sources/Archive 12#GameSkinny|1]]
+*    Gamester81 - [[WT:WikiProject Video games/Sources/Archive 22#Gamester81|1]]
+*    Gaminator (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], {{Cross-wiki language oldid|wikipedia|pl|36673252|Wikiprojekt:Gry komputerowe/Źródła|2}}
+*    Gaming Nexus [[WT:VG/S/A1#A few sources for your consideration|1]], [[WT:VG/S/A9#Gaming Nexus|2]]
+*    Gaming on Linux [[Talk:Steam (service)/Archive 8#There are 2,000 games for Linux|1]]
+*    Gaming Target [[WT:VG/S/A2#Games Radar and Gaming Target|1]]
+*    Gaming Trend [[WT:WikiProject Video games/Sources/Archive 22#Gaming Trend 1|1]], [[WT:WikiProject Video games/Sources/Archive 22#Gaming Trend 2|2]]
+*    Gamnesia [[WT:WikiProject Video games/Sources/Archive 10#Gamnesia|1]], [[WT:WikiProject Video games/Sources/Archive 16#Zelda Informer/ Gamnesia/ Nintendo Prime|2]]
+*    Gaygamer.net [[WT:WikiProject Video games/Archive 33#Sourcing concerns|1]], [[WT:VG/S/A1#Some more sites|2]], [[WT:WikiProject Video games/Archive 71#Requesting help from the best and brightest:|3]], [[WT:VG/S/A2#Gaygamer.net|4]], [[WT:VG/S/A5#Gaygamer.net|5]]
+*    Gery Gry [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], {{Cross-wiki language oldid|wikipedia|pl|36673252|Wikiprojekt:Gry komputerowe/Źródła|2}}
+*    Gildia Gier Komputerowych (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], {{Cross-wiki language oldid|wikipedia|pl|36673252|Wikiprojekt:Gry komputerowe/Źródła|2}}
+*    God Is a Geek [[WT:WikiProject Video games/Sources/Archive 13#God is a Geek|1]]
+*    GoNintendo [[WT:WikiProject Video games/Nintendo/Archive 9#Is GoNintendo.com reliable?|1]]
+*    Google [[WP:Reliable sources/Noticeboard/Archive 33#Google results|1]], [[WP:Reliable sources/Noticeboard/Archive 67#Google searches to prove wide coverage|2]], [[WP:Reliable sources/Noticeboard/Archive 54#Can Google hit counts ever be cited as a reliable source?|3]], [[WP:Reliable sources/Noticeboard/Archive 41#Google cache|4]], [[WP:Reliable sources/Noticeboard/Archive 61#articles on google cache|5]]<!--Many similar discussions available in the archives covering GoogleBooks, GoogleMaps, GoogleScholar, Google+, etc., etc.-->
+*    Gosu Gamers [[WT:WikiProject Video games/Sources/Archive 8#gosugamers.net|1]], [[WT:WikiProject Video games/Sources/Archive 13#GosuGamers|2]]
+*    Gry Mocny (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], {{Cross-wiki language oldid|wikipedia|pl|36673252|Wikiprojekt:Gry komputerowe/Źródła|2}}
+*    Gry Onet (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], {{Cross-wiki language oldid|wikipedia|pl|36673252|Wikiprojekt:Gry komputerowe/Źródła|2}}
+*    Gry PC (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], {{Cross-wiki language oldid|wikipedia|pl|36673252|Wikiprojekt:Gry komputerowe/Źródła|2}}
+*    Hard Drive [[WT:WikiProject Video games/Sources/Archive 21#Hard Drive|1]]
+*    HLTV [[WT:WikiProject Video games/Sources/Archive 13#eSports revisited|1]]
+*    Home of the Underdogs [[WP:Articles for deletion/Gate 88 (2nd nomination)|1]], [[WT:VG/S/A2#Home of the Underdogs|2]]
+*    Impulse Gamer [[Wikipedia_talk:WikiProject_Video_games/Sources/Archive_21#Impulse_Gamer|1]]
+*    Indie Game Reviewer [[WT:WikiProject Video games/Sources/Archive 22#Indie Game Reviewer|1]]
+*    Internet Games Archive [[WT:VG/S/A2#Internet Games Archive|1]]
+*    Internet Movie Database (IMDB) [[WT:WikiProject Video games/Archive 20#IMDb links|1]], [[WT:WikiProject Video games/Archive 87#IMDB links|2]], [[WT:WikiProject Video games/Archive 5#IMDB links|3]], [[WT:WikiProject Video games/Archive 51#IMDb but reliable?|4]], [[WP:Reliable sources/Noticeboard/Archive 17#The Internet Movie Database Bio Pages|5]], [[WP:Reliable sources/Noticeboard/Archive 40#IMDB, again|6]], [[WP:Reliable sources/Noticeboard/Archive 17#Is IMDb a reliable source?|7]], [[WP:Reliable sources/Noticeboard/Archive 96#IMDB|8]], [[WP:Reliable sources/Noticeboard/Archive 22#IMDb|9]], [[WP:Reliable sources/Noticeboard/Archive 24#Is IMDb an unreliable source?|10]], [[WP:Reliable sources/Noticeboard/Archive 16#IMDB|11]], [[WP:Reliable sources/Noticeboard/Archive 23#IMDB.com for plot synopsis|12]], [[WP:Reliable sources/Noticeboard/Archive 5#IMDB|13]], [[WP:Reliable sources/Noticeboard/Archive 68#IMDB lacking corroboration|14]], [[WP:Reliable sources/Noticeboard/Archive 77#Max's of Manila - a number of source issues including IMDB as a source for BLP|15]], [[WP:Reliable sources/Noticeboard/Archive 117#Awarding body using IMDB's "past winners" lists as their own|16]], [[WP:Reliable sources/Noticeboard/Archive 37#IMDB|17]], [[WP:Reliable sources/Noticeboard/Archive 47#IMDB?|18]], [[WP:Reliable sources/Noticeboard/Archive 58#IMDB as a source; List of documentary films|19]], [[WP:Reliable sources/Noticeboard/Archive 3#IMDb Publicity|20]], [[WP:Reliable sources/Noticeboard/Archive 105#IMDB and a sex tape|21]], [[WP:Reliable sources/Noticeboard/Archive 4#Is IMDB a reliable source for its polling and statistics in a film article?|22]], [[WP:Reliable sources/Noticeboard/Archive 28#IMDb for BLP info?|23]], [[WP:Reliable sources/Noticeboard/Archive 50#TV.com and IMDB|24]], [[WP:Reliable sources/Noticeboard/Archive 20#Are IMDB and personal websites reliable sources|25]]<!--Many more smaller discussions on IMDb exist in the archives as well-->
+*    Just RPG [[WT:VG/S/A1#Just RPG|1]], [[WT:WikiProject Video games/Archive 56#Pokémon Red and Blue|2]], [[WT:WikiProject Video games/Sources/Archive 14#Just RPG|3]]
+*    LoL Esports [[WT:WikiProject Video games/Sources/Archive 14#eSports revisited|1]]
+*    KeenGamer [[WT:WikiProject Video games/Sources/Archive 21#Keengamer|1]]
+*    Mana Pool [[WT:WikiProject Video games/Sources/Archive 8#Mana Pool|1]]
+*    Media Cows, The [[WT:VG/S/A3#Media Cows|1]]
+*    Melee It on Me [[WT:WikiProject Video games/Sources/Archive 14#eSports revisited|1]]
+*    [[Metro (British newspaper)|Metro]] Gaming [[WT:VG/S/A20#Metro|1]]
+*    MMOGChart.com [[WT:WikiProject Video games/Archive 35#MMOGChart.com|1]], [[WT:VG/S/A1#MMOGChart.com|2]], [[WT:VG/S/A2#Destructoid.com|3]], [[WT:WikiProject Video games/Archive 51#World of Warcraft|4]], [[WT:WikiProject Video games/Archive 73#Statistics on actual online game-players per game|5]], [[WP:Reliable sources/Noticeboard/Archive 4#Source of rating in RuneScape|6]]
+*    MMO Hub [[WT:VG/S/A2#Some MMO Sites|1]], [[WT:VG/S/A5#Massively.com - Joystiq|2]]
+*    MMOHut [[WT:VG/S/A2#Some MMO Sites|1]], [[WT:VG/S/A2#MMOHUT|2]], [[WT:VG/S/A5#Massively.com - Joystiq|3]]
+*    MMORPG.com [[WT:VG/S/A4#mmorpg.com|1]]
+*    MMOs.com [[WT:WikiProject Video games/Sources/Archive 11#MMOs.com|1]]
+*    MMOsite.com [[WT:VG/S/A3#mmosite|1]], [[WT:VG/S/A6#MMOsite is now reliable|2]]
+*    Mobile Mode Gaming [[WT:WikiProject Video games/Sources/Archive 21#Mobile Mode Gaming|1]]
+*    MobyGames [[WT:VG/S/A1#MobyGames and ModDB|1]], [[WT:VG/S/A2#MobyGames|2]], [[WT:WikiProject Video games/Archive 79#Moby Games ext. links removal|3]], [[WT:WikiProject Video games/Archive 76#MobyGames paid Wikipedia?|4]], [[WT:Manual of Style/Video games/Archive 2#Moving MobyGames to "Inappropriate" since it almost always is?|5]], [[WT:WikiProject Video games/Archive 82#MobyGames for credits?|6]], [[WT:WikiProject Video games/Archive 82#MobyGames as aggregate source|7]]
+*    Mod DB [[WT:VG/S/A1#MobyGames and ModDB|1]], [[WT:WikiProject Video games/Archive 49#Unreliable reference sites|2]], [[WT:WikiProject Video games/Archive 49#Game Mod Cruft|3]], [[WT:WikiProject Video games/Archive 34#ModdB as reliable source|4]], [[WT:WikiProject Video games/Archive 57#GoldenEye: Source|5]], [[WT:WikiProject Video games/Archive 75#Movie Battles GA?|6]]
+*    Multi-Player Online Gaming Directory (MPOGD.com) [[WT:VG/S/A2#Multi-Player Online Gaming Directory|1]], [[WT:WikiProject Video games/Archive 83#DragonFable|2]], [[WT:WikiProject Video games/Archive WikiProject Massively multiplayer online games#Sources resources|3]], [[WT:VG/S/A1#Browser/flash/MMOG games|4]], [[WT:VG/S/A5#Multi-Player Online Gaming Directory (MPOGD.com)|5]]
+*    TheMushroomKingdom [[WT:WikiProject Video games/Sources/Archive 5#TheMushroomKingdom.net|1]], [[WT:WikiProject Video games/Sources/Archive 17#TheMushroomKingdom|2]]
+*    My Nintendo News [[WT:WikiProject Video games/Sources/Archive 14#eSports revisited|1]], [[WT:WikiProject Video games/Sources/Archive 17#Unreliable|2]]
+*    N4G [[WT:VG/S/A2#N4G|1]], [[WT:WikiProject Video games/Archive 70#Source question|2]], [[WT:VG/S/A3#Custom Google search|3]]
+*    NeoGAF [[WT:WikiProject Video games/Sources/Archive 15#NeoGaf?|1]]
+*    Neoseeker [[WT:VG/S/A2#Neoseeker|1]], [[WT:WikiProject Video games/Archive 74#Neoseeker|2]], [[WT:WikiProject Video games/Sources/Archive 21#Neoseeker|3]]
+*    Netjak [[WT:VG/S/A5#Reliability of sources|1]], [[WT:WikiProject Video games/Archive 43#Is Netjak notable and/or reliable?|2]]
+*    Niche Gamer [[WT:VG/S/A9#Niche Gamer|1]], [[WT:WikiProject Video games/Sources/Archive 16#Niche Gamer|2]], [[WT:WikiProject Video games/Sources/Archive 17#Niche Gamer|3]]
+*    NinDB [[WT:VG/S/A5#NinDB|1]]
+*    Nintenderos [[WT:WikiProject Video games/Sources/Archive 22#Nintenderos|1]]
+*    Nintendo Enthusiast [[WT:WikiProject Video games/Sources/Archive 14#eSports revisited|1]]
+*    Nintendo Everything [[WT:WikiProject_Video_games/Sources/Archive_6#RS?|1]], [[WT:WikiProject_Video_games/Sources/Archive_8#A couple more sources to maybe add to the list|2]], [[WT:WikiProject_Video_games/Sources/Archive_16#Nintendo_Everything|3]], [[WT:WikiProject_Video_games/Sources/Archive_17#Nintendo Life|4]]
+*    Nintendo Insider [[WT:WikiProject Video games/Sources/Archive 22#Nintendo Insider|1]]
+*    Nintendo Prime [[WT:WikiProject Video games/Sources/Archive 16#Zelda Informer/ Gamnesia/ Nintendo Prime|1]]
+*    N-Sider [[WT:WikiProject Video games/Sources/Archive 4#N-Sider as situational source (2nd)|1]], [[WT:WikiProject Video games/Archive 76#N-Sider: RS?|2]]
+*    NTSC-uk/Bordersdown [[WT:VG/S/A3#NTSC-uk|1]], [[WT:WikiProject Video games/Archive 90#"Boardersdown"/"NTSC-uk"|2]], [[WT:WikiProject Video games/Archive 83#NTSC-uk as a reliable source|3]], [[WT:VG/S/A5#NTSC-uk (AKA BordersDown)|4]]
+*    OnRPG [[WT:VG/S/A3#Onrpg|1]]
+*    One Angry Gamer [[WT:WikiProject Video games/Sources/Archive 21#One Angry Gamer|1]]
+*    Overpowered Noobs [[WT:WikiProject Video games/Sources/Archive 19#Overpowered Noobs|1]]
+*    OuyaCentral.TV [[WT:VG/S/A9#Ouya Central TV|1]]
+*    Perfectly Nintendo [[Wikipedia talk:WikiProject Video games/Sources/Archive 22#Perfectly Nintendo|1]]
+*    Persona Central [[WT:WikiProject Video games/Sources/Archive 21#Persona Central|1]]
+*    Play This Thing [[WP:Articles for deletion/Transcendence (video game)|1]], [[WT:VG/S/A4#Play This Thing|2]]
+*    Przygodówki (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], {{Cross-wiki language oldid|wikipedia|pl|36673252|Wikiprojekt:Gry komputerowe/Źródła|2}}
+*    PSPSex.Net [[WP:Articles for deletion/PSPSex.Net|1]]
+*    Quandary [[WT:WikiProject Video games/Sources/Archive 14#Quandary|1]]
+*    Rakrent/RTSC [[WT:VG/S/A1#Talk:4X|1]]
+*    Screwattack [[WT:VG/S/A2#Screwattack!!|1]], [[WT:VG/S/A5#Screwattack again|2]], [[WP:Reliable sources/Noticeboard/Archive 104#Screwattack|3]], [[WT:WikiProject Video games/Archive 58#GamesRadar|4]], [[WT:VG/S/A5#Screwattack|5]], [[WT:VG/S/A7#Need help clarifying situationality|6]], [[WP:Reliable sources/Noticeboard/Archive 146#Video game source discussion|7]], [[WT:VG/S/A7#Three sources|8]], [[WT:WikiProject Video games/Sources/Archive 10#ScrewAttack for awards?|9]], [[WT:WikiProject Video games/Sources/Archive 17#Re-Assessing ScrewAttack|10]]
+*    SegaNerds [[WT:VG/S/A9#Sega Nerds|1]]
+*    SelectButton [[WT:VG/S#SelectButton|1]]
+*    Serebii [[WT:VG/S#Serebii|1]]
+*    Shoryuken [[WT:WikiProject Video games/Sources/Archive 14#eSports revisited|1]], [[WT:WikiProject Video games/Sources/Archive 15#Shoryuken|2]]
+*    TheSixthAxis [[WT:VG/S/A2#TheSixthAxis|1]], [[WT:WikiProject Video games/Sources/Archive 15#TheSixthAxis|2]], [[WT:WikiProject Video games/Sources/Archive 15#The Sixth Axis|3]]
+*    Smashboards [[WT:WikiProject Video games/Sources/Archive 14#eSports revisited|1]]
+*    Statista
+*    Suikosource.com [[WT:VG/S/A1#Suikosource|1]]
+*    System 16 [[WT:WikiProject Video games/Sources/Archive 21#System 16|1]]
+*    Tacticular Cancer [[WT:VG/S/A1#Talk:4X|1]]
+*    Tapscape [[WT:WikiProject Video games/Sources/Archive 12#Tapscape|1]]
+*    That Guy with the Glasses (TGWTG) [[WT:VG/S/A4#That Guy with the Glasses|1]]
+*    TopTenReviews [[WT:VG/S/A2#TopTenReviews|1]], [[WT:VG/S/A2#TopTenReviews again.|2]], [[WT:WikiProject Video games/Archive 44#TopTenReviews is a shitty source for games reception data, and shouldn't be touched|3]], [[WT:VG/S/A4#TopTenReviews. Again. Again.|4]]
+*    Twinfinite [[WT:WikiProject Video games/Sources/Archive 11#Twinfinite|1]], [[WT:WikiProject Video games/Sources/Archive 15#A few websites|2]], [[WT:WikiProject Video games/Archive 127#Twinfinite 'ight?|3]], [[WT:WikiProject Video games/Sources/Archive 19#Twinfinite|4]]
+*    TwoDashStash [[WT:VG/S/A9#TwoDashStash|1]]
+*    TV.com [[WT:VG/S/A2#TV.com|1]], [[WP:Reliable sources/Noticeboard/Archive 34#TV.com|2]], [[WP:Reliable sources/Noticeboard/Archive 50#TV.com and IMDB|3]], [[WP:Reliable sources/Noticeboard/Archive 57#Is TV.com a reliable source or wikipedia mirror?|4]], [[WP:Reliable sources/Noticeboard/Archive 83#Is www.tv.com a reliable source?|5]]
+*    TVTropes [[WT:WikiProject Video games/Sources/Archive 16#I would like to know your opinion on these sites.|1]]
+*    Valhalla [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], {{Cross-wiki language oldid|wikipedia|pl|36673252|Wikiprojekt:Gry komputerowe/Źródła|2}}
+*    Valkiria - Arena Gier (Poland) [[WT:VG/S/A6#Proposal: pl.wiki VG RS Transclusion|1]], {{Cross-wiki language oldid|wikipedia|pl|36673252|Wikiprojekt:Gry komputerowe/Źródła|2}}
+*    VGChartz [[WT:VG/S/A1#VG Chartz|1]], [[WT:VG/S/A1#VGChartz|2]], [[WT:VG/S/A3#VGChartz|3]], [[WT:WikiProject Video games/Archive 18#VGCharts|4]], [[WT:WikiProject Video games/Archive 38#VGChartz re-visited|5]], [[WT:WikiProject Video games/Archive 55#VG Chartz|6]], [[WT:WikiProject Video games/Archive 96#VGChartz Inquiry|7]]
+*    VGMdb (user-generated game music database)
+*    VGReleases.com [[WT:VG/S/A2#VGReleases.com|1]]
+*    VGrevolution [[WT:VG/S/A6#Un-discussed reliability determinations|1]]
+*    Vicio Juegos [[WT:WikiProject Video games/Sources/Archive 14#eSports revisited|1]]
+*    Video Game Critic, The [[WT:VG/S/A3#Use of The Video Game Critic as a reliable source|1]], [[WT:WikiProject Video games/Archive 84#Help at WT:WikiProject Video games/Sources|2]], [[WT:WikiProject Video games/Archive 85#Requesting commentary on new potential reliable sources.|3]], [[WT:VG/S/A5#The Video Game Critic|4]]
+*    Video Game PriceCharts.com [[WT:VG/S/A1#Videogamepricecharts.com|1]]
+*    Video Games Blogger (videogamesblogger.com) [[WT:VG/S/A7#Video Games Blogger|1]]
+*    WatchMojo.com [[WT:WikiProject Video games/Sources/Archive 16#I would like to know your opinion on these sites.|1]], [[WT:WikiProject Video games/Sources/Archive 17#WatchMojo.com|2]], [[WT:WikiProject Video games/Sources/Archive 17#Unreliable|3]]
+*    WhatCulture [[WT:VG/S/A8#What Culture, Complex, and Crave Online|1]]
+*    Wikia [[WT:VG/S/A2#Everything2.com, Wikia, Wikipedia|1]], [[WT:WikiProject Video games/Archive 24#Gaming.Wikia|2]], [[WP:Reliable sources/Noticeboard/Archive 75#Using Wikia.com|3]]
+*    Wikipedia [[WT:VG/S/A2#Everything2.com, Wikia, Wikipedia|1]], [[WP:Reliable sources/Noticeboard/Archive 13#Is Wikipedia a reliable source?|2]], [[WP:Reliable sources/Noticeboard/Archive 20#Wikipedia's pictures not verifiable?|3]], [[WP:Reliable sources/Noticeboard/Archive 107#References to non-English Wikipedias|4]], [[WP:Reliable sources/Noticeboard/Archive 18#Wikipedia|5]], [[WP:Reliable sources/Noticeboard/Archive 64#RS that references Wikipedia|6]], [[WP:Reliable sources/Noticeboard/Archive 5#Wikipedia/Wikinews research arm|7]], [[WP:Reliable sources/Noticeboard/Archive 26#Is ArbCom a reliable source?|8]]
+*    Worth Playing [[WT:VG/S/A1#Worth Playing|1]], [[WT:WikiProject Video games/Archive 56#WorthPlaying|2]]
+*    XBLA Fans [[WT:VG/S/A4#XBLAfans|1]], [[WT:WikiProject Video games/Archive 84#Help at WT:WikiProject Video games/Sources|2]], [[WT:WikiProject Video games/Archive 88#Notice of my own potential WP:COI|3]], [[WT:WikiProject Video games/Archive 85#Requesting commentary on new potential reliable sources.|4]], [[WT:WikiProject Video games/Sources/Archive 17#XBLA Fans|5]], [[WT:WikiProject Video games/Sources/Archive 17#XBLA Fans author|6]], [[WT:WikiProject Video games/Sources/Archive 18#XBLA Fans|7]]
+*    Zelda Informer [[WT:WikiProject Video games/Sources/Archive 13#Zelda Informer|1]], [[WT:WikiProject Video games/Sources/Archive 16#Zelda Informer/ Gamnesia/ Nintendo Prime|2]]
+*    ZTGameDomain (ZTGD) [[WT:VG/S/A4#ZTGameDomain?|1]], [[WT:WikiProject Video games/Archive 70#Source question|2]], [[WT:VG/S/A5#ZTGameDomain|3]]
+{{div col end}}
+
+==Inconclusive discussions==
+These sources have been discussed but no resolution for their reliability is available. They have not been discussed at sufficient length to achieve consensus.
+
+{{div col|colwidth=20em|style=font-size:80%}}
+*    3D Juegos (Spain) [[WT:VG/S/A2#9 Statis|1]], [[WT:VG/S/A5#3DJuegos|2]]
+*    576 Konzol (Hungary) [[WT:VG/S/A4#Approval of the Hungarian 576 Konzol magazine|1]], [[WT:WikiProject Video games/Archive 84#Help at WT:WikiProject Video games/Sources|2]]
+*    Armchair General [[WT:WikiProject Video games/Sources/Archive 21#Armchair General|1]]
+*    AtariAge.com (website) [[WT:VG/S/A2#Atari Age|1]], [[WT:VG/S/A4#Atari Age|2]]
+*    Atari User [[WT:VG/S/A2#Abandonia Reloaded|1]], [[WT:VG/S/A3#Use of The Video Game Critic as a reliable source|2]]
+*    AudioGames.net [[WT:VG/S/A2#Situational sources for the disabled|1]]
+*    Before Mario [[WT:WikiProject Video games/Sources/Archive 22#Before Mario|1]]
+*    Behind the Voice Actors [[WT:WikiProject Video games/Sources/Archive 13#Behind the Voice Actors|1]], [[WT:WikiProject Video games/Sources/Archive 23#Behind the Voice Actors|2]]
+*    Big Download [[WP:Articles for deletion/Transcendence (video game)|1]]
+*    Cincinnati Enquirer [[WT:WikiProject Video games/Archive 44#Notability/Relevance of Template:VG Reviews Sites|1]], [[WT:VG/S/A1#Template:VG Reviews|2]]
+*    CinnamonPirate.com [[WT:VG/S/A1#From KFM|1]]
+*    Collective, The (BBC) [[WP:Reliable sources/Noticeboard/Archive 1#Collective (BBC)|1]]
+*    Coming Soon (Magazine) [[WT:VG/S/A4#Coming Soon Magazine|1]], [[WT:WikiProject Video games/Archive 85#Requesting commentary on new potential reliable sources.|2]]
+*    Commodore User [[WT:VG/S/A2#Abandonia Reloaded|1]]
+*    contactmusic.com [[WP:Reliable sources/Noticeboard/Archive 114#Contactmusic.com on marital breakup|1]]
+*    Da Gameboyz [[WT:WikiProject Video games/Archive 34#The broader issue|1]]
+*    Deeko [[WT:WikiProject Video games/Archive 34#The broader issue|1]]
+*    Detroit Free Press (Freep) [[WP:Reliable sources/Noticeboard/Archive 5#Pajamas Media|1]]
+*    Digital Press - Classic Video Games [[WT:WikiProject Video games/Archive 78#Retro video game references|1]]
+*    DreamStation.cc [[WT:WikiProject Video games/Archive 43#Giant Bomb as reliable source?|1]]
+*    ElectronicTheatere [[WT:VG/S/A4#ElectronicTheatere|1]]
+*    Eludamos [[WT:VG/S/A2#Eludamos|1]], [[WT:WikiProject Video games/Archive 84#Problems with date sourcing|2]]
+*    ESC Magazine [[WT:WikiProject Video games/Sources/Archive 14#ESC Magazine|1]], [[WT:WikiProject Video games/Sources/Archive 13#ESC Magazine (ESCmag)|2]]
+*    ESRB [[WT:VG/S/A1#ESRB|1]], [[WT:VG/S/A3#General clean up|2]]
+*    Extra Credits [[WT:WikiProject Video games/Sources/Archive 10#Extra Credits|1]]
+*    FHM (Magazine) [[WT:VG/S/A2#Abandonia Reloaded|1]], [[WP:Reliable sources/Noticeboard/Archive 42#Adult industry|2]]
+*    FileFactory Games / Gameworld Network [[WT:VG/S/A2#E-mailing|1]], [[WT:WikiProject Video games/Archive 69#Final Fantasy series cleanup|2]], [[WT:WikiProject Video games/Archive 36#Reliable sources citing unreliable ones|3]], [[WT:VG/S/A5#FileFactory Games / Gameworld Network|4]]
+*    FOK!games (Netherlands) [[WP:Reliable sources/Noticeboard/Archive 76#fok.nl|1]]
+*    Fragland.net [[WT:WikiProject Video games/Archive 34#Fragland review|1]]
+*    G4mers [[WT:VG/S/A2#Abandonia Reloaded|1]]
+*    G4 TV: The Electric Playground [[WT:VG/S/A4#The Electric Playground and Reviews on the Run|1]]
+*    GameAlmighty.com [[WT:VG/S/A1#A few sources for your consideration|1]]
+*    Game Arena [[WT:VG/S/A2#Abandonia Reloaded|1]]
+*    GameBanshee [[WT:VG/S/A2#RPGWatch|1]], [[WP:Reliable sources/Noticeboard/Archive 74#Reliable sources mentioning fan-created content for video-game|2]]
+*    GameCenter [[WT:WikiProject Video games/Sources/Archive 14#Gamecenter|1]]
+*    GameGirl.com [[WT:VG/S/A1#IDG Entertainment|1]]
+*    GameHall [[WT:WikiProject Video games/Archive 85#Sega Mega Drive / Genesis sales figures dispute - input needed!|1]], [[WT:VG/S/A4#Brazilian fan/blogsite?|2]]
+*    Game industry News (GiN) [[WT:VG/S/A2#Abandonia Reloaded|1]]
+*    Gameplay Monthly [[WT:VG/S/A3#Reliability vs. Notability|1]]
+*    Game Power [[WT:WikiProject Video games/Sources/Archive 14#Game Power|1]]
+*    GameProFamily.com [[WT:VG/S/A1#IDG Entertainment|1]]
+*    Game Over Online [[WT:WikiProject Video games/Sources/Archive 14#Game Over Online|1]]
+*    GamerDad [[WT:VG/S/A3#GamerDad|1]]
+*    GameDaily.biz- [[WT:WikiProject Video games/Sources/Archive 22#GameDaily.biz|1]]
+*    Game Reactor (Denmark, Finland, Sweden) [[WT:VG/S/A2#Abandonia Reloaded|1]], [[WT:VG/S/A9#Gamereactor Sweden|2]]
+*    GamerHelp.com [[WT:VG/S/A1#IDG Entertainment|1]]
+*    Gamernode [[WT:VG/S/A2#Is Gamernode reliable?|1]]
+*    GamersInfo [[WT:VG/S/A1#Talk:4X|1]], [[WT:VG/S/A1#A few sources for your consideration|2]]
+*    GamersReports [[WT:WikiProject Video games/Nintendo/Archive 2#Wii Virtual Console|1]]
+*    Gamer, The [[WT:WikiProject Video games/Sources/Archive 23#THEGAMER|1]]
+*    Games.net [[WT:VG/S/A1#IDG Entertainment|1]]
+*    Games32 [[WT:VG/S/A1#Some more sites|1]]
+*    GamesAreFun.com (GAF) [[WT:VG/S/A2#Nintendojo and Gamesarefun.com (GAF)|1]]
+*    GameShark [[WT:VG/S/A1#Game Shark|1]], [[WT:VG/S/A9#GameShark|2]]
+*    GameSnob [[WT:VG/S/A2#GameSnob|1]]
+*    GameSlant [[WT:VG/S/A2#Situational sources for the disabled|1]]
+*    Gamestyle (Germany, USA) [[WT:VG/S/A2#E-mailing|1]], [[WT:WikiProject Video games/Visual novels/2009#Game-Style|2]]
+*    Game Tap [[WT:WikiProject Video games/Archive 35#Gamerankings|1]], [[WT:WikiProject Video games/Archive 70#Metacritic, GameRankings, MobyGames, TopTenReviews, GameTab, GameStats & Game Ratio|2]]
+*    Game Tunnel [[WT:VG/S/A2#Evaluation of sources covering indie games|1]], [[WT:VG/S/A1#Browser/flash/MMOG games|2]]
+*    Game World Navigator (Навигатор игрового мира, Russia) [[WT:WikiProject Video games/Sources/Archive 12#Game World Navigator / Навигатор игрового мира|1]]
+*    Game Zero [[WT:VG/S/A8#Game Zero magazine|1]]
+*    Gaming.Moe [[WT:WikiProject Video games/Sources/Archive 17#Gaming.Moe|1]]
+*    GamingUnion.net [[WT:WikiProject Video games/Archive 91#Metal Gear Solid 3: Snake Eater|1]], [[WT:VG/S/A3#gamingunion.net|2]]
+*    GamingXP [[WT:VG/S/A2#9 Statis|1]]
+*    GotGame [[WT:VG/S/A2#GotGame|1]]
+*    Great Games Experiment [[WT:VG/S/A2#Game Classification and Great Games Experiment|1]], [[WT:VG/S/A3#Game Classification and Great Games Experiment (again)|2]]
+*    Green Pixels [[WT:WikiProject Video games/Archive 68#Sources|1]], [[WT:VG/S/A2#Game Revolution and Green Pixels, two separate bits|2]]
+*    Happy Puppy [[WT:WikiProject Video games/Sources/Archive 14#Happy Puppy|1]]
+*    HarryBalls.com [[WT:VG/S/A2#Abandonia Reloaded|1]]
+*    Hive4media.com [[WT:WikiProject Video games/Sources/Archive 22#Hive4media.com|1]]
+*    Hyperactive [[WT:WikiProject Video games/Sources/Archive 14#Hyperactive|1]]
+*    Indie Game Magazine [[WT:VG/S/A8#Indie Game Magazine|1]]
+*    Insert Credit [[WT:VG/S/A2#Insert credit|1]], [[WT:WikiProject Video games/Archive 69#Final Fantasy series cleanup|2]], [[WT:WikiProject Video games/Archive 42#Joystiq and Kotaku|3]], [[WT:VG/S/A5#Insert Credit|4]]
+*    Inside Gaming Daily [[WT:WikiProject Video games/Sources/Archive 10#A few sites for Sonic X, a current FAC|1]], [[WT:WikiProject Video games/Sources/Archive 22#Inside Gaming Daily|2]]
+*    Inside Gaming Source, The (TIGSource) [[WP:Articles for deletion/Transcendence (video game)|1]]
+*    Inverse- [[WT:WikiProject Video games/Sources/Archive 22#Some sources I've gathered.|1]]
+*    JoyStik [[WT:VG/S/A2#Associated Content|1]], [[WT:WikiProject Video games/Archive 41#Some character articles|2]]
+*    Kikizo Games [[WT:VG/S/A2#Kikizo|1]]
+*    Kombo.com [[WT:VG/S/A2#Kombo reliable?|1]], [[WP:Reliable sources/Noticeboard/Archive 69#Advanced Media Network RS?|2]]
+*    Let's Play Video Games [[WT:WikiProject Video games/Sources/Archive 16#Let's Play Video Games|1]]
+*    LGBTQ Video Game Archive [[WT:WikiProject Video games/Sources/Archive 16#LGBTQ Video Game Archive|1]]
+*    LudoScience [[WT:VG/S/A2#Game Classification and Great Games Experiment|1]], [[WT:VG/S/A3#Game Classification and Great Games Experiment (again)|2]]
+*    MAN!AC [[WT:WikiProject Video games/Archive 85#Wording|1]]
+*    Mania/AnimeOnDVD.com [[WT:WikiProject Video games/Archive 83#Adding Giant Bomb to reviews template|1]], [[WP:Reliable sources/Noticeboard/Archive 88#mania.com a reliable third party source for reviews/commentary?|2]], [[WP:Reliable sources/Noticeboard/Archive 16#Mania.com|3]], [[WP:Reliable sources/Noticeboard/Archive 87#mania.com a reliable third party source for reviews/commentary?|4]], [[WP:Reliable sources/Noticeboard/Archive 69#Advanced Media Network RS?|5]], [[WP:Reliable sources/Noticeboard/Archive 84#Anime|6]], [[WT:VG/S/A5#Mania (previously AnimeOnDVD.com)|7]]
+*    Matt Chat Blog, The [[WT:WikiProject Video games/Sources/Archive 12#Developer interviews with YouTubers/fansites|1]]
+*    Mic - [[WT:WikiProject Video games/Sources/Archive 22#Some sources I've gathered.|1]]
+*    Millenium Portail [[WT:WikiProject Video games/Sources/Archive 16#Millenium|1]]
+*    MMOABC [[WT:VG/S/A3#MMOABC|1]]
+*    Nerd Much - [[WT:WikiProject Video games/Sources/Archive 22#Some sources I've gathered.|1]]
+*    neXGam (Germany) [[WT:VG/S/A5#Possible sources for consideration|1]]
+*    Nintendo Magazine System (Australia, UK) [[WT:WikiProject Video games/Archive 8#Critical reaction in computer games|1]], [[WT:WikiProject Video games/Archive 15#A Magazine Project|2]]
+*    Nintendo Wire [[WT:WikiProject Video games/Sources/Archive 21#Nintendo Wire|1]]
+*    Nours (Japan) - [[WT:WikiProject Video games/Sources/Archive 22#Nours / Miraiken Blog|1]]
+*    NZGamer [[WT:VG/S/A3#NZGamer|1]]
+*    Official Xbox 360 Magazine/Xbox 360 - Das offiziele Xbox-Magazin (Germany)
+*    OMGN.com [[WT:VG/S/A2#OMGN.com|1]], [[WT:VG/S/A1#Browser/flash/MMOG games|2]]
+*    OpenCritic [[WT:WikiProject Video games/Sources/Archive 12#OpenCritic|1]], [[Template talk:Video game reviews#Adding OpenCritic as a review aggregator|2]], [[Template talk:Video game reviews#RfC on OpenCritic|3]], [[WT:WikiProject Video games/Sources/Archive 17#OpenCritic|4]], [[WT:Neutral point of view/Archive 52#Review score aggregators like Rotten Tomatoes, Metacritic and OpenCritic|5]], [[WT:WikiProject Video games/Sources/Archive 17#RfC on reliability of OpenCritic|6]], [[WT:WikiProject Video games/Sources/Archive 18#OpenCritic|7]]
+*    PC Accelerator [[WT:WikiProject Video games/Sources/Archive 14#PC Accelerator|1]]
+*    PC Arena - Game Arena [[WT:VG/S/A2#Abandonia Reloaded|1]]
+*    PC Player (Brazil, Denmark, Germany) [[WT:WikiProject Video games/Archive 61#Insurrection (StarCraft) and Retribution (StarCraft) merge reopened|1]]
+*    PiQ [[WT:VG/S/A1#From KFM|1]]
+*    Player.One [[WT:WikiProject Video games/Sources/Archive 22#Player.One|1]]
+*    Playr (UK) [[WT:WikiProject Video games/Archive 79#3. Remove Playr and Gamezebo|1]]
+*    Playstation 2 Magazine (PSM2) (UK) [[WT:VG/S/A2#Abandonia Reloaded|1]]
+*    Playstation 3 Magazine (PSM3) (UK) [[WT:WikiProject Video games/Archive 79#VG reviews publications|1]], [[WT:VG/S/A2#Abandonia Reloaded|2]]
+*    PlayStation Lifestyle [[WT:WikiProject Video games/Sources/Archive 13#PlayStation LifeStyle|1]], [[WT:WikiProject Video games/Sources/Archive 16#PlayStation LifeStyle.net|2]]
+*    play.tm (Ferrago Ltd.) [[WT:VG/S/A1#Sega-16.com|1]]
+*    Pocket Tactics [[WT:WikiProject Video games/Sources/Archive 16#Pocket Tactics|1]]
+*    Practical Webdesign [[WT:VG/S/A2#Abandonia Reloaded|1]]
+*    Pregaming [[WT:WikiProject Video games/Sources/Archive 14#Pregaming|1]]
+*    PSX Extreme [[WT:WikiProject Video games/Archive 63#MGS4 resolution dispute|1]]
+*    RacketBoy [[WT:WikiProject Video games/Sources/Archive 22#RacketBoy|1]]
+*    Remeshed [[WT:WikiProject Video games/Sources/Archive 15#Remeshed.com|1]]
+*    Retro Magazine
+*    Rev3Games [[WT:VG/S/A9#Rev3Games|1]], [[WT:WikiProject Video games/Sources/Archive 10#Rev3Games (again)|2]]
+*    Reviews on the Run [[WT:VG/S/A4#The Electric Playground and Reviews on the Run|1]], [[WT:WikiProject Video games/Archive 85#Requesting commentary on new potential reliable sources.|2]]
+*    RPG Codex [[WT:VG/S/A1#Some more sites|1]]
+*    RPGDOT [[WT:VG/S/A2#RPGDot|1]]
+*    RPG Land [[WT:VG/S/A3#Reliability vs. Notability|1]]
+*    RPGnet/RPG.net [[WT:VG/S/A1#Talk:4X|1]]
+*    RPGWatch [[WT:VG/S/A2#RPGWatch|1]], [[WP:Reliable sources/Noticeboard/Archive 31#Video game refs|2]]
+*    SciFi.com [[WP:Reliable sources/Noticeboard/Archive 29#Twitchfilm.net|1]]
+*    Softonic [[WP:Reliable sources/Noticeboard/Archive 101#Softonic.com|1]]
+*    Speedrun.com [[WT:WikiProject Video games/Archive 116#Speedrun.com|1]]
+*    SPOnG [[WT:WikiProject Video games/Archive 64#Help! Reliable sources at FAC|1]], [[WT:VG/S/A1#Sega-16.com|2]]
+*    StrategyCore [[WT:VG/S/A1#Some more sites|1]]
+*    Strategy Informer [[WT:VG/S/A4#Strategy Informer|1]], [[WT:WikiProject Video games/Archive 85#Requesting commentary on new potential reliable sources.|2]]
+*    Subsim [[WT:WikiProject Video games/Sources/Archive 21#Subsim|1]]
+*    SucksOrRules.com [[WT:VG/S/A1#IDG Entertainment|1]]
+*    Tales of the Rampant Coyote [[WT:WikiProject Video games/Sources/Archive 5#Tales of the Rampant Coyote|1]]
+*    Tea Leaves [[WT:VG/S/A1#Boldly added TLeaves.com|1]], [[WT:WikiProject Video games/Archive 43#One suggestion... (re: reliable sources)|2]]
+*    Tech Crunch [[WT:VG/S/A2#TechCrunch|1]], [[WP:Reliable sources/Noticeboard/Archive 87#techcrunch.com|2]], [[WP:Reliable sources/Noticeboard/Archive 110#TechCrunch and Engadget|3]], [[WP:Reliable sources/Noticeboard/Archive 16#Blogs?|4]], [[WP:Reliable sources/Noticeboard/Archive 88#Blogs as sources|5]], [[WP:Reliable sources/Noticeboard/Archive 4#Techblogs|6]], [[WP:Reliable sources/Noticeboard/Archive 108#Tangent Magazine|7]], [[WT:VG/S/A5#TechCrunch|8]], [[WT:WikiProject Video games/Sources/Archive 10#Tech Crunch|9]]
+*    TechRaptor [[WT:WikiProject Video games/Sources/Archive 10#TechRaptor|1]]
+*    That Video Game Blog [[WT:WikiProject Video games/Archive 81#That Videogames Blog|1]]
+*    TheGamer [[WT:WikiProject Video games/Sources/Archive 23#THEGAMER|1]], [[WT:WikiProject Video games/Sources/Archive 24#Reliable Sources|2]]
+*    TheScore [[WT:WikiProject Video games/Sources/Archive 14#eSports revisited|1]]
+*    Thunderbolt Games [[WT:VG/S/A2#Thunderbolt|1]], [[WT:WikiProject Video games/Sources/Archive 11#Thunderbolt (website)|2]]
+*    Times Online [[WT:VG/S/A2#Abandonia Reloaded|1]], [[WP:Reliable sources/Noticeboard/Archive 13#Boxofficeindia.com|2]]
+*    Tiny Cartridge [[WT:VG/S/A4#Tiny Cartridge|1]]
+*    Tom's Games [[WT:VG/S/A2#Tom's Games|1]]
+*    TotalVideoGames (TVG) [[WT:VG/S/A2#TotalVideoGames|1]]
+*    UOL Jogos (Brazil) [[WT:VG/S/A4#Brazilian fan/blogsite?|1]], [[WT:WikiProject Video games/Archive 85#Sega Mega Drive / Genesis sales figures dispute - input needed!|2]]
+*    Video Game Rebirth [[WT:VG/S/A2#Video Game Rebirth|1]]
+*    VideoGames & Computer Entertainment [[WT:VG/S/A3#VideoGames and Computer Entertainment (VG&CE)|1]]
+*    Virtual Console Reviews [[WT:VG/S/A1#Some more sites|1]]
+*    V Jump (Japan) [[WP:Reliable sources/Noticeboard/Archive 99#V-Jump|1]]
+*    Warcry [[WT:VG/S/A2#Warcry|1]]
+*    WCCFTech [[WT:WikiProject Video games/Sources/Archive 19#WCCFTech|1]], [[WT:WikiProject Video games/Sources/Archive 21#WCCFtech|2]]
+*    Yahoo! Games (Spain, USA) [[WT:VG/S/A1#Set this up and knock it down|1]], [[WT:WikiProject Video games/Sources/Archive 14#Yahoo! Games|2]]
+*    Zzap! 64 [[WT:WikiProject Video games/Archive 31#Old Computer Mags|1]]
+{{div col end}}
+
+==See also==
+* [[WP:Advanced source searching]]
+* [[WP:Wikipedia Signpost/2008-06-26/Dispatches]]
+* [[WP:WikiProject Video games/Newsletter/20080806]]
+
+[[Category:WikiProject Video games|Sources]]
+[[Category:WikiProject lists of online reliable sources|Video games]]
