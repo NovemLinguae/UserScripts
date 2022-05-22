@@ -163,6 +163,7 @@ $(async function() {
 		
 		for ( let key in colors ) {
 			mw.util.addCSS('.cite-highlighter-' + key + ' {background-color: ' + colors[key] + ';}');
+			mw.util.addCSS('.rt-tooltipTail.cite-highlighter-' + key + '::after {background: ' + colors[key] + ';}');
 		}
 		
 		let wikicode = await getWikicode(articleTitle);
@@ -206,6 +207,33 @@ $(async function() {
 			}
 		}
 
+    function observeTooltips() {
+      new MutationObserver(function (mutations) {
+        var el = document.getElementsByClassName('rt-tooltip')[0]
+        if (el) {
+          for (let color in colors) {
+            if (typeof sources[color] === 'undefined') continue
+
+            for (let source of sources[color]) {
+              total++
+
+              if (wikicode.includes(source) || source === 'nih.gov' || source === 'twitter.com') {
+                i++
+
+                if (source.includes('.') && !source.includes(' ')) {
+                  $(el).has(`a[href*="${source.toLowerCase()}"]`).addClass('cite-highlighter-' + color)
+                  $(el).has(`a[href*="${source.toLowerCase()}"]`).children().first().addClass('cite-highlighter-' + color)
+                }
+              }
+            }
+          }
+        }
+      }).observe(document.body, {
+        subtree: false,
+        childList: true,
+      })
+    }
+
 		// Be more aggressive with this list of words. Doesn't have to be the domain name. Can be anywhere in the URL. Example unreliableWord: blog.
 		for ( let word of unreliableWords ) {
 			let color = 'unreliableWord';
@@ -216,6 +244,8 @@ $(async function() {
 				}
 			}
 		}
+
+		observeTooltips()
 
 		//console.log(`Added ${i} of ${total} CSS rules`);
 	});
