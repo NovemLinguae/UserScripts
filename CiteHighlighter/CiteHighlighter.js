@@ -207,6 +207,7 @@ $(async function() {
 			}
 		}
 
+		/** Observe and highlight popups created by the gadget Reference Tooltips. */
 		function observeTooltips() {
 			new MutationObserver(function (mutations) {
 				var el = document.getElementsByClassName('rt-tooltip')[0];
