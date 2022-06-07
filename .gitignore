@@ -1,11 +1,16 @@
 = drafts
 = other people's examples
+= template
 CiteHighlighter/todo.txt
 CiteHighlighter/CiteHighlighter.xlsx
-DraftCleaner
-NotSoFast
-RequestedArticleSifter
-SpeciesHelper
-UserRightsDiff
-/*.js
+/=*.*
 /*.docx
+node_modules
+AddInfobox.js
+HideRollbackOnTemplates.js
+PendingChanges.js
+PurgeButton.js
+cookie.txt
+publish.config.php
+publish_old.php
+original (off wiki)

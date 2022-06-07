@@ -1,0 +1,14 @@
+{
+	"dependencies": {
+		"jest": "^27.4.3"
+	},
+	"scripts": {
+		"test": "jest",
+		"build": "babel-node src/DraftCleaner2.js -d dist"
+	},
+	"devDependencies": {
+		"@babel/plugin-transform-modules-commonjs": "^7.16.0",
+		"babel-cli": "^6.26.0",
+		"babel-preset-env": "^1.7.0"
+	}
+}
