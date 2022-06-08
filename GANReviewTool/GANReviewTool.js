@@ -7,20 +7,19 @@ $(async function() {
 
 	async function getWikicode(title) {
 		if ( ! mw.config.get('wgCurRevisionId') ) return ''; // if page is deleted, return blank
-		var wikicode = '';
-		title = encodeURIComponent(title);
-		await $.ajax({
-			url: 'https://en.wikipedia.org/w/api.php?action=parse&page='+title+'&prop=wikitext&formatversion=2&format=json',
-			success: function (result) {
-				wikicode = result['parse']['wikitext'];
-			},
-			dataType: "json",
-			async: false
-		});
+		let api = new mw.Api();
+		let params = {
+			"action": "parse",
+			"page": title,
+			"prop": "wikitext",
+			"formatversion": 2,
+			"format": "json",
+		};
+		let result = await api.post(params);
+		let wikicode = result['parse']['wikitext'];
 		return wikicode;
 	}
 
-	// https://en.wikipedia.org/w/api.php?action=edit&format=json&title=User%3ANovem%20Linguae%2Fsandbox2&text=Test!&summary=Testing%20script&token=77ad2e923fb2bb511466fdd33f71df8d629fb7b1%2B%5C
 	async function makeEdit(title, editSummary, wikicode) {
 		let api = new mw.Api();
 		let params = {
@@ -30,21 +29,11 @@ $(async function() {
 			"text": wikicode,
 			"summary": editSummary,
 		};
-		let response = await api.postWithToken('csrf', params);
-		console.log(response);
+		await api.postWithToken('csrf', params);
+	}
 
-		/*
-		let api = new mw.Api();
-		let response = await api.post( {
-			"action": "edit",
-			"format": "json",
-			"title": title,
-			"text": wikicode,
-			"summary": editSummary,
-			"token": mw.user.tokens.get('csrfToken'),
-		} );
-		console.log(response);
-		*/
+	function pushStatus(statusToAdd) {
+		$(`#GANReviewTool-ProcessingMessage > p`).append('<br />' + statusToAdd);
 	}
 
 	function shouldRunOnThisPage(title) {
@@ -78,9 +67,9 @@ $(async function() {
 	let title = mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
 	if ( ! shouldRunOnThisPage(title) ) return;
 
-	// only run if this review hasn't already been closed. check for {{atopg}}
+	// only run if this review hasn't already been closed. check for {{atop}}
 	let reviewWikicode = await getWikicode(title);
-	if ( reviewWikicode.match(/\{\{atopg/i) ) return;
+	if ( reviewWikicode.match(/\{\{atop/i) ) return;
 
 	// only run if talk page has {{GA nominee}}
 	let gaTitle = getGATitle(title);
@@ -141,6 +130,7 @@ $(async function() {
 		</p>
 
 		<!-- if pass -->
+		<!--
 		<div id="GANReviewTool-PassDiv">
 			<p>
 				<strong>Topic, subtopic, and sub-subtopic:</strong><br />
@@ -781,13 +771,14 @@ $(async function() {
 			</p>
 
 			<p>
-				<strong>Wikicode to display when adding this to the list of good articles at [[<a href="https://en.wikipedia.org/wiki/Wikipedia:Good_articles">WP:GA</a>]].</strong><br />
+				<strong>Wikicode to display when adding this to the list of good articles at [[<a href="/wiki/Wikipedia:Good_articles">WP:GA</a>]].</strong><br />
 				Names should be in format: <code>Lastname, Firstname</code><br />
 				Television shows should be in format: <code>''Television show''</code><br />
 				Television episodes should be in format: <code>"Episode name"</code><br />
 				<input type="text" name="GANReviewTool-DisplayWikicode" value="${escapeHtml(gaTitle)}" />
 			</p>
 		</div>
+		-->
 		<!-- endif -->
 
 		<p>
@@ -815,38 +806,64 @@ $(async function() {
 
 	// Submit button
 	$(`#GANReviewTool-Submit`).on('click', async function() {
-		/*
-		let title = 'User:Novem Linguae/sandbox2';
-		let wikicode = 'Test 3';
-		let editSummary = 'Testing script';
-		await makeEdit(title, editSummary, wikicode);
-		*/
-
-		// hide form elements
 		$(`#GANReviewTool-Form`).hide();
 		$(`#GANReviewTool-ProcessingMessage`).show();
 
-		// display status messages
+		let passOrFail = $(`[name="GANReviewTool-PassOrFail"]:checked`).val();
 
-		// if pass:
+		let editSummarySuffix = ' ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
 
-			// Add below the first level 2 heading: {{atopg|result = Passed}} and {{abotg}} to the nomination page, if not present?
+		if ( passOrFail === 'pass' ) {
+			let editSummary = `promote [[${gaTitle}]] to good article` + editSummarySuffix;
+
+			pushStatus('Placing {{atop}} and {{abot}} on GA review page.');
+			reviewWikicode = placeATOP(reviewWikicode, 'Passed ~~~~', 'green');
+			await makeEdit(title, editSummary, reviewWikicode);
 			
-			// Article talk page: Replace {{GA nominee}} with
-				//{{GA|~~~~~|topic=use GA nominee data|page=use GA nominee data}}. "Topic" and "subtopic" parameters are aliases of each other, detect both and convert to "topic". Delete other parameters. See also: Wikipedia:WikiProject Good articles/Topic Values.
-				// Or if {{Article history}} is present, add an entry to that instead.
+			pushStatus('Deleting {{GA nominee}} from article talk page.');
+			let topic = getTopicFromGANomineeTemplate(talkWikicode);
+			let gaPageNumber = getTemplateParameter(talkWikicode, 'GA nominee', 'page');
+			talkWikicode = deleteGANomineeTemplate(talkWikicode);
 
-			// Update WikiProject templates so that class=GA
+			pushStatus('Adding {{GA}} or {{Article history}} to article talk page.');
+			let hasArticleHistoryTemplate = talkWikicode.match(/\{\{Article history/i);
+			if ( hasArticleHistoryTemplate ) {
+				let nextActionNumber = determineNextActionNumber(talkWikicode);
+				talkWikicode = updateArticleHistory(talkWikicode, nextActionNumber, topic, title);
+			} else {
+				talkWikicode = addGATemplate(talkWikicode, topic, gaPageNumber);
+			}
+			talkWikicode = changeWikiProjectArticleClassToGA(talkWikicode);
 
-			// List the article at Wikipedia:Good articles in the appropriate section
+			// make edit to article talk page
+			await makeEdit(gaTalkTitle, editSummary, talkWikicode);
+
+			// TODO: List the article at Wikipedia:Good articles in the appropriate section
 				// Subtopic lists appear to be alphabetized. If it is a person, the alphabetizing is by last name.
 				// The list is wrapped in module #invoke code, and line breaks are used as the item separators.
+		} else if ( passOrFail === 'fail' ) {
+			let editSummary = `close GAN as unsuccessful` + editSummarySuffix;
 
-		// if fail:
+			pushStatus('Placing {{atop}} and {{abot}} on GA review page.');
+			reviewWikicode = placeATOP(reviewWikicode, 'Unsuccessful ~~~~', 'red');
+			await makeEdit(title, editSummary, reviewWikicode);
 
-			// Add below the first level 2 heading: {{atopr|result = Failed}} and {{abotr}} to the nomination page, if not present
+			pushStatus('Deleting {{GA nominee}} from article talk page.');
+			let topic = getTopicFromGANomineeTemplate(talkWikicode);
+			let gaPageNumber = getTemplateParameter(talkWikicode, 'GA nominee', 'page');
+			talkWikicode = deleteGANomineeTemplate(talkWikicode);
 
+			pushStatus('Adding {{FailedGA}} to article talk page.');
+			talkWikicode = addFailedGATemplate(talkWikicode, topic, gaPageNumber);
+			await makeEdit(gaTalkTitle, editSummary, talkWikicode);
+		}
 
+		// TODO: write to a diff log in my userspace
+		// pushStatus('');
+
+		pushStatus('Script complete. Refreshing page.');
+
+		location.reload();
 	});
 });
 
