@@ -29,7 +29,24 @@ $(async function() {
 			"text": wikicode,
 			"summary": editSummary,
 		};
-		await api.postWithToken('csrf', params);
+		let result = await api.postWithToken('csrf', params);
+		let revisionID = result['edit']['newrevid'];
+		return revisionID;
+	}
+
+	/** Lets you append without getting the Wikicode first. Saves an API query. */
+	async function appendToPage(title, editSummary, wikicodeToAppend) {
+		let api = new mw.Api();
+		let params = {
+			"action": "edit",
+			"format": "json",
+			"title": title,
+			"appendtext": wikicodeToAppend,
+			"summary": editSummary,
+		};
+		let result = await api.postWithToken('csrf', params);
+		let revisionID = result['edit']['newrevid'];
+		return revisionID;
 	}
 
 	function pushStatus(statusToAdd) {
@@ -76,6 +93,9 @@ $(async function() {
 	let gaTalkTitle = getGATalkTitle(gaTitle);
 	let talkWikicode = await getWikicode(gaTalkTitle);
 	if ( title !== 'User:Novem_Linguae/sandbox' && ! talkWikicode.match(/\{\{GA nominee/i) ) return;
+
+	// TODO: combo box should default to blank, and submit should throw an error if combo box is blank
+	// TODO: may need some values in the combo box, to distinguish duplicates such as ==== Miscellaneous ====
 
 	// display HTML form
 	$('#contentSub2').prepend(
@@ -130,643 +150,642 @@ $(async function() {
 		</p>
 
 		<!-- if pass -->
-		<!--
 		<div id="GANReviewTool-PassDiv">
 			<p>
 				<strong>Topic, subtopic, and sub-subtopic:</strong><br />
-				<select>
-					<option disabled>==Agriculture, food, and drink==</option>
-					<option disabled>===Agriculture, food, and drink===</option>
-					<option>=====Agriculture and farming=====</option>
-					<option>=====Horticulture and forestry=====</option>
-					<option>=====Food and drink establishments=====</option>
-					<option>=====Cuisines=====</option>
-					<option>=====Food=====</option>
-					<option>=====Drink=====</option>
-					<option>=====Food and drink companies=====</option>
-					<option>=====Food and drink people=====</option>
-					<option>=====Cookery books=====</option>
-					<option>=====Miscellaneous=====</option>
+				<select name="GANReviewTool-Topic">
+					<option value="Agriculture, food and drink" disabled>==Agriculture, food, and drink==</option>
+					<option value="Agriculture, food and drink" disabled>===Agriculture, food, and drink===</option>
+					<option value="Agriculture, food and drink">=====Agriculture and farming=====</option>
+					<option value="Agriculture, food and drink">=====Horticulture and forestry=====</option>
+					<option value="Agriculture, food and drink">=====Food and drink establishments=====</option>
+					<option value="Agriculture, food and drink">=====Cuisines=====</option>
+					<option value="Agriculture, food and drink">=====Food=====</option>
+					<option value="Agriculture, food and drink">=====Drink=====</option>
+					<option value="Agriculture, food and drink">=====Food and drink companies=====</option>
+					<option value="Agriculture, food and drink">=====Food and drink people=====</option>
+					<option value="Agriculture, food and drink">=====Cookery books=====</option>
+					<option value="Agriculture, food and drink">=====Miscellaneous=====</option>
 
-					<option disabled>==Art and architecture==</option>
-					<option disabled>===Art===</option>
-					<option>=====Art=====</option>
-					<option>=====Artists and art organizations=====</option>
-					<option disabled>===Architecture===</option>
-					<option>=====Architecture=====</option>
-					<option>=====Architecture – Bridges and tunnels=====</option>
-					<option>=====Architecture – Buildings=====</option>
-					<option>=====Architecture – Forts and fortifications=====</option>
-					<option>=====Architecture – Hotels and inns=====</option>
-					<option>=====Architecture – Houses and residences=====</option>
-					<option>=====Architecture – Lighthouses=====</option>
-					<option>=====Architecture – Memorials and monuments=====</option>
-					<option>=====Architecture – Museums and galleries=====</option>
-					<option>=====Architecture – Religious=====</option>
-					<option>=====Architects=====</option>
+					<option value="Art and architecture" disabled>==Art and architecture==</option>
+					<option value="Art and architecture" disabled>===Art===</option>
+					<option value="Art and architecture">=====Art=====</option>
+					<option value="Art and architecture">=====Artists and art organizations=====</option>
+					<option value="Art and architecture" disabled>===Architecture===</option>
+					<option value="Art and architecture">=====Architecture=====</option>
+					<option value="Art and architecture">=====Architecture – Bridges and tunnels=====</option>
+					<option value="Art and architecture">=====Architecture – Buildings=====</option>
+					<option value="Art and architecture">=====Architecture – Forts and fortifications=====</option>
+					<option value="Art and architecture">=====Architecture – Hotels and inns=====</option>
+					<option value="Art and architecture">=====Architecture – Houses and residences=====</option>
+					<option value="Art and architecture">=====Architecture – Lighthouses=====</option>
+					<option value="Art and architecture">=====Architecture – Memorials and monuments=====</option>
+					<option value="Art and architecture">=====Architecture – Museums and galleries=====</option>
+					<option value="Art and architecture">=====Architecture – Religious=====</option>
+					<option value="Art and architecture">=====Architects=====</option>
 
-					<option disabled>==Engineering and technology==</option>
-					<option disabled>===Computing and engineering===</option>
-					<option>=====Computer-related organizations and people=====</option>
-					<option>=====Cryptography=====</option>
-					<option>=====Engineers and inventors=====</option>
-					<option>=====Engineering technology=====</option>
-					<option>=====Engineering failures and disasters=====</option>
-					<option>=====Hardware, standards and protocols=====</option>
-					<option>=====Power and water infrastructure=====</option>
-					<option>=====Programming=====</option>
-					<option>=====Software=====</option>
-					<option>=====Websites and the Internet=====</option>
-					<option disabled>===Transport===</option>
-					<option>=====Air transport=====</option>
-					<option>=====Maritime transport=====</option>
-					<option>=====Rail transport=====</option>
-					<option>=====Rail bridges, tunnels, and stations=====</option>
-					<option>=====Trains and locomotives=====</option>
-					<option>=====Road infrastructure: Canada=====</option>
-					<option>=====Road infrastructure: United States=====</option>
-					<option>=====Road infrastructure: Northeastern United States=====</option>
-					<option>=====Road infrastructure: Southern United States=====</option>
-					<option>=====Road infrastructure: Midwestern United States=====</option>
-					<option>=====Road infrastructure: Western United States=====</option>
-					<option>=====Road infrastructure: Other=====</option>
-					<option>=====Road transportation: Buses, vans, and paratransit=====</option>
-					<option>=====Road transportation: Cars and motorcycles=====</option>
-					<option>=====Road transportation: Other=====</option>
-					<option>=====Transport by region=====</option>
+					<option value="Engineering and technology" disabled>==Engineering and technology==</option>
+					<option value="Engineering and technology" disabled>===Computing and engineering===</option>
+					<option value="Engineering and technology">=====Computer-related organizations and people=====</option>
+					<option value="Engineering and technology">=====Cryptography=====</option>
+					<option value="Engineering and technology">=====Engineers and inventors=====</option>
+					<option value="Engineering and technology">=====Engineering technology=====</option>
+					<option value="Engineering and technology">=====Engineering failures and disasters=====</option>
+					<option value="Engineering and technology">=====Hardware, standards and protocols=====</option>
+					<option value="Engineering and technology">=====Power and water infrastructure=====</option>
+					<option value="Engineering and technology">=====Programming=====</option>
+					<option value="Engineering and technology">=====Software=====</option>
+					<option value="Engineering and technology">=====Websites and the Internet=====</option>
+					<option value="Engineering and technology" disabled>===Transport===</option>
+					<option value="Engineering and technology">=====Air transport=====</option>
+					<option value="Engineering and technology">=====Maritime transport=====</option>
+					<option value="Engineering and technology">=====Rail transport=====</option>
+					<option value="Engineering and technology">=====Rail bridges, tunnels, and stations=====</option>
+					<option value="Engineering and technology">=====Trains and locomotives=====</option>
+					<option value="Engineering and technology">=====Road infrastructure: Canada=====</option>
+					<option value="Engineering and technology">=====Road infrastructure: United States=====</option>
+					<option value="Engineering and technology">=====Road infrastructure: Northeastern United States=====</option>
+					<option value="Engineering and technology">=====Road infrastructure: Southern United States=====</option>
+					<option value="Engineering and technology">=====Road infrastructure: Midwestern United States=====</option>
+					<option value="Engineering and technology">=====Road infrastructure: Western United States=====</option>
+					<option value="Engineering and technology">=====Road infrastructure: Other=====</option>
+					<option value="Engineering and technology">=====Road transportation: Buses, vans, and paratransit=====</option>
+					<option value="Engineering and technology">=====Road transportation: Cars and motorcycles=====</option>
+					<option value="Engineering and technology">=====Road transportation: Other=====</option>
+					<option value="Engineering and technology">=====Transport by region=====</option>
 
-					<option disabled>==Geography and places==</option>
-					<option disabled>===Geography===</option>
-					<option>=====Bodies of water and water formations=====</option>
-					<option>=====Geographers and explorers=====</option>
-					<option>=====General and human geography=====</option>
-					<option>=====Islands=====</option>
-					<option>=====Landforms=====</option>
-					<option>=====National and state parks, nature reserves, conservation areas, and countryside routes=====</option>
-					<option>=====Urban and historical sites=====</option>
-					<option>=====Geography miscellanea=====</option>
-					<option disabled>===Places===</option>
-					<option>=====Countries=====</option>
-					<option>=====Africa=====</option>
-					<option>=====Antarctica=====</option>
-					<option>=====Asia=====</option>
-					<option>=====Australia and the Pacific=====</option>
-					<option>=====Europe=====</option>
-					<option>=====Middle East=====</option>
-					<option>=====North America=====</option>
+					<option value="Geography and places" disabled>==Geography and places==</option>
+					<option value="Geography and places" disabled>===Geography===</option>
+					<option value="Geography and places">=====Bodies of water and water formations=====</option>
+					<option value="Geography and places">=====Geographers and explorers=====</option>
+					<option value="Geography and places">=====General and human geography=====</option>
+					<option value="Geography and places">=====Islands=====</option>
+					<option value="Geography and places">=====Landforms=====</option>
+					<option value="Geography and places">=====National and state parks, nature reserves, conservation areas, and countryside routes=====</option>
+					<option value="Geography and places">=====Urban and historical sites=====</option>
+					<option value="Geography and places">=====Geography miscellanea=====</option>
+					<option value="Geography and places" disabled>===Places===</option>
+					<option value="Geography and places">=====Countries=====</option>
+					<option value="Geography and places">=====Africa=====</option>
+					<option value="Geography and places">=====Antarctica=====</option>
+					<option value="Geography and places">=====Asia=====</option>
+					<option value="Geography and places">=====Australia and the Pacific=====</option>
+					<option value="Geography and places">=====Europe=====</option>
+					<option value="Geography and places">=====Middle East=====</option>
+					<option value="Geography and places">=====North America=====</option>
 					<option>=====South America=====</option>
 
-					<option disabled>==History==</option>
-					<option disabled>===World history===</option>
-					<option>=====Archaeology and archaeologists=====</option>
-					<option>=====Historians, chroniclers and history books=====</option>
-					<option>=====Historical figures: heads of state and heads of government=====</option>
-					<option>=====Historical figures: politicians=====</option>
-					<option>=====Historical figures: other=====</option>
-					<option>=====African history=====</option>
-					<option>=====North American history=====</option>
-					<option>=====South American history=====</option>
-					<option>=====Asian history=====</option>
-					<option>=====Australian and Oceania history=====</option>
-					<option>=====European history=====</option>
-					<option>=====Middle Eastern history=====</option>
-					<option>=====Global history=====</option>
-					<option disabled>===Royalty, nobility, and heraldry===</option>
-					<option>=====Flags and heraldry=====</option>
-					<option>=====Monarchs=====</option>
-					<option>=====Royalty and nobility=====</option>
+					<option value="History" disabled>==History==</option>
+					<option value="History" disabled>===World history===</option>
+					<option value="History">=====Archaeology and archaeologists=====</option>
+					<option value="History">=====Historians, chroniclers and history books=====</option>
+					<option value="History">=====Historical figures: heads of state and heads of government=====</option>
+					<option value="History">=====Historical figures: politicians=====</option>
+					<option value="History">=====Historical figures: other=====</option>
+					<option value="History">=====African history=====</option>
+					<option value="History">=====North American history=====</option>
+					<option value="History">=====South American history=====</option>
+					<option value="History">=====Asian history=====</option>
+					<option value="History">=====Australian and Oceania history=====</option>
+					<option value="History">=====European history=====</option>
+					<option value="History">=====Middle Eastern history=====</option>
+					<option value="History">=====Global history=====</option>
+					<option value="History" disabled>===Royalty, nobility, and heraldry===</option>
+					<option value="History">=====Flags and heraldry=====</option>
+					<option value="History">=====Monarchs=====</option>
+					<option value="History">=====Royalty and nobility=====</option>
 
-					<option disabled>==Language and literature==</option>
-					<option disabled>===Language and literature===</option>
-					<option>=====Alphabets and transliteration=====</option>
-					<option>=====Ancient texts=====</option>
-					<option>=====Biographies, autobiographies, essays, diaries, and travelogues=====</option>
-					<option>=====Characters and fictional items=====</option>
-					<option>=====Children's books, fairy tales, and nursery rhymes=====</option>
-					<option>=====Comics=====</option>
-					<option>=====Genres and literary theory=====</option>
-					<option>=====Languages=====</option>
-					<option>=====Linguists and philologists=====</option>
-					<option>=====Non-fiction=====</option>
-					<option>=====Novels=====</option>
-					<option>=====Plays=====</option>
-					<option>=====Poetry=====</option>
-					<option>=====Short fiction and anthologies=====</option>
-					<option>=====Words and linguistics=====</option>
-					<option>=====Writers, publishers, and critics=====</option>
+					<option value="Language and literature" disabled>==Language and literature==</option>
+					<option value="Language and literature" disabled>===Language and literature===</option>
+					<option value="Language and literature">=====Alphabets and transliteration=====</option>
+					<option value="Language and literature">=====Ancient texts=====</option>
+					<option value="Language and literature">=====Biographies, autobiographies, essays, diaries, and travelogues=====</option>
+					<option value="Language and literature">=====Characters and fictional items=====</option>
+					<option value="Language and literature">=====Children's books, fairy tales, and nursery rhymes=====</option>
+					<option value="Language and literature">=====Comics=====</option>
+					<option value="Language and literature">=====Genres and literary theory=====</option>
+					<option value="Language and literature">=====Languages=====</option>
+					<option value="Language and literature">=====Linguists and philologists=====</option>
+					<option value="Language and literature">=====Non-fiction=====</option>
+					<option value="Language and literature">=====Novels=====</option>
+					<option value="Language and literature">=====Plays=====</option>
+					<option value="Language and literature">=====Poetry=====</option>
+					<option value="Language and literature">=====Short fiction and anthologies=====</option>
+					<option value="Language and literature">=====Words and linguistics=====</option>
+					<option value="Language and literature">=====Writers, publishers, and critics=====</option>
 
-					<option disabled>==Mathematics==</option>
-					<option disabled>===Mathematics and mathematicians===</option>
-					<option>=====Mathematical concepts and topics=====</option>
-					<option>=====Mathematical texts and artifacts=====</option>
-					<option>=====Mathematicians=====</option>
+					<option value="Mathematics" disabled>==Mathematics==</option>
+					<option value="Mathematics" disabled>===Mathematics and mathematicians===</option>
+					<option value="Mathematics">=====Mathematical concepts and topics=====</option>
+					<option value="Mathematics">=====Mathematical texts and artifacts=====</option>
+					<option value="Mathematics">=====Mathematicians=====</option>
 
-					<option disabled>==Media and drama==</option>
-					<option disabled>===Film===</option>
-					<option>=====Cinema=====</option>
-					<option>=====Film franchises, overview articles and production articles=====</option>
-					<option>=====Pre-1910s films=====</option>
-					<option>=====1910s films=====</option>
-					<option>=====1920s films=====</option>
-					<option>=====1930s films=====</option>
-					<option>=====1940s films=====</option>
-					<option>=====1950s films=====</option>
-					<option>=====1960s films=====</option>
-					<option>=====1970s films=====</option>
-					<option>=====1980s films=====</option>
-					<option>=====1990s films=====</option>
-					<option>=====2000 to 2004 films=====</option>
-					<option>=====2005 to 2009 films=====</option>
-					<option>=====2010 to 2014 films=====</option>
-					<option>=====2015 to 2019 films=====</option>
-					<option>=====2020 to 2024 films=====</option>
-					<option disabled>===Television===</option>
-					<option>=====Television networks and overview articles=====</option>
-					<option>====Television series====</option>
-					<option>=====''30 Rock''=====</option>
-					<option>=====''Ackley Bridge''=====</option>
-					<option>=====''Adventure Time''=====</option>
-					<option>=====''American Dad!''=====</option>
-					<option>=====''American Horror Story''=====</option>
-					<option>=====''Archer''=====</option>
-					<option>=====Arrowverse=====</option>
-					<option>=====Avatarverse=====</option>
-					<option>=====''Awake''=====</option>
-					<option>=====''Battlestar Galactica''=====</option>
-					<option>=====''Better Call Saul''=====</option>
-					<option>=====''The Big Bang Theory''=====</option>
-					<option>=====''Black Mirror''=====</option>
-					<option>=====''Body of Proof''=====</option>
-					<option>=====''BoJack Horseman''=====</option>
-					<option>=====''Breaking Bad''=====</option>
-					<option>=====''Buffy the Vampire Slayer''=====</option>
-					<option>=====''Casualty''=====</option>
-					<option>=====''Cheers''=====</option>
-					<option>=====''Chuck''=====</option>
-					<option>=====''Cold Feet''=====</option>
-					<option>=====''Community''=====</option>
-					<option>=====''Coronation Street''=====</option>
-					<option>=====''Daredevil''=====</option>
-					<option>=====''Desperate Housewives''=====</option>
-					<option>=====''Dexter''=====</option>
-					<option>=====''Doctor Who'' series=====</option>
-					<option>=====''Doctor Who'' episodes=====</option>
-					<option>=====''Doctors''=====</option>
-					<option>=====''EastEnders''=====</option>
-					<option>=====''Ed, Edd n Eddy''=====</option>
-					<option>=====''Emmerdale''=====</option>
-					<option>=====''Family Guy''=====</option>
-					<option>=====''Friends''=====</option>
-					<option>=====''Fringe'' series=====</option>
-					<option>=====''Fringe'' episodes=====</option>
-					<option>=====''Futurama''=====</option>
-					<option>=====''Game of Thrones''=====</option>
-					<option>=====''Glee'' series=====</option>
-					<option>=====''Glee'' episodes=====</option>
-					<option>=====''The Good Place''=====</option>
-					<option>=====''Gossip Girl''=====</option>
-					<option>=====''Grey's Anatomy'' series=====</option>
-					<option>=====''Grey's Anatomy'' episodes=====</option>
-					<option>=====''Hawaii Five-0 (2010 TV series)''=====</option>
-					<option>=====''The Hills''=====</option>
-					<option>=====''Home and Away''=====</option>
-					<option>=====''Holby City''=====</option>
-					<option>=====''Hollyoaks''=====</option>
-					<option>=====''Homicide: Life on the Street''=====</option>
-					<option>=====''House''=====</option>
-					<option>=====''House of Cards''=====</option>
-					<option>=====''The House of Flowers''=====</option>
-					<option>=====''Inside No. 9''=====</option>
-					<option>=====''Last Week Tonight with John Oliver''=====</option>
-					<option>=====''Law & Order: Special Victims Unit''=====</option>
-					<option>=====''Lost'' series=====</option>
-					<option>=====''Lost'' episodes=====</option>
-					<option>=====''Mad Men''=====</option>
-					<option>=====''Magnum P.I.''=====</option>
-					<option>=====Marvel Cinematic Universe=====</option>
-					<option>=====''Millennium''=====</option>
-					<option>=====''Modern Family''=====</option>
-					<option>=====''Monk''=====</option>
-					<option>=====''My Little Pony: Friendship Is Magic''=====</option>
-					<option>=====''Neighbours''=====</option>
-					<option>=====''Neon Genesis Evangelion''=====</option>
-					<option>=====''The Office'' series=====</option>
-					<option>=====''The Office'' episodes=====</option>
-					<option>=====''Once Upon a Time''=====</option>
-					<option>=====''Parks and Recreation''=====</option>
-					<option>=====''Phineas and Ferb''=====</option>
-					<option>=====''Psych''=====</option>
-					<option>=====''Rugrats''=====</option>
-					<option>=====''Sanctuary''=====</option>
-					<option>=====''Seinfeld''=====</option>
-					<option>=====''Sesame Street'' series and co-productions=====</option>
-					<option>=====''The Simpsons'' series=====</option>
-					<option>=====''The Simpsons'' episodes=====</option>
-					<option>=====''Skins''=====</option>
-					<option>=====''Smallville''=====</option>
-					<option>=====''South Park'' series=====</option>
-					<option>=====''South Park'' episodes=====</option>
-					<option>=====''The Spectacular Spider-Man''=====</option>
-					<option>=====''SpongeBob SquarePants''=====</option>
-					<option>=====''Spooks''=====</option>
-					<option>=====''Stargate''=====</option>
-					<option>=====''Star Trek'' series=====</option>
-					<option>=====''Star Trek'' series episodes=====</option>
-					<option>=====''Supernatural''=====</option>
-					<option>=====''Thunderbirds''=====</option>
-					<option>=====''Torchwood''=====</option>
-					<option>=====''Twin Peaks''=====</option>
-					<option>=====''Ugly Americans''=====</option>
-					<option>=====''Veronica Mars''=====</option>
-					<option>=====''The Walking Dead''=====</option>
-					<option>=====''WandaVision''=====</option>
-					<option>=====''The West Wing''=====</option>
-					<option>=====''White Collar''=====</option>
-					<option>=====''Will & Grace''=====</option>
-					<option>=====''The X-Files'' series=====</option>
-					<option>=====''The X-Files'' episodes=====</option>
-					<option>=====Other television series, 1950s debuts=====</option>
-					<option>=====Other television series, 1960s debuts=====</option>
-					<option>=====Other television series, 1970s debuts=====</option>
-					<option>=====Other television series, 1980s debuts=====</option>
-					<option>=====Other television series, 1990s debuts=====</option>
-					<option>=====Other television series, 2000s debuts=====</option>
-					<option>=====Other television series, 2010s debuts=====</option>
-					<option>=====Other television series, 2020s debuts=====</option>
-					<option>=====Other television seasons and related articles=====</option>
-					<option>=====Other episodes and specials=====</option>
-					<option disabled>===Media and drama===</option>
-					<option>=====Actors, directors, models, performers, and celebrities=====</option>
-					<option>=====Animation=====</option>
-					<option>=====Fictional characters and technologies=====</option>
-					<option>=====Radio=====</option>
-					<option>=====Theatre, musical theatre, dance, and opera=====</option>
+					<option value="Media and drama" disabled>==Media and drama==</option>
+					<option value="Media and drama" disabled>===Film===</option>
+					<option value="Media and drama">=====Cinema=====</option>
+					<option value="Media and drama">=====Film franchises, overview articles and production articles=====</option>
+					<option value="Media and drama">=====Pre-1910s films=====</option>
+					<option value="Media and drama">=====1910s films=====</option>
+					<option value="Media and drama">=====1920s films=====</option>
+					<option value="Media and drama">=====1930s films=====</option>
+					<option value="Media and drama">=====1940s films=====</option>
+					<option value="Media and drama">=====1950s films=====</option>
+					<option value="Media and drama">=====1960s films=====</option>
+					<option value="Media and drama">=====1970s films=====</option>
+					<option value="Media and drama">=====1980s films=====</option>
+					<option value="Media and drama">=====1990s films=====</option>
+					<option value="Media and drama">=====2000 to 2004 films=====</option>
+					<option value="Media and drama">=====2005 to 2009 films=====</option>
+					<option value="Media and drama">=====2010 to 2014 films=====</option>
+					<option value="Media and drama">=====2015 to 2019 films=====</option>
+					<option value="Media and drama">=====2020 to 2024 films=====</option>
+					<option value="Media and drama" disabled>===Television===</option>
+					<option value="Media and drama">=====Television networks and overview articles=====</option>
+					<option value="Media and drama">====Television series====</option>
+					<option value="Media and drama">=====''30 Rock''=====</option>
+					<option value="Media and drama">=====''Ackley Bridge''=====</option>
+					<option value="Media and drama">=====''Adventure Time''=====</option>
+					<option value="Media and drama">=====''American Dad!''=====</option>
+					<option value="Media and drama">=====''American Horror Story''=====</option>
+					<option value="Media and drama">=====''Archer''=====</option>
+					<option value="Media and drama">=====Arrowverse=====</option>
+					<option value="Media and drama">=====Avatarverse=====</option>
+					<option value="Media and drama">=====''Awake''=====</option>
+					<option value="Media and drama">=====''Battlestar Galactica''=====</option>
+					<option value="Media and drama">=====''Better Call Saul''=====</option>
+					<option value="Media and drama">=====''The Big Bang Theory''=====</option>
+					<option value="Media and drama">=====''Black Mirror''=====</option>
+					<option value="Media and drama">=====''Body of Proof''=====</option>
+					<option value="Media and drama">=====''BoJack Horseman''=====</option>
+					<option value="Media and drama">=====''Breaking Bad''=====</option>
+					<option value="Media and drama">=====''Buffy the Vampire Slayer''=====</option>
+					<option value="Media and drama">=====''Casualty''=====</option>
+					<option value="Media and drama">=====''Cheers''=====</option>
+					<option value="Media and drama">=====''Chuck''=====</option>
+					<option value="Media and drama">=====''Cold Feet''=====</option>
+					<option value="Media and drama">=====''Community''=====</option>
+					<option value="Media and drama">=====''Coronation Street''=====</option>
+					<option value="Media and drama">=====''Daredevil''=====</option>
+					<option value="Media and drama">=====''Desperate Housewives''=====</option>
+					<option value="Media and drama">=====''Dexter''=====</option>
+					<option value="Media and drama">=====''Doctor Who'' series=====</option>
+					<option value="Media and drama">=====''Doctor Who'' episodes=====</option>
+					<option value="Media and drama">=====''Doctors''=====</option>
+					<option value="Media and drama">=====''EastEnders''=====</option>
+					<option value="Media and drama">=====''Ed, Edd n Eddy''=====</option>
+					<option value="Media and drama">=====''Emmerdale''=====</option>
+					<option value="Media and drama">=====''Family Guy''=====</option>
+					<option value="Media and drama">=====''Friends''=====</option>
+					<option value="Media and drama">=====''Fringe'' series=====</option>
+					<option value="Media and drama">=====''Fringe'' episodes=====</option>
+					<option value="Media and drama">=====''Futurama''=====</option>
+					<option value="Media and drama">=====''Game of Thrones''=====</option>
+					<option value="Media and drama">=====''Glee'' series=====</option>
+					<option value="Media and drama">=====''Glee'' episodes=====</option>
+					<option value="Media and drama">=====''The Good Place''=====</option>
+					<option value="Media and drama">=====''Gossip Girl''=====</option>
+					<option value="Media and drama">=====''Grey's Anatomy'' series=====</option>
+					<option value="Media and drama">=====''Grey's Anatomy'' episodes=====</option>
+					<option value="Media and drama">=====''Hawaii Five-0 (2010 TV series)''=====</option>
+					<option value="Media and drama">=====''The Hills''=====</option>
+					<option value="Media and drama">=====''Home and Away''=====</option>
+					<option value="Media and drama">=====''Holby City''=====</option>
+					<option value="Media and drama">=====''Hollyoaks''=====</option>
+					<option value="Media and drama">=====''Homicide: Life on the Street''=====</option>
+					<option value="Media and drama">=====''House''=====</option>
+					<option value="Media and drama">=====''House of Cards''=====</option>
+					<option value="Media and drama">=====''The House of Flowers''=====</option>
+					<option value="Media and drama">=====''Inside No. 9''=====</option>
+					<option value="Media and drama">=====''Last Week Tonight with John Oliver''=====</option>
+					<option value="Media and drama">=====''Law & Order: Special Victims Unit''=====</option>
+					<option value="Media and drama">=====''Lost'' series=====</option>
+					<option value="Media and drama">=====''Lost'' episodes=====</option>
+					<option value="Media and drama">=====''Mad Men''=====</option>
+					<option value="Media and drama">=====''Magnum P.I.''=====</option>
+					<option value="Media and drama">=====Marvel Cinematic Universe=====</option>
+					<option value="Media and drama">=====''Millennium''=====</option>
+					<option value="Media and drama">=====''Modern Family''=====</option>
+					<option value="Media and drama">=====''Monk''=====</option>
+					<option value="Media and drama">=====''My Little Pony: Friendship Is Magic''=====</option>
+					<option value="Media and drama">=====''Neighbours''=====</option>
+					<option value="Media and drama">=====''Neon Genesis Evangelion''=====</option>
+					<option value="Media and drama">=====''The Office'' series=====</option>
+					<option value="Media and drama">=====''The Office'' episodes=====</option>
+					<option value="Media and drama">=====''Once Upon a Time''=====</option>
+					<option value="Media and drama">=====''Parks and Recreation''=====</option>
+					<option value="Media and drama">=====''Phineas and Ferb''=====</option>
+					<option value="Media and drama">=====''Psych''=====</option>
+					<option value="Media and drama">=====''Rugrats''=====</option>
+					<option value="Media and drama">=====''Sanctuary''=====</option>
+					<option value="Media and drama">=====''Seinfeld''=====</option>
+					<option value="Media and drama">=====''Sesame Street'' series and co-productions=====</option>
+					<option value="Media and drama">=====''The Simpsons'' series=====</option>
+					<option value="Media and drama">=====''The Simpsons'' episodes=====</option>
+					<option value="Media and drama">=====''Skins''=====</option>
+					<option value="Media and drama">=====''Smallville''=====</option>
+					<option value="Media and drama">=====''South Park'' series=====</option>
+					<option value="Media and drama">=====''South Park'' episodes=====</option>
+					<option value="Media and drama">=====''The Spectacular Spider-Man''=====</option>
+					<option value="Media and drama">=====''SpongeBob SquarePants''=====</option>
+					<option value="Media and drama">=====''Spooks''=====</option>
+					<option value="Media and drama">=====''Stargate''=====</option>
+					<option value="Media and drama">=====''Star Trek'' series=====</option>
+					<option value="Media and drama">=====''Star Trek'' series episodes=====</option>
+					<option value="Media and drama">=====''Supernatural''=====</option>
+					<option value="Media and drama">=====''Thunderbirds''=====</option>
+					<option value="Media and drama">=====''Torchwood''=====</option>
+					<option value="Media and drama">=====''Twin Peaks''=====</option>
+					<option value="Media and drama">=====''Ugly Americans''=====</option>
+					<option value="Media and drama">=====''Veronica Mars''=====</option>
+					<option value="Media and drama">=====''The Walking Dead''=====</option>
+					<option value="Media and drama">=====''WandaVision''=====</option>
+					<option value="Media and drama">=====''The West Wing''=====</option>
+					<option value="Media and drama">=====''White Collar''=====</option>
+					<option value="Media and drama">=====''Will & Grace''=====</option>
+					<option value="Media and drama">=====''The X-Files'' series=====</option>
+					<option value="Media and drama">=====''The X-Files'' episodes=====</option>
+					<option value="Media and drama">=====Other television series, 1950s debuts=====</option>
+					<option value="Media and drama">=====Other television series, 1960s debuts=====</option>
+					<option value="Media and drama">=====Other television series, 1970s debuts=====</option>
+					<option value="Media and drama">=====Other television series, 1980s debuts=====</option>
+					<option value="Media and drama">=====Other television series, 1990s debuts=====</option>
+					<option value="Media and drama">=====Other television series, 2000s debuts=====</option>
+					<option value="Media and drama">=====Other television series, 2010s debuts=====</option>
+					<option value="Media and drama">=====Other television series, 2020s debuts=====</option>
+					<option value="Media and drama">=====Other television seasons and related articles=====</option>
+					<option value="Media and drama">=====Other episodes and specials=====</option>
+					<option value="Media and drama" disabled>===Media and drama===</option>
+					<option value="Media and drama">=====Actors, directors, models, performers, and celebrities=====</option>
+					<option value="Media and drama">=====Animation=====</option>
+					<option value="Media and drama">=====Fictional characters and technologies=====</option>
+					<option value="Media and drama">=====Radio=====</option>
+					<option value="Media and drama">=====Theatre, musical theatre, dance, and opera=====</option>
 
-					<option disabled>==Music==</option>
-					<option disabled>===Albums===</option>
-					<option>=====1950 to 1969 albums=====</option>
-					<option>=====1970 to 1979 albums=====</option>
-					<option>=====1980 to 1989 albums=====</option>
-					<option>=====1990 to 1994 albums=====</option>
-					<option>=====1995 to 1999 albums=====</option>
-					<option>=====2000 to 2004 albums=====</option>
-					<option>=====2005 to 2009 albums=====</option>
-					<option>=====2010 to 2014 albums=====</option>
-					<option>=====2015 to 2019 albums=====</option>
-					<option>=====2020 to 2024 albums=====</option>
-					<option>=====Soundtracks=====</option>
-					<option>=====Video albums=====</option>
-					<option disabled>===Classical compositions===</option>
-					<option>=====Classical compositions=====</option>
-					<option disabled>===Songs===</option>
-					<option>=====Pre-1900 songs=====</option>
-					<option>=====1900 to 1959 songs=====</option>
-					<option>=====1960 to 1969 songs=====</option>
-					<option>=====1970 to 1979 songs=====</option>
-					<option>=====1980 to 1989 songs=====</option>
-					<option>=====1990 to 1999 songs=====</option>
-					<option>=====2000 to 2004 songs=====</option>
-					<option>=====2005 to 2006 songs=====</option>
-					<option>=====2007 to 2008 songs=====</option>
-					<option>=====2009 songs=====</option>
-					<option>=====2010 songs=====</option>
-					<option>=====2011 songs=====</option>
-					<option>=====2012 songs=====</option>
-					<option>=====2013 songs=====</option>
-					<option>=====2014 songs=====</option>
-					<option>=====2015 songs=====</option>
-					<option>=====2016 songs=====</option>
-					<option>=====2017 songs=====</option>
-					<option>=====2018 songs=====</option>
-					<option>=====2019 songs=====</option>
-					<option>=====2020 songs=====</option>
-					<option>=====2021 songs=====</option>
-					<option>=====2022 songs=====</option>
-					<option disabled>===Other music articles===</option>
-					<option>=====Music awards=====</option>
-					<option>=====Music by nation, people, region, or country=====</option>
-					<option>=====Music genres, music styles, music eras=====</option>
-					<option>=====Musical theory, musical instruments, and music techniques=====</option>
-					<option>=====Music businesses and events=====</option>
-					<option>=====Performers, groups, composers, and other music-related people=====</option>
+					<option value="Music" disabled>==Music==</option>
+					<option value="Music" disabled>===Albums===</option>
+					<option value="Music">=====1950 to 1969 albums=====</option>
+					<option value="Music">=====1970 to 1979 albums=====</option>
+					<option value="Music">=====1980 to 1989 albums=====</option>
+					<option value="Music">=====1990 to 1994 albums=====</option>
+					<option value="Music">=====1995 to 1999 albums=====</option>
+					<option value="Music">=====2000 to 2004 albums=====</option>
+					<option value="Music">=====2005 to 2009 albums=====</option>
+					<option value="Music">=====2010 to 2014 albums=====</option>
+					<option value="Music">=====2015 to 2019 albums=====</option>
+					<option value="Music">=====2020 to 2024 albums=====</option>
+					<option value="Music">=====Soundtracks=====</option>
+					<option value="Music">=====Video albums=====</option>
+					<option value="Music" disabled>===Classical compositions===</option>
+					<option value="Music">=====Classical compositions=====</option>
+					<option value="Music" disabled>===Songs===</option>
+					<option value="Music">=====Pre-1900 songs=====</option>
+					<option value="Music">=====1900 to 1959 songs=====</option>
+					<option value="Music">=====1960 to 1969 songs=====</option>
+					<option value="Music">=====1970 to 1979 songs=====</option>
+					<option value="Music">=====1980 to 1989 songs=====</option>
+					<option value="Music">=====1990 to 1999 songs=====</option>
+					<option value="Music">=====2000 to 2004 songs=====</option>
+					<option value="Music">=====2005 to 2006 songs=====</option>
+					<option value="Music">=====2007 to 2008 songs=====</option>
+					<option value="Music">=====2009 songs=====</option>
+					<option value="Music">=====2010 songs=====</option>
+					<option value="Music">=====2011 songs=====</option>
+					<option value="Music">=====2012 songs=====</option>
+					<option value="Music">=====2013 songs=====</option>
+					<option value="Music">=====2014 songs=====</option>
+					<option value="Music">=====2015 songs=====</option>
+					<option value="Music">=====2016 songs=====</option>
+					<option value="Music">=====2017 songs=====</option>
+					<option value="Music">=====2018 songs=====</option>
+					<option value="Music">=====2019 songs=====</option>
+					<option value="Music">=====2020 songs=====</option>
+					<option value="Music">=====2021 songs=====</option>
+					<option value="Music">=====2022 songs=====</option>
+					<option value="Music" disabled>===Other music articles===</option>
+					<option value="Music">=====Music awards=====</option>
+					<option value="Music">=====Music by nation, people, region, or country=====</option>
+					<option value="Music">=====Music genres, music styles, music eras=====</option>
+					<option value="Music">=====Musical theory, musical instruments, and music techniques=====</option>
+					<option value="Music">=====Music businesses and events=====</option>
+					<option value="Music">=====Performers, groups, composers, and other music-related people=====</option>
 
-					<option disabled>==Natural sciences==</option>
-					<option disabled>===Biology and medicine===</option>
-					<option>====Biology====</option>
-					<option>=====Anatomy=====</option>
-					<option>=====Biologists=====</option>
-					<option>=====Biology books=====</option>
-					<option>=====Ecology=====</option>
-					<option>=====Evolution and reproduction=====</option>
-					<option>=====Molecular and cellular biology=====</option>
-					<option>=====Miscellaneous biology=====</option>
-					<option>====Medicine====</option>
-					<option>=====Medicine books=====</option>
-					<option>=====Diseases and medical conditions=====</option>
-					<option>=====History of medicine=====</option>
-					<option>=====Medical people and institutions=====</option>
-					<option>=====Medical procedures=====</option>
-					<option>====Pharmacology====</option>
-					<option>=====Vaccines=====</option>
-					<option>=====Drug classes and individual drugs=====</option>
-					<option>=====Pharmacology miscellanea=====</option>
-					<option>====Viruses====</option>
-					<option>====Organisms====</option>
-					<option>=====Bacterial species=====</option>
-					<option>=====Protists=====</option>
-					<option>=====Fungi=====</option>
-					<option>=====Plants=====</option>
-					<option>=====Animals=====</option>
-					<option>======Mammals and other synapsids======</option>
-					<option>======Birds======</option>
-					<option>======Non-avian dinosaurs======</option>
-					<option>======Reptiles and amphibians======</option>
-					<option>======Fish======</option>
-					<option>======Arthropods======</option>
-					<option>======Other invertebrates======</option>
-					<option>======Animal domestic breeds, types, and individuals======</option>
-					<option disabled>===Chemistry and materials science===</option>
-					<option>=====Areas of chemistry theory=====</option>
-					<option>=====Chemistry books=====</option>
-					<option>=====Types of chemical analyses=====</option>
-					<option>=====Types of chemical transformations=====</option>
-					<option>=====Named reactions=====</option>
-					<option>=====Classes of chemical compounds and materials=====</option>
-					<option>=====Chemical compounds and materials=====</option>
-					<option>=====Periodic table groups and periods=====</option>
-					<option>=====Elements=====</option>
-					<option>=====Chemistry and materials science organizations=====</option>
-					<option>=====Chemists and materials scientists=====</option>
-					<option>=====Chemistry miscellanea=====</option>
-					<option>=====Materials science miscellanea=====</option>
-					<option disabled>===Earth science===</option>
-					<option>====Geology====</option>
-					<option>=====Geology and geophysics=====</option>
-					<option>=====Geologists, geophysicists and mineralogists=====</option>
-					<option>=====Mineralogy=====</option>
-					<option>=====Earthquakes and similar natural disasters=====</option>
-					<option>====Meteorology====</option>
-					<option>=====Climate=====</option>
-					<option>=====Climate change=====</option>
-					<option>=====Meteorological observatories=====</option>
-					<option>=====Storm sciences, tropical cyclone seasons, and storm effects=====</option>
-					<option>=====Tropical cyclones: Atlantic=====</option>
-					<option>=====Tropical cyclones: Eastern Pacific=====</option>
-					<option>=====Tropical cyclones: Northwestern Pacific=====</option>
-					<option>=====Tropical cyclones: Southern Pacific and the Indian Ocean=====</option>
-					<option>=====Weather=====</option>
-					<option>=====Severe weather and winter storms=====</option>
-					<option disabled>===Physics and astronomy===</option>
-					<option>====Physics====</option>
-					<option>=====Physics=====</option>
-					<option>=====Physicists=====</option>
-					<option>====Astronomy====</option>
-					<option>=====Space travelers=====</option>
-					<option>=====Astronomy and astrophysics=====</option>
-					<option>=====Astronomers and astrophysicists=====</option>
-					<option>=====Solar system=====</option>
-					<option>=====Constellations and asterisms=====</option>
-					<option>=====Stars, galaxies and extrasolar objects=====</option>
-					<option>=====Rocketry and spaceflight=====</option>
-					<option>=====Astronomy miscellanea=====</option>
+					<option value="Natural sciences" disabled>==Natural sciences==</option>
+					<option value="Natural sciences" disabled>===Biology and medicine===</option>
+					<option value="Natural sciences">====Biology====</option>
+					<option value="Natural sciences">=====Anatomy=====</option>
+					<option value="Natural sciences">=====Biologists=====</option>
+					<option value="Natural sciences">=====Biology books=====</option>
+					<option value="Natural sciences">=====Ecology=====</option>
+					<option value="Natural sciences">=====Evolution and reproduction=====</option>
+					<option value="Natural sciences">=====Molecular and cellular biology=====</option>
+					<option value="Natural sciences">=====Miscellaneous biology=====</option>
+					<option value="Natural sciences">====Medicine====</option>
+					<option value="Natural sciences">=====Medicine books=====</option>
+					<option value="Natural sciences">=====Diseases and medical conditions=====</option>
+					<option value="Natural sciences">=====History of medicine=====</option>
+					<option value="Natural sciences">=====Medical people and institutions=====</option>
+					<option value="Natural sciences">=====Medical procedures=====</option>
+					<option value="Natural sciences">====Pharmacology====</option>
+					<option value="Natural sciences">=====Vaccines=====</option>
+					<option value="Natural sciences">=====Drug classes and individual drugs=====</option>
+					<option value="Natural sciences">=====Pharmacology miscellanea=====</option>
+					<option value="Natural sciences">====Viruses====</option>
+					<option value="Natural sciences">====Organisms====</option>
+					<option value="Natural sciences">=====Bacterial species=====</option>
+					<option value="Natural sciences">=====Protists=====</option>
+					<option value="Natural sciences">=====Fungi=====</option>
+					<option value="Natural sciences">=====Plants=====</option>
+					<option value="Natural sciences">=====Animals=====</option>
+					<option value="Natural sciences">======Mammals and other synapsids======</option>
+					<option value="Natural sciences">======Birds======</option>
+					<option value="Natural sciences">======Non-avian dinosaurs======</option>
+					<option value="Natural sciences">======Reptiles and amphibians======</option>
+					<option value="Natural sciences">======Fish======</option>
+					<option value="Natural sciences">======Arthropods======</option>
+					<option value="Natural sciences">======Other invertebrates======</option>
+					<option value="Natural sciences">======Animal domestic breeds, types, and individuals======</option>
+					<option value="Natural sciences" disabled>===Chemistry and materials science===</option>
+					<option value="Natural sciences">=====Areas of chemistry theory=====</option>
+					<option value="Natural sciences">=====Chemistry books=====</option>
+					<option value="Natural sciences">=====Types of chemical analyses=====</option>
+					<option value="Natural sciences">=====Types of chemical transformations=====</option>
+					<option value="Natural sciences">=====Named reactions=====</option>
+					<option value="Natural sciences">=====Classes of chemical compounds and materials=====</option>
+					<option value="Natural sciences">=====Chemical compounds and materials=====</option>
+					<option value="Natural sciences">=====Periodic table groups and periods=====</option>
+					<option value="Natural sciences">=====Elements=====</option>
+					<option value="Natural sciences">=====Chemistry and materials science organizations=====</option>
+					<option value="Natural sciences">=====Chemists and materials scientists=====</option>
+					<option value="Natural sciences">=====Chemistry miscellanea=====</option>
+					<option value="Natural sciences">=====Materials science miscellanea=====</option>
+					<option value="Natural sciences" disabled>===Earth science===</option>
+					<option value="Natural sciences">====Geology====</option>
+					<option value="Natural sciences">=====Geology and geophysics=====</option>
+					<option value="Natural sciences">=====Geologists, geophysicists and mineralogists=====</option>
+					<option value="Natural sciences">=====Mineralogy=====</option>
+					<option value="Natural sciences">=====Earthquakes and similar natural disasters=====</option>
+					<option value="Natural sciences">====Meteorology====</option>
+					<option value="Natural sciences">=====Climate=====</option>
+					<option value="Natural sciences">=====Climate change=====</option>
+					<option value="Natural sciences">=====Meteorological observatories=====</option>
+					<option value="Natural sciences">=====Storm sciences, tropical cyclone seasons, and storm effects=====</option>
+					<option value="Natural sciences">=====Tropical cyclones: Atlantic=====</option>
+					<option value="Natural sciences">=====Tropical cyclones: Eastern Pacific=====</option>
+					<option value="Natural sciences">=====Tropical cyclones: Northwestern Pacific=====</option>
+					<option value="Natural sciences">=====Tropical cyclones: Southern Pacific and the Indian Ocean=====</option>
+					<option value="Natural sciences">=====Weather=====</option>
+					<option value="Natural sciences">=====Severe weather and winter storms=====</option>
+					<option value="Natural sciences" disabled>===Physics and astronomy===</option>
+					<option value="Natural sciences">====Physics====</option>
+					<option value="Natural sciences">=====Physics=====</option>
+					<option value="Natural sciences">=====Physicists=====</option>
+					<option value="Natural sciences">====Astronomy====</option>
+					<option value="Natural sciences">=====Space travelers=====</option>
+					<option value="Natural sciences">=====Astronomy and astrophysics=====</option>
+					<option value="Natural sciences">=====Astronomers and astrophysicists=====</option>
+					<option value="Natural sciences">=====Solar system=====</option>
+					<option value="Natural sciences">=====Constellations and asterisms=====</option>
+					<option value="Natural sciences">=====Stars, galaxies and extrasolar objects=====</option>
+					<option value="Natural sciences">=====Rocketry and spaceflight=====</option>
+					<option value="Natural sciences">=====Astronomy miscellanea=====</option>
 
-					<option disabled>==Philosophy and religion==</option>
-					<option disabled>===Philosophy===</option>
-					<option>=====Divinities and protohistoric figures=====</option>
-					<option>=====Myths, mythology, and miracles=====</option>
-					<option>=====Philosophies and philosophical movements=====</option>
-					<option>=====Philosophical doctrines, teachings, texts, events, and symbols=====</option>
-					<option>=====Philosophers=====</option>
-					<option disabled>===Religion===</option>
-					<option>=====Religions and religious movements=====</option>
-					<option>=====Religious congregations, denominations, and organizations=====</option>
-					<option>=====Religious doctrines, teachings, texts, events, and symbols=====</option>
-					<option>=====Religious figures=====</option>
+					<option value="Philosophy and religion" disabled>==Philosophy and religion==</option>
+					<option value="Philosophy and religion" disabled>===Philosophy===</option>
+					<option value="Philosophy and religion">=====Divinities and protohistoric figures=====</option>
+					<option value="Philosophy and religion">=====Myths, mythology, and miracles=====</option>
+					<option value="Philosophy and religion">=====Philosophies and philosophical movements=====</option>
+					<option value="Philosophy and religion">=====Philosophical doctrines, teachings, texts, events, and symbols=====</option>
+					<option value="Philosophy and religion">=====Philosophers=====</option>
+					<option value="Philosophy and religion" disabled>===Religion===</option>
+					<option value="Philosophy and religion">=====Religions and religious movements=====</option>
+					<option value="Philosophy and religion">=====Religious congregations, denominations, and organizations=====</option>
+					<option value="Philosophy and religion">=====Religious doctrines, teachings, texts, events, and symbols=====</option>
+					<option value="Philosophy and religion">=====Religious figures=====</option>
 
-					<option disabled>==Social sciences and society==</option>
-					<option disabled>===Culture, sociology, and psychology===</option>
-					<option>=====Culture and cultural studies=====</option>
-					<option>=====Cultural symbols=====</option>
-					<option>=====Internet culture=====</option>
-					<option>=====Cultural organizations and events=====</option>
-					<option>=====Ethnic groups=====</option>
-					<option>=====Psychology and psychologists=====</option>
-					<option>=====Anthropology, anthropologists, sociology and sociologists=====</option>
-					<option>=====Globalization=====</option>
-					<option disabled>===Education===</option>
-					<option>=====Educational institutions=====</option>
-					<option>=====Educators=====</option>
-					<option>=====Education miscellanea=====</option>
-					<option disabled>===Economics and business===</option>
-					<option>=====Advertising and marketing=====</option>
-					<option>=====Businesspeople=====</option>
-					<option>=====Businesses and organizations=====</option>
-					<option>=====Economics=====</option>
-					<option>=====Numismatics and currencies=====</option>
-					<option disabled>===Law===</option>
-					<option>=====Case law and litigation=====</option>
-					<option>=====Constitutional law=====</option>
-					<option>=====Criminal justice, law enforcement, and ethics=====</option>
-					<option>=====Criminals, crimes, allegations, and victims=====</option>
-					<option>=====Domestic law=====</option>
-					<option>=====International laws and treaties=====</option>
-					<option>=====Lawyers, judges and legal academics=====</option>
-					<option>=====Legal institutions, publications, and buildings=====</option>
-					<option>=====Legislation and statutory law=====</option>
-					<option>=====Law miscellanea=====</option>
-					<option disabled>===Magazines and print journalism===</option>
-					<option>=====Journalism and newspapers=====</option>
-					<option>=====Magazines and journals=====</option>
-					<option disabled>===Politics and government===</option>
-					<option>=====Heads of state and heads of government=====</option>
-					<option>=====Spouses of heads of state and heads of government=====</option>
-					<option>=====Intelligence and espionage=====</option>
-					<option>=====International organizations=====</option>
-					<option>=====National non-governmental organizations=====</option>
-					<option>=====Political and governmental institutions=====</option>
-					<option>=====Political districts, direction and governance=====</option>
-					<option>=====Political events and elections=====</option>
-					<option>=====Political figures=====</option>
-					<option>=====Political issues, theory and analysis=====</option>
-					<option>=====Political parties and movements=====</option>
+					<option value="Social sciences and society" disabled>==Social sciences and society==</option>
+					<option value="Social sciences and society" disabled>===Culture, sociology, and psychology===</option>
+					<option value="Social sciences and society">=====Culture and cultural studies=====</option>
+					<option value="Social sciences and society">=====Cultural symbols=====</option>
+					<option value="Social sciences and society">=====Internet culture=====</option>
+					<option value="Social sciences and society">=====Cultural organizations and events=====</option>
+					<option value="Social sciences and society">=====Ethnic groups=====</option>
+					<option value="Social sciences and society">=====Psychology and psychologists=====</option>
+					<option value="Social sciences and society">=====Anthropology, anthropologists, sociology and sociologists=====</option>
+					<option value="Social sciences and society">=====Globalization=====</option>
+					<option value="Social sciences and society" disabled>===Education===</option>
+					<option value="Social sciences and society">=====Educational institutions=====</option>
+					<option value="Social sciences and society">=====Educators=====</option>
+					<option value="Social sciences and society">=====Education miscellanea=====</option>
+					<option value="Social sciences and society" disabled>===Economics and business===</option>
+					<option value="Social sciences and society">=====Advertising and marketing=====</option>
+					<option value="Social sciences and society">=====Businesspeople=====</option>
+					<option value="Social sciences and society">=====Businesses and organizations=====</option>
+					<option value="Social sciences and society">=====Economics=====</option>
+					<option value="Social sciences and society">=====Numismatics and currencies=====</option>
+					<option value="Social sciences and society" disabled>===Law===</option>
+					<option value="Social sciences and society">=====Case law and litigation=====</option>
+					<option value="Social sciences and society">=====Constitutional law=====</option>
+					<option value="Social sciences and society">=====Criminal justice, law enforcement, and ethics=====</option>
+					<option value="Social sciences and society">=====Criminals, crimes, allegations, and victims=====</option>
+					<option value="Social sciences and society">=====Domestic law=====</option>
+					<option value="Social sciences and society">=====International laws and treaties=====</option>
+					<option value="Social sciences and society">=====Lawyers, judges and legal academics=====</option>
+					<option value="Social sciences and society">=====Legal institutions, publications, and buildings=====</option>
+					<option value="Social sciences and society">=====Legislation and statutory law=====</option>
+					<option value="Social sciences and society">=====Law miscellanea=====</option>
+					<option value="Social sciences and society" disabled>===Magazines and print journalism===</option>
+					<option value="Social sciences and society">=====Journalism and newspapers=====</option>
+					<option value="Social sciences and society">=====Magazines and journals=====</option>
+					<option value="Social sciences and society" disabled>===Politics and government===</option>
+					<option value="Social sciences and society">=====Heads of state and heads of government=====</option>
+					<option value="Social sciences and society">=====Spouses of heads of state and heads of government=====</option>
+					<option value="Social sciences and society">=====Intelligence and espionage=====</option>
+					<option value="Social sciences and society">=====International organizations=====</option>
+					<option value="Social sciences and society">=====National non-governmental organizations=====</option>
+					<option value="Social sciences and society">=====Political and governmental institutions=====</option>
+					<option value="Social sciences and society">=====Political districts, direction and governance=====</option>
+					<option value="Social sciences and society">=====Political events and elections=====</option>
+					<option value="Social sciences and society">=====Political figures=====</option>
+					<option value="Social sciences and society">=====Political issues, theory and analysis=====</option>
+					<option value="Social sciences and society">=====Political parties and movements=====</option>
 
-					<option disabled>==Sports and recreation==</option>
-					<option disabled>===Football===</option>
-					<option>=====American football teams, events, seasons, concepts=====</option>
-					<option>=====American football people=====</option>
-					<option>=====Association football teams, events, and concepts=====</option>
-					<option>=====Association football people=====</option>
-					<option>=====Australian rules and Gaelic football=====</option>
-					<option>=====Canadian football=====</option>
-					<option>=====Rugby and rugby league football=====</option>
-					<option disabled>===Baseball===</option>
-					<option>=====Baseball teams, venues, events, and concepts=====</option>
-					<option>=====Baseball people=====</option>
-					<option disabled>===Basketball===</option>
-					<option>=====Basketball teams, venues and events=====</option>
-					<option>=====Basketball people=====</option>
-					<option disabled>===Cricket===</option>
-					<option>=====Cricket teams, venues and events=====</option>
-					<option>=====Cricket people=====</option>
-					<option disabled>===Hockey===</option>
-					<option>=====Field hockey=====</option>
-					<option>=====Ice hockey teams, venues and events=====</option>
-					<option>=====Ice hockey people=====</option>
-					<option disabled>===Motorsport===</option>
-					<option>=====Races and seasons=====</option>
-					<option>=====Racers, racecars, and tracks=====</option>
+					<option value="Sports and recreation" disabled>==Sports and recreation==</option>
+					<option value="Sports and recreation" disabled>===Football===</option>
+					<option value="Sports and recreation">=====American football teams, events, seasons, concepts=====</option>
+					<option value="Sports and recreation">=====American football people=====</option>
+					<option value="Sports and recreation">=====Association football teams, events, and concepts=====</option>
+					<option value="Sports and recreation">=====Association football people=====</option>
+					<option value="Sports and recreation">=====Australian rules and Gaelic football=====</option>
+					<option value="Sports and recreation">=====Canadian football=====</option>
+					<option value="Sports and recreation">=====Rugby and rugby league football=====</option>
+					<option value="Sports and recreation" disabled>===Baseball===</option>
+					<option value="Sports and recreation">=====Baseball teams, venues, events, and concepts=====</option>
+					<option value="Sports and recreation">=====Baseball people=====</option>
+					<option value="Sports and recreation" disabled>===Basketball===</option>
+					<option value="Sports and recreation">=====Basketball teams, venues and events=====</option>
+					<option value="Sports and recreation">=====Basketball people=====</option>
+					<option value="Sports and recreation" disabled>===Cricket===</option>
+					<option value="Sports and recreation">=====Cricket teams, venues and events=====</option>
+					<option value="Sports and recreation">=====Cricket people=====</option>
+					<option value="Sports and recreation" disabled>===Hockey===</option>
+					<option value="Sports and recreation">=====Field hockey=====</option>
+					<option value="Sports and recreation">=====Ice hockey teams, venues and events=====</option>
+					<option value="Sports and recreation">=====Ice hockey people=====</option>
+					<option value="Sports and recreation" disabled>===Motorsport===</option>
+					<option value="Sports and recreation">=====Races and seasons=====</option>
+					<option value="Sports and recreation">=====Racers, racecars, and tracks=====</option>
 					<optio disabledn>===Pro wrestling===</option>
-					<option>=====Professional wrestling events=====</option>
-					<option>=====Professional wrestling groups=====</option>
-					<option>=====Professional wrestling people=====</option>
-					<option>=====Professional wrestling championships=====</option>
-					<option>=====Professional wrestling (other)=====</option>
-					<option disabled>===Recreation===</option>
-					<option>=====Board, card, and role-playing games=====</option>
-					<option>=====Chess=====</option>
-					<option>=====Climbing=====</option>
-					<option>=====Diving=====</option>
-					<option>=====Poker=====</option>
-					<option>=====Toys=====</option>
-					<option>=====Stadiums, public parks, and amusements=====</option>
-					<option>=====Yoga=====</option>
-					<option>=====Zoos and public aquariums=====</option>
-					<option disabled>===Multi-sport event===</option>
-					<option>=====Olympics=====</option>
-					<option>=====Summer Olympics=====</option>
-					<option>=====Winter Olympics=====</option>
-					<option>=====Paralympics=====</option>
-					<option>=====Other multi-sport events=====</option>
-					<option disabled>===Other sports===</option>
-					<option>=====Archery=====</option>
-					<option>=====Badminton=====</option>
-					<option>=====Cue sports=====</option>
-					<option>=====Curling=====</option>
-					<option>=====Cycling=====</option>
-					<option>=====Darts=====</option>
-					<option>=====Equestrianism/Horse racing=====</option>
-					<option>=====Fencing=====</option>
-					<option>=====Goalball=====</option>
-					<option>=====Golf=====</option>
-					<option>=====Gymnastics=====</option>
-					<option>=====Handball=====</option>
-					<option>=====Lacrosse=====</option>
-					<option>=====Mixed martial arts, martial arts, and boxing=====</option>
-					<option>=====Netball=====</option>
-					<option>=====Rowing=====</option>
-					<option>=====Running, track and field=====</option>
-					<option>=====Shooting=====</option>
-					<option>=====Skating=====</option>
-					<option>=====Skiing=====</option>
-					<option>=====Snowboarding=====</option>
-					<option>=====Softball=====</option>
-					<option>=====Squash=====</option>
-					<option>=====Swimming and water sports=====</option>
-					<option>=====Table tennis=====</option>
-					<option>=====Tennis=====</option>
-					<option>=====Volleyball=====</option>
-					<option>=====Sports mascots and supporters=====</option>
-					<option>=====Multiple sports=====</option>
-					<option>=====Sports miscellanea=====</option>
+					<option value="Sports and recreation">=====Professional wrestling events=====</option>
+					<option value="Sports and recreation">=====Professional wrestling groups=====</option>
+					<option value="Sports and recreation">=====Professional wrestling people=====</option>
+					<option value="Sports and recreation">=====Professional wrestling championships=====</option>
+					<option value="Sports and recreation">=====Professional wrestling (other)=====</option>
+					<option value="Sports and recreation" disabled>===Recreation===</option>
+					<option value="Sports and recreation">=====Board, card, and role-playing games=====</option>
+					<option value="Sports and recreation">=====Chess=====</option>
+					<option value="Sports and recreation">=====Climbing=====</option>
+					<option value="Sports and recreation">=====Diving=====</option>
+					<option value="Sports and recreation">=====Poker=====</option>
+					<option value="Sports and recreation">=====Toys=====</option>
+					<option value="Sports and recreation">=====Stadiums, public parks, and amusements=====</option>
+					<option value="Sports and recreation">=====Yoga=====</option>
+					<option value="Sports and recreation">=====Zoos and public aquariums=====</option>
+					<option value="Sports and recreation" disabled>===Multi-sport event===</option>
+					<option value="Sports and recreation">=====Olympics=====</option>
+					<option value="Sports and recreation">=====Summer Olympics=====</option>
+					<option value="Sports and recreation">=====Winter Olympics=====</option>
+					<option value="Sports and recreation">=====Paralympics=====</option>
+					<option value="Sports and recreation">=====Other multi-sport events=====</option>
+					<option value="Sports and recreation" disabled>===Other sports===</option>
+					<option value="Sports and recreation">=====Archery=====</option>
+					<option value="Sports and recreation">=====Badminton=====</option>
+					<option value="Sports and recreation">=====Cue sports=====</option>
+					<option value="Sports and recreation">=====Curling=====</option>
+					<option value="Sports and recreation">=====Cycling=====</option>
+					<option value="Sports and recreation">=====Darts=====</option>
+					<option value="Sports and recreation">=====Equestrianism/Horse racing=====</option>
+					<option value="Sports and recreation">=====Fencing=====</option>
+					<option value="Sports and recreation">=====Goalball=====</option>
+					<option value="Sports and recreation">=====Golf=====</option>
+					<option value="Sports and recreation">=====Gymnastics=====</option>
+					<option value="Sports and recreation">=====Handball=====</option>
+					<option value="Sports and recreation">=====Lacrosse=====</option>
+					<option value="Sports and recreation">=====Mixed martial arts, martial arts, and boxing=====</option>
+					<option value="Sports and recreation">=====Netball=====</option>
+					<option value="Sports and recreation">=====Rowing=====</option>
+					<option value="Sports and recreation">=====Running, track and field=====</option>
+					<option value="Sports and recreation">=====Shooting=====</option>
+					<option value="Sports and recreation">=====Skating=====</option>
+					<option value="Sports and recreation">=====Skiing=====</option>
+					<option value="Sports and recreation">=====Snowboarding=====</option>
+					<option value="Sports and recreation">=====Softball=====</option>
+					<option value="Sports and recreation">=====Squash=====</option>
+					<option value="Sports and recreation">=====Swimming and water sports=====</option>
+					<option value="Sports and recreation">=====Table tennis=====</option>
+					<option value="Sports and recreation">=====Tennis=====</option>
+					<option value="Sports and recreation">=====Volleyball=====</option>
+					<option value="Sports and recreation">=====Sports mascots and supporters=====</option>
+					<option value="Sports and recreation">=====Multiple sports=====</option>
+					<option value="Sports and recreation">=====Sports miscellanea=====</option>
 
-					<option disabled>==Video games==</option>
-					<option disabled>===Video games===</option>
-					<option>=====Early video games=====</option>
-					<option>=====1970s video games=====</option>
-					<option>=====1980–84 video games=====</option>
-					<option>=====1985–89 video games=====</option>
-					<option>=====1990–94 video games=====</option>
-					<option>=====1995–99 video games=====</option>
-					<option>=====2000–04 video games=====</option>
-					<option>=====2005–09 video games=====</option>
-					<option>=====2010–14 video games=====</option>
-					<option>=====2015–19 video games=====</option>
-					<option>=====2020–24 video games=====</option>
-					<option>=====Cancelled video games=====</option>
-					<option>=====Video game series=====</option>
-					<option>=====Video game characters=====</option>
-					<option>=====Video game genres=====</option>
-					<option>=====Video game systems and services=====</option>
-					<option>=====Video game history and development=====</option>
-					<option>=====Video game industry and developers=====</option>
-					<option>=====Video game terms and game elements=====</option>
-					<option>=====Video game miscellanea=====</option>
+					<option value="Video games" disabled>==Video games==</option>
+					<option value="Video games" disabled>===Video games===</option>
+					<option value="Video games">=====Early video games=====</option>
+					<option value="Video games">=====1970s video games=====</option>
+					<option value="Video games">=====1980–84 video games=====</option>
+					<option value="Video games">=====1985–89 video games=====</option>
+					<option value="Video games">=====1990–94 video games=====</option>
+					<option value="Video games">=====1995–99 video games=====</option>
+					<option value="Video games">=====2000–04 video games=====</option>
+					<option value="Video games">=====2005–09 video games=====</option>
+					<option value="Video games">=====2010–14 video games=====</option>
+					<option value="Video games">=====2015–19 video games=====</option>
+					<option value="Video games">=====2020–24 video games=====</option>
+					<option value="Video games">=====Cancelled video games=====</option>
+					<option value="Video games">=====Video game series=====</option>
+					<option value="Video games">=====Video game characters=====</option>
+					<option value="Video games">=====Video game genres=====</option>
+					<option value="Video games">=====Video game systems and services=====</option>
+					<option value="Video games">=====Video game history and development=====</option>
+					<option value="Video games">=====Video game industry and developers=====</option>
+					<option value="Video games">=====Video game terms and game elements=====</option>
+					<option value="Video games">=====Video game miscellanea=====</option>
 
-					<option disabled>==Warfare==</option>
-					<option disabled>===Armies and military units===</option>
-					<option>====Air force====</option>
-					<option>====Army====</option>
-					<option>=====Australian army=====</option>
-					<option>=====United States and Confederate armies=====</option>
-					<option>====Navy====</option>
-					<option>====Other====</option>
-					<option disabled>===Battles, exercises, and conflicts===</option>
-					<option>====Ancient and classical history (before 500)====</option>
-					<option>====Middle Ages (500–1499)====</option>
-					<option>====Early modern period (1500–1799)====</option>
-					<option>====American Revolutionary War (1775–1783)====</option>
-					<option>====French Revolutionary and Napoleonic Wars (1792–1815)====</option>
-					<option>====Long nineteenth century (1800–1914)====</option>
-					<option>====World War I and interwar (1914–1939)====</option>
-					<option>====World War II (1939–1945)====</option>
-					<option>====Post-World War II (1945–present)====</option>
-					<option>====Massacres, war crimes, and legal issues of warfare====</option>
-					<option disabled>===Military aircraft===</option>
-					<option>====Aircraft technology and doctrine====</option>
-					<option>====Military aircraft====</option>
-					<option disabled>===Military decorations and memorials===</option>
-					<option>====Awards and decorations====</option>
-					<option>====Military museums and memorials====</option>
-					<option disabled>===Military people===</option>
-					<option>====Military people (A–C)====</option>
-					<option>====Military people (D–F)====</option>
-					<option>====Military people (G–K)====</option>
-					<option>====Military people (L–M)====</option>
-					<option>====Military people (N–R)====</option>
-					<option>====Military people (S–Z)====</option>
-					<option>====Warfare and race====</option>
-					<option disabled>===Military ranks and positions===</option>
-					<option>====Military ranks and positions====</option>
-					<option disabled>===Warships and naval units===</option>
-					<option>====Ship types====</option>
-					<option>====Naval technology====</option>
-					<option>====Warships====</option>
-					<option>=====Warships of Argentina=====</option>
-					<option>=====Warships of Australia=====</option>
-					<option>=====Warships of Austria-Hungary=====</option>
-					<option>=====Warships of Belgium=====</option>
-					<option>=====Warships of Brazil=====</option>
-					<option>=====Warships of Canada=====</option>
-					<option>=====Warships of Chile=====</option>
-					<option>=====Warships of China=====</option>
-					<option>=====Warships of the Confederate States of America=====</option>
-					<option>=====Warships of Croatia=====</option>
-					<option>=====Warships of Denmark=====</option>
-					<option>=====Warships of France=====</option>
-					<option>=====Warships of Germany=====</option>
-					<option>=====Warships of Greece=====</option>
-					<option>=====Warships of Iceland=====</option>
-					<option>=====Warships of India=====</option>
-					<option>=====Warships of Indonesia=====</option>
-					<option>=====Warships of Italy=====</option>
-					<option>=====Warships of Japan=====</option>
-					<option>=====Warships of Norway=====</option>
-					<option>=====Warships of Peru=====</option>
-					<option>=====Warships of Portugal=====</option>
-					<option>=====Warships of Romania=====</option>
-					<option>=====Warships of Russia and the Soviet Union=====</option>
-					<option>=====Warships of South Africa=====</option>
-					<option>=====Warships of Spain=====</option>
-					<option>=====Warships of Sweden=====</option>
-					<option>=====Warships of Turkey and the Ottoman Empire=====</option>
-					<option>=====Warships of the United Kingdom=====</option>
-					<option>=====Warships of the United States=====</option>
-					<option>=====Warships of Yugoslavia=====</option>
-					<option disabled>===Weapons, equipment, and buildings===</option>
-					<option>====Weapons, military equipment and programs====</option>
-					<option>====Military uniforms and clothing====</option>
-					<option>====Fortifications and military installations====</option>
-					<option>====Castles====</option>
+					<option value="Warfare" disabled>==Warfare==</option>
+					<option value="Warfare" disabled>===Armies and military units===</option>
+					<option value="Warfare">====Air force====</option>
+					<option value="Warfare">====Army====</option>
+					<option value="Warfare">=====Australian army=====</option>
+					<option value="Warfare">=====United States and Confederate armies=====</option>
+					<option value="Warfare">====Navy====</option>
+					<option value="Warfare">====Other====</option>
+					<option value="Warfare" disabled>===Battles, exercises, and conflicts===</option>
+					<option value="Warfare">====Ancient and classical history (before 500)====</option>
+					<option value="Warfare">====Middle Ages (500–1499)====</option>
+					<option value="Warfare">====Early modern period (1500–1799)====</option>
+					<option value="Warfare">====American Revolutionary War (1775–1783)====</option>
+					<option value="Warfare">====French Revolutionary and Napoleonic Wars (1792–1815)====</option>
+					<option value="Warfare">====Long nineteenth century (1800–1914)====</option>
+					<option value="Warfare">====World War I and interwar (1914–1939)====</option>
+					<option value="Warfare">====World War II (1939–1945)====</option>
+					<option value="Warfare">====Post-World War II (1945–present)====</option>
+					<option value="Warfare">====Massacres, war crimes, and legal issues of warfare====</option>
+					<option value="Warfare" disabled>===Military aircraft===</option>
+					<option value="Warfare">====Aircraft technology and doctrine====</option>
+					<option value="Warfare">====Military aircraft====</option>
+					<option value="Warfare" disabled>===Military decorations and memorials===</option>
+					<option value="Warfare">====Awards and decorations====</option>
+					<option value="Warfare">====Military museums and memorials====</option>
+					<option value="Warfare" disabled>===Military people===</option>
+					<option value="Warfare">====Military people (A–C)====</option>
+					<option value="Warfare">====Military people (D–F)====</option>
+					<option value="Warfare">====Military people (G–K)====</option>
+					<option value="Warfare">====Military people (L–M)====</option>
+					<option value="Warfare">====Military people (N–R)====</option>
+					<option value="Warfare">====Military people (S–Z)====</option>
+					<option value="Warfare">====Warfare and race====</option>
+					<option value="Warfare" disabled>===Military ranks and positions===</option>
+					<option value="Warfare">====Military ranks and positions====</option>
+					<option value="Warfare" disabled>===Warships and naval units===</option>
+					<option value="Warfare">====Ship types====</option>
+					<option value="Warfare">====Naval technology====</option>
+					<option value="Warfare">====Warships====</option>
+					<option value="Warfare">=====Warships of Argentina=====</option>
+					<option value="Warfare">=====Warships of Australia=====</option>
+					<option value="Warfare">=====Warships of Austria-Hungary=====</option>
+					<option value="Warfare">=====Warships of Belgium=====</option>
+					<option value="Warfare">=====Warships of Brazil=====</option>
+					<option value="Warfare">=====Warships of Canada=====</option>
+					<option value="Warfare">=====Warships of Chile=====</option>
+					<option value="Warfare">=====Warships of China=====</option>
+					<option value="Warfare">=====Warships of the Confederate States of America=====</option>
+					<option value="Warfare">=====Warships of Croatia=====</option>
+					<option value="Warfare">=====Warships of Denmark=====</option>
+					<option value="Warfare">=====Warships of France=====</option>
+					<option value="Warfare">=====Warships of Germany=====</option>
+					<option value="Warfare">=====Warships of Greece=====</option>
+					<option value="Warfare">=====Warships of Iceland=====</option>
+					<option value="Warfare">=====Warships of India=====</option>
+					<option value="Warfare">=====Warships of Indonesia=====</option>
+					<option value="Warfare">=====Warships of Italy=====</option>
+					<option value="Warfare">=====Warships of Japan=====</option>
+					<option value="Warfare">=====Warships of Norway=====</option>
+					<option value="Warfare">=====Warships of Peru=====</option>
+					<option value="Warfare">=====Warships of Portugal=====</option>
+					<option value="Warfare">=====Warships of Romania=====</option>
+					<option value="Warfare">=====Warships of Russia and the Soviet Union=====</option>
+					<option value="Warfare">=====Warships of South Africa=====</option>
+					<option value="Warfare">=====Warships of Spain=====</option>
+					<option value="Warfare">=====Warships of Sweden=====</option>
+					<option value="Warfare">=====Warships of Turkey and the Ottoman Empire=====</option>
+					<option value="Warfare">=====Warships of the United Kingdom=====</option>
+					<option value="Warfare">=====Warships of the United States=====</option>
+					<option value="Warfare">=====Warships of Yugoslavia=====</option>
+					<option value="Warfare" disabled>===Weapons, equipment, and buildings===</option>
+					<option value="Warfare">====Weapons, military equipment and programs====</option>
+					<option value="Warfare">====Military uniforms and clothing====</option>
+					<option value="Warfare">====Fortifications and military installations====</option>
+					<option value="Warfare">====Castles====</option>
 				</select>
 			</p>
 
@@ -778,7 +797,6 @@ $(async function() {
 				<input type="text" name="GANReviewTool-DisplayWikicode" value="${escapeHtml(gaTitle)}" />
 			</p>
 		</div>
-		-->
 		<!-- endif -->
 
 		<p>
@@ -813,12 +831,15 @@ $(async function() {
 
 		let editSummarySuffix = ' ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
 
+		let reviewTitle = title;
+		let reviewRevisionID, talkRevisionID, gaRevisionID;
+
 		if ( passOrFail === 'pass' ) {
 			let editSummary = `promote [[${gaTitle}]] to good article` + editSummarySuffix;
 
 			pushStatus('Placing {{atop}} and {{abot}} on GA review page.');
 			reviewWikicode = placeATOP(reviewWikicode, 'Passed ~~~~', 'green');
-			await makeEdit(title, editSummary, reviewWikicode);
+			reviewRevisionID = await makeEdit(reviewTitle, editSummary, reviewWikicode);
 			
 			pushStatus('Deleting {{GA nominee}} from article talk page.');
 			let topic = getTopicFromGANomineeTemplate(talkWikicode);
@@ -829,24 +850,31 @@ $(async function() {
 			let hasArticleHistoryTemplate = talkWikicode.match(/\{\{Article history/i);
 			if ( hasArticleHistoryTemplate ) {
 				let nextActionNumber = determineNextActionNumber(talkWikicode);
-				talkWikicode = updateArticleHistory(talkWikicode, nextActionNumber, topic, title);
+				talkWikicode = updateArticleHistory(talkWikicode, nextActionNumber, topic, reviewTitle);
 			} else {
 				talkWikicode = addGATemplate(talkWikicode, topic, gaPageNumber);
 			}
+
+			pushStatus('Changing WikiProject template class parameters to GA on article talk page.');
 			talkWikicode = changeWikiProjectArticleClassToGA(talkWikicode);
+			talkRevisionID = await makeEdit(gaTalkTitle, editSummary, talkWikicode);
 
-			// make edit to article talk page
-			await makeEdit(gaTalkTitle, editSummary, talkWikicode);
-
-			// TODO: List the article at Wikipedia:Good articles in the appropriate section
-				// Subtopic lists appear to be alphabetized. If it is a person, the alphabetizing is by last name.
-				// The list is wrapped in module #invoke code, and line breaks are used as the item separators.
+			pushStatus('Adding to appropriate subpage of [[WP:GA]]');
+			let gaSubpageTitle = $(`[name="GANReviewTool-Topic"]`).val();
+			gaSubpageTitle = `Wikipedia:Good articles/` + gaSubpageTitle;
+			let gaSubpageHeading = document.querySelector(`[name="GANReviewTool-Topic"]`);
+			gaSubpageHeading = gaSubpageHeading.options[gaSubpageHeading.selectedIndex];
+			gaSubpageHeading = gaSubpageHeading.text;
+			let gaDisplayTitle = $(`[name="GANReviewTool-DisplayWikicode"]`).val();
+			let gaSubpageWikicode = await getWikicode(gaSubpageTitle);
+			gaSubpageWikicode = addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle);
+			gaRevisionID = await makeEdit(gaSubpageTitle, editSummary, gaSubpageWikicode);
 		} else if ( passOrFail === 'fail' ) {
 			let editSummary = `close GAN as unsuccessful` + editSummarySuffix;
 
 			pushStatus('Placing {{atop}} and {{abot}} on GA review page.');
 			reviewWikicode = placeATOP(reviewWikicode, 'Unsuccessful ~~~~', 'red');
-			await makeEdit(title, editSummary, reviewWikicode);
+			reviewRevisionID = await makeEdit(reviewTitle, editSummary, reviewWikicode);
 
 			pushStatus('Deleting {{GA nominee}} from article talk page.');
 			let topic = getTopicFromGANomineeTemplate(talkWikicode);
@@ -855,13 +883,20 @@ $(async function() {
 
 			pushStatus('Adding {{FailedGA}} to article talk page.');
 			talkWikicode = addFailedGATemplate(talkWikicode, topic, gaPageNumber);
-			await makeEdit(gaTalkTitle, editSummary, talkWikicode);
+			talkRevisionID = await makeEdit(gaTalkTitle, editSummary, talkWikicode);
 		}
 
-		// TODO: write to a diff log in my userspace
-		// pushStatus('');
+		pushStatus('Adding to log');
+		let editSummary = `log [[${gaTitle}]]` + editSummarySuffix;
+		let username = mw.config.get('wgUserName');
+		let textToAppend = `\n* [[User:${username}]] ${passOrFail}ed [[${reviewTitle.replace('_', ' ')}]] at ~~~~~. [[Special:Diff/${reviewRevisionID}|[1]]][[Special:Diff/${talkRevisionID}|[2]]]`;
+		if ( gaRevisionID ) {
+			textToAppend += `[[Special:Diff/${gaRevisionID}|[3]]]`;
+		}
+		await appendToPage('User:Novem Linguae/Scripts/GANReviewTool/Log', editSummary, textToAppend);
 
 		pushStatus('Script complete. Refreshing page.');
+		// TODO: 1 second delay?
 
 		location.reload();
 	});

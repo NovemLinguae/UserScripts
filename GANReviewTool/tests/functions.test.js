@@ -435,3 +435,666 @@ describe('insertCodeAtEndOfFirstTemplate(wikicode, templateNameRegExNoDelimiters
 		expect(functions.insertCodeAtEndOfFirstTemplate(wikicode, templateNameRegExNoDelimiters, codeToInsert)).toBe(output);
 	});
 });
+
+describe('getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)', () => {
+	test('Exact match', () => {
+		let wikicode = `=====Bodies of water and water formations=====`;
+		let shortenedVersionInComboBox = `=====Bodies of water and water formations=====`;
+		let output = 0;
+		expect(functions.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
+	});
+
+	test('No match', () => {
+		let wikicode = `blah blah blah`;
+		let shortenedVersionInComboBox = `=====Bodies of water and water formations=====`;
+		let output = -1;
+		expect(functions.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
+	});
+
+	test('Input no space in front of ===, wikicode yes space in front of ===', () => {
+		let wikicode = `===== Landforms =====`;
+		let shortenedVersionInComboBox = `=====Landforms=====`;
+		let output = 0;
+		expect(functions.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
+	});
+
+	test('Wikicode has [[File:', () => {
+		let wikicode = `===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===`;
+		let shortenedVersionInComboBox = `===Geography===`;
+		let output = 0;
+		expect(functions.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
+	});
+});
+
+describe('findFirstStringAfterPosition(needle, haystack, position)', () => {
+	test('No match', () => {
+		let needle = `Needle`;
+		let haystack = `Haystack`;
+		let position = 3;
+		let output = -1;
+		expect(functions.findFirstStringAfterPosition(needle, haystack, position)).toBe(output);
+	});
+
+	test('Start at 0. Match immediately.', () => {
+		let needle = `Hay`;
+		let haystack = `Haystack`;
+		let position = 0;
+		let output = 0;
+		expect(functions.findFirstStringAfterPosition(needle, haystack, position)).toBe(output);
+	});
+
+	test('Start at 3. Match immediately.', () => {
+		let needle = `stack`;
+		let haystack = `Haystack`;
+		let position = 3;
+		let output = 3;
+		expect(functions.findFirstStringAfterPosition(needle, haystack, position)).toBe(output);
+	});
+
+	test('Start at 3. Match later.', () => {
+		let needle = `ack`;
+		let haystack = `Haystack`;
+		let position = 0;
+		let output = 5;
+		expect(functions.findFirstStringAfterPosition(needle, haystack, position)).toBe(output);
+	});
+});
+
+describe('insertStringIntoStringAtPosition(bigString, insertString, position)', () => {
+	test('Middle', () => {
+		let bigString = 'Haystack';
+		let insertString = 'Needle';
+		let position = 3;
+		let output = 'HayNeedlestack';
+		expect(functions.insertStringIntoStringAtPosition(bigString, insertString, position)).toBe(output);
+	});
+
+	test('Start', () => {
+		let bigString = 'Haystack';
+		let insertString = 'Needle';
+		let position = 0;
+		let output = 'NeedleHaystack';
+		expect(functions.insertStringIntoStringAtPosition(bigString, insertString, position)).toBe(output);
+	});
+
+	test('End', () => {
+		let bigString = 'Haystack';
+		let insertString = 'Needle';
+		let position = 8;
+		let output = 'HaystackNeedle';
+		expect(functions.insertStringIntoStringAtPosition(bigString, insertString, position)).toBe(output);
+	});
+});
+
+describe('aSortsLowerAlphabeticallyThanB(a, b)', () => {
+	test('a, b', () => {
+		let a = 'a';
+		let b = 'b';
+		let output = true;
+		expect(functions.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
+	});
+
+	test('b, a', () => {
+		let a = 'b';
+		let b = 'a';
+		let output = false;
+		expect(functions.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
+	});
+
+	test('numbers should sort lower than letters', () => {
+		let a = '1';
+		let b = 'a';
+		let output = true;
+		expect(functions.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
+	});
+});
+
+describe('removeFormattingThatInterferesWithSort(str)', () => {
+	test('delete [[ ]]', () => {
+		let str = `[[Abyssal plain]]`
+		let output = `Abyssal plain`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test('delete entire first part of piped link', () => {
+		let str = `[[Abyssal plain|Test]]`
+		let output = `Test`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test('delete anything in front of [[', () => {
+		let str = `"[[Abyssal plain]]"`
+		let output = `Abyssal plain`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test(`delete "`, () => {
+		let str = `[[Abyssal plain|"Test"]]`
+		let output = `Test`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test(`delete ''`, () => {
+		let str = `[[Abyssal plain|''Test'']]`
+		let output = `Test`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test(`don't delete single '`, () => {
+		let str = `[[Abyssal plain|I can't stop lovin' you]]`
+		let output = `I can't stop lovin' you`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test(`[[David Attenborough|Attenborough, David]]`, () => {
+		let str = `[[David Attenborough|Attenborough, David]]`
+		let output = `Attenborough, David`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test(`[[Herbert E. Balch|Balch, Herbert E.]]`, () => {
+		let str = `[[Herbert E. Balch|Balch, Herbert E.]]`
+		let output = `Balch, Herbert E.`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test(`[[ABC|{{ABC}}]]`, () => {
+		let str = `[[ABC|{{ABC}}]]`
+		let output = `{{ABC}}`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test(`[[&Antelope]]`, () => {
+		let str = `[[&Antelope]]`
+		let output = `&Antelope`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test(`[[The New York Times]]`, () => {
+		let str = `[[The New York Times]]`
+		let output = `New York Times`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test(`''[[A Book of Mediterranean Food]]''`, () => {
+		let str = `''[[A Book of Mediterranean Food]]''`
+		let output = `Book of Mediterranean Food`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test(`''[[an unexpected journey]]''`, () => {
+		let str = `''[[an unexpected journey]]''`
+		let output = `unexpected journey`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+
+	test(`[[The Compleat Housewife|''The Compleat Housewife'']]`, () => {
+		let str = `[[The Compleat Housewife|''The Compleat Housewife'']]`
+		let output = `Compleat Housewife`;
+		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+	});
+});
+
+describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)', () => {
+	test('[[Nile River]]', () => {
+		let gaSubpageHeading = `=====Bodies of water and water formations=====`;
+		let gaTitle = `Nile River`;
+		let gaDisplayTitle = `Nile River`;
+		let gaSubpageWikicode =
+`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
+<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Bodies of water and water formations=====
+{{#invoke:Good Articles|subsection|
+[[Abrahams Creek]]
+[[Adams River (British Columbia)]]
+[[Zarqa River]]
+}}
+
+</div>
+</div>
+<!--End Geography level 3 GA subtopic-->
+<!--Start Places level 3 GA subtopic-->
+<div class="mw-collapsible">
+`;
+		let output =
+`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
+<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Bodies of water and water formations=====
+{{#invoke:Good Articles|subsection|
+[[Abrahams Creek]]
+[[Adams River (British Columbia)]]
+[[Nile River]]
+[[Zarqa River]]
+}}
+
+</div>
+</div>
+<!--End Geography level 3 GA subtopic-->
+<!--Start Places level 3 GA subtopic-->
+<div class="mw-collapsible">
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('[[David Attenborough|Attenborough, David]]', () => {
+		let gaSubpageHeading = `=====Geographers and explorers=====`;
+		let gaTitle = `David Attenborough`;
+		let gaDisplayTitle = `Attenborough, David`;
+		let gaSubpageWikicode =
+`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
+<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Geographers and explorers=====
+{{#invoke:Good Articles|subsection|
+[[1773 Phipps expedition towards the North Pole]]
+[[Herbert E. Balch|Balch, Herbert E.]]
+}}
+
+</div>
+</div>
+<!--End Geography level 3 GA subtopic-->
+<!--Start Places level 3 GA subtopic-->
+<div class="mw-collapsible">
+`;
+		let output =
+`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
+<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Geographers and explorers=====
+{{#invoke:Good Articles|subsection|
+[[1773 Phipps expedition towards the North Pole]]
+[[David Attenborough|Attenborough, David]]
+[[Herbert E. Balch|Balch, Herbert E.]]
+}}
+
+</div>
+</div>
+<!--End Geography level 3 GA subtopic-->
+<!--Start Places level 3 GA subtopic-->
+<div class="mw-collapsible">
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Extra spaces in heading near equals signs', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `Amak Volcano`;
+		let gaDisplayTitle = `Amak Volcano`;
+		let gaSubpageWikicode =
+`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
+<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+
+</div>
+</div>
+<!--End Geography level 3 GA subtopic-->
+<!--Start Places level 3 GA subtopic-->
+<div class="mw-collapsible">
+`;
+		let output =
+`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
+<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Amak Volcano]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+
+</div>
+</div>
+<!--End Geography level 3 GA subtopic-->
+<!--Start Places level 3 GA subtopic-->
+<div class="mw-collapsible">
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('First in section', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `Aardvark`;
+		let gaDisplayTitle = `Aardvark`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Aardvark]]
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Last in section', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `Zebra`;
+		let gaDisplayTitle = `Zebra`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+[[Zebra]]
+}}
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Numbers before letters', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `123`;
+		let gaDisplayTitle = `123`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[123]]
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Display title', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `Test`;
+		let gaDisplayTitle = `123`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Test|123]]
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Italics should be ignored when sorting the haystack', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `?Antelope`;
+		let gaDisplayTitle = `?Antelope`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[?Antelope]]
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+}}
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Italics should be ignored when sorting the needle', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `Building`;
+		let gaDisplayTitle = `''Building''`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+[[Alepotrypa Cave|'Hello]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+[[Alepotrypa Cave|'Hello]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+[[Building|''Building'']]
+}}
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('{{Further}}', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `ABC`;
+		let gaDisplayTitle = `{{ABC}}`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{Further}}
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+[[Alepotrypa Cave|'Hello]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{Further}}
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+[[Alepotrypa Cave|'Hello]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+[[ABC|{{ABC}}]]
+}}
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Italics should be ignored when sorting the needle', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `Building`;
+		let gaDisplayTitle = `''Building''`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+[[Alepotrypa Cave|'Hello]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+[[Alepotrypa Cave|'Hello]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+[[Building|''Building'']]
+}}
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('ignore articles (a, an, the) in haystack', () => {
+		let gaSubpageHeading = `=====Cookery books=====`;
+		let gaTitle = `Food in the United States`;
+		let gaDisplayTitle = `''Food in the United States''`;
+		let gaSubpageWikicode =
+`=====Cookery books=====
+{{#invoke:Good Articles|subsection|
+[[Elizabeth David bibliography]]
+''[[The Art of Cookery Made Plain and Easy]]''
+''[[A Book of Mediterranean Food]]''
+''[[Compendium ferculorum, albo Zebranie potraw]]''
+''[[The Compleat Housewife]]''
+''[[The Cookery Book of Lady Clark of Tillypronie]]''
+''[[The Experienced English Housekeeper]]'' 
+''[[Food in England]]''
+''[[The Good Huswifes Jewell]]'' 
+''[[The Modern Cook]]''
+''[[Modern Cookery for Private Families]]'' 
+''[[Mrs. Beeton's Book of Household Management]]'' 
+''[[A New System of Domestic Cookery]]''
+''[[The Accomplisht Cook]]''
+}}
+`;
+		let output =
+`=====Cookery books=====
+{{#invoke:Good Articles|subsection|
+[[Elizabeth David bibliography]]
+''[[The Art of Cookery Made Plain and Easy]]''
+''[[A Book of Mediterranean Food]]''
+''[[Compendium ferculorum, albo Zebranie potraw]]''
+''[[The Compleat Housewife]]''
+''[[The Cookery Book of Lady Clark of Tillypronie]]''
+''[[The Experienced English Housekeeper]]'' 
+''[[Food in England]]''
+[[Food in the United States|''Food in the United States'']]
+''[[The Good Huswifes Jewell]]'' 
+''[[The Modern Cook]]''
+''[[Modern Cookery for Private Families]]'' 
+''[[Mrs. Beeton's Book of Household Management]]'' 
+''[[A New System of Domestic Cookery]]''
+''[[The Accomplisht Cook]]''
+}}
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('ignore articles (a, an, the) in needle', () => {
+		let gaSubpageHeading = `=====Cookery books=====`;
+		let gaTitle = `The Compleat Housewife`;
+		let gaDisplayTitle = `''The Compleat Housewife''`;
+		let gaSubpageWikicode =
+`=====Cookery books=====
+{{#invoke:Good Articles|subsection|
+''[[The Art of Cookery Made Plain and Easy]]''
+''[[A Book of Mediterranean Food]]''
+''[[Compendium ferculorum, albo Zebranie potraw]]''
+''[[The Cookery Book of Lady Clark of Tillypronie]]''
+''[[The Experienced English Housekeeper]]'' 
+''[[Food in England]]''
+''[[The Good Huswifes Jewell]]'' 
+''[[The Modern Cook]]''
+''[[Modern Cookery for Private Families]]'' 
+''[[Mrs. Beeton's Book of Household Management]]'' 
+''[[A New System of Domestic Cookery]]''
+''[[The Accomplisht Cook]]''
+}}
+`;
+		let output =
+`=====Cookery books=====
+{{#invoke:Good Articles|subsection|
+''[[The Art of Cookery Made Plain and Easy]]''
+''[[A Book of Mediterranean Food]]''
+''[[Compendium ferculorum, albo Zebranie potraw]]''
+[[The Compleat Housewife|''The Compleat Housewife'']]
+''[[The Cookery Book of Lady Clark of Tillypronie]]''
+''[[The Experienced English Housekeeper]]'' 
+''[[Food in England]]''
+''[[The Good Huswifes Jewell]]'' 
+''[[The Modern Cook]]''
+''[[Modern Cookery for Private Families]]'' 
+''[[Mrs. Beeton's Book of Household Management]]'' 
+''[[A New System of Domestic Cookery]]''
+''[[The Accomplisht Cook]]''
+}}
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+});

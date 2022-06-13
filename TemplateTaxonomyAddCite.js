@@ -24,6 +24,7 @@ function addCite(website) {
 
 	switch ( website ) {
 		case 'Catalogue of Life':
+		// TODO: use {{Catalogue of Life}}
 wikicode = `{{Don't edit this line {{{machine code|}}}
 |rank=genus
 |link={{subst:#titleparts:{{subst:PAGENAME}}|2|2}}
