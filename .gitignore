@@ -1,16 +1,16 @@
+/*.docx
+/=*.*
 = drafts
 = other people's examples
 = template
-CiteHighlighter/todo.txt
-CiteHighlighter/CiteHighlighter.xlsx
-/=*.*
-/*.docx
-node_modules
 AddInfobox.js
-HideRollbackOnTemplates.js
-PendingChanges.js
-PurgeButton.js
+CiteHighlighter/CiteHighlighter.xlsx
+CiteHighlighter/todo.txt
 cookie.txt
-publish.config.php
+HideRollbackOnTemplates.js
+node_modules
+PendingChanges.js
 publish_old.php
-original (off wiki)
+publish.config.php
+PurgeButton.js
+RequestedArticleSifter
