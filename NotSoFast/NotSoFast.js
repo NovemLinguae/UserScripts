@@ -40,18 +40,29 @@ $(function() {
 	let oneHourAgo = currentTimestamp - 60*60;
 	
 	// then run it again whenever a DOM node is inserted (the list refreshes as you scroll down, so this can be anytime you scroll down). could also be because this script loads BEFORE the the NPP applet (race condition)
-	$('body').on('DOMNodeInserted', '.mwe-pt-list-item', function() {
+	new MutationObserver(() => {
+		console.log('Checkpoint A');
 		if ( ! inAFCMode() ) {
 			checkAndHighlight(this);
 		}
-	});
-	
+	}).observe($('#mwe-pt-list-view')[0], {childList: true});
+
 	// run it once in case the NPP applet loaded BEFORE this script (race condition)
 	$('.mwe-pt-list-item').each(function() {
+		console.log('Checkpoint B');
 		if ( ! inAFCMode() ) {
 			checkAndHighlight(this);
 		}
 	});
+
+	console.log('NotSoFast loaded.');
 });
+
+/* Nardog suggestions:
+	~~1) switch to MutationObserver,~~
+	2) handle time zones,
+	3) use console.log to check for code execution instead of breakpoints,
+	4) "I see no reason to look for .mwe-pt-list-item btw. I would just query .mwe-pt-creation-date directly and give them a class once they're processed, and exclude them in the query (e.g. $('.mwe-pt-creation-date:not(.notsofast-processed)').each(function(){)"
+*/
 
 // </nowiki>

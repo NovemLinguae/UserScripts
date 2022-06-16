@@ -6,7 +6,7 @@ export function isGASubPage(title) {
 
 export function getGATitle(title) {
 	title = title.replace('Talk:', '');
-	title = title.replace('_', ' ');
+	title = title.replace(/_/g, ' ');
 	title = title.match(/^[^\/]*/)[0];
 	return title;
 }
@@ -102,32 +102,107 @@ export function changeWikiProjectArticleClassToGA(talkWikicode) {
 
 /** Determine next |action= number in {{Article history}} template. This is so we can insert an action. */
 export function determineNextActionNumber(talkWikicode) {
-	let ARTICLE_HISTORY_MAX_ACTIONS = 50;
-	for ( let i = ARTICLE_HISTORY_MAX_ACTIONS; i >= 1; i-- ) {
+	let i = 1;
+	while ( true ) {
 		let regex = new RegExp(`\\|\\s*action${i}\\s*=`, 'i');
 		let hasAction = talkWikicode.match(regex);
-		if ( hasAction ) {
-			return i + 1;
+		if ( ! hasAction ) {
+			return i;
 		}
+		i++;
 	}
 }
 
-export function updateArticleHistory(talkWikicode, nextActionNumber, topic, nominationPageTitle) {
+export function updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed) {
+	let nextActionNumber = determineNextActionNumber(talkWikicode);
+
+	if ( listedOrFailed !== 'listed' && listedOrFailed !== 'failed' ) {
+		throw new Error('InvalidArgumentException');
+	}
+
+	let needsTopic = ! Boolean(firstTemplateGetParameterValue(talkWikicode, 'Artricle history', 'topic'));
+	let topicString = '';
+	if ( needsTopic ) {
+		topicString = `\n|topic = ${topic}`;
+	}
+
+	// TODO: tests for all this new stuff I just added
+	// TODO: preserve certain codes, for example, on failure preserve FFA/FFAC/DGA instead of overwriting with FGAN
+	// TODO: if promoted and FFA/FFAC, switch to FFA/GA or FFAC/GA instead of GA
+	// https://en.wikipedia.org/wiki/Template:Article_history#How_to_use_in_practice
+	let currentStatusString = '';
+	let existingStatus = firstTemplateGetParameterValue(talkWikicode, 'Artricle history', 'currentstatus')
+	talkWikicode = firstTemplateDeleteParameter(talkWikicode, 'Article history', 'currentstatus');
+	if ( listedOrFailed === 'listed' ) {
+		// GA or FFA/GA or FFAC/GA
+		switch ( existingStatus ) {
+			case 'FFA':
+				currentStatusString += '\n|currentstatus = FFA/GA';
+				break;
+			case 'FFAC':
+				currentStatusString += '\n|currentstatus = FFAC/GA';
+				break;
+			default:
+				currentStatusString += '\n|currentstatus = GA';
+				break;
+		}
+	} else {
+		// FGAN or FFA or FFAC or DGA
+		switch ( existingStatus ) {
+			case 'FFA':
+				currentStatusString += '\n|currentstatus = FFA';
+				break;
+			case 'FFAC':
+				currentStatusString += '\n|currentstatus = FFAC';
+				break;
+			case 'DGA':
+				currentStatusString += '\n|currentstatus = DGA';
+				break;
+			default:
+				currentStatusString += '\n|currentstatus = FGAN';
+				break;
+		}
+	}
+
 	let addToArticleHistory = 
 `|action${nextActionNumber} = GAN
 |action${nextActionNumber}date = ~~~~~
 |action${nextActionNumber}link = ${nominationPageTitle}
-|action${nextActionNumber}result = listed
-|currentstatus = GA
-|topic = ${topic}`;
-	talkWikicode = insertCodeAtEndOfFirstTemplate(talkWikicode, 'Article ?history', addToArticleHistory);
+|action${nextActionNumber}result = ${listedOrFailed}`;
+
+	addToArticleHistory += currentStatusString + topicString;
+
+	talkWikicode = firstTemplateInsertCode(talkWikicode, 'Article ?history', addToArticleHistory);
+
 	return talkWikicode;
 }
 
-export function insertCodeAtEndOfFirstTemplate(wikicode, templateNameRegExNoDelimiters, codeToInsert) {
+export function firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert) {
 	// TODO: handle nested templates
-	let regex = new RegExp(`(\\{\\{${templateNameRegExNoDelimiters}[^\\}]*)(\\}\\})`, '');
+	let regex = new RegExp(`(\\{\\{${templateNameRegExNoDelimiters}[^\\}]*)(\\}\\})`, 'i');
 	return wikicode.replace(regex, `$1\n${codeToInsert}\n$2`);
+}
+
+export function firstTemplateGetParameterValue(wikicode, template, parameter) {
+	// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
+	// new algorithm:
+		// find start of template. use regex /i (ignore case)
+		// iterate using loops until end of template found
+			// handle <nowiki>
+			// handle triple {{{
+			// handle nested
+	
+	let regex = new RegExp(`\\|\\s*${parameter}\\s*=\\s*([^\\n\\|\\}]*)\\s*`, '');
+	let result = wikicode.match(regex);
+	if ( wikicode.match(regex) === null ) return null;
+	return result[1];
+}
+
+export function firstTemplateDeleteParameter(wikicode, template, parameter) {
+	// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
+
+	let regex = new RegExp(`\\|\\s*${parameter}\\s*=\\s*([^\\n\\|\\}]*)\\s*`, '');
+	return wikicode.replace(regex, '');
 }
 
 export function addFailedGATemplate(talkWikicode, topic, gaPageNumber) {
@@ -209,5 +284,25 @@ export function findFirstStringAfterPosition(needle, haystack, position) {
 // https://stackoverflow.com/a/4364902/3480193
 // CC BY-SA 4.0
 export function insertStringIntoStringAtPosition(bigString, insertString, position) {
-	return [bigString.slice(0, position), insertString, bigString.slice(position)].join('');
+	return [
+		bigString.slice(0, position),
+		insertString,
+		bigString.slice(position)
+	].join('');
+}
+
+export function getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error) {
+	let textToAppend = `\n* `;
+	if ( error ) {
+		textToAppend += `<span style="color: red; font-weight: bold;">ERROR:</span> ${error}. `
+	}
+	textToAppend += `[[User:${username}|${username}]] ${passOrFail}ed [[${reviewTitle}]] at ~~~~~. [[Special:Diff/${reviewRevisionID}|[1]]][[Special:Diff/${talkRevisionID}|[2]]]`;
+	if ( gaRevisionID ) {
+		textToAppend += `[[Special:Diff/${gaRevisionID}|[3]]]`;
+	}
+	return textToAppend;
+}
+
+export function hasArticleHistoryTemplate(wikicode) {
+	return Boolean(wikicode.match(/\{\{Article ?history/i));
 }
