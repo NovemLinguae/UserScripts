@@ -11,18 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - cd DraftCleaner
+    - run: cd DraftCleaner
     - run: npm install
     - run: npm test
-    - cd ../GANReviewTool
+    - run: cd ../GANReviewTool
     - run: npm install
     - run: npm test
-    - cd ../NotSoFast
+    - run: cd ../NotSoFast
     - run: npm install
     - run: npm test
-    - cd ../SpeciesHelper
+    - run: cd ../SpeciesHelper
     - run: npm install
     - run: npm test
-    - cd ../UserRightsDiff
+    - run: cd ../UserRightsDiff
     - run: npm install
     - run: npm test
