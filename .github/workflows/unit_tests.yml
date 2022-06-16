@@ -17,23 +17,28 @@ jobs:
     #   run: npm install
     # - working-directory: ./DraftCleaner
     #   run: npm test
+    #   name: DraftCleaner unit tests
 
     - working-directory: ./GANReviewTool
       run: npm install
     - working-directory: ./GANReviewTool
       run: npm test
+      name: GANReviewTool unit tests
 
     - working-directory: ./NotSoFast
       run: npm install
     - working-directory: ./NotSoFast
       run: npm test
+      name: NotSoFast unit tests
 
     - working-directory: ./SpeciesHelper
       run: npm install
     - working-directory: ./SpeciesHelper
       run: npm test
+      name: SpeciesHelper unit tests
     
     - working-directory: ./UserRightsDiff
       run: npm install
     - working-directory: ./UserRightsDiff
       run: npm test
+      name: UserRightsDiff unit tests
