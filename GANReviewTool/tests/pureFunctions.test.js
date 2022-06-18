@@ -1,4 +1,4 @@
-import * as functions from "../modules/functions.js";
+import * as functions from "../modules/pureFunctions.js";
 
 // Babel is required to use ES6 module syntax
 // Copy package.json and .babelrc from a project that already has this working
@@ -673,6 +673,18 @@ describe('getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)', ()
 		let output = 0;
 		expect(functions.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
 	});
+
+	test('two headings with same name', () => {
+		let wikicode =
+`===[[File:Nuvola apps package graphics.svg|22px|left|alt=|link=]] Art===
+
+=====Art=====
+
+`;
+		let shortenedVersionInComboBox = `=====Art=====`;
+		let output = 74;
+		expect(functions.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
+	});
 });
 
 describe('findFirstStringAfterPosition(needle, haystack, position)', () => {
@@ -1302,6 +1314,78 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 ''[[Mrs. Beeton's Book of Household Management]]'' 
 ''[[A New System of Domestic Cookery]]''
 ''[[The Accomplisht Cook]]''
+}}
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('multiple of the same heading', () => {
+		let gaSubpageHeading = `=====Art=====`;
+		let gaTitle = `The Great Wave off Kanagawa`;
+		let gaDisplayTitle = `The Great Wave off Kanagawa`;
+		let gaSubpageWikicode =
+`<noinclude>
+{{hatnote|[[#Art and architecture|'''↓  Skip to lists  ↓''']]}}
+{{Wikipedia:Good article nominations/Tab header}}
+{{Wikipedia:Good articles/Summary|shortcuts={{shortcut|WP:GA/AA}}}}
+</noinclude><templatestyles src="Wikipedia:Good articles/styles.css"/>
+__NOTOC__
+<div class="wp-ga-topic">
+==Art and architecture==
+<includeonly><div class="wp-ga-topic-back">[[#Contents|back]]</div></includeonly>
+<div class="wp-ga-topic-contents">
+===Contents===
+{{plainlist}}
+* [[#Art|Art]]
+* [[#Architecture|Architecture]]
+{{endplainlist}}
+</div>
+<!--Start Art level 3 GA subtopic-->
+<div class="mw-collapsible">
+===[[File:Nuvola apps package graphics.svg|22px|left|alt=|link=]] Art===
+<div class="wp-ga-topic-back">[[#Art and architecture|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Art=====
+{{#invoke:Good Articles|subsection|
+''[[A Boy with a Flying Squirrel]]''
+[[Akzidenz-Grotesk]]
+[[Zzz]]
+}}
+`;
+		let output =
+`<noinclude>
+{{hatnote|[[#Art and architecture|'''↓  Skip to lists  ↓''']]}}
+{{Wikipedia:Good article nominations/Tab header}}
+{{Wikipedia:Good articles/Summary|shortcuts={{shortcut|WP:GA/AA}}}}
+</noinclude><templatestyles src="Wikipedia:Good articles/styles.css"/>
+__NOTOC__
+<div class="wp-ga-topic">
+==Art and architecture==
+<includeonly><div class="wp-ga-topic-back">[[#Contents|back]]</div></includeonly>
+<div class="wp-ga-topic-contents">
+===Contents===
+{{plainlist}}
+* [[#Art|Art]]
+* [[#Architecture|Architecture]]
+{{endplainlist}}
+</div>
+<!--Start Art level 3 GA subtopic-->
+<div class="mw-collapsible">
+===[[File:Nuvola apps package graphics.svg|22px|left|alt=|link=]] Art===
+<div class="wp-ga-topic-back">[[#Art and architecture|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Art=====
+{{#invoke:Good Articles|subsection|
+''[[A Boy with a Flying Squirrel]]''
+[[Akzidenz-Grotesk]]
+[[The Great Wave off Kanagawa]]
+[[Zzz]]
 }}
 `;
 		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);

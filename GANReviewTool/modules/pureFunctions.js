@@ -1,5 +1,3 @@
-// Pure functions
-
 export function isGASubPage(title) {
 	return Boolean(title.match(/\/GA\d{1,2}$/));
 }
@@ -126,15 +124,11 @@ export function updateArticleHistory(talkWikicode, topic, nominationPageTitle, l
 		topicString = `\n|topic = ${topic}`;
 	}
 
-	// TODO: tests for all this new stuff I just added
-	// TODO: preserve certain codes, for example, on failure preserve FFA/FFAC/DGA instead of overwriting with FGAN
-	// TODO: if promoted and FFA/FFAC, switch to FFA/GA or FFAC/GA instead of GA
 	// https://en.wikipedia.org/wiki/Template:Article_history#How_to_use_in_practice
 	let currentStatusString = '';
 	let existingStatus = firstTemplateGetParameterValue(talkWikicode, 'Artricle history', 'currentstatus')
 	talkWikicode = firstTemplateDeleteParameter(talkWikicode, 'Article history', 'currentstatus');
 	if ( listedOrFailed === 'listed' ) {
-		// GA or FFA/GA or FFAC/GA
 		switch ( existingStatus ) {
 			case 'FFA':
 				currentStatusString += '\n|currentstatus = FFA/GA';
@@ -147,7 +141,6 @@ export function updateArticleHistory(talkWikicode, topic, nominationPageTitle, l
 				break;
 		}
 	} else {
-		// FGAN or FFA or FFAC or DGA
 		switch ( existingStatus ) {
 			case 'FFA':
 				currentStatusString += '\n|currentstatus = FFA';
@@ -261,8 +254,10 @@ export function aSortsLowerAlphabeticallyThanB(a, b) {
 export function getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode) {
 	// chop off equals at beginning and end of line. we want to isolate a smaller piece to use as our needle.
 	let needle = /^={2,5}\s*(.*?)\s*={2,5}$/gm.exec(shortenedVersionInComboBox)[1];
+	// keep the === === equals signs surrounding the heading the same. to prevent matching the wrong heading when there are multiple headings with the same needle, e.g. ===Art=== and =====Art=====
+	let equalsSignsOnOneSide = /^(={2,5})/gm.exec(shortenedVersionInComboBox)[1];
 	// then insert this needle into a wide regex that includes equals, optional spaces next to the equals, and optional [[File:]]
-	let regex = new RegExp(`^={2,5}\\s*(?:\\[\\[File:[^\\]]*\\]\\]\\s*)?${regExEscape(needle)}\\s*={2,5}$`, 'gm');
+	let regex = new RegExp(`^${equalsSignsOnOneSide}\\s*(?:\\[\\[File:[^\\]]*\\]\\]\\s*)?${regExEscape(needle)}\\s*${equalsSignsOnOneSide}$`, 'gm');
 	let result = regex.exec(wikicode);
 	// if needle not found in haystack, return -1
 	if ( ! Array.isArray(result) ) return -1;

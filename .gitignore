@@ -1,5 +1,6 @@
 /*.docx
 /=*.*
+.vscode
 = drafts
 = other people's examples
 = template
@@ -7,7 +8,9 @@ AddInfobox.js
 CiteHighlighter/CiteHighlighter.xlsx
 CiteHighlighter/todo.txt
 cookie.txt
+jsconfig.json
 HideRollbackOnTemplates.js
+Morebits/
 node_modules
 PendingChanges.js
 publish_old.php

@@ -25,6 +25,12 @@ jobs:
       run: npm test
       name: GANReviewTool unit tests
 
+    # - working-directory: ./GARCloser
+    #   run: npm install
+    # - working-directory: ./GARCloser
+    #   run: npm test
+    #   name: GARCloser unit tests
+
     - working-directory: ./NotSoFast
       run: npm install
     - working-directory: ./NotSoFast

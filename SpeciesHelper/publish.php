@@ -95,7 +95,8 @@ function deleteNoWikiTags($str) {
 	return $str;
 }
 
-$wikitext = "$(async function() {\n\n";
+$wikitext = "// === Compiled with Novem Linguae's publish.php script ======================\n\n";
+$wikitext .= "$(async function() {\n\n// === $MAIN_FILE_PATH ======================================================\n\n";
 
 $wikitext .= file_get_contents($MAIN_FILE_PATH);
 
@@ -105,7 +106,7 @@ foreach ( $files as $fileName ) {
 	if ( $fileName === '..' ) continue;
 	$path = $CLASSES_FOLDER_PATH . $fileName;
 	$classText = file_get_contents($path);
-	$wikitext .= "\n\n" . $classText;
+	$wikitext .= "\n\n// === $path ======================================================\n\n" . $classText;
 }
 
 $wikitext .= "\n\n});";
