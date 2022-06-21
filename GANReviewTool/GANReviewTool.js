@@ -71,10 +71,12 @@ $(async function() {
 				let editSummary = `promote [[${gaTitle}]] to good article` + editSummarySuffix;
 
 				pushStatus('Placing {{atop}} and {{abot}} on GA review page.');
+				reviewWikicode = await getWikicode(title); // get this wikicode again, in case it changed between page load and "submit" button click
 				reviewWikicode = placeATOP(reviewWikicode, 'Passed ~~~~', 'green');
 				reviewRevisionID = await makeEdit(reviewTitle, editSummary, reviewWikicode);
 				
 				pushStatus('Deleting {{GA nominee}} from article talk page.');
+				talkWikicode = await getWikicode(gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
 				let topic = getTopicFromGANomineeTemplate(talkWikicode);
 				let gaPageNumber = getTemplateParameter(talkWikicode, 'GA nominee', 'page');
 				talkWikicode = deleteGANomineeTemplate(talkWikicode);
@@ -95,7 +97,7 @@ $(async function() {
 				pushStatus('Adding to appropriate subpage of [[WP:GA]]');
 				let gaSubpageTitle = $(`[name="GANReviewTool-Topic"]`).val();
 				gaSubpageTitle = `Wikipedia:Good articles/` + gaSubpageTitle;
-				let gaDisplayTitle = $(`[name="GANReviewTool-DisplayWikicode"]`).val();
+				let gaDisplayTitle = $(`[name="GANReviewTool-DisplayWikicode"]`).val().trim();
 				let gaSubpageWikicode = await getWikicode(gaSubpageTitle);
 				gaSubpageWikicode = addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle);
 				gaRevisionID = await makeEdit(gaSubpageTitle, editSummary, gaSubpageWikicode);
@@ -103,10 +105,12 @@ $(async function() {
 				let editSummary = `close GAN as unsuccessful` + editSummarySuffix;
 
 				pushStatus('Placing {{atop}} and {{abot}} on GA review page.');
+				reviewWikicode = await getWikicode(title); // get this wikicode again, in case it changed between page load and "submit" button click
 				reviewWikicode = placeATOP(reviewWikicode, 'Unsuccessful ~~~~', 'red');
 				reviewRevisionID = await makeEdit(reviewTitle, editSummary, reviewWikicode);
 
 				pushStatus('Deleting {{GA nominee}} from article talk page.');
+				talkWikicode = await getWikicode(gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
 				let topic = getTopicFromGANomineeTemplate(talkWikicode);
 				let gaPageNumber = getTemplateParameter(talkWikicode, 'GA nominee', 'page');
 				talkWikicode = deleteGANomineeTemplate(talkWikicode);

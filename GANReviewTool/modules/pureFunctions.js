@@ -90,8 +90,49 @@ export function deleteGANomineeTemplate(talkWikicode) {
 }
 
 export function addGATemplate(talkWikicode, topic, gaPageNumber) {
-	let prependString = `{{GA|~~~~~|topic=${topic}|page=${gaPageNumber}}}`;
-	return prependString + '\n' + talkWikicode;
+	let codeToAdd = `{{GA|~~~~~|topic=${topic}|page=${gaPageNumber}}}\n`;
+	let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English']; // [[MOS:TALKORDER]]
+	return addWikicodeAfterTemplates(talkWikicode, templates, codeToAdd);
+}
+
+export function addFailedGATemplate(talkWikicode, topic, gaPageNumber) {
+	let codeToAdd = `{{FailedGA|~~~~~|topic=${topic}|page=${gaPageNumber}}}\n`;
+	let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English']; // [[MOS:TALKORDER]]
+	return addWikicodeAfterTemplates(talkWikicode, templates, codeToAdd);
+}
+
+/**
+@param {array} templates
+Search algorithm looks for \n after the searched templates. If not present, it will not match.
+*/
+export function addWikicodeAfterTemplates(wikicode, templates, codeToAdd) {
+	let insertPosition = 0;
+	for ( let template of templates ) {
+		// TODO: handle nested templates
+		let regex = new RegExp(`{{${regExEscape(template)}[^\\}]*}}\\n`, 'ig');
+		let endOfTemplatePosition = getEndOfStringPositionOfLastMatch(wikicode, regex);
+		if ( endOfTemplatePosition > insertPosition ) {
+			insertPosition = endOfTemplatePosition;
+		}
+	}
+	return insertStringIntoStringAtPosition(wikicode, codeToAdd, insertPosition);
+}
+
+/**
+@param {RegExp} regex /g flag must be set
+@returns {int} endOfStringPosition Returns zero if not found
+*/
+export function getEndOfStringPositionOfLastMatch(haystack, regex) {
+	let matches = [...haystack.matchAll(regex)];
+	let hasMatches = matches.length;
+	if ( hasMatches ) {
+		let lastMatch = matches[matches.length - 1];
+		let lastMatchStartPosition = lastMatch['index'];
+		let lastMatchStringLength = lastMatch[0].length;
+		let lastMatchEndPosition = lastMatchStartPosition + lastMatchStringLength;
+		return lastMatchEndPosition;
+	}
+	return 0;
 }
 
 export function changeWikiProjectArticleClassToGA(talkWikicode) {
@@ -198,11 +239,6 @@ export function firstTemplateDeleteParameter(wikicode, template, parameter) {
 	return wikicode.replace(regex, '');
 }
 
-export function addFailedGATemplate(talkWikicode, topic, gaPageNumber) {
-	let prependString = `{{FailedGA|~~~~~|topic=${topic}|page=${gaPageNumber}}}`;
-	return prependString + '\n' + talkWikicode;
-}
-
 export function addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle) {
 	// find heading
 	let headingStartPosition = getGASubpageHeadingPosition(gaSubpageHeading, gaSubpageWikicode);
@@ -246,6 +282,11 @@ export function removeFormattingThatInterferesWithSort(str) {
 
 export function aSortsLowerAlphabeticallyThanB(a, b) {
 	// JavaScript appears to use an ASCII sort. See https://en.wikipedia.org/wiki/ASCII#Printable_characters
+
+	// make sure "A" and "a" sort the same. prevents a bug
+	a = a.toLowerCase();
+	b = b.toLowerCase();
+
 	let arr1 = [a, b];
 	let arr2 = [a, b];
 	return JSON.stringify(arr1.sort()) === JSON.stringify(arr2);

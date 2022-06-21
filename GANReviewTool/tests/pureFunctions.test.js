@@ -296,6 +296,19 @@ describe('addGATemplate(talkWikicode, topic, gaPageNumber)', () => {
 Test Test`;
 		expect(functions.addGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
 	});
+
+	test('Below {{Talk Header}}', () => {
+		let talkWikicode =
+`{{Talk Header}}
+Test Test`;
+		let topic = 'agriculture, food, and drink';
+		let gaPageNumber = 2;
+		let output =
+`{{Talk Header}}
+{{GA|~~~~~|topic=agriculture, food, and drink|page=2}}
+Test Test`;
+		expect(functions.addGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+	});
 });
 
 describe('addFailedGATemplate(talkWikicode, topic, gaPageNumber)', () => {
@@ -305,6 +318,19 @@ describe('addFailedGATemplate(talkWikicode, topic, gaPageNumber)', () => {
 		let gaPageNumber = 2;
 		let output =
 `{{FailedGA|~~~~~|topic=agriculture, food, and drink|page=2}}
+Test Test`;
+		expect(functions.addFailedGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+	});
+
+	test('below {{Talk Header}}', () => {
+		let talkWikicode =
+`{{Talk Header}}
+Test Test`;
+		let topic = 'agriculture, food, and drink';
+		let gaPageNumber = 2;
+		let output =
+`{{Talk Header}}
+{{FailedGA|~~~~~|topic=agriculture, food, and drink|page=2}}
 Test Test`;
 		expect(functions.addFailedGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
 	});
@@ -765,6 +791,13 @@ describe('aSortsLowerAlphabeticallyThanB(a, b)', () => {
 	test('numbers should sort lower than letters', () => {
 		let a = '1';
 		let b = 'a';
+		let output = true;
+		expect(functions.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
+	});
+
+	test('lowercase vs uppercase should evaluate the same', () => {
+		let a = 'de Havilland, Olivia';
+		let b = 'Rao, Amrita';
 		let output = true;
 		expect(functions.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
 	});
@@ -1390,6 +1423,38 @@ __NOTOC__
 `;
 		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
+
+	test('list has a random entry that starts with a lowercase letter', () => {
+		let gaSubpageHeading = `=====Actors, directors, models, performers, and celebrities=====`;
+		let gaTitle = `Amrita Rao`;
+		let gaDisplayTitle = `Rao, Amrita`;
+		let gaSubpageWikicode =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Kartik Aaryan|Aaryan, Kartik]]
+[[Nina Davuluri|Davuluri, Nina]]
+[[Daniel Day-Lewis|Day-Lewis, Daniel]]
+[[Olivia de Havilland|de Havilland, Olivia]]
+[[Belle Delphine|Delphine, Belle]]
+[[Ellen Pompeo|Pompeo, Ellen]]
+[[Amanda Seyfried|Seyfried, Amanda]]
+}}
+`;
+		let output =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Kartik Aaryan|Aaryan, Kartik]]
+[[Nina Davuluri|Davuluri, Nina]]
+[[Daniel Day-Lewis|Day-Lewis, Daniel]]
+[[Olivia de Havilland|de Havilland, Olivia]]
+[[Belle Delphine|Delphine, Belle]]
+[[Ellen Pompeo|Pompeo, Ellen]]
+[[Amrita Rao|Rao, Amrita]]
+[[Amanda Seyfried|Seyfried, Amanda]]
+}}
+`;
+		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
 });
 
 describe('firstTemplateGetParameterValue(wikicode, template, parameter)', () => {
@@ -1542,5 +1607,90 @@ describe('hasArticleHistoryTemplate(wikicode)', () => {
 		let wikicode = `{{articlehistory}}`;
 		let output = true;
 		expect(functions.hasArticleHistoryTemplate(wikicode)).toBe(output);
+	});
+});
+
+describe('addWikicodeAfterTemplates(wikicode, templates, codeToAdd)', () => {
+	test('at top (no templates detected)', () => {
+		let wikicode =
+`{{Old AfD multi|page=Murder of Arthur Labinjo-Hughes|date=5 December 2021|result='''[[WP:SNOW|SNOW]] keep'''}}
+{{Annual readership}}
+{{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
+{{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
+}}`;
+		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
+		let codeToAdd = `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}\n`;
+		let output =
+`{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}
+{{Old AfD multi|page=Murder of Arthur Labinjo-Hughes|date=5 December 2021|result='''[[WP:SNOW|SNOW]] keep'''}}
+{{Annual readership}}
+{{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
+{{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
+}}`;
+		expect(functions.addWikicodeAfterTemplates(wikicode, templates, codeToAdd)).toBe(output);
+	});
+
+	test('after {{Talk header}}', () => {
+		let wikicode =
+`{{Talk header}}
+{{Old AfD multi|page=Murder of Arthur Labinjo-Hughes|date=5 December 2021|result='''[[WP:SNOW|SNOW]] keep'''}}
+{{Annual readership}}
+{{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
+{{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
+}}`;
+		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
+		let codeToAdd = `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}\n`;
+		let output =
+`{{Talk header}}
+{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}
+{{Old AfD multi|page=Murder of Arthur Labinjo-Hughes|date=5 December 2021|result='''[[WP:SNOW|SNOW]] keep'''}}
+{{Annual readership}}
+{{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
+{{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
+}}`;
+		expect(functions.addWikicodeAfterTemplates(wikicode, templates, codeToAdd)).toBe(output);
+	});
+
+	test('case insensitive template names', () => {
+		let wikicode =
+`{{Talk Header}}
+`;
+		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
+		let codeToAdd = `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}\n`;
+		let output =
+`{{Talk Header}}
+{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}
+`;
+		expect(functions.addWikicodeAfterTemplates(wikicode, templates, codeToAdd)).toBe(output);
+	});
+});
+
+describe('getEndOfStringPositionOfLastMatch(haystack, regex)', () => {
+	test('No match', () => {
+		let haystack = `AAA BBB`;
+		let regex = new RegExp('ghi', 'ig');
+		let output = 0;
+		expect(functions.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
+	});
+
+	test('1 match', () => {
+		let haystack = `Abc def`;
+		let regex = new RegExp('Abc', 'ig');
+		let output = 3;
+		expect(functions.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
+	});
+
+	test('2 matches', () => {
+		let haystack = `Abc Abc def`;
+		let regex = new RegExp('Abc', 'ig');
+		let output = 7;
+		expect(functions.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
+	});
+
+	test('Case insensitive', () => {
+		let haystack = `Abc Abc def`;
+		let regex = new RegExp('abc', 'ig');
+		let output = 7;
+		expect(functions.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
 	});
 });

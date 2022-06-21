@@ -720,9 +720,12 @@ export function getHTML(gaTitle) {
 				<p>
 					<strong>Wikicode to display when adding this to the list of good articles at [[<a href="/wiki/Wikipedia:Good_articles">WP:GA</a>]].</strong><br />
 					Names should be in format: <code>Lastname, Firstname</code><br />
-					Television shows should be italicized: <code>''Television show''</code><br />
+					Television shows should be italicized: <code>''Jeopardy''</code><br />
+					Albums should be italicized: <code>''The Dark Side of the Moon''</code><br />
 					Television episodes should be surrounded by double quotes: <code>"Episode name"</code><br />
+					Parentheses at the end should not be formatted: <code>''Revolver'' (Beatles album)</code><br />
 					Artwork, poetry, etc. may also require special formatting<br />
+					More info at [[<a href="/wiki/Wikipedia:Manual_of_Style/Titles_of_works#Italics">MOS:TITLE#Italics</a>]] and [[<a href="/wiki/Wikipedia:Manual_of_Style/Titles_of_works#Quotation_marks">MOS:TITLE#Quotation marks</a>]]<br />
 					<input type="text" name="GANReviewTool-DisplayWikicode" value="${escapeHtml(gaTitle)}" />
 				</p>
 			</div>
