@@ -95,6 +95,10 @@ function deleteNoWikiTags($str) {
 	return $str;
 }
 
+function deleteRequireFunctions($str) {
+	return preg_replace('/^.*require\(.*$\n/m', '', $str);
+}
+
 $wikitext = "// === Compiled with Novem Linguae's publish.php script ======================\n\n";
 $wikitext .= "$(async function() {\n\n// === $MAIN_FILE_PATH ======================================================\n\n";
 
@@ -114,6 +118,7 @@ $wikitext .= "\n\n});";
 $wikitext = deleteNoWikiTags($wikitext);
 $wikitext = deleteImportStatements($wikitext);
 $wikitext = deleteExportStatements($wikitext);
+$wikitext = deleteRequireFunctions($wikitext);
 
 $wikitext = "// <nowiki>\n\n" . $wikitext . "\n\n// </nowiki>";
 

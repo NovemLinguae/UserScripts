@@ -1,5 +1,6 @@
-export function getHTML(gaTitle) {
-	return `
+export class GANReviewToolView {
+	getHTML(gaTitle) {
+		return `
 <style>
 	#GANReviewTool {
 		border: 1px solid black;
@@ -726,7 +727,7 @@ export function getHTML(gaTitle) {
 					Parentheses at the end should not be formatted: <code>''Revolver'' (Beatles album)</code><br />
 					Artwork, poetry, etc. may also require special formatting<br />
 					More info at [[<a href="/wiki/Wikipedia:Manual_of_Style/Titles_of_works#Italics">MOS:TITLE#Italics</a>]] and [[<a href="/wiki/Wikipedia:Manual_of_Style/Titles_of_works#Quotation_marks">MOS:TITLE#Quotation marks</a>]]<br />
-					<input type="text" name="GANReviewTool-DisplayWikicode" value="${escapeHtml(gaTitle)}" />
+					<input type="text" name="GANReviewTool-DisplayWikicode" value="${this.escapeHtml(gaTitle)}" />
 				</p>
 			</div>
 			<!-- endif -->
@@ -747,4 +748,18 @@ export function getHTML(gaTitle) {
 	</div>
 </div>
 `;
+	}
+
+	/**
+	  * CC BY-SA 4.0, bjornd, https://stackoverflow.com/a/6234804/3480193
+	  * @private
+	  */
+	escapeHtml(unsafe) {
+		return unsafe
+			.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#039;");
+	}
 }

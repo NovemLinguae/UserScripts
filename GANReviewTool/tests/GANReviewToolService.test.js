@@ -1,118 +1,13 @@
-import * as functions from "../modules/pureFunctions.js";
+//import * as service from "../modules/GANReviewToolService.js";
+const { GANReviewToolService } = require("../modules/GANReviewToolService");
 
 // Babel is required to use ES6 module syntax
 // Copy package.json and .babelrc from a project that already has this working
 // Babel tutorial: https://www.sitepoint.com/babel-beginners-guide/
 
-describe('isGASubPage(title)', () => {
-	test('capitalized, single digit', () => {
-		let title = `Talk:Sora Amamiya/GA2`;
-		let output = true;
-		expect(functions.isGASubPage(title)).toBe(output);
-	});
+// npx jest --coverage for HTML code coverage report, in /coverage/lcov-report
 
-	test('capitalized, double digits', () => {
-		let title = `Talk:Sora Amamiya/GA21`;
-		let output = true;
-		expect(functions.isGASubPage(title)).toBe(output);
-	});
-
-	test('subpage of GA page', () => {
-		let title = `Talk:Sora Amamiya/GA2/test`;
-		let output = false;
-		expect(functions.isGASubPage(title)).toBe(output);
-	});
-
-	test('talk page', () => {
-		let title = `Talk:Sora Amamiya`;
-		let output = false;
-		expect(functions.isGASubPage(title)).toBe(output);
-	});
-
-	test('main article', () => {
-		let title = `Sora Amamiya`;
-		let output = false;
-		expect(functions.isGASubPage(title)).toBe(output);
-	});
-
-	test('lowercase', () => {
-		let title = `Talk:Sora Amamiya/ga2`;
-		let output = false;
-		expect(functions.isGASubPage(title)).toBe(output);
-	});
-});
-
-describe('getGATitle(title)', () => {
-	test('talk and subpage', () => {
-		let title = `Talk:Sora_Amamiya/GA2`;
-		let output = 'Sora Amamiya';
-		expect(functions.getGATitle(title)).toBe(output);
-	});
-
-	test('talk page', () => {
-		let title = `Talk:Sora_Amamiya`;
-		let output = 'Sora Amamiya';
-		expect(functions.getGATitle(title)).toBe(output);
-	});
-
-	test('user page', () => {
-		let title = `User:Novem_Linguae/sandbox`;
-		let output = 'User:Novem Linguae';
-		expect(functions.getGATitle(title)).toBe(output);
-	});
-
-	test('article itself', () => {
-		let title = `Sora_Amamiya`;
-		let output = 'Sora Amamiya';
-		expect(functions.getGATitle(title)).toBe(output);
-	});
-
-	test('no underscores', () => {
-		let title = `Sora_Amamiya`;
-		let output = 'Sora Amamiya';
-		expect(functions.getGATitle(title)).toBe(output);
-	});
-
-	test('no underscores for multi-word titles', () => {
-		let title = `2021_French_Grand_Prix`;
-		let output = '2021 French Grand Prix';
-		expect(functions.getGATitle(title)).toBe(output);
-	});
-});
-
-describe('escapeHtml(unsafe)', () => {
-	test('Test', () => {
-		let unsafe = `Test`;
-		let output = 'Test';
-		expect(functions.escapeHtml(unsafe)).toBe(output);
-	});
-
-	test(`"&<>`, () => {
-		let unsafe = `"&<>`;
-		let output = '&quot;&amp;&lt;&gt;';
-		expect(functions.escapeHtml(unsafe)).toBe(output);
-	});
-});
-
-describe('getGATalkTitle(gaTitle)', () => {
-	test('mainspace', () => {
-		let gaTitle = `Sora Amamiya`;
-		let output = 'Talk:Sora Amamiya';
-		expect(functions.getGATalkTitle(gaTitle)).toBe(output);
-	});
-
-	test('userspace', () => {
-		let gaTitle = `User:Novem Linguae`;
-		let output = 'User talk:Novem Linguae';
-		expect(functions.getGATalkTitle(gaTitle)).toBe(output);
-	});
-
-	test('two colons', () => {
-		let gaTitle = `User:Novem Linguae:test`;
-		let output = 'User talk:Novem Linguae:test';
-		expect(functions.getGATalkTitle(gaTitle)).toBe(output);
-	});
-});
+let service = new GANReviewToolService();
 
 describe('placeATOP(wikicode, result, color)', () => {
 	test('h2 present', () => {
@@ -130,9 +25,7 @@ test
 
 blah`;
 		let output =
-`
-
-== Test ==
+`== Test ==
 {{atopg
 | status = 
 | result = Passed
@@ -144,8 +37,9 @@ blah`;
 test
 
 blah
-{{abot}}`;
-		expect(functions.placeATOP(wikicode, result, color)).toBe(output);
+{{abot}}
+`;
+		expect(service.placeATOP(wikicode, result, color)).toBe(output);
 	});
 
 	test('h2 absent', () => {
@@ -163,8 +57,9 @@ blah`;
 test
 
 blah
-{{abot}}`;
-		expect(functions.placeATOP(wikicode, result, color)).toBe(output);
+{{abot}}
+`;
+		expect(service.placeATOP(wikicode, result, color)).toBe(output);
 	});
 
 	test('failed instead of passed', () => {
@@ -182,8 +77,9 @@ blah`;
 test
 
 blah
-{{abot}}`;
-		expect(functions.placeATOP(wikicode, result, color)).toBe(output);
+{{abot}}
+`;
+		expect(service.placeATOP(wikicode, result, color)).toBe(output);
 	});
 });
 
@@ -191,25 +87,25 @@ describe('getTopicFromGANomineeTemplate(talkWikicode)', () => {
 	test('topic', () => {
 		let talkWikicode = `{{GA nominee|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|topic=Media and drama|status=onhold|note=}}`;
 		let output = 'Media and drama';
-		expect(functions.getTopicFromGANomineeTemplate(talkWikicode)).toBe(output);
+		expect(service.getTopicFromGANomineeTemplate(talkWikicode)).toBe(output);
 	});
 
 	test('subtopic', () => {
 		let talkWikicode = `{{GA nominee|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|subtopic=Media and drama| status=onhold|note=}}`;
 		let output = 'Media and drama';
-		expect(functions.getTopicFromGANomineeTemplate(talkWikicode)).toBe(output);
+		expect(service.getTopicFromGANomineeTemplate(talkWikicode)).toBe(output);
 	});
 
 	test('whitespace', () => {
 		let talkWikicode = `{{GA nominee|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|subtopic= Media and drama | status=onhold|note=}}`;
 		let output = 'Media and drama';
-		expect(functions.getTopicFromGANomineeTemplate(talkWikicode)).toBe(output);
+		expect(service.getTopicFromGANomineeTemplate(talkWikicode)).toBe(output);
 	});
 
 	test('lowercase', () => {
 		let talkWikicode = `{{ga nominee|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|topic=Media and drama|status=onhold|note=}}`;
 		let output = 'Media and drama';
-		expect(functions.getTopicFromGANomineeTemplate(talkWikicode)).toBe(output);
+		expect(service.getTopicFromGANomineeTemplate(talkWikicode)).toBe(output);
 	});
 });
 
@@ -217,13 +113,13 @@ describe('deleteGANomineeTemplate(talkWikicode)', () => {
 	test('normal', () => {
 		let talkWikicode = `{{Test}}{{GA nominee|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|topic=Media and drama|status=onhold|note=}}{{Test2}}`;
 		let output = '{{Test}}{{Test2}}';
-		expect(functions.deleteGANomineeTemplate(talkWikicode)).toBe(output);
+		expect(service.deleteGANomineeTemplate(talkWikicode)).toBe(output);
 	});
 
 	test('lowercase', () => {
 		let talkWikicode = `{{Test}}{{ga nominee|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|topic=Media and drama|status=onhold|note=}}{{Test2}}`;
 		let output = '{{Test}}{{Test2}}';
-		expect(functions.deleteGANomineeTemplate(talkWikicode)).toBe(output);
+		expect(service.deleteGANomineeTemplate(talkWikicode)).toBe(output);
 	});
 
 	test('delete a line break too', () => {
@@ -234,7 +130,7 @@ describe('deleteGANomineeTemplate(talkWikicode)', () => {
 		let output =
 `{{Test}}
 {{Test2}}`;
-		expect(functions.deleteGANomineeTemplate(talkWikicode)).toBe(output);
+		expect(service.deleteGANomineeTemplate(talkWikicode)).toBe(output);
 	});
 });
 
@@ -244,7 +140,7 @@ describe('getTemplateParameter(wikicode, templateName, parameterName)', () => {
 		let templateName = 'GA nominee';
 		let parameterName = 'topic';
 		let output = 'Media and drama';
-		expect(functions.getTemplateParameter(wikicode, templateName, parameterName)).toBe(output);
+		expect(service.getTemplateParameter(wikicode, templateName, parameterName)).toBe(output);
 	});
 
 	test('template name case difference', () => {
@@ -252,7 +148,7 @@ describe('getTemplateParameter(wikicode, templateName, parameterName)', () => {
 		let templateName = 'GA nominee';
 		let parameterName = 'topic';
 		let output = 'Media and drama';
-		expect(functions.getTemplateParameter(wikicode, templateName, parameterName)).toBe(output);
+		expect(service.getTemplateParameter(wikicode, templateName, parameterName)).toBe(output);
 	});
 
 	test('parameter name case difference', () => {
@@ -260,7 +156,7 @@ describe('getTemplateParameter(wikicode, templateName, parameterName)', () => {
 		let templateName = 'GA nominee';
 		let parameterName = 'topic';
 		let output = 'Media and drama';
-		expect(functions.getTemplateParameter(wikicode, templateName, parameterName)).toBe(output);
+		expect(service.getTemplateParameter(wikicode, templateName, parameterName)).toBe(output);
 	});
 
 	test('not found', () => {
@@ -268,7 +164,7 @@ describe('getTemplateParameter(wikicode, templateName, parameterName)', () => {
 		let templateName = 'GA nominee';
 		let parameterName = 'topic';
 		let output = null;
-		expect(functions.getTemplateParameter(wikicode, templateName, parameterName)).toBe(output);
+		expect(service.getTemplateParameter(wikicode, templateName, parameterName)).toBe(output);
 	});
 });
 
@@ -276,13 +172,13 @@ describe('regExEscape(string)', () => {
 	test('Nothing to escape', () => {
 		let string = `Test Test`;
 		let output = 'Test Test';
-		expect(functions.regExEscape(string)).toBe(output);
+		expect(service.regExEscape(string)).toBe(output);
 	});
 
 	test('Escape {', () => {
 		let string = `Test{Test`;
 		let output = 'Test\\{Test';
-		expect(functions.regExEscape(string)).toBe(output);
+		expect(service.regExEscape(string)).toBe(output);
 	});
 });
 
@@ -294,7 +190,7 @@ describe('addGATemplate(talkWikicode, topic, gaPageNumber)', () => {
 		let output =
 `{{GA|~~~~~|topic=agriculture, food, and drink|page=2}}
 Test Test`;
-		expect(functions.addGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+		expect(service.addGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
 	});
 
 	test('Below {{Talk Header}}', () => {
@@ -307,7 +203,41 @@ Test Test`;
 `{{Talk Header}}
 {{GA|~~~~~|topic=agriculture, food, and drink|page=2}}
 Test Test`;
-		expect(functions.addGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+		expect(service.addGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+	});
+
+	test('Below {{talkheader}}', () => {
+		let talkWikicode =
+`{{talkheader}}
+Test Test`;
+		let topic = 'agriculture, food, and drink';
+		let gaPageNumber = 2;
+		let output =
+`{{talkheader}}
+{{GA|~~~~~|topic=agriculture, food, and drink|page=2}}
+Test Test`;
+		expect(service.addGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+	});
+});
+
+describe('getFirstTemplateNameFromWikicode(wikicode)', () => {
+	test('No template', () => {
+		let wikicode = `Hi`;
+		expect(() => service.getFirstTemplateNameFromWikicode(wikicode)).toThrow('getFirstTemplateNameFromWikicode: No template found in Wikicode.');
+	});
+
+	test('Normal', () => {
+		let wikicode = `Hi{{Test|hello}}`;
+		let output = `Test`;
+		expect(service.getFirstTemplateNameFromWikicode(wikicode)).toBe(output);
+	});
+});
+
+describe('addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd)', () => {
+	test('No template', () => {
+		let talkWikicode = `Hi`;
+		let codeToAdd = `{{NonExistentTemplate0967}}`;
+		expect(() => service.addTemplateInCorrectMOSTalkOrderPosition(talkWikicode,codeToAdd)).toThrow('addTemplateInCorrectMOSTalkOrderPosition: Supplied template is not in dictionary. Unsure where to place it.');
 	});
 });
 
@@ -319,7 +249,7 @@ describe('addFailedGATemplate(talkWikicode, topic, gaPageNumber)', () => {
 		let output =
 `{{FailedGA|~~~~~|topic=agriculture, food, and drink|page=2}}
 Test Test`;
-		expect(functions.addFailedGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+		expect(service.addFailedGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
 	});
 
 	test('below {{Talk Header}}', () => {
@@ -332,7 +262,7 @@ Test Test`;
 `{{Talk Header}}
 {{FailedGA|~~~~~|topic=agriculture, food, and drink|page=2}}
 Test Test`;
-		expect(functions.addFailedGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+		expect(service.addFailedGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
 	});
 });
 
@@ -352,7 +282,7 @@ describe('changeWikiProjectArticleClassToGA(talkWikicode)', () => {
 {{WikiProject Japan|class=GA|biography|yes|importance=low|listas=Amamiya, Sora}}
 {{WikiProject Women in Music |class=GA |importance=Low|listas=Amamiya, Sora}}
 }}`;
-		expect(functions.changeWikiProjectArticleClassToGA(talkWikicode)).toBe(output);
+		expect(service.changeWikiProjectArticleClassToGA(talkWikicode)).toBe(output);
 	});
 
 	test(`don't change |class in non-WikiProject templates`, () => {
@@ -362,7 +292,7 @@ describe('changeWikiProjectArticleClassToGA(talkWikicode)', () => {
 		let output =
 `{{WikiProject Anime and manga|class=GA|biography=yes|importance=low|listas=Amamiya, Sora}}
 {{Random template|class=DontChangeMe}}`;
-		expect(functions.changeWikiProjectArticleClassToGA(talkWikicode)).toBe(output);
+		expect(service.changeWikiProjectArticleClassToGA(talkWikicode)).toBe(output);
 	});
 });
 
@@ -377,7 +307,7 @@ describe('determineNextActionNumber(talkWikicode)', () => {
 |action1oldid=47350127
 }}`;
 		let output = 2;
-		expect(functions.determineNextActionNumber(talkWikicode)).toBe(output);
+		expect(service.determineNextActionNumber(talkWikicode)).toBe(output);
 	});
 
 	test('2', () => {
@@ -395,7 +325,7 @@ describe('determineNextActionNumber(talkWikicode)', () => {
 |action2oldid=68920418
 }}`;
 		let output = 3;
-		expect(functions.determineNextActionNumber(talkWikicode)).toBe(output);
+		expect(service.determineNextActionNumber(talkWikicode)).toBe(output);
 	});
 });
 
@@ -427,7 +357,7 @@ describe('updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedO
 |currentstatus = GA
 |topic = agriculture
 }}`;
-		expect(functions.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed)).toBe(output);
+		expect(service.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed)).toBe(output);
 	});
 
 	test('listed, FFAC/GA', () => {
@@ -458,7 +388,7 @@ describe('updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedO
 |currentstatus = FFAC/GA
 |topic = Natural Sciences
 }}`;
-		expect(functions.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed)).toBe(output);
+		expect(service.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed)).toBe(output);
 	});
 
 	test('failed, DGA', () => {
@@ -603,7 +533,7 @@ describe('updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedO
 |currentstatus = DGA
 }}
 `;
-		expect(functions.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed)).toBe(output);
+		expect(service.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed)).toBe(output);
 	});
 });
 
@@ -640,7 +570,7 @@ describe('firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeT
 |currentstatus = GA
 |topic = Natural Sciences
 }}`;
-		expect(functions.firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert)).toBe(output);
+		expect(service.firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert)).toBe(output);
 	});
 
 	test('should be case insensitive', () => {
@@ -667,7 +597,7 @@ describe('firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeT
 |currentstatus = DGA
 }}
 `;
-		expect(functions.firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert)).toBe(output);
+		expect(service.firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert)).toBe(output);
 	});
 });
 
@@ -676,28 +606,28 @@ describe('getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)', ()
 		let wikicode = `=====Bodies of water and water formations=====`;
 		let shortenedVersionInComboBox = `=====Bodies of water and water formations=====`;
 		let output = 0;
-		expect(functions.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
+		expect(service.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
 	});
 
 	test('No match', () => {
 		let wikicode = `blah blah blah`;
 		let shortenedVersionInComboBox = `=====Bodies of water and water formations=====`;
 		let output = -1;
-		expect(functions.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
+		expect(service.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
 	});
 
 	test('Input no space in front of ===, wikicode yes space in front of ===', () => {
 		let wikicode = `===== Landforms =====`;
 		let shortenedVersionInComboBox = `=====Landforms=====`;
 		let output = 0;
-		expect(functions.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
+		expect(service.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
 	});
 
 	test('Wikicode has [[File:', () => {
 		let wikicode = `===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===`;
 		let shortenedVersionInComboBox = `===Geography===`;
 		let output = 0;
-		expect(functions.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
+		expect(service.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
 	});
 
 	test('two headings with same name', () => {
@@ -709,7 +639,7 @@ describe('getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)', ()
 `;
 		let shortenedVersionInComboBox = `=====Art=====`;
 		let output = 74;
-		expect(functions.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
+		expect(service.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
 	});
 });
 
@@ -719,7 +649,7 @@ describe('findFirstStringAfterPosition(needle, haystack, position)', () => {
 		let haystack = `Haystack`;
 		let position = 3;
 		let output = -1;
-		expect(functions.findFirstStringAfterPosition(needle, haystack, position)).toBe(output);
+		expect(service.findFirstStringAfterPosition(needle, haystack, position)).toBe(output);
 	});
 
 	test('Start at 0. Match immediately.', () => {
@@ -727,7 +657,7 @@ describe('findFirstStringAfterPosition(needle, haystack, position)', () => {
 		let haystack = `Haystack`;
 		let position = 0;
 		let output = 0;
-		expect(functions.findFirstStringAfterPosition(needle, haystack, position)).toBe(output);
+		expect(service.findFirstStringAfterPosition(needle, haystack, position)).toBe(output);
 	});
 
 	test('Start at 3. Match immediately.', () => {
@@ -735,7 +665,7 @@ describe('findFirstStringAfterPosition(needle, haystack, position)', () => {
 		let haystack = `Haystack`;
 		let position = 3;
 		let output = 3;
-		expect(functions.findFirstStringAfterPosition(needle, haystack, position)).toBe(output);
+		expect(service.findFirstStringAfterPosition(needle, haystack, position)).toBe(output);
 	});
 
 	test('Start at 3. Match later.', () => {
@@ -743,7 +673,7 @@ describe('findFirstStringAfterPosition(needle, haystack, position)', () => {
 		let haystack = `Haystack`;
 		let position = 0;
 		let output = 5;
-		expect(functions.findFirstStringAfterPosition(needle, haystack, position)).toBe(output);
+		expect(service.findFirstStringAfterPosition(needle, haystack, position)).toBe(output);
 	});
 });
 
@@ -753,7 +683,7 @@ describe('insertStringIntoStringAtPosition(bigString, insertString, position)', 
 		let insertString = 'Needle';
 		let position = 3;
 		let output = 'HayNeedlestack';
-		expect(functions.insertStringIntoStringAtPosition(bigString, insertString, position)).toBe(output);
+		expect(service.insertStringIntoStringAtPosition(bigString, insertString, position)).toBe(output);
 	});
 
 	test('Start', () => {
@@ -761,7 +691,7 @@ describe('insertStringIntoStringAtPosition(bigString, insertString, position)', 
 		let insertString = 'Needle';
 		let position = 0;
 		let output = 'NeedleHaystack';
-		expect(functions.insertStringIntoStringAtPosition(bigString, insertString, position)).toBe(output);
+		expect(service.insertStringIntoStringAtPosition(bigString, insertString, position)).toBe(output);
 	});
 
 	test('End', () => {
@@ -769,7 +699,7 @@ describe('insertStringIntoStringAtPosition(bigString, insertString, position)', 
 		let insertString = 'Needle';
 		let position = 8;
 		let output = 'HaystackNeedle';
-		expect(functions.insertStringIntoStringAtPosition(bigString, insertString, position)).toBe(output);
+		expect(service.insertStringIntoStringAtPosition(bigString, insertString, position)).toBe(output);
 	});
 });
 
@@ -778,28 +708,28 @@ describe('aSortsLowerAlphabeticallyThanB(a, b)', () => {
 		let a = 'a';
 		let b = 'b';
 		let output = true;
-		expect(functions.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
+		expect(service.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
 	});
 
 	test('b, a', () => {
 		let a = 'b';
 		let b = 'a';
 		let output = false;
-		expect(functions.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
+		expect(service.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
 	});
 
 	test('numbers should sort lower than letters', () => {
 		let a = '1';
 		let b = 'a';
 		let output = true;
-		expect(functions.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
+		expect(service.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
 	});
 
 	test('lowercase vs uppercase should evaluate the same', () => {
 		let a = 'de Havilland, Olivia';
 		let b = 'Rao, Amrita';
 		let output = true;
-		expect(functions.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
+		expect(service.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
 	});
 });
 
@@ -807,89 +737,433 @@ describe('removeFormattingThatInterferesWithSort(str)', () => {
 	test('delete [[ ]]', () => {
 		let str = `[[Abyssal plain]]`
 		let output = `Abyssal plain`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test('delete entire first part of piped link', () => {
 		let str = `[[Abyssal plain|Test]]`
 		let output = `Test`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test('delete anything in front of [[', () => {
 		let str = `"[[Abyssal plain]]"`
 		let output = `Abyssal plain`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test(`delete "`, () => {
 		let str = `[[Abyssal plain|"Test"]]`
 		let output = `Test`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test(`delete ''`, () => {
 		let str = `[[Abyssal plain|''Test'']]`
 		let output = `Test`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test(`don't delete single '`, () => {
 		let str = `[[Abyssal plain|I can't stop lovin' you]]`
 		let output = `I can't stop lovin' you`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test(`[[David Attenborough|Attenborough, David]]`, () => {
 		let str = `[[David Attenborough|Attenborough, David]]`
 		let output = `Attenborough, David`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test(`[[Herbert E. Balch|Balch, Herbert E.]]`, () => {
 		let str = `[[Herbert E. Balch|Balch, Herbert E.]]`
 		let output = `Balch, Herbert E.`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test(`[[ABC|{{ABC}}]]`, () => {
 		let str = `[[ABC|{{ABC}}]]`
 		let output = `{{ABC}}`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test(`[[&Antelope]]`, () => {
 		let str = `[[&Antelope]]`
 		let output = `&Antelope`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test(`[[The New York Times]]`, () => {
 		let str = `[[The New York Times]]`
 		let output = `New York Times`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test(`''[[A Book of Mediterranean Food]]''`, () => {
 		let str = `''[[A Book of Mediterranean Food]]''`
 		let output = `Book of Mediterranean Food`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test(`''[[an unexpected journey]]''`, () => {
 		let str = `''[[an unexpected journey]]''`
 		let output = `unexpected journey`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 
 	test(`[[The Compleat Housewife|''The Compleat Housewife'']]`, () => {
 		let str = `[[The Compleat Housewife|''The Compleat Housewife'']]`
 		let output = `Compleat Housewife`;
-		expect(functions.removeFormattingThatInterferesWithSort(str)).toBe(output);
+		expect(service.removeFormattingThatInterferesWithSort(str)).toBe(output);
 	});
 });
 
-describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)', () => {
+describe('firstTemplateGetParameterValue(wikicode, template, parameter)', () => {
+	test('param exists', () => {
+		let wikicode =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+
+|action2=GAN
+|action2date=~~~~~
+|action2link=Talk:Cow tipping/GA1
+|action2result=listed
+|currentstatus=GA
+|topic=agriculture
+}}`;
+		let template = `Article history`;
+		let parameter = `topic`;
+		let output = 'agriculture';
+		expect(service.firstTemplateGetParameterValue(wikicode, template, parameter)).toBe(output);
+	});
+
+	test('param does not exist', () => {
+		let wikicode =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+}}`;
+		let template = `Article history`;
+		let parameter = `topic`;
+		let output = null;
+		expect(service.firstTemplateGetParameterValue(wikicode, template, parameter)).toBe(output);
+	});
+});
+
+describe('firstTemplateDeleteParameter(wikicode, template, parameter)', () => {
+	test('param exists', () => {
+		let wikicode =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+
+|action2=GAN
+|action2date=~~~~~
+|action2link=Talk:Cow tipping/GA1
+|action2result=listed
+|currentstatus=GA
+|topic=agriculture
+}}`;
+		let template = `Article history`;
+		let parameter = `topic`;
+		let output =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+
+|action2=GAN
+|action2date=~~~~~
+|action2link=Talk:Cow tipping/GA1
+|action2result=listed
+|currentstatus=GA
+}}`;
+		expect(service.firstTemplateDeleteParameter(wikicode, template, parameter)).toBe(output);
+	});
+
+	test('param does not exist', () => {
+		let wikicode =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+}}`;
+		let template = `Article history`;
+		let parameter = `topic`;
+		let output =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+}}`;
+		expect(service.firstTemplateDeleteParameter(wikicode, template, parameter)).toBe(output);
+	});
+
+	test('edge case', () => {
+		let wikicode =
+`{{Article history
+|action1=FAC
+|action1date=14 January 2004
+|action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
+|action1result=failed
+|action1oldid=47350127
+|currentstatus=FFAC
+}}`;
+		let template = 'Article history';
+		let parameter = 'currentstatus';
+		let output =
+`{{Article history
+|action1=FAC
+|action1date=14 January 2004
+|action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
+|action1result=failed
+|action1oldid=47350127
+}}`;
+		expect(service.firstTemplateDeleteParameter(wikicode, template, parameter)).toBe(output);
+	});
+});
+
+describe('hasArticleHistoryTemplate(wikicode)', () => {
+	test('no match', () => {
+		let wikicode = `{{GA}}`;
+		let output = false;
+		expect(service.hasArticleHistoryTemplate(wikicode)).toBe(output);
+	});
+
+	test('0 capitals, 1 space', () => {
+		let wikicode = `{{article history}}`;
+		let output = true;
+		expect(service.hasArticleHistoryTemplate(wikicode)).toBe(output);
+	});
+
+	test('1 capital, 1 space', () => {
+		let wikicode = `{{Article history}}`;
+		let output = true;
+		expect(service.hasArticleHistoryTemplate(wikicode)).toBe(output);
+	});
+
+	test('2 capitals, 1 space', () => {
+		let wikicode = `{{Article History}}`;
+		let output = true;
+		expect(service.hasArticleHistoryTemplate(wikicode)).toBe(output);
+	});
+
+	test('2 capitals, 0 spaces', () => {
+		let wikicode = `{{ArticleHistory}}`;
+		let output = true;
+		expect(service.hasArticleHistoryTemplate(wikicode)).toBe(output);
+	});
+
+	test('0 capitals, 0 spaces', () => {
+		let wikicode = `{{articlehistory}}`;
+		let output = true;
+		expect(service.hasArticleHistoryTemplate(wikicode)).toBe(output);
+	});
+});
+
+describe('addWikicodeAfterTemplates(wikicode, templates, codeToAdd)', () => {
+	test('at top (no templates detected)', () => {
+		let wikicode =
+`{{Old AfD multi|page=Murder of Arthur Labinjo-Hughes|date=5 December 2021|result='''[[WP:SNOW|SNOW]] keep'''}}
+{{Annual readership}}
+{{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
+{{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
+}}`;
+		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
+		let codeToAdd = `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}\n`;
+		let output =
+`{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}
+{{Old AfD multi|page=Murder of Arthur Labinjo-Hughes|date=5 December 2021|result='''[[WP:SNOW|SNOW]] keep'''}}
+{{Annual readership}}
+{{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
+{{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
+}}`;
+		expect(service.addWikicodeAfterTemplates(wikicode, templates, codeToAdd)).toBe(output);
+	});
+
+	test('after {{Talk header}}', () => {
+		let wikicode =
+`{{Talk header}}
+{{Old AfD multi|page=Murder of Arthur Labinjo-Hughes|date=5 December 2021|result='''[[WP:SNOW|SNOW]] keep'''}}
+{{Annual readership}}
+{{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
+{{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
+}}`;
+		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
+		let codeToAdd = `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}\n`;
+		let output =
+`{{Talk header}}
+{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}
+{{Old AfD multi|page=Murder of Arthur Labinjo-Hughes|date=5 December 2021|result='''[[WP:SNOW|SNOW]] keep'''}}
+{{Annual readership}}
+{{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
+{{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
+}}`;
+		expect(service.addWikicodeAfterTemplates(wikicode, templates, codeToAdd)).toBe(output);
+	});
+
+	test('case insensitive template names', () => {
+		let wikicode =
+`{{Talk Header}}
+`;
+		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
+		let codeToAdd = `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}\n`;
+		let output =
+`{{Talk Header}}
+{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}
+`;
+		expect(service.addWikicodeAfterTemplates(wikicode, templates, codeToAdd)).toBe(output);
+	});
+});
+
+describe('getEndOfStringPositionOfLastMatch(haystack, regex)', () => {
+	test('No match', () => {
+		let haystack = `AAA BBB`;
+		let regex = new RegExp('ghi', 'ig');
+		let output = 0;
+		expect(service.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
+	});
+
+	test('1 match', () => {
+		let haystack = `Abc def`;
+		let regex = new RegExp('Abc', 'ig');
+		let output = 3;
+		expect(service.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
+	});
+
+	test('2 matches', () => {
+		let haystack = `Abc Abc def`;
+		let regex = new RegExp('Abc', 'ig');
+		let output = 7;
+		expect(service.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
+	});
+
+	test('Case insensitive', () => {
+		let haystack = `Abc Abc def`;
+		let regex = new RegExp('abc', 'ig');
+		let output = 7;
+		expect(service.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
+	});
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ============================= PUBLIC METHODS ===============================
+
+describe('getPassWikicodeForGANPage(reviewWikicode)', () => {
+	test('#1', () => {
+		let reviewWikicode = 
+`==GA Review==
+{{Good article tools}}
+<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the review.''</includeonly>
+::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
+`;
+		let output = 
+`==GA Review==
+{{atopg
+| status = 
+| result = Passed ~~~~
+}}
+{{Good article tools}}
+<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the review.''</includeonly>
+::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
+{{abot}}
+`;
+		expect(service.getPassWikicodeForGANPage(reviewWikicode)).toBe(output);
+	});
+});
+
+describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
+	test('No {{Article history}}', () => {
+		let talkWikicode =
+`{{GA nominee|20:49, 10 May 2022 (UTC)|nominator=[[User:Sinopecynic|Sinopecynic]] ([[User talk:Sinopecynic|talk]])|page=1|subtopic=Art and architecture|status=onreview|note=}}
+{{WikiProject Visual arts|class=b}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
+		let output =
+`{{GA|~~~~~|topic=Art and architecture|page=1}}
+{{WikiProject Visual arts|class=GA}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		expect(service.getPassWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+	});
+
+	test('{{Article history}}', () => {
+		let talkWikicode =
+`{{GA nominee|20:49, 10 May 2022 (UTC)|nominator=[[User:Sinopecynic|Sinopecynic]] ([[User talk:Sinopecynic|talk]])|page=1|subtopic=Art and architecture|status=onreview|note=}}
+{{Article history
+|ftname=Kanye West studio albums
+|action1 = FAC
+|action1date = 13:36, 18 April 2022 (UTC)
+|action1link = Wikipedia:Featured article candidates/Late Registration/archive1
+|action1result = failed
+|action1oldid = 1083301278
+
+|currentstatus= GA
+|topic=music
+}}
+{{WikiProject Visual arts|class=b}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
+		let output =
+`{{Article history
+|ftname=Kanye West studio albums
+|action1 = FAC
+|action1date = 13:36, 18 April 2022 (UTC)
+|action1link = Wikipedia:Featured article candidates/Late Registration/archive1
+|action1result = failed
+|action1oldid = 1083301278
+
+|topic=music
+
+|action2 = GAN
+|action2date = ~~~~~
+|action2link = Thomas Carlyle (Millais)/GA1
+|action2result = listed
+|currentstatus = GA
+}}
+{{WikiProject Visual arts|class=GA}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		expect(service.getPassWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+	});
+});
+
+describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)', () => {
 	test('[[Nile River]]', () => {
 		let gaSubpageHeading = `=====Bodies of water and water formations=====`;
 		let gaTitle = `Nile River`;
@@ -935,7 +1209,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 <!--Start Places level 3 GA subtopic-->
 <div class="mw-collapsible">
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('[[David Attenborough|Attenborough, David]]', () => {
@@ -981,7 +1255,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 <!--Start Places level 3 GA subtopic-->
 <div class="mw-collapsible">
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('Extra spaces in heading near equals signs', () => {
@@ -1035,7 +1309,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 <!--Start Places level 3 GA subtopic-->
 <div class="mw-collapsible">
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('First in section', () => {
@@ -1065,7 +1339,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 [[Antofalla]]
 }}
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('Last in section', () => {
@@ -1095,7 +1369,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 [[Zebra]]
 }}
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('Numbers before letters', () => {
@@ -1125,7 +1399,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 [[Antofalla]]
 }}
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('Display title', () => {
@@ -1155,7 +1429,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 [[Antofalla]]
 }}
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('Italics should be ignored when sorting the haystack', () => {
@@ -1175,7 +1449,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 [[Alepotrypa Cave|''Aleoptrypa Cave'']]
 }}
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('Italics should be ignored when sorting the needle', () => {
@@ -1203,7 +1477,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 [[Building|''Building'']]
 }}
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('{{Further}}', () => {
@@ -1233,7 +1507,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 [[ABC|{{ABC}}]]
 }}
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('Italics should be ignored when sorting the needle', () => {
@@ -1261,7 +1535,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 [[Building|''Building'']]
 }}
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('ignore articles (a, an, the) in haystack', () => {
@@ -1307,7 +1581,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 ''[[The Accomplisht Cook]]''
 }}
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('ignore articles (a, an, the) in needle', () => {
@@ -1349,7 +1623,7 @@ describe('addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplay
 ''[[The Accomplisht Cook]]''
 }}
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('multiple of the same heading', () => {
@@ -1421,7 +1695,7 @@ __NOTOC__
 [[Zzz]]
 }}
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
 	test('list has a random entry that starts with a lowercase letter', () => {
@@ -1453,244 +1727,157 @@ __NOTOC__
 [[Amanda Seyfried|Seyfried, Amanda]]
 }}
 `;
-		expect(functions.addToGASubpage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-});
-
-describe('firstTemplateGetParameterValue(wikicode, template, parameter)', () => {
-	test('param exists', () => {
-		let wikicode =
-`{{Article history
-|action1=AFD
-|action1date=6 June 2007
-|action1link=Wikipedia:Articles for deletion/Cow tipping
-|action1result=kept
-
-|action2=GAN
-|action2date=~~~~~
-|action2link=Talk:Cow tipping/GA1
-|action2result=listed
-|currentstatus=GA
-|topic=agriculture
-}}`;
-		let template = `Article history`;
-		let parameter = `topic`;
-		let output = 'agriculture';
-		expect(functions.firstTemplateGetParameterValue(wikicode, template, parameter)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
-	test('param does not exist', () => {
-		let wikicode =
-`{{Article history
-|action1=AFD
-|action1date=6 June 2007
-|action1link=Wikipedia:Articles for deletion/Cow tipping
-|action1result=kept
-}}`;
-		let template = `Article history`;
-		let parameter = `topic`;
-		let output = null;
-		expect(functions.firstTemplateGetParameterValue(wikicode, template, parameter)).toBe(output);
-	});
-});
-
-describe('firstTemplateDeleteParameter(wikicode, template, parameter)', () => {
-	test('param exists', () => {
-		let wikicode =
-`{{Article history
-|action1=AFD
-|action1date=6 June 2007
-|action1link=Wikipedia:Articles for deletion/Cow tipping
-|action1result=kept
-
-|action2=GAN
-|action2date=~~~~~
-|action2link=Talk:Cow tipping/GA1
-|action2result=listed
-|currentstatus=GA
-|topic=agriculture
-}}`;
-		let template = `Article history`;
-		let parameter = `topic`;
-		let output =
-`{{Article history
-|action1=AFD
-|action1date=6 June 2007
-|action1link=Wikipedia:Articles for deletion/Cow tipping
-|action1result=kept
-
-|action2=GAN
-|action2date=~~~~~
-|action2link=Talk:Cow tipping/GA1
-|action2result=listed
-|currentstatus=GA
-}}`;
-		expect(functions.firstTemplateDeleteParameter(wikicode, template, parameter)).toBe(output);
-	});
-
-	test('param does not exist', () => {
-		let wikicode =
-`{{Article history
-|action1=AFD
-|action1date=6 June 2007
-|action1link=Wikipedia:Articles for deletion/Cow tipping
-|action1result=kept
-}}`;
-		let template = `Article history`;
-		let parameter = `topic`;
-		let output =
-`{{Article history
-|action1=AFD
-|action1date=6 June 2007
-|action1link=Wikipedia:Articles for deletion/Cow tipping
-|action1result=kept
-}}`;
-		expect(functions.firstTemplateDeleteParameter(wikicode, template, parameter)).toBe(output);
-	});
-
-	test('edge case', () => {
-		let wikicode =
-`{{Article history
-|action1=FAC
-|action1date=14 January 2004
-|action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
-|action1result=failed
-|action1oldid=47350127
-|currentstatus=FFAC
-}}`;
-		let template = 'Article history';
-		let parameter = 'currentstatus';
-		let output =
-`{{Article history
-|action1=FAC
-|action1date=14 January 2004
-|action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
-|action1result=failed
-|action1oldid=47350127
-}}`;
-		expect(functions.firstTemplateDeleteParameter(wikicode, template, parameter)).toBe(output);
-	});
-});
-
-describe('hasArticleHistoryTemplate(wikicode)', () => {
-	test('no match', () => {
-		let wikicode = `{{GA}}`;
-		let output = false;
-		expect(functions.hasArticleHistoryTemplate(wikicode)).toBe(output);
-	});
-
-	test('0 capitals, 1 space', () => {
-		let wikicode = `{{article history}}`;
-		let output = true;
-		expect(functions.hasArticleHistoryTemplate(wikicode)).toBe(output);
-	});
-
-	test('1 capital, 1 space', () => {
-		let wikicode = `{{Article history}}`;
-		let output = true;
-		expect(functions.hasArticleHistoryTemplate(wikicode)).toBe(output);
-	});
-
-	test('2 capitals, 1 space', () => {
-		let wikicode = `{{Article History}}`;
-		let output = true;
-		expect(functions.hasArticleHistoryTemplate(wikicode)).toBe(output);
-	});
-
-	test('2 capitals, 0 spaces', () => {
-		let wikicode = `{{ArticleHistory}}`;
-		let output = true;
-		expect(functions.hasArticleHistoryTemplate(wikicode)).toBe(output);
-	});
-
-	test('0 capitals, 0 spaces', () => {
-		let wikicode = `{{articlehistory}}`;
-		let output = true;
-		expect(functions.hasArticleHistoryTemplate(wikicode)).toBe(output);
-	});
-});
-
-describe('addWikicodeAfterTemplates(wikicode, templates, codeToAdd)', () => {
-	test('at top (no templates detected)', () => {
-		let wikicode =
-`{{Old AfD multi|page=Murder of Arthur Labinjo-Hughes|date=5 December 2021|result='''[[WP:SNOW|SNOW]] keep'''}}
-{{Annual readership}}
-{{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
-{{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
-}}`;
-		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
-		let codeToAdd = `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}\n`;
-		let output =
-`{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}
-{{Old AfD multi|page=Murder of Arthur Labinjo-Hughes|date=5 December 2021|result='''[[WP:SNOW|SNOW]] keep'''}}
-{{Annual readership}}
-{{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
-{{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
-}}`;
-		expect(functions.addWikicodeAfterTemplates(wikicode, templates, codeToAdd)).toBe(output);
-	});
-
-	test('after {{Talk header}}', () => {
-		let wikicode =
-`{{Talk header}}
-{{Old AfD multi|page=Murder of Arthur Labinjo-Hughes|date=5 December 2021|result='''[[WP:SNOW|SNOW]] keep'''}}
-{{Annual readership}}
-{{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
-{{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
-}}`;
-		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
-		let codeToAdd = `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}\n`;
-		let output =
-`{{Talk header}}
-{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}
-{{Old AfD multi|page=Murder of Arthur Labinjo-Hughes|date=5 December 2021|result='''[[WP:SNOW|SNOW]] keep'''}}
-{{Annual readership}}
-{{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
-{{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
-}}`;
-		expect(functions.addWikicodeAfterTemplates(wikicode, templates, codeToAdd)).toBe(output);
-	});
-
-	test('case insensitive template names', () => {
-		let wikicode =
-`{{Talk Header}}
+	test('trim() extra spaces at end of gaDisplayTitle', () => {
+		let gaSubpageHeading = `=====Actors, directors, models, performers, and celebrities=====`;
+		let gaTitle = `Amrita Rao`;
+		let gaDisplayTitle = `Rao, Amrita `;
+		let gaSubpageWikicode =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Ellen Pompeo|Pompeo, Ellen]]
+[[Amanda Seyfried|Seyfried, Amanda]]
+}}
 `;
-		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
-		let codeToAdd = `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}\n`;
 		let output =
-`{{Talk Header}}
-{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Ellen Pompeo|Pompeo, Ellen]]
+[[Amrita Rao|Rao, Amrita]]
+[[Amanda Seyfried|Seyfried, Amanda]]
+}}
 `;
-		expect(functions.addWikicodeAfterTemplates(wikicode, templates, codeToAdd)).toBe(output);
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 });
 
-describe('getEndOfStringPositionOfLastMatch(haystack, regex)', () => {
-	test('No match', () => {
-		let haystack = `AAA BBB`;
-		let regex = new RegExp('ghi', 'ig');
-		let output = 0;
-		expect(functions.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
+
+describe('getFailWikicodeForGANPage(reviewWikicode)', () => {
+	test('#1', () => {
+		let reviewWikicode = 
+`==GA Review==
+{{Good article tools}}
+<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the review.''</includeonly>
+::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
+`;
+		let output = 
+`==GA Review==
+{{atopr
+| status = 
+| result = Unsuccessful ~~~~
+}}
+{{Good article tools}}
+<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the review.''</includeonly>
+::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
+{{abot}}
+`;
+		expect(service.getFailWikicodeForGANPage(reviewWikicode)).toBe(output);
+	});
+});
+
+describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
+	test('No {{Article history}}', () => {
+		let talkWikicode = 
+`{{GA nominee|20:49, 10 May 2022 (UTC)|nominator=[[User:Sinopecynic|Sinopecynic]] ([[User talk:Sinopecynic|talk]])|page=1|subtopic=Art and architecture|status=onreview|note=}}
+{{WikiProject Visual arts|class=b}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
+		let output = 
+`{{FailedGA|~~~~~|topic=Art and architecture|page=1}}
+{{WikiProject Visual arts|class=b}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		expect(service.getFailWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
 	});
 
-	test('1 match', () => {
-		let haystack = `Abc def`;
-		let regex = new RegExp('Abc', 'ig');
-		let output = 3;
-		expect(functions.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
+	test('{{Article history}}', () => {
+		let talkWikicode = 
+`{{GA nominee|04:41, 1 June 2022 (UTC)|nominator=[[User:CactiStaccingCrane|CactiStaccingCrane]] ([[User talk:CactiStaccingCrane|talk]])|page=2|subtopic=Physics and astronomy|status=onreview|note=}}
+{{ArticleHistory
+|action1 = GAN
+|action1date = 07:01, 14 September 2021 (UTC)
+|action1link = Talk:SpaceX Starship/GA1
+|action1result = failed
+|action1oldid = 1044235959
+
+|currentstatus = FGAN
+
+|dykdate = 9 November 2021
+|dykentry = ... that [[SpaceX]]'s reusable '''[[SpaceX Starship|Starship]]''' launch vehicle has twice as much thrust as the [[Apollo program]]'s [[Saturn&nbsp;V]]?
+|dyknom = Template:Did you know nominations/SpaceX Starship
+
+|topic = Physics and astronomy
+}}
+
+{{Talk:SpaceX Starship/GA2}}
+`;
+		let reviewTitle = `SpaceX Starship/GA2`;
+		let output = 
+`{{ArticleHistory
+|action1 = GAN
+|action1date = 07:01, 14 September 2021 (UTC)
+|action1link = Talk:SpaceX Starship/GA1
+|action1result = failed
+|action1oldid = 1044235959
+
+|dykdate = 9 November 2021
+|dykentry = ... that [[SpaceX]]'s reusable '''[[SpaceX Starship|Starship]]''' launch vehicle has twice as much thrust as the [[Apollo program]]'s [[Saturn&nbsp;V]]?
+|dyknom = Template:Did you know nominations/SpaceX Starship
+
+|topic = Physics and astronomy
+
+|action2 = GAN
+|action2date = ~~~~~
+|action2link = SpaceX Starship/GA2
+|action2result = failed
+|currentstatus = FGAN
+}}
+
+{{Talk:SpaceX Starship/GA2}}
+`;
+		expect(service.getFailWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+	});
+});
+
+describe('getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)', () => {
+	test('Pass, no error', () => {
+		let username = 'Sammi Brie';
+		let passOrFail = 'pass';
+		let reviewTitle = `Talk:1982 World's Fair/GA1`;
+		let reviewRevisionID = `1094307525`;
+		let talkRevisionID = `1094307532`;
+		let gaRevisionID = `1094307538`;
+		let error = false;
+		let output = `\n* [[User:Sammi Brie|Sammi Brie]] passed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307525|[1]]][[Special:Diff/1094307532|[2]]][[Special:Diff/1094307538|[3]]]`;
+		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)).toBe(output);
 	});
 
-	test('2 matches', () => {
-		let haystack = `Abc Abc def`;
-		let regex = new RegExp('Abc', 'ig');
-		let output = 7;
-		expect(functions.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
+	test('Fail, no error', () => {
+		let username = 'Sammi Brie';
+		let passOrFail = 'fail';
+		let reviewTitle = `Talk:1982 World's Fair/GA1`;
+		let reviewRevisionID = `1094307525`;
+		let talkRevisionID = `1094307532`;
+		let gaRevisionID = ``;
+		let error = false;
+		let output = `\n* [[User:Sammi Brie|Sammi Brie]] failed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307525|[1]]][[Special:Diff/1094307532|[2]]]`;
+		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)).toBe(output);
 	});
 
-	test('Case insensitive', () => {
-		let haystack = `Abc Abc def`;
-		let regex = new RegExp('abc', 'ig');
-		let output = 7;
-		expect(functions.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
+	test('Error', () => {
+		let username = 'Novem Linguae';
+		let passOrFail = 'pass';
+		let reviewTitle = `Talk:Thomas Carlyle (Millais)/GA1`;
+		let reviewRevisionID = undefined;
+		let talkRevisionID = undefined;
+		let gaRevisionID = undefined;
+		let error = `ReferenceError: getPassWikicodeForGANPage is not defined`;
+		let output = `\n* <span style="color: red; font-weight: bold;">ERROR:</span> ReferenceError: getPassWikicodeForGANPage is not defined. [[User:Novem Linguae|Novem Linguae]] passed [[Talk:Thomas Carlyle (Millais)/GA1]] at ~~~~~. [[Special:Diff/undefined|[1]]][[Special:Diff/undefined|[2]]]`;
+		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)).toBe(output);
 	});
 });
