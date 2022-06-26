@@ -7,6 +7,7 @@
 		- common.js
 		- global.js
 		- vector.js
+		- common.css
 		- central auth (good for seeing what global permissions people have)
 		- rename log
 		- global lock log
@@ -96,6 +97,7 @@ $(async function() {
 		userLinks += `<li><a href="/wiki/${username}/common.js">common.js</a></li>`;
 		userLinks += `<li><a href="https://meta.wikimedia.org/wiki/${username}/global.js">global.js</a></li>`;
 		userLinks += `<li><a href="/wiki/${username}/vector.js">vector.js</a></li>`;
+		userLinks += `<li><a href="/wiki/${username}/common.css">common.css</a></li>`;
 
 		// central auth
 		userLinks += `<li><a href="/wiki/Special:CentralAuth?target=${usernameURI}">Central auth</a></li>`;

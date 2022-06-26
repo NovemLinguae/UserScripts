@@ -26,6 +26,7 @@ export class GANReviewToolView {
 	#GANReviewTool p {
 		margin-top: 1.5em;
 		margin-bottom: 1.5em;
+		line-height: 1.5em;
 	}
 
 	#GANReviewTool option:disabled {
@@ -74,6 +75,10 @@ export class GANReviewToolView {
 				<strong>Pass or fail?</strong><br />
 				<input type="radio" name="GANReviewTool-PassOrFail" value="pass" checked /> Pass
 				<input type="radio" name="GANReviewTool-PassOrFail" value="fail" /> Fail
+			</p>
+
+			<p>
+				<input type="checkbox" name="GANReviewTool-ATOPYesNo" value="1" checked /> Apply {{<a href="/wiki/Template:Archive_top">atop</a>}} template to GA review
 			</p>
 
 			<!-- if pass -->
@@ -719,10 +724,9 @@ export class GANReviewToolView {
 				</p>
 
 				<p>
-					<strong>Wikicode to display when adding this to the list of good articles at [[<a href="/wiki/Wikipedia:Good_articles">WP:GA</a>]].</strong><br />
-					Names should be in format: <code>Lastname, Firstname</code><br />
-					Television shows should be italicized: <code>''Jeopardy''</code><br />
-					Albums should be italicized: <code>''The Dark Side of the Moon''</code><br />
+					<strong>Wikicode to display when adding this to the list of good articles at [[<a href="/wiki/Wikipedia:Good_articles">WP:GA</a>]]</strong><br />
+					People should be in format: <code>Lastname, Firstname</code><br />
+					Albums, television shows, <a href="/wiki/Genus">genus</a>, <a href="/wiki/Binomial_nomenclature">species</a> should be italicized: <code>''Jeopardy''</code><br />
 					Television episodes should be surrounded by double quotes: <code>"Episode name"</code><br />
 					Parentheses at the end should not be formatted: <code>''Revolver'' (Beatles album)</code><br />
 					Artwork, poetry, etc. may also require special formatting<br />

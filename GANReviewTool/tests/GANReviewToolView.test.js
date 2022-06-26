@@ -7,13 +7,13 @@ const { GANReviewToolView } = require("../modules/GANReviewToolView");
 let view = new GANReviewToolView();
 
 describe('getHTML(gaTitle)', () => {
-	it(`injects $gaTitle into the form's HTML`, () => {
+	it(`Should inject $gaTitle into the form's HTML`, () => {
 		let gaTitle = `UnqiueString~~~Test`;
 		let output = 'UnqiueString~~~Test';
 		expect(view.getHTML(gaTitle)).toMatch(output);
 	});
 
-	it(`html escapes $gaTitle before injecting it`, () => {
+	it(`Should html escape $gaTitle before injecting it`, () => {
 		let gaTitle = `UnqiueString~~~"&<>`;
 		let output = 'UnqiueString~~~&quot;&amp;&lt;&gt;';
 		expect(view.getHTML(gaTitle)).toMatch(output);

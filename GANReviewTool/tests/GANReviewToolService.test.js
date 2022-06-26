@@ -9,6 +9,873 @@ const { GANReviewToolService } = require("../modules/GANReviewToolService");
 
 let service = new GANReviewToolService();
 
+// TODO: group each test into 3 paragraphs: given, when, then
+
+// Only unit testing public methods. Recommended best practice, for easier refactoring.
+
+describe('getPassWikicodeForGANPage(reviewWikicode)', () => {
+	test('Should place {{atopg}}', () => {
+		let reviewWikicode = 
+`==GA Review==
+{{Good article tools}}
+<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the review.''</includeonly>
+::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
+`;
+		let output = 
+`==GA Review==
+{{atopg
+| status = 
+| result = Passed ~~~~
+}}
+{{Good article tools}}
+<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the review.''</includeonly>
+::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
+{{abot}}
+`;
+		expect(service.getPassWikicodeForGANPage(reviewWikicode)).toBe(output);
+	});
+});
+
+describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
+	test('Should handle no {{Article history}} present', () => {
+		let talkWikicode =
+`{{GA nominee|20:49, 10 May 2022 (UTC)|nominator=[[User:Sinopecynic|Sinopecynic]] ([[User talk:Sinopecynic|talk]])|page=1|subtopic=Art and architecture|status=onreview|note=}}
+{{WikiProject Visual arts|class=b}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
+		let output =
+`{{GA|~~~~~|topic=Art and architecture|page=1}}
+{{WikiProject Visual arts|class=GA}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		expect(service.getPassWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+	});
+
+	test('Should handle {{Article history}} present', () => {
+		let talkWikicode =
+`{{GA nominee|20:49, 10 May 2022 (UTC)|nominator=[[User:Sinopecynic|Sinopecynic]] ([[User talk:Sinopecynic|talk]])|page=1|subtopic=Art and architecture|status=onreview|note=}}
+{{Article history
+|ftname=Kanye West studio albums
+|action1 = FAC
+|action1date = 13:36, 18 April 2022 (UTC)
+|action1link = Wikipedia:Featured article candidates/Late Registration/archive1
+|action1result = failed
+|action1oldid = 1083301278
+
+|currentstatus= GA
+|topic=music
+}}
+{{WikiProject Visual arts|class=b}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
+		let output =
+`{{Article history
+|ftname=Kanye West studio albums
+|action1 = FAC
+|action1date = 13:36, 18 April 2022 (UTC)
+|action1link = Wikipedia:Featured article candidates/Late Registration/archive1
+|action1result = failed
+|action1oldid = 1083301278
+
+|topic=music
+
+|action2 = GAN
+|action2date = ~~~~~
+|action2link = Thomas Carlyle (Millais)/GA1
+|action2result = listed
+|currentstatus = GA
+}}
+{{WikiProject Visual arts|class=GA}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		expect(service.getPassWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+	});
+});
+
+describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)', () => {
+	test('Should handle a wikilink with no pipe', () => {
+		let gaSubpageHeading = `=====Bodies of water and water formations=====`;
+		let gaTitle = `Nile River`;
+		let gaDisplayTitle = `Nile River`;
+		let gaSubpageWikicode =
+`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
+<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Bodies of water and water formations=====
+{{#invoke:Good Articles|subsection|
+[[Abrahams Creek]]
+[[Adams River (British Columbia)]]
+[[Zarqa River]]
+}}
+
+</div>
+</div>
+<!--End Geography level 3 GA subtopic-->
+<!--Start Places level 3 GA subtopic-->
+<div class="mw-collapsible">
+`;
+		let output =
+`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
+<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Bodies of water and water formations=====
+{{#invoke:Good Articles|subsection|
+[[Abrahams Creek]]
+[[Adams River (British Columbia)]]
+[[Nile River]]
+[[Zarqa River]]
+}}
+
+</div>
+</div>
+<!--End Geography level 3 GA subtopic-->
+<!--Start Places level 3 GA subtopic-->
+<div class="mw-collapsible">
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should handle a piped wikilink', () => {
+		let gaSubpageHeading = `=====Geographers and explorers=====`;
+		let gaTitle = `David Attenborough`;
+		let gaDisplayTitle = `Attenborough, David`;
+		let gaSubpageWikicode =
+`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
+<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Geographers and explorers=====
+{{#invoke:Good Articles|subsection|
+[[1773 Phipps expedition towards the North Pole]]
+[[Herbert E. Balch|Balch, Herbert E.]]
+}}
+
+</div>
+</div>
+<!--End Geography level 3 GA subtopic-->
+<!--Start Places level 3 GA subtopic-->
+<div class="mw-collapsible">
+`;
+		let output =
+`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
+<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Geographers and explorers=====
+{{#invoke:Good Articles|subsection|
+[[1773 Phipps expedition towards the North Pole]]
+[[David Attenborough|Attenborough, David]]
+[[Herbert E. Balch|Balch, Herbert E.]]
+}}
+
+</div>
+</div>
+<!--End Geography level 3 GA subtopic-->
+<!--Start Places level 3 GA subtopic-->
+<div class="mw-collapsible">
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test(`Should handle when provided heading doesn't exactly match list heading`, () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `Amak Volcano`;
+		let gaDisplayTitle = `Amak Volcano`;
+		let gaSubpageWikicode =
+`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
+<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+
+</div>
+</div>
+<!--End Geography level 3 GA subtopic-->
+<!--Start Places level 3 GA subtopic-->
+<div class="mw-collapsible">
+`;
+		let output =
+`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
+<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Amak Volcano]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+
+</div>
+</div>
+<!--End Geography level 3 GA subtopic-->
+<!--Start Places level 3 GA subtopic-->
+<div class="mw-collapsible">
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should handle being first in the list', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `Aardvark`;
+		let gaDisplayTitle = `Aardvark`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Aardvark]]
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should handle being last in the list', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `Zebra`;
+		let gaDisplayTitle = `Zebra`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+[[Zebra]]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should sort numbers before letters', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `123`;
+		let gaDisplayTitle = `123`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[123]]
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should sort by display title, not article name', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `Test`;
+		let gaDisplayTitle = `123`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Test|123]]
+[[Abyssal plain]]
+[[Ailladie]]
+[[Alepotrypa Cave]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should ignore italics when sorting the haystack', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `?Antelope`;
+		let gaDisplayTitle = `?Antelope`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[?Antelope]]
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should ignore italics when sorting the needle', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `Building`;
+		let gaDisplayTitle = `''Building''`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+[[Alepotrypa Cave|'Hello]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+[[Alepotrypa Cave|'Hello]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+[[Building|''Building'']]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should ignore {{Further}} when it is present in the list', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `ABC`;
+		let gaDisplayTitle = `{{ABC}}`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{Further}}
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+[[Alepotrypa Cave|'Hello]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{Further}}
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+[[Alepotrypa Cave|'Hello]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+[[ABC|{{ABC}}]]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should ignore italics when sorting the needle', () => {
+		let gaSubpageHeading = `=====Landforms=====`;
+		let gaTitle = `Building`;
+		let gaDisplayTitle = `''Building''`;
+		let gaSubpageWikicode =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+[[Alepotrypa Cave|'Hello]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+}}
+`;
+		let output =
+`===== Landforms =====
+{{#invoke:Good Articles|subsection|
+[[Alepotrypa Cave|''Aleoptrypa Cave'']]
+[[Alepotrypa Cave|'Hello]]
+[[Ampato]]
+[[Andagua volcanic field]]
+[[Antofalla]]
+[[Building|''Building'']]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should ignore articles (a, an, the) in the haystack', () => {
+		let gaSubpageHeading = `=====Cookery books=====`;
+		let gaTitle = `Food in the United States`;
+		let gaDisplayTitle = `''Food in the United States''`;
+		let gaSubpageWikicode =
+`=====Cookery books=====
+{{#invoke:Good Articles|subsection|
+[[Elizabeth David bibliography]]
+''[[The Art of Cookery Made Plain and Easy]]''
+''[[A Book of Mediterranean Food]]''
+''[[Compendium ferculorum, albo Zebranie potraw]]''
+''[[The Compleat Housewife]]''
+''[[The Cookery Book of Lady Clark of Tillypronie]]''
+''[[The Experienced English Housekeeper]]'' 
+''[[Food in England]]''
+''[[The Good Huswifes Jewell]]'' 
+''[[The Modern Cook]]''
+''[[Modern Cookery for Private Families]]'' 
+''[[Mrs. Beeton's Book of Household Management]]'' 
+''[[A New System of Domestic Cookery]]''
+''[[The Accomplisht Cook]]''
+}}
+`;
+		let output =
+`=====Cookery books=====
+{{#invoke:Good Articles|subsection|
+[[Elizabeth David bibliography]]
+''[[The Art of Cookery Made Plain and Easy]]''
+''[[A Book of Mediterranean Food]]''
+''[[Compendium ferculorum, albo Zebranie potraw]]''
+''[[The Compleat Housewife]]''
+''[[The Cookery Book of Lady Clark of Tillypronie]]''
+''[[The Experienced English Housekeeper]]'' 
+''[[Food in England]]''
+[[Food in the United States|''Food in the United States'']]
+''[[The Good Huswifes Jewell]]'' 
+''[[The Modern Cook]]''
+''[[Modern Cookery for Private Families]]'' 
+''[[Mrs. Beeton's Book of Household Management]]'' 
+''[[A New System of Domestic Cookery]]''
+''[[The Accomplisht Cook]]''
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should ignore articles (a, an, the) in the needle', () => {
+		let gaSubpageHeading = `=====Cookery books=====`;
+		let gaTitle = `The Compleat Housewife`;
+		let gaDisplayTitle = `''The Compleat Housewife''`;
+		let gaSubpageWikicode =
+`=====Cookery books=====
+{{#invoke:Good Articles|subsection|
+''[[The Art of Cookery Made Plain and Easy]]''
+''[[A Book of Mediterranean Food]]''
+''[[Compendium ferculorum, albo Zebranie potraw]]''
+''[[The Cookery Book of Lady Clark of Tillypronie]]''
+''[[The Experienced English Housekeeper]]'' 
+''[[Food in England]]''
+''[[The Good Huswifes Jewell]]'' 
+''[[The Modern Cook]]''
+''[[Modern Cookery for Private Families]]'' 
+''[[Mrs. Beeton's Book of Household Management]]'' 
+''[[A New System of Domestic Cookery]]''
+''[[The Accomplisht Cook]]''
+}}
+`;
+		let output =
+`=====Cookery books=====
+{{#invoke:Good Articles|subsection|
+''[[The Art of Cookery Made Plain and Easy]]''
+''[[A Book of Mediterranean Food]]''
+''[[Compendium ferculorum, albo Zebranie potraw]]''
+[[The Compleat Housewife|''The Compleat Housewife'']]
+''[[The Cookery Book of Lady Clark of Tillypronie]]''
+''[[The Experienced English Housekeeper]]'' 
+''[[Food in England]]''
+''[[The Good Huswifes Jewell]]'' 
+''[[The Modern Cook]]''
+''[[Modern Cookery for Private Families]]'' 
+''[[Mrs. Beeton's Book of Household Management]]'' 
+''[[A New System of Domestic Cookery]]''
+''[[The Accomplisht Cook]]''
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should handle when there are multiple of the same heading', () => {
+		let gaSubpageHeading = `=====Art=====`;
+		let gaTitle = `The Great Wave off Kanagawa`;
+		let gaDisplayTitle = `The Great Wave off Kanagawa`;
+		let gaSubpageWikicode =
+`<noinclude>
+{{hatnote|[[#Art and architecture|'''↓  Skip to lists  ↓''']]}}
+{{Wikipedia:Good article nominations/Tab header}}
+{{Wikipedia:Good articles/Summary|shortcuts={{shortcut|WP:GA/AA}}}}
+</noinclude><templatestyles src="Wikipedia:Good articles/styles.css"/>
+__NOTOC__
+<div class="wp-ga-topic">
+==Art and architecture==
+<includeonly><div class="wp-ga-topic-back">[[#Contents|back]]</div></includeonly>
+<div class="wp-ga-topic-contents">
+===Contents===
+{{plainlist}}
+* [[#Art|Art]]
+* [[#Architecture|Architecture]]
+{{endplainlist}}
+</div>
+<!--Start Art level 3 GA subtopic-->
+<div class="mw-collapsible">
+===[[File:Nuvola apps package graphics.svg|22px|left|alt=|link=]] Art===
+<div class="wp-ga-topic-back">[[#Art and architecture|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Art=====
+{{#invoke:Good Articles|subsection|
+''[[A Boy with a Flying Squirrel]]''
+[[Akzidenz-Grotesk]]
+[[Zzz]]
+}}
+`;
+		let output =
+`<noinclude>
+{{hatnote|[[#Art and architecture|'''↓  Skip to lists  ↓''']]}}
+{{Wikipedia:Good article nominations/Tab header}}
+{{Wikipedia:Good articles/Summary|shortcuts={{shortcut|WP:GA/AA}}}}
+</noinclude><templatestyles src="Wikipedia:Good articles/styles.css"/>
+__NOTOC__
+<div class="wp-ga-topic">
+==Art and architecture==
+<includeonly><div class="wp-ga-topic-back">[[#Contents|back]]</div></includeonly>
+<div class="wp-ga-topic-contents">
+===Contents===
+{{plainlist}}
+* [[#Art|Art]]
+* [[#Architecture|Architecture]]
+{{endplainlist}}
+</div>
+<!--Start Art level 3 GA subtopic-->
+<div class="mw-collapsible">
+===[[File:Nuvola apps package graphics.svg|22px|left|alt=|link=]] Art===
+<div class="wp-ga-topic-back">[[#Art and architecture|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Art=====
+{{#invoke:Good Articles|subsection|
+''[[A Boy with a Flying Squirrel]]''
+[[Akzidenz-Grotesk]]
+[[The Great Wave off Kanagawa]]
+[[Zzz]]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('For sorting, should treat lowercase and uppercase letters as identical', () => {
+		let gaSubpageHeading = `=====Actors, directors, models, performers, and celebrities=====`;
+		let gaTitle = `Amrita Rao`;
+		let gaDisplayTitle = `Rao, Amrita`;
+		let gaSubpageWikicode =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Kartik Aaryan|Aaryan, Kartik]]
+[[Nina Davuluri|Davuluri, Nina]]
+[[Daniel Day-Lewis|Day-Lewis, Daniel]]
+[[Olivia de Havilland|de Havilland, Olivia]]
+[[Belle Delphine|Delphine, Belle]]
+[[Ellen Pompeo|Pompeo, Ellen]]
+[[Amanda Seyfried|Seyfried, Amanda]]
+}}
+`;
+		let output =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Kartik Aaryan|Aaryan, Kartik]]
+[[Nina Davuluri|Davuluri, Nina]]
+[[Daniel Day-Lewis|Day-Lewis, Daniel]]
+[[Olivia de Havilland|de Havilland, Olivia]]
+[[Belle Delphine|Delphine, Belle]]
+[[Ellen Pompeo|Pompeo, Ellen]]
+[[Amrita Rao|Rao, Amrita]]
+[[Amanda Seyfried|Seyfried, Amanda]]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should trim() extra spaces at end of the display title', () => {
+		let gaSubpageHeading = `=====Actors, directors, models, performers, and celebrities=====`;
+		let gaTitle = `Amrita Rao`;
+		let gaDisplayTitle = `Rao, Amrita `;
+		let gaSubpageWikicode =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Ellen Pompeo|Pompeo, Ellen]]
+[[Amanda Seyfried|Seyfried, Amanda]]
+}}
+`;
+		let output =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Ellen Pompeo|Pompeo, Ellen]]
+[[Amrita Rao|Rao, Amrita]]
+[[Amanda Seyfried|Seyfried, Amanda]]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should place an article beginning with M after an article beginning with É', () => {
+		let gaSubpageHeading = `=====Actors, directors, models, performers, and celebrities=====`;
+		let gaTitle = `Minskoff Theatre`;
+		let gaDisplayTitle = `Minskoff Theatre`;
+		let gaSubpageWikicode =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Édifice Price]]
+}}
+`;
+		let output =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Édifice Price]]
+[[Minskoff Theatre]]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('Should place an article beginning with m after an article beginning with é', () => {
+		let gaSubpageHeading = `=====Actors, directors, models, performers, and celebrities=====`;
+		let gaTitle = `minskoff theatre`;
+		let gaDisplayTitle = `minskoff theatre`;
+		let gaSubpageWikicode =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[édifice price]]
+}}
+`;
+		let output =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[édifice price]]
+[[minskoff theatre]]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+});
+
+describe('getFailWikicodeForGANPage(reviewWikicode)', () => {
+	test('Should place {{atopr}}', () => {
+		let reviewWikicode = 
+`==GA Review==
+{{Good article tools}}
+<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the review.''</includeonly>
+::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
+`;
+		let output = 
+`==GA Review==
+{{atopr
+| status = 
+| result = Unsuccessful ~~~~
+}}
+{{Good article tools}}
+<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the review.''</includeonly>
+::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
+{{abot}}
+`;
+		expect(service.getFailWikicodeForGANPage(reviewWikicode)).toBe(output);
+	});
+});
+
+describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
+	test('Should handle no {{Article history}} present', () => {
+		let talkWikicode = 
+`{{GA nominee|20:49, 10 May 2022 (UTC)|nominator=[[User:Sinopecynic|Sinopecynic]] ([[User talk:Sinopecynic|talk]])|page=1|subtopic=Art and architecture|status=onreview|note=}}
+{{WikiProject Visual arts|class=b}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
+		let output = 
+`{{FailedGA|~~~~~|topic=Art and architecture|page=1}}
+{{WikiProject Visual arts|class=b}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		expect(service.getFailWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+	});
+
+	test('Should handle {{Article history}} present', () => {
+		let talkWikicode = 
+`{{GA nominee|04:41, 1 June 2022 (UTC)|nominator=[[User:CactiStaccingCrane|CactiStaccingCrane]] ([[User talk:CactiStaccingCrane|talk]])|page=2|subtopic=Physics and astronomy|status=onreview|note=}}
+{{ArticleHistory
+|action1 = GAN
+|action1date = 07:01, 14 September 2021 (UTC)
+|action1link = Talk:SpaceX Starship/GA1
+|action1result = failed
+|action1oldid = 1044235959
+
+|currentstatus = FGAN
+
+|dykdate = 9 November 2021
+|dykentry = ... that [[SpaceX]]'s reusable '''[[SpaceX Starship|Starship]]''' launch vehicle has twice as much thrust as the [[Apollo program]]'s [[Saturn&nbsp;V]]?
+|dyknom = Template:Did you know nominations/SpaceX Starship
+
+|topic = Physics and astronomy
+}}
+
+{{Talk:SpaceX Starship/GA2}}
+`;
+		let reviewTitle = `SpaceX Starship/GA2`;
+		let output = 
+`{{ArticleHistory
+|action1 = GAN
+|action1date = 07:01, 14 September 2021 (UTC)
+|action1link = Talk:SpaceX Starship/GA1
+|action1result = failed
+|action1oldid = 1044235959
+
+|dykdate = 9 November 2021
+|dykentry = ... that [[SpaceX]]'s reusable '''[[SpaceX Starship|Starship]]''' launch vehicle has twice as much thrust as the [[Apollo program]]'s [[Saturn&nbsp;V]]?
+|dyknom = Template:Did you know nominations/SpaceX Starship
+
+|topic = Physics and astronomy
+
+|action2 = GAN
+|action2date = ~~~~~
+|action2link = SpaceX Starship/GA2
+|action2result = failed
+|currentstatus = FGAN
+}}
+
+{{Talk:SpaceX Starship/GA2}}
+`;
+		expect(service.getFailWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+	});
+});
+
+describe('getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)', () => {
+	test('Should handle a pass', () => {
+		let username = 'Sammi Brie';
+		let passOrFail = 'pass';
+		let reviewTitle = `Talk:1982 World's Fair/GA1`;
+		let reviewRevisionID = `1094307525`;
+		let talkRevisionID = `1094307532`;
+		let gaRevisionID = `1094307538`;
+		let error = false;
+		let needsATOP = true;
+		let output = `\n* [[User:Sammi Brie|Sammi Brie]] passed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307525|[Atop]]][[Special:Diff/1094307532|[Talk]]][[Special:Diff/1094307538|[List]]]`;
+		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
+	});
+
+	test('Should handle a fail', () => {
+		let username = 'Sammi Brie';
+		let passOrFail = 'fail';
+		let reviewTitle = `Talk:1982 World's Fair/GA1`;
+		let reviewRevisionID = `1094307525`;
+		let talkRevisionID = `1094307532`;
+		let gaRevisionID = ``;
+		let error = false;
+		let needsATOP = true;
+		let output = `\n* [[User:Sammi Brie|Sammi Brie]] failed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307525|[Atop]]][[Special:Diff/1094307532|[Talk]]]`;
+		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
+	});
+
+	test('Should handle an error', () => {
+		let username = 'Novem Linguae';
+		let passOrFail = 'pass';
+		let reviewTitle = `Talk:Thomas Carlyle (Millais)/GA1`;
+		let reviewRevisionID = undefined;
+		let talkRevisionID = undefined;
+		let gaRevisionID = undefined;
+		let error = `ReferenceError: getPassWikicodeForGANPage is not defined`;
+		let needsATOP = true;
+		let output = `\n* <span style="color: red; font-weight: bold;">ERROR:</span> ReferenceError: getPassWikicodeForGANPage is not defined. [[User:Novem Linguae|Novem Linguae]] passed [[Talk:Thomas Carlyle (Millais)/GA1]] at ~~~~~. [[Special:Diff/undefined|[Atop]]][[Special:Diff/undefined|[Talk]]]`;
+		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
+	});
+
+	test('Should not display [Atop] diff if user selected not to place {{ATOP}}', () => {
+		let username = 'Sammi Brie';
+		let passOrFail = 'pass';
+		let reviewTitle = `Talk:1982 World's Fair/GA1`;
+		let reviewRevisionID = undefined;
+		let talkRevisionID = `1094307532`;
+		let gaRevisionID = `1094307538`;
+		let error = false;
+		let needsATOP = false;
+		let output = `\n* [[User:Sammi Brie|Sammi Brie]] passed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307532|[Talk]]][[Special:Diff/1094307538|[List]]]`;
+		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
+	});
+});
+
+/*
+
+// Private methods. Only unit testing public methods. Best practice for easier refactoring.
+
 describe('placeATOP(wikicode, result, color)', () => {
 	test('h2 present', () => {
 		let result = 'Passed';
@@ -1057,827 +1924,4 @@ describe('getEndOfStringPositionOfLastMatch(haystack, regex)', () => {
 	});
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ============================= PUBLIC METHODS ===============================
-
-describe('getPassWikicodeForGANPage(reviewWikicode)', () => {
-	test('#1', () => {
-		let reviewWikicode = 
-`==GA Review==
-{{Good article tools}}
-<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the review.''</includeonly>
-::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
-`;
-		let output = 
-`==GA Review==
-{{atopg
-| status = 
-| result = Passed ~~~~
-}}
-{{Good article tools}}
-<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the review.''</includeonly>
-::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
-{{abot}}
-`;
-		expect(service.getPassWikicodeForGANPage(reviewWikicode)).toBe(output);
-	});
-});
-
-describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
-	test('No {{Article history}}', () => {
-		let talkWikicode =
-`{{GA nominee|20:49, 10 May 2022 (UTC)|nominator=[[User:Sinopecynic|Sinopecynic]] ([[User talk:Sinopecynic|talk]])|page=1|subtopic=Art and architecture|status=onreview|note=}}
-{{WikiProject Visual arts|class=b}}
-
-{{Talk:Thomas Carlyle (Millais)/GA1}}
-`;
-		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
-		let output =
-`{{GA|~~~~~|topic=Art and architecture|page=1}}
-{{WikiProject Visual arts|class=GA}}
-
-{{Talk:Thomas Carlyle (Millais)/GA1}}
-`;
-		expect(service.getPassWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
-	});
-
-	test('{{Article history}}', () => {
-		let talkWikicode =
-`{{GA nominee|20:49, 10 May 2022 (UTC)|nominator=[[User:Sinopecynic|Sinopecynic]] ([[User talk:Sinopecynic|talk]])|page=1|subtopic=Art and architecture|status=onreview|note=}}
-{{Article history
-|ftname=Kanye West studio albums
-|action1 = FAC
-|action1date = 13:36, 18 April 2022 (UTC)
-|action1link = Wikipedia:Featured article candidates/Late Registration/archive1
-|action1result = failed
-|action1oldid = 1083301278
-
-|currentstatus= GA
-|topic=music
-}}
-{{WikiProject Visual arts|class=b}}
-
-{{Talk:Thomas Carlyle (Millais)/GA1}}
-`;
-		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
-		let output =
-`{{Article history
-|ftname=Kanye West studio albums
-|action1 = FAC
-|action1date = 13:36, 18 April 2022 (UTC)
-|action1link = Wikipedia:Featured article candidates/Late Registration/archive1
-|action1result = failed
-|action1oldid = 1083301278
-
-|topic=music
-
-|action2 = GAN
-|action2date = ~~~~~
-|action2link = Thomas Carlyle (Millais)/GA1
-|action2result = listed
-|currentstatus = GA
-}}
-{{WikiProject Visual arts|class=GA}}
-
-{{Talk:Thomas Carlyle (Millais)/GA1}}
-`;
-		expect(service.getPassWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
-	});
-});
-
-describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)', () => {
-	test('[[Nile River]]', () => {
-		let gaSubpageHeading = `=====Bodies of water and water formations=====`;
-		let gaTitle = `Nile River`;
-		let gaDisplayTitle = `Nile River`;
-		let gaSubpageWikicode =
-`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
-<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
-<div class="mw-collapsible-content">
-<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
-<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
-
-=====Bodies of water and water formations=====
-{{#invoke:Good Articles|subsection|
-[[Abrahams Creek]]
-[[Adams River (British Columbia)]]
-[[Zarqa River]]
-}}
-
-</div>
-</div>
-<!--End Geography level 3 GA subtopic-->
-<!--Start Places level 3 GA subtopic-->
-<div class="mw-collapsible">
-`;
-		let output =
-`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
-<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
-<div class="mw-collapsible-content">
-<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
-<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
-
-=====Bodies of water and water formations=====
-{{#invoke:Good Articles|subsection|
-[[Abrahams Creek]]
-[[Adams River (British Columbia)]]
-[[Nile River]]
-[[Zarqa River]]
-}}
-
-</div>
-</div>
-<!--End Geography level 3 GA subtopic-->
-<!--Start Places level 3 GA subtopic-->
-<div class="mw-collapsible">
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('[[David Attenborough|Attenborough, David]]', () => {
-		let gaSubpageHeading = `=====Geographers and explorers=====`;
-		let gaTitle = `David Attenborough`;
-		let gaDisplayTitle = `Attenborough, David`;
-		let gaSubpageWikicode =
-`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
-<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
-<div class="mw-collapsible-content">
-<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
-<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
-
-=====Geographers and explorers=====
-{{#invoke:Good Articles|subsection|
-[[1773 Phipps expedition towards the North Pole]]
-[[Herbert E. Balch|Balch, Herbert E.]]
-}}
-
-</div>
-</div>
-<!--End Geography level 3 GA subtopic-->
-<!--Start Places level 3 GA subtopic-->
-<div class="mw-collapsible">
-`;
-		let output =
-`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
-<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
-<div class="mw-collapsible-content">
-<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
-<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
-
-=====Geographers and explorers=====
-{{#invoke:Good Articles|subsection|
-[[1773 Phipps expedition towards the North Pole]]
-[[David Attenborough|Attenborough, David]]
-[[Herbert E. Balch|Balch, Herbert E.]]
-}}
-
-</div>
-</div>
-<!--End Geography level 3 GA subtopic-->
-<!--Start Places level 3 GA subtopic-->
-<div class="mw-collapsible">
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('Extra spaces in heading near equals signs', () => {
-		let gaSubpageHeading = `=====Landforms=====`;
-		let gaTitle = `Amak Volcano`;
-		let gaDisplayTitle = `Amak Volcano`;
-		let gaSubpageWikicode =
-`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
-<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
-<div class="mw-collapsible-content">
-<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
-<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
-
-===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Abyssal plain]]
-[[Ailladie]]
-[[Alepotrypa Cave]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-}}
-
-</div>
-</div>
-<!--End Geography level 3 GA subtopic-->
-<!--Start Places level 3 GA subtopic-->
-<div class="mw-collapsible">
-`;
-		let output =
-`===[[File:Gnome-globe.svg|22px|left|alt=|link=]] Geography===
-<div class="wp-ga-topic-back">[[#Geography and places|back]]</div>
-<div class="mw-collapsible-content">
-<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
-<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
-
-===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Abyssal plain]]
-[[Ailladie]]
-[[Alepotrypa Cave]]
-[[Amak Volcano]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-}}
-
-</div>
-</div>
-<!--End Geography level 3 GA subtopic-->
-<!--Start Places level 3 GA subtopic-->
-<div class="mw-collapsible">
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('First in section', () => {
-		let gaSubpageHeading = `=====Landforms=====`;
-		let gaTitle = `Aardvark`;
-		let gaDisplayTitle = `Aardvark`;
-		let gaSubpageWikicode =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Abyssal plain]]
-[[Ailladie]]
-[[Alepotrypa Cave]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-}}
-`;
-		let output =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Aardvark]]
-[[Abyssal plain]]
-[[Ailladie]]
-[[Alepotrypa Cave]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('Last in section', () => {
-		let gaSubpageHeading = `=====Landforms=====`;
-		let gaTitle = `Zebra`;
-		let gaDisplayTitle = `Zebra`;
-		let gaSubpageWikicode =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Abyssal plain]]
-[[Ailladie]]
-[[Alepotrypa Cave]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-}}
-`;
-		let output =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Abyssal plain]]
-[[Ailladie]]
-[[Alepotrypa Cave]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-[[Zebra]]
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('Numbers before letters', () => {
-		let gaSubpageHeading = `=====Landforms=====`;
-		let gaTitle = `123`;
-		let gaDisplayTitle = `123`;
-		let gaSubpageWikicode =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Abyssal plain]]
-[[Ailladie]]
-[[Alepotrypa Cave]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-}}
-`;
-		let output =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[123]]
-[[Abyssal plain]]
-[[Ailladie]]
-[[Alepotrypa Cave]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('Display title', () => {
-		let gaSubpageHeading = `=====Landforms=====`;
-		let gaTitle = `Test`;
-		let gaDisplayTitle = `123`;
-		let gaSubpageWikicode =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Abyssal plain]]
-[[Ailladie]]
-[[Alepotrypa Cave]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-}}
-`;
-		let output =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Test|123]]
-[[Abyssal plain]]
-[[Ailladie]]
-[[Alepotrypa Cave]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('Italics should be ignored when sorting the haystack', () => {
-		let gaSubpageHeading = `=====Landforms=====`;
-		let gaTitle = `?Antelope`;
-		let gaDisplayTitle = `?Antelope`;
-		let gaSubpageWikicode =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Alepotrypa Cave|''Aleoptrypa Cave'']]
-}}
-`;
-		let output =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[?Antelope]]
-[[Alepotrypa Cave|''Aleoptrypa Cave'']]
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('Italics should be ignored when sorting the needle', () => {
-		let gaSubpageHeading = `=====Landforms=====`;
-		let gaTitle = `Building`;
-		let gaDisplayTitle = `''Building''`;
-		let gaSubpageWikicode =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Alepotrypa Cave|''Aleoptrypa Cave'']]
-[[Alepotrypa Cave|'Hello]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-}}
-`;
-		let output =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Alepotrypa Cave|''Aleoptrypa Cave'']]
-[[Alepotrypa Cave|'Hello]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-[[Building|''Building'']]
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('{{Further}}', () => {
-		let gaSubpageHeading = `=====Landforms=====`;
-		let gaTitle = `ABC`;
-		let gaDisplayTitle = `{{ABC}}`;
-		let gaSubpageWikicode =
-`===== Landforms =====
-{{Further}}
-{{#invoke:Good Articles|subsection|
-[[Alepotrypa Cave|''Aleoptrypa Cave'']]
-[[Alepotrypa Cave|'Hello]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-}}
-`;
-		let output =
-`===== Landforms =====
-{{Further}}
-{{#invoke:Good Articles|subsection|
-[[Alepotrypa Cave|''Aleoptrypa Cave'']]
-[[Alepotrypa Cave|'Hello]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-[[ABC|{{ABC}}]]
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('Italics should be ignored when sorting the needle', () => {
-		let gaSubpageHeading = `=====Landforms=====`;
-		let gaTitle = `Building`;
-		let gaDisplayTitle = `''Building''`;
-		let gaSubpageWikicode =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Alepotrypa Cave|''Aleoptrypa Cave'']]
-[[Alepotrypa Cave|'Hello]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-}}
-`;
-		let output =
-`===== Landforms =====
-{{#invoke:Good Articles|subsection|
-[[Alepotrypa Cave|''Aleoptrypa Cave'']]
-[[Alepotrypa Cave|'Hello]]
-[[Ampato]]
-[[Andagua volcanic field]]
-[[Antofalla]]
-[[Building|''Building'']]
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('ignore articles (a, an, the) in haystack', () => {
-		let gaSubpageHeading = `=====Cookery books=====`;
-		let gaTitle = `Food in the United States`;
-		let gaDisplayTitle = `''Food in the United States''`;
-		let gaSubpageWikicode =
-`=====Cookery books=====
-{{#invoke:Good Articles|subsection|
-[[Elizabeth David bibliography]]
-''[[The Art of Cookery Made Plain and Easy]]''
-''[[A Book of Mediterranean Food]]''
-''[[Compendium ferculorum, albo Zebranie potraw]]''
-''[[The Compleat Housewife]]''
-''[[The Cookery Book of Lady Clark of Tillypronie]]''
-''[[The Experienced English Housekeeper]]'' 
-''[[Food in England]]''
-''[[The Good Huswifes Jewell]]'' 
-''[[The Modern Cook]]''
-''[[Modern Cookery for Private Families]]'' 
-''[[Mrs. Beeton's Book of Household Management]]'' 
-''[[A New System of Domestic Cookery]]''
-''[[The Accomplisht Cook]]''
-}}
-`;
-		let output =
-`=====Cookery books=====
-{{#invoke:Good Articles|subsection|
-[[Elizabeth David bibliography]]
-''[[The Art of Cookery Made Plain and Easy]]''
-''[[A Book of Mediterranean Food]]''
-''[[Compendium ferculorum, albo Zebranie potraw]]''
-''[[The Compleat Housewife]]''
-''[[The Cookery Book of Lady Clark of Tillypronie]]''
-''[[The Experienced English Housekeeper]]'' 
-''[[Food in England]]''
-[[Food in the United States|''Food in the United States'']]
-''[[The Good Huswifes Jewell]]'' 
-''[[The Modern Cook]]''
-''[[Modern Cookery for Private Families]]'' 
-''[[Mrs. Beeton's Book of Household Management]]'' 
-''[[A New System of Domestic Cookery]]''
-''[[The Accomplisht Cook]]''
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('ignore articles (a, an, the) in needle', () => {
-		let gaSubpageHeading = `=====Cookery books=====`;
-		let gaTitle = `The Compleat Housewife`;
-		let gaDisplayTitle = `''The Compleat Housewife''`;
-		let gaSubpageWikicode =
-`=====Cookery books=====
-{{#invoke:Good Articles|subsection|
-''[[The Art of Cookery Made Plain and Easy]]''
-''[[A Book of Mediterranean Food]]''
-''[[Compendium ferculorum, albo Zebranie potraw]]''
-''[[The Cookery Book of Lady Clark of Tillypronie]]''
-''[[The Experienced English Housekeeper]]'' 
-''[[Food in England]]''
-''[[The Good Huswifes Jewell]]'' 
-''[[The Modern Cook]]''
-''[[Modern Cookery for Private Families]]'' 
-''[[Mrs. Beeton's Book of Household Management]]'' 
-''[[A New System of Domestic Cookery]]''
-''[[The Accomplisht Cook]]''
-}}
-`;
-		let output =
-`=====Cookery books=====
-{{#invoke:Good Articles|subsection|
-''[[The Art of Cookery Made Plain and Easy]]''
-''[[A Book of Mediterranean Food]]''
-''[[Compendium ferculorum, albo Zebranie potraw]]''
-[[The Compleat Housewife|''The Compleat Housewife'']]
-''[[The Cookery Book of Lady Clark of Tillypronie]]''
-''[[The Experienced English Housekeeper]]'' 
-''[[Food in England]]''
-''[[The Good Huswifes Jewell]]'' 
-''[[The Modern Cook]]''
-''[[Modern Cookery for Private Families]]'' 
-''[[Mrs. Beeton's Book of Household Management]]'' 
-''[[A New System of Domestic Cookery]]''
-''[[The Accomplisht Cook]]''
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('multiple of the same heading', () => {
-		let gaSubpageHeading = `=====Art=====`;
-		let gaTitle = `The Great Wave off Kanagawa`;
-		let gaDisplayTitle = `The Great Wave off Kanagawa`;
-		let gaSubpageWikicode =
-`<noinclude>
-{{hatnote|[[#Art and architecture|'''↓  Skip to lists  ↓''']]}}
-{{Wikipedia:Good article nominations/Tab header}}
-{{Wikipedia:Good articles/Summary|shortcuts={{shortcut|WP:GA/AA}}}}
-</noinclude><templatestyles src="Wikipedia:Good articles/styles.css"/>
-__NOTOC__
-<div class="wp-ga-topic">
-==Art and architecture==
-<includeonly><div class="wp-ga-topic-back">[[#Contents|back]]</div></includeonly>
-<div class="wp-ga-topic-contents">
-===Contents===
-{{plainlist}}
-* [[#Art|Art]]
-* [[#Architecture|Architecture]]
-{{endplainlist}}
-</div>
-<!--Start Art level 3 GA subtopic-->
-<div class="mw-collapsible">
-===[[File:Nuvola apps package graphics.svg|22px|left|alt=|link=]] Art===
-<div class="wp-ga-topic-back">[[#Art and architecture|back]]</div>
-<div class="mw-collapsible-content">
-<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
-<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
-
-=====Art=====
-{{#invoke:Good Articles|subsection|
-''[[A Boy with a Flying Squirrel]]''
-[[Akzidenz-Grotesk]]
-[[Zzz]]
-}}
-`;
-		let output =
-`<noinclude>
-{{hatnote|[[#Art and architecture|'''↓  Skip to lists  ↓''']]}}
-{{Wikipedia:Good article nominations/Tab header}}
-{{Wikipedia:Good articles/Summary|shortcuts={{shortcut|WP:GA/AA}}}}
-</noinclude><templatestyles src="Wikipedia:Good articles/styles.css"/>
-__NOTOC__
-<div class="wp-ga-topic">
-==Art and architecture==
-<includeonly><div class="wp-ga-topic-back">[[#Contents|back]]</div></includeonly>
-<div class="wp-ga-topic-contents">
-===Contents===
-{{plainlist}}
-* [[#Art|Art]]
-* [[#Architecture|Architecture]]
-{{endplainlist}}
-</div>
-<!--Start Art level 3 GA subtopic-->
-<div class="mw-collapsible">
-===[[File:Nuvola apps package graphics.svg|22px|left|alt=|link=]] Art===
-<div class="wp-ga-topic-back">[[#Art and architecture|back]]</div>
-<div class="mw-collapsible-content">
-<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
-<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
-
-=====Art=====
-{{#invoke:Good Articles|subsection|
-''[[A Boy with a Flying Squirrel]]''
-[[Akzidenz-Grotesk]]
-[[The Great Wave off Kanagawa]]
-[[Zzz]]
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('list has a random entry that starts with a lowercase letter', () => {
-		let gaSubpageHeading = `=====Actors, directors, models, performers, and celebrities=====`;
-		let gaTitle = `Amrita Rao`;
-		let gaDisplayTitle = `Rao, Amrita`;
-		let gaSubpageWikicode =
-`=====Actors, directors, models, performers, and celebrities=====
-{{#invoke:Good Articles|subsection|
-[[Kartik Aaryan|Aaryan, Kartik]]
-[[Nina Davuluri|Davuluri, Nina]]
-[[Daniel Day-Lewis|Day-Lewis, Daniel]]
-[[Olivia de Havilland|de Havilland, Olivia]]
-[[Belle Delphine|Delphine, Belle]]
-[[Ellen Pompeo|Pompeo, Ellen]]
-[[Amanda Seyfried|Seyfried, Amanda]]
-}}
-`;
-		let output =
-`=====Actors, directors, models, performers, and celebrities=====
-{{#invoke:Good Articles|subsection|
-[[Kartik Aaryan|Aaryan, Kartik]]
-[[Nina Davuluri|Davuluri, Nina]]
-[[Daniel Day-Lewis|Day-Lewis, Daniel]]
-[[Olivia de Havilland|de Havilland, Olivia]]
-[[Belle Delphine|Delphine, Belle]]
-[[Ellen Pompeo|Pompeo, Ellen]]
-[[Amrita Rao|Rao, Amrita]]
-[[Amanda Seyfried|Seyfried, Amanda]]
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-
-	test('trim() extra spaces at end of gaDisplayTitle', () => {
-		let gaSubpageHeading = `=====Actors, directors, models, performers, and celebrities=====`;
-		let gaTitle = `Amrita Rao`;
-		let gaDisplayTitle = `Rao, Amrita `;
-		let gaSubpageWikicode =
-`=====Actors, directors, models, performers, and celebrities=====
-{{#invoke:Good Articles|subsection|
-[[Ellen Pompeo|Pompeo, Ellen]]
-[[Amanda Seyfried|Seyfried, Amanda]]
-}}
-`;
-		let output =
-`=====Actors, directors, models, performers, and celebrities=====
-{{#invoke:Good Articles|subsection|
-[[Ellen Pompeo|Pompeo, Ellen]]
-[[Amrita Rao|Rao, Amrita]]
-[[Amanda Seyfried|Seyfried, Amanda]]
-}}
-`;
-		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
-	});
-});
-
-
-describe('getFailWikicodeForGANPage(reviewWikicode)', () => {
-	test('#1', () => {
-		let reviewWikicode = 
-`==GA Review==
-{{Good article tools}}
-<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the review.''</includeonly>
-::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
-`;
-		let output = 
-`==GA Review==
-{{atopr
-| status = 
-| result = Unsuccessful ~~~~
-}}
-{{Good article tools}}
-<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the review.''</includeonly>
-::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
-{{abot}}
-`;
-		expect(service.getFailWikicodeForGANPage(reviewWikicode)).toBe(output);
-	});
-});
-
-describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
-	test('No {{Article history}}', () => {
-		let talkWikicode = 
-`{{GA nominee|20:49, 10 May 2022 (UTC)|nominator=[[User:Sinopecynic|Sinopecynic]] ([[User talk:Sinopecynic|talk]])|page=1|subtopic=Art and architecture|status=onreview|note=}}
-{{WikiProject Visual arts|class=b}}
-
-{{Talk:Thomas Carlyle (Millais)/GA1}}
-`;
-		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
-		let output = 
-`{{FailedGA|~~~~~|topic=Art and architecture|page=1}}
-{{WikiProject Visual arts|class=b}}
-
-{{Talk:Thomas Carlyle (Millais)/GA1}}
-`;
-		expect(service.getFailWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
-	});
-
-	test('{{Article history}}', () => {
-		let talkWikicode = 
-`{{GA nominee|04:41, 1 June 2022 (UTC)|nominator=[[User:CactiStaccingCrane|CactiStaccingCrane]] ([[User talk:CactiStaccingCrane|talk]])|page=2|subtopic=Physics and astronomy|status=onreview|note=}}
-{{ArticleHistory
-|action1 = GAN
-|action1date = 07:01, 14 September 2021 (UTC)
-|action1link = Talk:SpaceX Starship/GA1
-|action1result = failed
-|action1oldid = 1044235959
-
-|currentstatus = FGAN
-
-|dykdate = 9 November 2021
-|dykentry = ... that [[SpaceX]]'s reusable '''[[SpaceX Starship|Starship]]''' launch vehicle has twice as much thrust as the [[Apollo program]]'s [[Saturn&nbsp;V]]?
-|dyknom = Template:Did you know nominations/SpaceX Starship
-
-|topic = Physics and astronomy
-}}
-
-{{Talk:SpaceX Starship/GA2}}
-`;
-		let reviewTitle = `SpaceX Starship/GA2`;
-		let output = 
-`{{ArticleHistory
-|action1 = GAN
-|action1date = 07:01, 14 September 2021 (UTC)
-|action1link = Talk:SpaceX Starship/GA1
-|action1result = failed
-|action1oldid = 1044235959
-
-|dykdate = 9 November 2021
-|dykentry = ... that [[SpaceX]]'s reusable '''[[SpaceX Starship|Starship]]''' launch vehicle has twice as much thrust as the [[Apollo program]]'s [[Saturn&nbsp;V]]?
-|dyknom = Template:Did you know nominations/SpaceX Starship
-
-|topic = Physics and astronomy
-
-|action2 = GAN
-|action2date = ~~~~~
-|action2link = SpaceX Starship/GA2
-|action2result = failed
-|currentstatus = FGAN
-}}
-
-{{Talk:SpaceX Starship/GA2}}
-`;
-		expect(service.getFailWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
-	});
-});
-
-describe('getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)', () => {
-	test('Pass, no error', () => {
-		let username = 'Sammi Brie';
-		let passOrFail = 'pass';
-		let reviewTitle = `Talk:1982 World's Fair/GA1`;
-		let reviewRevisionID = `1094307525`;
-		let talkRevisionID = `1094307532`;
-		let gaRevisionID = `1094307538`;
-		let error = false;
-		let output = `\n* [[User:Sammi Brie|Sammi Brie]] passed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307525|[1]]][[Special:Diff/1094307532|[2]]][[Special:Diff/1094307538|[3]]]`;
-		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)).toBe(output);
-	});
-
-	test('Fail, no error', () => {
-		let username = 'Sammi Brie';
-		let passOrFail = 'fail';
-		let reviewTitle = `Talk:1982 World's Fair/GA1`;
-		let reviewRevisionID = `1094307525`;
-		let talkRevisionID = `1094307532`;
-		let gaRevisionID = ``;
-		let error = false;
-		let output = `\n* [[User:Sammi Brie|Sammi Brie]] failed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307525|[1]]][[Special:Diff/1094307532|[2]]]`;
-		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)).toBe(output);
-	});
-
-	test('Error', () => {
-		let username = 'Novem Linguae';
-		let passOrFail = 'pass';
-		let reviewTitle = `Talk:Thomas Carlyle (Millais)/GA1`;
-		let reviewRevisionID = undefined;
-		let talkRevisionID = undefined;
-		let gaRevisionID = undefined;
-		let error = `ReferenceError: getPassWikicodeForGANPage is not defined`;
-		let output = `\n* <span style="color: red; font-weight: bold;">ERROR:</span> ReferenceError: getPassWikicodeForGANPage is not defined. [[User:Novem Linguae|Novem Linguae]] passed [[Talk:Thomas Carlyle (Millais)/GA1]] at ~~~~~. [[Special:Diff/undefined|[1]]][[Special:Diff/undefined|[2]]]`;
-		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)).toBe(output);
-	});
-});
+*/

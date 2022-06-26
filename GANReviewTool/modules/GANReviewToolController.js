@@ -48,6 +48,7 @@ export class GANReviewToolController {
 		$(`#GANReviewTool-Submit`).on('click', async () => { // must use arrow functions in classes. else "this" keyword is not properly recognized, and can't acess class methods
 			// if pass, a WP:GA subpage heading must be selected
 			let passOrFail = $(`[name="GANReviewTool-PassOrFail"]:checked`).val();
+			let needsATOP = $(`[name="GANReviewTool-ATOPYesNo"]`).is(":checked");
 			let gaSubpageHeading = document.querySelector(`[name="GANReviewTool-Topic"]`);
 			gaSubpageHeading = gaSubpageHeading.options[gaSubpageHeading.selectedIndex];
 			gaSubpageHeading = gaSubpageHeading.text;
@@ -71,10 +72,12 @@ export class GANReviewToolController {
 				if ( passOrFail === 'pass' ) {
 					let editSummary = `promote [[${gaTitle}]] to good article` + editSummarySuffix;
 
-					this.pushStatus('Placing {{atop}} and {{abot}} on GA review page.', $);
-					reviewWikicode = await this.getWikicode(title, mw); // get this wikicode again, in case it changed between page load and "submit" button click
-					reviewWikicode = service.getPassWikicodeForGANPage(reviewWikicode);
-					reviewRevisionID = await this.makeEdit(reviewTitle, editSummary, reviewWikicode, mw);
+					if ( needsATOP ) {
+						this.pushStatus('Placing {{atop}} and {{abot}} on GA review page.', $);
+						reviewWikicode = await this.getWikicode(title, mw); // get this wikicode again, in case it changed between page load and "submit" button click
+						reviewWikicode = service.getPassWikicodeForGANPage(reviewWikicode);
+						reviewRevisionID = await this.makeEdit(reviewTitle, editSummary, reviewWikicode, mw);
+					}
 					
 					this.pushStatus('Deleting {{GA nominee}} from article talk page.', $);
 					this.pushStatus('Adding {{GA}} or {{Article history}} to article talk page.', $);
@@ -93,10 +96,12 @@ export class GANReviewToolController {
 				} else if ( passOrFail === 'fail' ) {
 					let editSummary = `close GAN as unsuccessful` + editSummarySuffix;
 
-					this.pushStatus('Placing {{atop}} and {{abot}} on GA review page.', $);
-					reviewWikicode = await this.getWikicode(title, mw); // get this wikicode again, in case it changed between page load and "submit" button click
-					reviewWikicode = service.getFailWikicodeForGANPage(reviewWikicode);
-					reviewRevisionID = await this.makeEdit(reviewTitle, editSummary, reviewWikicode, mw);
+					if ( needsATOP ) {
+						this.pushStatus('Placing {{atop}} and {{abot}} on GA review page.', $);
+						reviewWikicode = await this.getWikicode(title, mw); // get this wikicode again, in case it changed between page load and "submit" button click
+						reviewWikicode = service.getFailWikicodeForGANPage(reviewWikicode);
+						reviewRevisionID = await this.makeEdit(reviewTitle, editSummary, reviewWikicode, mw);
+					}
 
 					this.pushStatus('Deleting {{GA nominee}} from article talk page.', $);
 					this.pushStatus('Adding {{FailedGA}} or {{Article history}} to article talk page.', $);
@@ -113,7 +118,7 @@ export class GANReviewToolController {
 			this.pushStatus('Adding to log', $);
 			let editSummary = `log [[${gaTitle}]]` + editSummarySuffix;
 			let username = mw.config.get('wgUserName');
-			let textToAppend = service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error);
+			let textToAppend = service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP);
 			await this.appendToPage('User:Novem Linguae/Scripts/GANReviewTool/Log', editSummary, textToAppend, mw);
 
 			if ( ! error ) {

@@ -5,10 +5,9 @@
 = other people's examples
 = template
 AddInfobox.js
-CiteHighlighter/CiteHighlighter.xlsx
-CiteHighlighter/todo.txt
 cookie.txt
 coverage
+gitignore/
 jsconfig.json
 HideRollbackOnTemplates.js
 Morebits/
