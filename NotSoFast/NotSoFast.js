@@ -39,22 +39,22 @@ $(function() {
 	}
 
 	/**
-	  * Converts a MediaWiki mw.user.options.get('timecorrection') from something like 'ZoneInfo|-420|America/Los_Angeles' or 'System|0' to -420 or 0.
-	  */
+	 * Converts a MediaWiki mw.user.options.get('timecorrection') from something like 'ZoneInfo|-420|America/Los_Angeles' or 'System|0' to -420 or 0.
+	 */
 	function getMediaWikiTimeZoneOffset(string) {
 		return parseInt(string.match(/\d+/)[0]);
 	}
 
 	/**
-	  * Returns the pagename, including the namespace name, but with spaces replaced by underscores
-	  */
+	 * Returns the pagename, including the namespace name, but with spaces replaced by underscores
+	 */
 	function getArticleName() {
 		return mw.config.get('wgPageName');
 	}
 
 	/**
-	  * Flips date and time, so that Date.parse() recognizes it. Example: 00:34, 5 March 2022 becomes 5 March 2002 00:34
-	  */
+	 * Flips date and time, so that Date.parse() recognizes it. Example: 00:34, 5 March 2022 becomes 5 March 2002 00:34
+	 */
 	function convertNPPDateTimeToJSDateTime(nppDateTime) {
 		return nppDateTime.replace(/(^.*), (.*)$/, '$2 $1');
 	}

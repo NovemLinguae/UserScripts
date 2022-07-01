@@ -127,8 +127,8 @@ export class GANReviewToolController {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	async getWikicode(title, mw) {
 		let api = new mw.Api();
 		let params = {
@@ -144,8 +144,8 @@ export class GANReviewToolController {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	async makeEdit(title, editSummary, wikicode, mw) {
 		let api = new mw.Api();
 		let params = {
@@ -161,8 +161,8 @@ export class GANReviewToolController {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	async getPageCreator(title, mw) {
 		let api = new mw.Api();
 		let params = {
@@ -182,9 +182,9 @@ export class GANReviewToolController {
 	}
 
 	/**
-	  * Lets you append without getting the Wikicode first. Saves an API query.
-	  * @private
-	  */
+	 * Lets you append without getting the Wikicode first. Saves an API query.
+	 * @private
+	 */
 	async appendToPage(title, editSummary, wikicodeToAppend, mw) {
 		let api = new mw.Api();
 		let params = {
@@ -200,15 +200,15 @@ export class GANReviewToolController {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	pushStatus(statusToAdd, $) {
 		$(`#GANReviewTool-ProcessingMessage > p`).append('<br />' + statusToAdd);
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	shouldRunOnThisPageQuickChecks(title, mw) {
 		// don't run when not viewing articles
 		let action = mw.config.get('wgAction');
@@ -236,15 +236,15 @@ export class GANReviewToolController {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	isGASubPage(title) {
 		return Boolean(title.match(/\/GA\d{1,2}$/));
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	getGATitle(title) {
 		title = title.replace('Talk:', '');
 		title = title.replace(/_/g, ' ');
@@ -253,8 +253,8 @@ export class GANReviewToolController {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	getGATalkTitle(gaTitle) {
 		if ( gaTitle.includes(':') ) {
 			return gaTitle.replace(/^([^:]*)(:.*)$/gm, '$1 talk$2');

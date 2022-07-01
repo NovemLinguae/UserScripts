@@ -90,8 +90,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	getWikicodeToInsert(gaTitle, gaDisplayTitle) {
 		if ( gaDisplayTitle === gaTitle ) { // use a non-piped wikilink, when possible
 			return `[[${gaTitle}]]\n`;
@@ -103,8 +103,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	placeATOP(wikicode, result, color) {
 		let colorCode = '';
 		switch ( color ) {
@@ -138,8 +138,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	getTopicFromGANomineeTemplate(talkWikicode) {
 		let topic = this.getTemplateParameter(talkWikicode, 'GA nominee', 'topic');
 		if ( ! topic ) {
@@ -149,8 +149,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	getTemplateParameter(wikicode, templateName, parameterName) {
 		templateName = this.regExEscape(templateName);
 		parameterName = this.regExEscape(parameterName);
@@ -164,39 +164,39 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * CC BY-SA 4.0, coolaj86, https://stackoverflow.com/a/6969486/3480193
-	  * @private
-	  */
+	 * CC BY-SA 4.0, coolaj86, https://stackoverflow.com/a/6969486/3480193
+	 * @private
+	 */
 	regExEscape(string) {
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	deleteGANomineeTemplate(talkWikicode) {
 		return talkWikicode.replace(/\{\{GA nominee[^\}]+\}\}\n?/i, '');
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	addGATemplate(talkWikicode, topic, gaPageNumber) {
 		let codeToAdd = `{{GA|~~~~~|topic=${topic}|page=${gaPageNumber}}}\n`;
 		return this.addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd);
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	addFailedGATemplate(talkWikicode, topic, gaPageNumber) {
 		let codeToAdd = `{{FailedGA|~~~~~|topic=${topic}|page=${gaPageNumber}}}\n`;
 		return this.addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd);
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd) {
 		let templateName = this.getFirstTemplateNameFromWikicode(codeToAdd);
 		let templatesThatGoBefore;
@@ -212,8 +212,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	getFirstTemplateNameFromWikicode(wikicode) {
 		let match = wikicode.match(/(?<=\{\{)[^\|\}]+/)
 		if ( ! match ) {
@@ -223,10 +223,10 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * Search algorithm looks for \n after the searched templates. If not present, it will not match.
-	  * @param {array} templates
-	  * @private
-	  */
+	 * Search algorithm looks for \n after the searched templates. If not present, it will not match.
+	 * @param {array} templates
+	 * @private
+	 */
 	addWikicodeAfterTemplates(wikicode, templates, codeToAdd) {
 		let insertPosition = 0;
 		for ( let template of templates ) {
@@ -241,10 +241,10 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @param {RegExp} regex /g flag must be set
-	  * @returns {int} endOfStringPosition Returns zero if not found
-	  * @private
-	  */
+	 * @param {RegExp} regex /g flag must be set
+	 * @returns {int} endOfStringPosition Returns zero if not found
+	 * @private
+	 */
 	getEndOfStringPositionOfLastMatch(haystack, regex) {
 		let matches = [...haystack.matchAll(regex)];
 		let hasMatches = matches.length;
@@ -259,16 +259,16 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	changeWikiProjectArticleClassToGA(talkWikicode) {
 		return talkWikicode.replace(/(\{\{WikiProject [^\}]*\|\s*class\s*=\s*)([^\}\|\s]*)/gi, '$1GA');
 	}
 
 	/**
-	  * Determine next |action= number in {{Article history}} template. This is so we can insert an action.
-	  * @private
-	  */
+	 * Determine next |action= number in {{Article history}} template. This is so we can insert an action.
+	 * @private
+	 */
 	determineNextActionNumber(talkWikicode) {
 		let i = 1;
 		while ( true ) {
@@ -282,8 +282,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed) {
 		let nextActionNumber = this.determineNextActionNumber(talkWikicode);
 
@@ -316,8 +316,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	getArticleHistoryNewStatus(existingStatus, listedOrFailed) {
 		if ( listedOrFailed === 'listed' ) {
 			switch ( existingStatus ) {
@@ -343,8 +343,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert) {
 		// TODO: handle nested templates
 		let regex = new RegExp(`(\\{\\{${templateNameRegExNoDelimiters}[^\\}]*)(\\}\\})`, 'i');
@@ -352,8 +352,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	firstTemplateGetParameterValue(wikicode, template, parameter) {
 		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
 		// new algorithm:
@@ -370,8 +370,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	firstTemplateDeleteParameter(wikicode, template, parameter) {
 		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
 
@@ -380,8 +380,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	removeFormattingThatInterferesWithSort(str) {
 		return str.replace(/^[^\[]*\[\[(?:[^\|]+\|)?/, '') // delete anything in front of [[, [[, and anything inside the left half of a piped wikilink
 			.replace(/\]\][^\]]*$/, '') // delete ]], and anything after ]]
@@ -393,8 +393,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	aSortsLowerAlphabeticallyThanB(a, b) {
 		// JavaScript appears to use an ASCII sort. See https://en.wikipedia.org/wiki/ASCII#Printable_characters
 
@@ -411,9 +411,9 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * Jeroen Ooms, CC BY-SA 3.0, https://stackoverflow.com/a/18123985/3480193
-	  * @private
-	  */
+	 * Jeroen Ooms, CC BY-SA 3.0, https://stackoverflow.com/a/18123985/3480193
+	 * @private
+	 */
 	removeDiacritics(str) {
 		var defaultDiacriticsRemovalMap = [
 			{'base':'A', 'letters':/[\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F]/g},
@@ -510,8 +510,8 @@ export class GANReviewToolService {
   	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode) {
 		// chop off equals at beginning and end of line. we want to isolate a smaller piece to use as our needle.
 		let needle = /^={2,5}\s*(.*?)\s*={2,5}$/gm.exec(shortenedVersionInComboBox)[1];
@@ -527,8 +527,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	findFirstStringAfterPosition(needle, haystack, position) {
 		let len = haystack.length;
 		for ( let i = position; i < len; i++ ) {
@@ -541,9 +541,9 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * CC BY-SA 4.0, jAndy, https://stackoverflow.com/a/4364902/3480193
-	  * @private
-	  */
+	 * CC BY-SA 4.0, jAndy, https://stackoverflow.com/a/4364902/3480193
+	 * @private
+	 */
 	insertStringIntoStringAtPosition(bigString, insertString, position) {
 		return [
 			bigString.slice(0, position),
@@ -553,8 +553,8 @@ export class GANReviewToolService {
 	}
 
 	/**
-	  * @private
-	  */
+	 * @private
+	 */
 	hasArticleHistoryTemplate(wikicode) {
 		return Boolean(wikicode.match(/\{\{Article ?history/i));
 	}
