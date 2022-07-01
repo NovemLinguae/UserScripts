@@ -1,12 +1,8 @@
-// giving up on node.js style includes for now. is messing up my unit test includes
-//const { GANReviewToolView } = require("./modules/GANReviewToolView");
-//const { GANReviewToolService } = require("./modules/GANReviewToolService");
-
 export class GANReviewToolController {
-	async execute($, mw, location) { // Classes are walled gardens. Global variables must be passed in. This is good!
+	async execute($, mw, location) {
 		let title = mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
 		title = title.replace(/_/g, ' '); // underscores to spaces. prevents some bugs later
-		if ( ! this.shouldRunOnThisPage(title) ) return;
+		if ( ! this.shouldRunOnThisPageQuickChecks(title, mw) ) return;
 
 		// only run if this review hasn't already been closed. check for {{atop}}
 		let reviewWikicode = await this.getWikicode(title, mw);
@@ -213,7 +209,7 @@ export class GANReviewToolController {
 	/**
 	  * @private
 	  */
-	shouldRunOnThisPage(title) {
+	shouldRunOnThisPageQuickChecks(title, mw) {
 		// don't run when not viewing articles
 		let action = mw.config.get('wgAction');
 		if ( action != 'view' ) return false;

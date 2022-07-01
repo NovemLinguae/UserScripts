@@ -28,15 +28,10 @@ export class GANReviewToolService {
 		// find heading
 		let headingStartPosition = this.getGASubpageHeadingPosition(gaSubpageHeading, gaSubpageWikicode);
 		// now move down a bit, to the first line with an item. skip {{Further}}, {{#invoke:Good Articles|subsection|, etc.
-		headingStartPosition = this.findFirstStringAfterPosition('[[', gaSubpageWikicode, headingStartPosition);
+		headingStartPosition = this.findFirstStringAfterPosition('|subsection|\n', gaSubpageWikicode, headingStartPosition) + 13;
 		let headingEndPosition = this.findFirstStringAfterPosition('}}', gaSubpageWikicode, headingStartPosition);
-		let wikicodeToInsert;
 		gaDisplayTitle = gaDisplayTitle.trim();
-		if ( gaDisplayTitle === gaTitle ) {
-			wikicodeToInsert = `[[${gaTitle}]]\n`;
-		} else {
-			wikicodeToInsert = `[[${gaTitle}|${gaDisplayTitle}]]\n`;
-		}
+		let wikicodeToInsert = this.getWikicodeToInsert(gaTitle, gaDisplayTitle);
 		let insertPosition;
 		let startOfLine = headingStartPosition;
 		while ( startOfLine < headingEndPosition ) {
@@ -92,6 +87,19 @@ export class GANReviewToolService {
 			textToAppend += `[[Special:Diff/${gaRevisionID}|[List]]]`;
 		}
 		return textToAppend;
+	}
+
+	/**
+	  * @private
+	  */
+	getWikicodeToInsert(gaTitle, gaDisplayTitle) {
+		if ( gaDisplayTitle === gaTitle ) { // use a non-piped wikilink, when possible
+			return `[[${gaTitle}]]\n`;
+		} else if ( gaDisplayTitle === `''${gaTitle}''` ) { // put italics on the outside, when possible
+			return `''[[${gaTitle}]]''\n`;
+		} else {
+			return `[[${gaTitle}|${gaDisplayTitle}]]\n`;
+		}
 	}
 
 	/**
@@ -407,7 +415,6 @@ export class GANReviewToolService {
 	  * @private
 	  */
 	removeDiacritics(str) {
-
 		var defaultDiacriticsRemovalMap = [
 			{'base':'A', 'letters':/[\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F]/g},
 			{'base':'AA','letters':/[\uA732]/g},

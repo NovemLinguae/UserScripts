@@ -1,12 +1,23 @@
-function parseDate(str) {
-	let dateTimeString = str.trim(); // example: 00:34, 5 March 2022
-	dateTimeString = dateTimeString.replace(/(^.*), (.*)$/, '$2 $1');
-	return Date.parse(dateTimeString);
+function convertTimeZoneFromMediaWikiToBrowser(timestamp, medaWikiTimeZoneString, browserTimeZoneOffset) {
+	let mediaWikiTimeZoneOffsetInMinutes = getMediaWikiTimeZoneOffset(medaWikiTimeZoneString);
+	let mediaWikiTimeZoneOffsetInSeconds = mediaWikiTimeZoneOffsetInMinutes * 60;
+	let browserTimeZoneOffsetInSeconds = browserTimeZoneOffset * 60;
+	let conversion = parseInt(mediaWikiTimeZoneOffsetInSeconds) - parseInt(browserTimeZoneOffsetInSeconds);
+	return parseInt(timestamp) + conversion;
 }
 
-describe('parseDate(str)', () => {
-	test(`Special:NewPagesFeed date format as of 03/04/22 shouldn't return NaN`, () => {
-		let str = `00:34, 5 March 2022`;
-		expect(isNaN(parseDate(str))).toBe(false);
+/**
+	* Converts a MediaWiki mw.user.options.get('timecorrection') from something like 'ZoneInfo|-420|America/Los_Angeles' or 'System|0' to -420 or 0.
+	*/
+function getMediaWikiTimeZoneOffset(string) {
+	return parseInt(string.match(/\d+/)[0]);
+}
+
+describe('convertTimeZoneFromMediaWikiToBrowser(timestamp, medaWikiTimeZoneString, browserTimeZoneOffset)', () => {
+	test(`should handle mediawiki UTC and browser pacific standard time`, () => {
+		let timestamp = 1656495780; // UTC
+		let medaWikiTimeZoneString = `System|0`; // UTC
+		let browserTimeZoneOffset = 420; // USA pacific time
+		expect(convertTimeZoneFromMediaWikiToBrowser(timestamp, medaWikiTimeZoneString, browserTimeZoneOffset)).toBe(1656470580);
 	});
 });

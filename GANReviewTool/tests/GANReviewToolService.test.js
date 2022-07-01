@@ -13,6 +13,8 @@ let service = new GANReviewToolService();
 
 // Only unit testing public methods. Recommended best practice, for easier refactoring.
 
+// Fold All (Ctrl+K Ctrl+0) folds all regions in the editor. Unfold All (Ctrl+K Ctrl+J) unfolds all regions in the editor.
+
 describe('getPassWikicodeForGANPage(reviewWikicode)', () => {
 	test('Should place {{atopg}}', () => {
 		let reviewWikicode = 
@@ -409,7 +411,7 @@ describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTi
 [[Ampato]]
 [[Andagua volcanic field]]
 [[Antofalla]]
-[[Building|''Building'']]
+''[[Building]]''
 }}
 `;
 		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
@@ -467,7 +469,7 @@ describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTi
 [[Ampato]]
 [[Andagua volcanic field]]
 [[Antofalla]]
-[[Building|''Building'']]
+''[[Building]]''
 }}
 `;
 		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
@@ -507,7 +509,7 @@ describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTi
 ''[[The Cookery Book of Lady Clark of Tillypronie]]''
 ''[[The Experienced English Housekeeper]]'' 
 ''[[Food in England]]''
-[[Food in the United States|''Food in the United States'']]
+''[[Food in the United States]]''
 ''[[The Good Huswifes Jewell]]'' 
 ''[[The Modern Cook]]''
 ''[[Modern Cookery for Private Families]]'' 
@@ -546,7 +548,7 @@ describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTi
 ''[[The Art of Cookery Made Plain and Easy]]''
 ''[[A Book of Mediterranean Food]]''
 ''[[Compendium ferculorum, albo Zebranie potraw]]''
-[[The Compleat Housewife|''The Compleat Housewife'']]
+''[[The Compleat Housewife]]''
 ''[[The Cookery Book of Lady Clark of Tillypronie]]''
 ''[[The Experienced English Housekeeper]]'' 
 ''[[Food in England]]''
@@ -726,6 +728,44 @@ __NOTOC__
 `;
 		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
+
+	test('should handle empty list', () => {
+		let gaSubpageHeading = `=====Actors, directors, models, performers, and celebrities=====`;
+		let gaTitle = `Pakeezah`;
+		let gaDisplayTitle = `Pakeezah`;
+		let gaSubpageWikicode =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+}}
+`;
+		let output =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Pakeezah]]
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test('if only decoration is italics, should place italics outside the wikilink', () => {
+		let gaSubpageHeading = `=====Actors, directors, models, performers, and celebrities=====`;
+		let gaTitle = `Pakeezah`;
+		let gaDisplayTitle = `''Pakeezah''`;
+		let gaSubpageWikicode =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Abc]]
+}}
+`;
+		let output =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Abc]]
+''[[Pakeezah]]''
+}}
+`;
+		expect(service.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
 });
 
 describe('getFailWikicodeForGANPage(reviewWikicode)', () => {
@@ -858,7 +898,7 @@ describe('getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, tal
 		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
 	});
 
-	test('Should not display [Atop] diff if user selected not to place {{ATOP}}', () => {
+	test('Should not display [Atop] diff if user selected not to place {{Atop}}', () => {
 		let username = 'Sammi Brie';
 		let passOrFail = 'pass';
 		let reviewTitle = `Talk:1982 World's Fair/GA1`;
