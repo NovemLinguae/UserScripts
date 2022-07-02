@@ -73,7 +73,7 @@ export class GANReviewToolService {
 		return talkWikicode;
 	}
 
-	getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP) {
+	getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP) {
 		let textToAppend = `\n* `;
 		if ( error ) {
 			textToAppend += `<span style="color: red; font-weight: bold;">ERROR:</span> ${error}. `
@@ -224,7 +224,7 @@ export class GANReviewToolService {
 
 	/**
 	 * Search algorithm looks for \n after the searched templates. If not present, it will not match.
-	 * @param {array} templates
+	 * @param {string[]} templates
 	 * @private
 	 */
 	addWikicodeAfterTemplates(wikicode, templates, codeToAdd) {

@@ -116,9 +116,9 @@ export class ConvertToSpeciesBox {
 	}
 
 	/**
-		@param needle A template name, case insensitive. So for example, to find {{Speciesbox}}, you'd input speciesbox with no braces.
-		@param haystack A bunch of wikicode.
-	*/
+	 * @param needle A template name, case insensitive. So for example, to find {{Speciesbox}}, you'd input speciesbox with no braces.
+	 * @param haystack A bunch of wikicode.
+	 */
 	_removeBlankParametersFromFirstTemplate(templateName, wikicode) {
 		let thirds = this._isolateFirstTemplate(templateName, wikicode);
 		// eliminate blank parameters without enters at the end of the line
@@ -132,7 +132,9 @@ export class ConvertToSpeciesBox {
 		return haystack.search(new RegExp(this._regExEscape(needle), "i"));
 	}
 
-	/** @returns {array} [preTemplateText, templateText, postTemplateText] */
+	/**
+	 * @returns {string[]} [preTemplateText, templateText, postTemplateText]
+	 */
 	_isolateFirstTemplate(needle, haystack) {
 		// isolate first template needle that is found
 		let templateWikicodeStartPos = this._indexOfCaseInsensitive('{{' + needle, haystack);

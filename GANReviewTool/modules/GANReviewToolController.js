@@ -114,7 +114,7 @@ export class GANReviewToolController {
 			this.pushStatus('Adding to log', $);
 			let editSummary = `log [[${gaTitle}]]` + editSummarySuffix;
 			let username = mw.config.get('wgUserName');
-			let textToAppend = service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP);
+			let textToAppend = service.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP);
 			await this.appendToPage('User:Novem Linguae/Scripts/GANReviewTool/Log', editSummary, textToAppend, mw);
 
 			if ( ! error ) {

@@ -858,7 +858,7 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 	});
 });
 
-describe('getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)', () => {
+describe('getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)', () => {
 	test('Should handle a pass', () => {
 		let username = 'Sammi Brie';
 		let passOrFail = 'pass';
@@ -869,7 +869,7 @@ describe('getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, tal
 		let error = false;
 		let needsATOP = true;
 		let output = `\n* [[User:Sammi Brie|Sammi Brie]] passed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307525|[Atop]]][[Special:Diff/1094307532|[Talk]]][[Special:Diff/1094307538|[List]]]`;
-		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
+		expect(service.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
 	});
 
 	test('Should handle a fail', () => {
@@ -882,7 +882,7 @@ describe('getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, tal
 		let error = false;
 		let needsATOP = true;
 		let output = `\n* [[User:Sammi Brie|Sammi Brie]] failed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307525|[Atop]]][[Special:Diff/1094307532|[Talk]]]`;
-		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
+		expect(service.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
 	});
 
 	test('Should handle an error', () => {
@@ -895,7 +895,7 @@ describe('getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, tal
 		let error = `ReferenceError: getPassWikicodeForGANPage is not defined`;
 		let needsATOP = true;
 		let output = `\n* <span style="color: red; font-weight: bold;">ERROR:</span> ReferenceError: getPassWikicodeForGANPage is not defined. [[User:Novem Linguae|Novem Linguae]] passed [[Talk:Thomas Carlyle (Millais)/GA1]] at ~~~~~. [[Special:Diff/undefined|[Atop]]][[Special:Diff/undefined|[Talk]]]`;
-		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
+		expect(service.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
 	});
 
 	test('Should not display [Atop] diff if user selected not to place {{Atop}}', () => {
@@ -908,7 +908,7 @@ describe('getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, tal
 		let error = false;
 		let needsATOP = false;
 		let output = `\n* [[User:Sammi Brie|Sammi Brie]] passed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307532|[Talk]]][[Special:Diff/1094307538|[List]]]`;
-		expect(service.getLogMessage(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
+		expect(service.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
 	});
 });
 

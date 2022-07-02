@@ -1,6 +1,10 @@
-/** Lets you use regex to specify what parts of a very long string you want to specify as "off limits", then you can do additional regex's and search/replace to the remaining parts of the string. */
+/**
+ * Lets you use regex to specify what parts of a very long string you want to specify as "off limits", then you can do additional regex's and search/replace to the remaining parts of the string.
+ */
 export class StringFilter {
-	/** Does a replace, but specifies areas of the file that should NOT be replaced. Those areas are specified by providing an openingTag and a closingTag, and those areas are marked as off limits. */
+	/**
+	 * Does a replace, but specifies areas of the file that should NOT be replaced. Those areas are specified by providing an openingTag and a closingTag, and those areas are marked as off limits.
+	 */
 	surgicalReplaceOutsideTags(regex, replacement, haystack, openingTags, closingTags) {
 		let allTags = [...openingTags, ...closingTags];
 		let parts = this._splitStringUsingMultiplePatterns(haystack, allTags);
@@ -21,7 +25,9 @@ export class StringFilter {
 		return resultArray.join('');
 	}
 
-	/** Does a replace, but specifies areas of the file that SHOULD be replaced, then skips the rest of the file. The area that should be replaced is specified by providing an openingTag and a closingTag. */
+	/**
+	 * Does a replace, but specifies areas of the file that SHOULD be replaced, then skips the rest of the file. The area that should be replaced is specified by providing an openingTag and a closingTag.
+	 */
 	surgicalReplaceInsideTags(regex, replacement, haystack, openingTags, closingTags) {
 		let allTags = [...openingTags, ...closingTags];
 		let parts = this._splitStringUsingMultiplePatterns(haystack, allTags);
@@ -38,10 +44,10 @@ export class StringFilter {
 	}
 	
 	/**
-	Also keeps the pattern in the result, unlike string.prototype.split. Algorithm isn't perfect, will fail with this pattern: <ref>Test/>Test</ref>. But should be good enough for DraftCleaner stuff.
-	
-	@param {Array} patterns
-	*/
+	 * Also keeps the pattern in the result, unlike string.prototype.split. Algorithm isn't perfect, will fail with this pattern: <ref>Test/>Test</ref>. But should be good enough for DraftCleaner stuff.
+	 * @param {string[]} patterns
+	 * @returns {string[]}
+	 */
 	_splitStringUsingMultiplePatterns(string, patterns) {
 		let length = string.length;
 		let result = [];

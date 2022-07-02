@@ -6,12 +6,35 @@ export class GARCloserService {
 		return wikicode;
 	}
 
-	makeCommunityAssessmentLogEntry(wikicode) {
-
+	makeCommunityAssessmentLogEntryToAppend(garTitle) {
+		return `\n{{${garTitle}}}`;
 	}
 
-	makeScriptLogEntry(wikicode) {
+	/**
+	 * @param {'keep'|'delist'} keepOrDelist
+	 */
+	makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error) {
+		let textToAppend = `\n* `;
 
+		if ( error ) {
+			textToAppend += `<span style="color: red; font-weight: bold;">ERROR:</span> ${error}. `
+		}
+
+		let keepOrDelistPastTense = this.getKeepOrDelistPastTense(keepOrDelist);
+		textToAppend += `[[User:${username}|${username}]] ${keepOrDelistPastTense} [[${reviewTitle}]] at ~~~~~. `;
+		textToAppend += `[[Special:Diff/${talkRevisionID}|[Talk]]]`;
+
+		if ( articleRevisionID ) {
+			textToAppend += `[[Special:Diff/${articleRevisionID}|[Article]]]`;
+		}
+		if ( gaListRevisionID ) {
+			textToAppend += `[[Special:Diff/${gaListRevisionID}|[List]]]`;
+		}
+		if ( garLogRevisionID ) {
+			textToAppend += `[[Special:Diff/${garLogRevisionID}|[Log]]]`;
+		}
+
+		return textToAppend;
 	}
 
 	processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle) {
@@ -221,7 +244,7 @@ export class GARCloserService {
 	}
 
 	/**
-	 * @returns {Array} Parameters, with keys being equivalent to the template parameter names. Unnamed parameters will be 1, 2, 3, etc.
+	 * @returns {Object} Parameters, with keys being equivalent to the template parameter names. Unnamed parameters will be 1, 2, 3, etc.
 	 * @private
 	 */
 	getParametersFromTemplateWikicode(wikicodeOfSingleTemplate) {
@@ -270,7 +293,7 @@ export class GARCloserService {
 		wikicode = this.firstTemplateDeleteParameter(wikicode, 'Article history', 'currentstatus');
 		let currentStatusString = this.getArticleHistoryNewStatus(existingStatus, keepOrDelist);
 
-		let result = this.getArticleHistoryResult(keepOrDelist);
+		let result = this.getKeepOrDelistPastTense(keepOrDelist);
 
 		let addToArticleHistory = 
 `|action${nextActionNumber} = GAR
@@ -288,7 +311,7 @@ export class GARCloserService {
 	/**
 	 * @private
 	 */
-	getArticleHistoryResult(keepOrDelist) {
+	getKeepOrDelistPastTense(keepOrDelist) {
 		switch ( keepOrDelist ) {
 			case 'keep':
 				return 'kept';

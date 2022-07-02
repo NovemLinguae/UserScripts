@@ -104,29 +104,82 @@ describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => 
 	});
 });
 
-/*
-
-describe('makeCommunityAssessmentLogEntry(wikicode)', () => {
+describe('makeCommunityAssessmentLogEntryToAppend(garTitle)', () => {
 	it(`Should `, () => {
-		let wikicode =
-`Talk:Abcdef/GA12`;
+		let garTitle = `Wikipedia:Good article reassessment/American popular music/1`;
 		let output =
-`Abcdef`;
-		expect(service.makeCommunityAssessmentLogEntry(wikicode)).toBe(output);
+`
+{{Wikipedia:Good article reassessment/American popular music/1}}`;
+		expect(service.makeCommunityAssessmentLogEntryToAppend(garTitle)).toBe(output);
 	});
 });
 
-describe('makeScriptLogEntry(wikicode)', () => {
-	it(`Should `, () => {
-		let wikicode =
-`Talk:Abcdef/GA12`;
-		let output =
-`Abcdef`;
-		expect(service.makeScriptLogEntry(wikicode)).toBe(output);
+describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)', () => {
+	it(`Should handle individual pass`, () => {
+		let username = `Novem Linguae`;
+		let keepOrDelist = `keep`;
+		let reviewTitle = `Talk:Geothermal energy/GA2`;
+		let talkRevisionID = 123;
+		let articleRevisionID = undefined;
+		let gaListRevisionID = undefined;
+		let garLogRevisionID = undefined;
+		let error = false;
+		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Talk:Geothermal energy/GA2]] at ~~~~~. [[Special:Diff/123|[Talk]]]`;
+		expect(service.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+	});
+
+	it(`Should handle individual fail`, () => {
+		let username = `Novem Linguae`;
+		let keepOrDelist = `delist`;
+		let reviewTitle = `Talk:Geothermal energy/GA2`;
+		let talkRevisionID = 123;
+		let articleRevisionID = 456;
+		let gaListRevisionID = 789;
+		let garLogRevisionID = undefined;
+		let error = false;
+		let output = `\n* [[User:Novem Linguae|Novem Linguae]] delisted [[Talk:Geothermal energy/GA2]] at ~~~~~. [[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]]`;
+		expect(service.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+	});
+
+	it(`Should handle community pass`, () => {
+		let username = `Novem Linguae`;
+		let keepOrDelist = `keep`;
+		let reviewTitle = `Wikipedia:Good article reassessment/WIN Television/1`;
+		let talkRevisionID = 123;
+		let articleRevisionID = undefined;
+		let gaListRevisionID = undefined;
+		let garLogRevisionID = 456;
+		let error = false;
+		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/123|[Talk]]][[Special:Diff/456|[Log]]]`;
+		expect(service.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+	});
+
+	it(`Should handle community fail`, () => {
+		let username = `Novem Linguae`;
+		let keepOrDelist = `delist`;
+		let reviewTitle = `Wikipedia:Good article reassessment/WIN Television/1`;
+		let talkRevisionID = 123;
+		let articleRevisionID = 456;
+		let gaListRevisionID = 789;
+		let garLogRevisionID = 101112;
+		let error = false;
+		let output = `\n* [[User:Novem Linguae|Novem Linguae]] delisted [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]][[Special:Diff/101112|[Log]]]`;
+		expect(service.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+	});
+
+	it(`Should handle error`, () => {
+		let username = `Novem Linguae`;
+		let keepOrDelist = `delist`;
+		let reviewTitle = `Wikipedia:Good article reassessment/WIN Television/1`;
+		let talkRevisionID = 123;
+		let articleRevisionID = 456;
+		let gaListRevisionID = 789;
+		let garLogRevisionID = 101112;
+		let error = `ReferenceError: getPassWikicodeForGANPage is not defined`;
+		let output = `\n* <span style="color: red; font-weight: bold;">ERROR:</span> ReferenceError: getPassWikicodeForGANPage is not defined. [[User:Novem Linguae|Novem Linguae]] delisted [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]][[Special:Diff/101112|[Log]]]`;
+		expect(service.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
 	});
 });
-
-*/
 
 describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => {
 	it(`Should remove {{GAR/link}}, add action4 to {{Article history}}, set currentstatus to DGA, and remove class=GA`, () => {
@@ -459,19 +512,7 @@ describe('processDelistForGAList(wikicode, title)', () => {
 	});
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
 
 // private methods
 
@@ -813,3 +854,5 @@ describe('convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)', 
 		expect(service.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)).toBe(output);
 	});
 });
+
+*/
