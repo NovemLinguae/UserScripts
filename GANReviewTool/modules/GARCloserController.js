@@ -1,5 +1,3 @@
-const { GARCloserWikicodeGenerator } = require("./GARCloserWikicodeGenerator.js");
-
 export class GARCloserController {
 	/**
 	 * @param {function} $ jQuery
