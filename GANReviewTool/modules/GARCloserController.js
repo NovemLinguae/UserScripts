@@ -1,7 +1,10 @@
+import { GARCloserHTMLGenerator } from "./GARCloserHTMLGenerator";
+import { GARCloserWikicodeGenerator } from "./GARCloserWikicodeGenerator";
+
 export class GARCloserController {
 	/**
 	 * @param {function} $ jQuery
-	 * @param {Object} mw mediawiki object, https://doc.wikimedia.org/mediawiki-core/master/js/#!/api/mw
+	 * @param {Object} mw mediawiki, https://doc.wikimedia.org/mediawiki-core/master/js/#!/api/mw
 	 * @param {Location} location https://developer.mozilla.org/en-US/docs/Web/API/Window/location
 	 * @param {GARCloserWikicodeGenerator} wg
 	 * @param {GARCloserHTMLGenerator} hg
@@ -38,18 +41,18 @@ export class GARCloserController {
 		this.$(`.mw-headline`).first().append(hg.getHTML());
 
 		this.$(`#GARCloser-Keep`).on('click', async () => {
-			this.clickKeep();
+			await this.clickKeep();
 		});
 
 		this.$(`#GARCloser-Delist`).on('click', async () => {
-			this.clickDelist();
+			await this.clickDelist();
 		});
 	}
 
 	/**
 	 * @private
 	 */
-	clickKeep() {
+	async clickKeep() {
 		// TODO: {{subst:GAR/result|result=outcome}} ~~~~ ? Ask Femke. May need to check if user already did it. Would do for both keep and delist.
 
 		try {
@@ -72,7 +75,7 @@ export class GARCloserController {
 		}
 	}
 
-	clickDelist() {
+	async clickDelist() {
 		/*
 		
 		try {
