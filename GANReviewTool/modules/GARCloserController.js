@@ -1,12 +1,22 @@
 const { GARCloserWikicodeGenerator } = require("./GARCloserWikicodeGenerator.js");
 
 export class GARCloserController {
-	async execute($, mw, location) {
+	/**
+	 * @param {function} $ jQuery
+	 * @param {Object} mw mediawiki object, https://doc.wikimedia.org/mediawiki-core/master/js/#!/api/mw
+	 * @param {Location} location https://developer.mozilla.org/en-US/docs/Web/API/Window/location
+	 * @param {GARCloserWikicodeGenerator} wg
+	 * @param {GARCloserHTMLGenerator} hg
+	 */
+	async execute($, mw, location, wg, hg) {
 		this.$ = $;
 		this.mw = mw;
 		this.location = location;
-		this.wg = new GARCloserWikicodeGenerator();
+		this.wg = wg;
+		this.hg = hg;
+
 		this.scriptLogTitle = `User:Novem Linguae/Scripts/GANReviewTool/GARLog`;
+		this.editSummarySuffix = ' ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
 
 		this.garPageTitle = this.mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
 		this.garPageTitle = this.garPageTitle.replace(/_/g, ' '); // underscores to spaces. prevents some bugs later
@@ -15,8 +25,8 @@ export class GARCloserController {
 			return;
 		}
 
-		let parentArticle = await this.confirmGARAndGetArticleName();
-		if ( ! parentArticle ) {
+		this.parentArticle = await this.confirmGARAndGetArticleName();
+		if ( ! this.parentArticle ) {
 			return;
 		}
 
@@ -27,59 +37,68 @@ export class GARCloserController {
 		}
 
 		// place HTML on page
-		let hg = new GARCloserHTMLGenerator();
 		this.$(`.mw-headline`).first().append(hg.getHTML());
 
-		let editSummarySuffix = ' ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
-
 		this.$(`#GARCloser-Keep`).on('click', async () => {
-			// TODO: {{subst:GAR/result|result=outcome}} ~~~~ ? Ask Femke. May need to check if user already did it. Would do for both keep and delist.
-
-			try {
-				this.editSummary = `close GAR [[${this.garPageTitle}]] as keep` + editSummarySuffix;
-				this.deactivateBothButtons();
-				await this.processKeepForGARPage();
-				await this.processKeepForTalkPage(`Talk:${parentArticle}`);
-				if ( this.isCommunityAssessment() ) {
-					// await this.makeCommunityAssessmentLogEntry();
-				}
-			} catch(err) {
-				this.error = err;
-			}
-			await this.makeScriptLogEntry('keep');
-
-			if ( ! this.error ) {
-				this.pushStatus(`Done! Reloading...`);
-				location.reload();
-			}
+			this.clickKeep();
 		});
 
 		this.$(`#GARCloser-Delist`).on('click', async () => {
-			/*
-			
-			try {
-				let editSummary = `close GAR [[${this.garPageTitle}]] as delist` + editSummarySuffix;
-				this.deactivateBothButtons();
-				await this.processDelistForGARPage();
-				await this.processDelistForTalkPage();
-				await this.processDelistForArticle();
-				await this.processDelistForGAList();
-				if ( this.isCommunityAssessment() ) {
-					await this.makeCommunityAssessmentLogEntry();
-				}
-			} catch(err) {
-				this.error = err;
-			}
-
-			await this.makeScriptLogEntry();
-
-			if ( ! this.error ) {
-				this.pushStatus(`Done! Reloading...`);
-				location.reload();
-			}
-
-			*/
+			this.clickDelist();
 		});
+	}
+
+	/**
+	 * @private
+	 */
+	clickKeep() {
+		// TODO: {{subst:GAR/result|result=outcome}} ~~~~ ? Ask Femke. May need to check if user already did it. Would do for both keep and delist.
+
+		try {
+			this.editSummary = `close GAR [[${this.garPageTitle}]] as keep` + this.editSummarySuffix;
+			this.deactivateBothButtons();
+			await this.processKeepForGARPage();
+			await this.processKeepForTalkPage(`Talk:${this.parentArticle}`);
+			if ( this.isCommunityAssessment() ) {
+				// await this.makeCommunityAssessmentLogEntry();
+			}
+		} catch(err) {
+			this.error = err;
+		}
+
+		await this.makeScriptLogEntry('keep');
+
+		if ( ! this.error ) {
+			this.pushStatus(`Done! Reloading...`);
+			location.reload();
+		}
+	}
+
+	clickDelist() {
+		/*
+		
+		try {
+			let editSummary = `close GAR [[${this.garPageTitle}]] as delist` + this.editSummarySuffix;
+			this.deactivateBothButtons();
+			await this.processDelistForGARPage();
+			await this.processDelistForTalkPage();
+			await this.processDelistForArticle();
+			await this.processDelistForGAList();
+			if ( this.isCommunityAssessment() ) {
+				await this.makeCommunityAssessmentLogEntry();
+			}
+		} catch(err) {
+			this.error = err;
+		}
+
+		await this.makeScriptLogEntry();
+
+		if ( ! this.error ) {
+			this.pushStatus(`Done! Reloading...`);
+			location.reload();
+		}
+
+		*/
 	}
 
 	/**

@@ -1,5 +1,12 @@
 export class GANReviewController {
-	async execute($, mw, location) {
+	/**
+	 * @param {function} $ jQuery
+	 * @param {Object} mw mediawiki object, https://doc.wikimedia.org/mediawiki-core/master/js/#!/api/mw
+	 * @param {Location} location https://developer.mozilla.org/en-US/docs/Web/API/Window/location
+	 * @param {GANReviewWikicodeGenerator} wg
+	 * @param {GANReviewHTMLGenerator} hg
+	 */
+	async execute($, mw, location, wg, hg) {
 		let title = mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
 		title = title.replace(/_/g, ' '); // underscores to spaces. prevents some bugs later
 		if ( ! this.shouldRunOnThisPageQuickChecks(title, mw) ) return;
@@ -15,7 +22,6 @@ export class GANReviewController {
 		if ( title !== 'User:Novem_Linguae/sandbox' && ! talkWikicode.match(/\{\{GA nominee/i) ) return;
 
 		// display HTML form
-		let hg = new GANReviewHTMLGenerator();
 		$('#contentSub2').prepend(hg.getHTML(gaTitle));
 
 		// Show a warning if viewer is not the creator of the page
@@ -61,8 +67,6 @@ export class GANReviewController {
 			let reviewTitle = title;
 			let reviewRevisionID, talkRevisionID, gaRevisionID;
 			let error = false;
-
-			let wg = new GANReviewWikicodeGenerator();
 
 			try {
 				if ( passOrFail === 'pass' ) {
@@ -115,7 +119,7 @@ export class GANReviewController {
 			let editSummary = `log [[${gaTitle}]]` + editSummarySuffix;
 			let username = mw.config.get('wgUserName');
 			let textToAppend = wg.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP);
-			await this.appendToPage('User:Novem Linguae/Scripts/GANReviewTool/Log', editSummary, textToAppend, mw);
+			await this.appendToPage('User:Novem Linguae/Scripts/GANReviewTool/GANReviewLog', editSummary, textToAppend, mw);
 
 			if ( ! error ) {
 				this.pushStatus('Script complete. Refreshing page.', $);
