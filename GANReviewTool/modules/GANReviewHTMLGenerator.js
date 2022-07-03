@@ -1,4 +1,4 @@
-export class GANReviewToolView {
+export class GANReviewHTMLGenerator {
 	getHTML(gaTitle) {
 		return `
 <style>

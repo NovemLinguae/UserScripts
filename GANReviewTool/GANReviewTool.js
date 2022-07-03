@@ -1,7 +1,7 @@
 // <nowiki>
 
 $(async function() {
-	let ganController = new GANReviewToolController();
+	let ganController = new GANReviewController();
 	await ganController.execute($, mw, location);
 
 	let garController = new GARCloserController();

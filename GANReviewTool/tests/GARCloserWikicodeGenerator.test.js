@@ -1,9 +1,31 @@
-const { GARCloserService } = require("../modules/GARCloserService.js");
+const { GARCloserWikicodeGenerator } = require("../modules/GARCloserWikicodeGenerator.js");
 
-// use this pattern. prevents bugs.
-let service;
+let wg;
 beforeEach(() => {
-	service = new GARCloserService();
+	wg = new GARCloserWikicodeGenerator();
+});
+
+describe('processKeepForGARPage(garPageWikicode)', () => {
+	test('Should place {{atopg}}', () => {
+		let garPageWikicode = 
+`===GA Review===
+{{Good article tools}}
+<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the rehg.''</includeonly>
+::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
+`;
+		let output = 
+`===GA Review===
+{{atopg
+| status = 
+| result = Kept. ~~~~
+}}
+{{Good article tools}}
+<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the rehg.''</includeonly>
+::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
+{{abot}}
+`;
+		expect(wg.processKeepForGARPage(garPageWikicode)).toBe(output);
+	});
 });
 
 describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => {
@@ -64,7 +86,7 @@ describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => 
 {{WikiProject United States|class=GA|importance=Mid|USMusic=yes|USMusic-importance=High}}
 {{WikiProject Rock music|class=GA|importance=high}}
 }}`;
-		expect(service.processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
 	});
 
 	it(`Should remove {{GAR/link}}, remove {{GA}}, add {{Article history}}, leave currentstatus alone, leave class=GA alone`, () => {
@@ -100,17 +122,17 @@ describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => 
 {{WikiProject United States|class=GA|importance=Mid|USMusic=yes|USMusic-importance=High}}
 {{WikiProject Rock music|class=GA|importance=high}}
 }}`;
-		expect(service.processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
 	});
 });
 
 describe('makeCommunityAssessmentLogEntryToAppend(garTitle)', () => {
-	it(`Should `, () => {
+	it(`Should wrap garTitle in template syntax {{ }} and insert a newline`, () => {
 		let garTitle = `Wikipedia:Good article reassessment/American popular music/1`;
 		let output =
 `
 {{Wikipedia:Good article reassessment/American popular music/1}}`;
-		expect(service.makeCommunityAssessmentLogEntryToAppend(garTitle)).toBe(output);
+		expect(wg.makeCommunityAssessmentLogEntryToAppend(garTitle)).toBe(output);
 	});
 });
 
@@ -119,65 +141,93 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 		let username = `Novem Linguae`;
 		let keepOrDelist = `keep`;
 		let reviewTitle = `Talk:Geothermal energy/GA2`;
+		let garRevisionID = 987;
 		let talkRevisionID = 123;
 		let articleRevisionID = undefined;
 		let gaListRevisionID = undefined;
 		let garLogRevisionID = undefined;
 		let error = false;
-		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Talk:Geothermal energy/GA2]] at ~~~~~. [[Special:Diff/123|[Talk]]]`;
-		expect(service.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Talk:Geothermal energy/GA2]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]]`;
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
 	});
 
 	it(`Should handle individual fail`, () => {
 		let username = `Novem Linguae`;
 		let keepOrDelist = `delist`;
 		let reviewTitle = `Talk:Geothermal energy/GA2`;
+		let garRevisionID = 987;
 		let talkRevisionID = 123;
 		let articleRevisionID = 456;
 		let gaListRevisionID = 789;
 		let garLogRevisionID = undefined;
 		let error = false;
-		let output = `\n* [[User:Novem Linguae|Novem Linguae]] delisted [[Talk:Geothermal energy/GA2]] at ~~~~~. [[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]]`;
-		expect(service.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+		let output = `\n* [[User:Novem Linguae|Novem Linguae]] delisted [[Talk:Geothermal energy/GA2]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]]`;
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
 	});
 
 	it(`Should handle community pass`, () => {
 		let username = `Novem Linguae`;
 		let keepOrDelist = `keep`;
 		let reviewTitle = `Wikipedia:Good article reassessment/WIN Television/1`;
+		let garRevisionID = 987;
 		let talkRevisionID = 123;
 		let articleRevisionID = undefined;
 		let gaListRevisionID = undefined;
 		let garLogRevisionID = 456;
 		let error = false;
-		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/123|[Talk]]][[Special:Diff/456|[Log]]]`;
-		expect(service.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Log]]]`;
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
 	});
 
 	it(`Should handle community fail`, () => {
 		let username = `Novem Linguae`;
 		let keepOrDelist = `delist`;
 		let reviewTitle = `Wikipedia:Good article reassessment/WIN Television/1`;
+		let garRevisionID = 987;
 		let talkRevisionID = 123;
 		let articleRevisionID = 456;
 		let gaListRevisionID = 789;
 		let garLogRevisionID = 101112;
 		let error = false;
-		let output = `\n* [[User:Novem Linguae|Novem Linguae]] delisted [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]][[Special:Diff/101112|[Log]]]`;
-		expect(service.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+		let output = `\n* [[User:Novem Linguae|Novem Linguae]] delisted [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]][[Special:Diff/101112|[Log]]]`;
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
 	});
 
 	it(`Should handle error`, () => {
 		let username = `Novem Linguae`;
 		let keepOrDelist = `delist`;
 		let reviewTitle = `Wikipedia:Good article reassessment/WIN Television/1`;
+		let garRevisionID = 987;
 		let talkRevisionID = 123;
 		let articleRevisionID = 456;
 		let gaListRevisionID = 789;
 		let garLogRevisionID = 101112;
 		let error = `ReferenceError: getPassWikicodeForGANPage is not defined`;
-		let output = `\n* <span style="color: red; font-weight: bold;">ERROR:</span> ReferenceError: getPassWikicodeForGANPage is not defined. [[User:Novem Linguae|Novem Linguae]] delisted [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]][[Special:Diff/101112|[Log]]]`;
-		expect(service.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+		let output = `\n* <span style="color: red; font-weight: bold;">ERROR:</span> ReferenceError: getPassWikicodeForGANPage is not defined. [[User:Novem Linguae|Novem Linguae]] delisted [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]][[Special:Diff/101112|[Log]]]`;
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+	});
+});
+
+describe('processDelistForGARPage(garPageWikicode)', () => {
+	test('Should place {{atopr}}', () => {
+		let garPageWikicode = 
+`===GA Review===
+{{Good article tools}}
+<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the rehg.''</includeonly>
+::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
+`;
+		let output = 
+`===GA Review===
+{{atopr
+| status = 
+| result = Delisted. ~~~~
+}}
+{{Good article tools}}
+<noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the rehg.''</includeonly>
+::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
+{{abot}}
+`;
+		expect(wg.processDelistForGARPage(garPageWikicode)).toBe(output);
 	});
 });
 
@@ -239,7 +289,7 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 {{WikiProject United States|class=|importance=Mid|USMusic=yes|USMusic-importance=High}}
 {{WikiProject Rock music|class=|importance=high}}
 }}`;
-		expect(service.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
 	});
 
 	it(`Should remove {{GAR/link}}, remove {{GA}}, add {{Article history}}, and remove class=GA`, () => {
@@ -275,7 +325,7 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 {{WikiProject United States|class=|importance=Mid|USMusic=yes|USMusic-importance=High}}
 {{WikiProject Rock music|class=|importance=high}}
 }}`;
-		expect(service.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
 	});
 });
 
@@ -288,7 +338,7 @@ describe('processDelistForArticle(wikicode)', () => {
 		let output =
 `{{Short description|None}}
 {{USmusicgenres}}`;
-		expect(service.processDelistForArticle(wikicode)).toBe(output);
+		expect(wg.processDelistForArticle(wikicode)).toBe(output);
 	});
 
 	it(`Should handle template being at top of wikicode`, () => {
@@ -297,7 +347,7 @@ describe('processDelistForArticle(wikicode)', () => {
 {{USmusicgenres}}`;
 		let output =
 `{{USmusicgenres}}`;
-		expect(service.processDelistForArticle(wikicode)).toBe(output);
+		expect(wg.processDelistForArticle(wikicode)).toBe(output);
 	});
 
 	it(`Should handle template being at bottom of wikicode`, () => {
@@ -307,7 +357,7 @@ describe('processDelistForArticle(wikicode)', () => {
 		let output =
 `{{USmusicgenres}}
 `;
-		expect(service.processDelistForArticle(wikicode)).toBe(output);
+		expect(wg.processDelistForArticle(wikicode)).toBe(output);
 	});
 
 	it(`Should remove {{good article}}`, () => {
@@ -318,7 +368,7 @@ describe('processDelistForArticle(wikicode)', () => {
 		let output =
 `{{Short description|None}}
 {{USmusicgenres}}`;
-		expect(service.processDelistForArticle(wikicode)).toBe(output);
+		expect(wg.processDelistForArticle(wikicode)).toBe(output);
 	});
 
 	it(`Should remove {{Good Article}}`, () => {
@@ -329,7 +379,7 @@ describe('processDelistForArticle(wikicode)', () => {
 		let output =
 `{{Short description|None}}
 {{USmusicgenres}}`;
-		expect(service.processDelistForArticle(wikicode)).toBe(output);
+		expect(wg.processDelistForArticle(wikicode)).toBe(output);
 	});
 
 	it(`Should remove {{GA article}}`, () => {
@@ -340,7 +390,7 @@ describe('processDelistForArticle(wikicode)', () => {
 		let output =
 `{{Short description|None}}
 {{USmusicgenres}}`;
-		expect(service.processDelistForArticle(wikicode)).toBe(output);
+		expect(wg.processDelistForArticle(wikicode)).toBe(output);
 	});
 
 	it(`Should remove {{ga article}}`, () => {
@@ -351,7 +401,7 @@ describe('processDelistForArticle(wikicode)', () => {
 		let output =
 `{{Short description|None}}
 {{USmusicgenres}}`;
-		expect(service.processDelistForArticle(wikicode)).toBe(output);
+		expect(wg.processDelistForArticle(wikicode)).toBe(output);
 	});
 
 	it(`Should remove {{GA icon}}`, () => {
@@ -362,7 +412,7 @@ describe('processDelistForArticle(wikicode)', () => {
 		let output =
 `{{Short description|None}}
 {{USmusicgenres}}`;
-		expect(service.processDelistForArticle(wikicode)).toBe(output);
+		expect(wg.processDelistForArticle(wikicode)).toBe(output);
 	});
 
 	it(`Should remove {{ga icon}}`, () => {
@@ -373,7 +423,7 @@ describe('processDelistForArticle(wikicode)', () => {
 		let output =
 `{{Short description|None}}
 {{USmusicgenres}}`;
-		expect(service.processDelistForArticle(wikicode)).toBe(output);
+		expect(wg.processDelistForArticle(wikicode)).toBe(output);
 	});
 });
 
@@ -391,7 +441,7 @@ describe('processDelistForGAList(wikicode, title)', () => {
 {{#invoke:Good Articles|subsection|
 [[Andorra in the Eurovision Song Contest]]
 }}`;
-		expect(service.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
 	});
 
 	it(`Should remove when in middle of list`, () => {
@@ -409,7 +459,7 @@ describe('processDelistForGAList(wikicode, title)', () => {
 [[American popular music]]
 [[Test]]
 }}`;
-		expect(service.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
 	});
 
 	it(`Should handle piped wikilink`, () => {
@@ -427,7 +477,7 @@ describe('processDelistForGAList(wikicode, title)', () => {
 [[American popular music]]
 [[Test]]
 }}`;
-		expect(service.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
 	});
 
 	it(`Should handle piped wikilink surrounded by italics outside`, () => {
@@ -445,7 +495,7 @@ describe('processDelistForGAList(wikicode, title)', () => {
 [[American popular music]]
 [[Test]]
 }}`;
-		expect(service.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
 	});
 
 	it(`Should handle piped wikilink surrounded by italics inside`, () => {
@@ -463,7 +513,7 @@ describe('processDelistForGAList(wikicode, title)', () => {
 [[American popular music]]
 [[Test]]
 }}`;
-		expect(service.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
 	});
 
 	it(`Should remove when last in list`, () => {
@@ -479,7 +529,7 @@ describe('processDelistForGAList(wikicode, title)', () => {
 {{#invoke:Good Articles|subsection|
 [[American popular music]]
 }}`;
-		expect(service.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
 	});
 
 	it(`Should remove when only item in list`, () => {
@@ -493,7 +543,7 @@ describe('processDelistForGAList(wikicode, title)', () => {
 `=====Music by nation, people, region, or country=====
 {{#invoke:Good Articles|subsection|
 }}`;
-		expect(service.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
 	});
 
 	it(`Should do nothing when item not found`, () => {
@@ -508,7 +558,7 @@ describe('processDelistForGAList(wikicode, title)', () => {
 {{#invoke:Good Articles|subsection|
 [[American popular music]]
 }}`;
-		expect(service.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
 	});
 });
 
@@ -520,28 +570,28 @@ describe('preg_position(regex, haystack)', () => {
 	test(`preg_position_false`, () => {
 		let regex = new RegExp(`hello`, 'gis');
 		let haystack = `How are you?`;
-		let result = service.preg_position(regex, haystack);
+		let result = wg.preg_position(regex, haystack);
 		expect(result).toBe(false);
 	});
 	
 	test(`preg_position_zero`, () => {
 		let regex = new RegExp(`How`, `gis`);
 		let haystack = `How are you?`;
-		let result = service.preg_position(regex, haystack);
+		let result = wg.preg_position(regex, haystack);
 		expect(result).toBe(0);
 	});
 	
 	test(`preg_position_positive`, () => {
 		let regex = new RegExp(`are`, `gis`);
 		let haystack = `How are you?`;
-		let result = service.preg_position(regex, haystack);
+		let result = wg.preg_position(regex, haystack);
 		expect(result).toBe(4);
 	});
 	
 	test(`preg_position_end`, () => {
 		let regex = new RegExp(`$`, `gis`);
 		let haystack = `How are you?`;
-		let result = service.preg_position(regex, haystack);
+		let result = wg.preg_position(regex, haystack);
 		expect(result).toBe(12);
 	});
 });
@@ -556,7 +606,7 @@ describe('getParametersFromTemplateWikicode(wikicodeOfSingleTemplate)', () => {
 			'garpage': '1',
 			'status': ''
 		};
-		expect(service.getParametersFromTemplateWikicode(wikicodeOfSingleTemplate)).toStrictEqual(output);
+		expect(wg.getParametersFromTemplateWikicode(wikicodeOfSingleTemplate)).toStrictEqual(output);
 	});
 });
 
@@ -572,7 +622,7 @@ Test
 == Heading 2 ==
 Text`;
 		let wikicodeToAdd = `[[Test]]`;
-		let result = service.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
+		let result = wg.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
 		expect(result).toBe(
 `{{Article history}}
 {{Talk header}}
@@ -599,7 +649,7 @@ Test
 == Heading 2 ==
 Text`;
 		let wikicodeToAdd = `[[Test]]`;
-		let result = service.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
+		let result = wg.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
 		expect(result).toBe(
 `{{Article history}}
 {{Talk header}}
@@ -628,7 +678,7 @@ Test
 == Heading 2 ==
 Text`;
 		let wikicodeToAdd = `[[Test]]`;
-		let result = service.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
+		let result = wg.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
 		expect(result).toBe(
 `{{Article history}}
 {{Talk header}}
@@ -647,7 +697,7 @@ Text`
 	test(`addToTalkPageAboveWikiProjects_blank`, () => {
 		let talkPageWikicode = ``;
 		let wikicodeToAdd = `[[Test]]`;
-		let result = service.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
+		let result = wg.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
 		expect(result).toBe('[[Test]]');
 	});
 	
@@ -656,7 +706,7 @@ Text`
 `== Heading 1 ==
 Test`;
 		let wikicodeToAdd = `[[Test]]`;
-		let result = service.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
+		let result = wg.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
 		expect(result).toBe(
 `[[Test]]
 == Heading 1 ==
@@ -667,7 +717,7 @@ Test`
 	test(`addToTalkPageAboveWikiProjects_end`, () => {
 		let talkPageWikicode = `Test`;
 		let wikicodeToAdd = `[[Test]]`;
-		let result = service.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
+		let result = wg.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
 		expect(result).toBe(
 `Test
 [[Test]]`
@@ -682,7 +732,7 @@ Test`
 
 == Test3 ==`;
 		let wikicodeToAdd = `[[Test]]`;
-		let result = service.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
+		let result = wg.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
 		expect(result).toBe(
 `{{Test1}}
 [[Test]]
@@ -701,7 +751,7 @@ Test`
 
 == Test3 ==`;
 		let wikicodeToAdd = `[[Test]]`;
-		let result = service.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
+		let result = wg.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
 		expect(result).toBe(
 `{{Test1}}
 [[Test]]
@@ -724,7 +774,7 @@ Test`
 
 == this is a piano song ==`;
 		let wikicodeToAdd = `[[Test]]`;
-		let result = service.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
+		let result = wg.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
 		expect(result).toBe(
 `{{GTC|Dua Lipa (album)|1}}
 {{GA|06:30, 12 August 2020 (UTC)|topic=Music|page=1|oldid=972465209}}
@@ -739,7 +789,7 @@ Test`
 	test(`addToTalkPageAboveWikiProjects_recognizeFootballTemplateAsWikiProject`, () => {
 		let talkPageWikicode = `{{football}}`;
 		let wikicodeToAdd = `[[Test]]`;
-		let result = service.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
+		let result = wg.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd);
 		expect(result).toBe(
 `[[Test]]
 {{football}}`
@@ -752,7 +802,7 @@ Test`
 		let output =
 `[[Test]]
 {{wp banner shell}}{{football}}`;
-		expect(service.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd)).toBe(output);
+		expect(wg.addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd)).toBe(output);
 	});
 });
 
@@ -761,7 +811,7 @@ describe('deleteMiddleOfString(string, deleteStartPosition, deleteEndPosition)',
 		let string = `Test DELETE THIS dont delete this`;
 		let deleteStartPosition = 5;
 		let deleteEndPosition = 17;
-		let result = service.deleteMiddleOfString(string, deleteStartPosition, deleteEndPosition);
+		let result = wg.deleteMiddleOfString(string, deleteStartPosition, deleteEndPosition);
 		expect(result).toBe('Test dont delete this');
 	});
 	
@@ -769,7 +819,7 @@ describe('deleteMiddleOfString(string, deleteStartPosition, deleteEndPosition)',
 		let string = ``;
 		let deleteStartPosition = 0;
 		let deleteEndPosition = 0;
-		let result = service.deleteMiddleOfString(string, deleteStartPosition, deleteEndPosition);
+		let result = wg.deleteMiddleOfString(string, deleteStartPosition, deleteEndPosition);
 		expect(result).toBe('');
 	});
 });
@@ -778,28 +828,28 @@ describe('regexGetFirstMatchString(regex, haystack)', () => {
 	test(`match`, () => {
 		let regex = /hello ([^ ]+)/;
 		let haystack = `hello test goodbye`;
-		let result = service.regexGetFirstMatchString(regex, haystack);
+		let result = wg.regexGetFirstMatchString(regex, haystack);
 		expect(result).toBe('test');
 	});
 
 	test(`no match`, () => {
 		let regex = /hello (bob)/;
 		let haystack = `hello test goodbye`;
-		let result = service.regexGetFirstMatchString(regex, haystack);
+		let result = wg.regexGetFirstMatchString(regex, haystack);
 		expect(result).toBe(null);
 	});
 
 	test(`no capture group, no match`, () => {
 		let regex = /hello bob/;
 		let haystack = `hello test goodbye`;
-		let result = service.regexGetFirstMatchString(regex, haystack);
+		let result = wg.regexGetFirstMatchString(regex, haystack);
 		expect(result).toBe(null);
 	});
 
 	test(`no capture group, yes match`, () => {
 		let regex = /hello bob/;
 		let haystack = `hello bob`;
-		let result = service.regexGetFirstMatchString(regex, haystack);
+		let result = wg.regexGetFirstMatchString(regex, haystack);
 		expect(result).toBe(null);
 	});
 });
@@ -818,7 +868,7 @@ describe('convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)', 
 |action1link = Talk:Test/GA1
 |action1result = listed
 }}`;
-		expect(service.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)).toBe(output);
+		expect(wg.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)).toBe(output);
 	});
 
 	it(`should handle subtopic parameter`, () => {
@@ -834,7 +884,7 @@ describe('convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)', 
 |action1link = Talk:Test/GA1
 |action1result = listed
 }}`;
-		expect(service.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)).toBe(output);
+		expect(wg.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)).toBe(output);
 	});
 
 	it(`should handle oldid parameter`, () => {
@@ -851,7 +901,7 @@ describe('convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)', 
 |action1result = listed
 |action1oldid = 123456789
 }}`;
-		expect(service.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)).toBe(output);
+		expect(wg.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)).toBe(output);
 	});
 });
 

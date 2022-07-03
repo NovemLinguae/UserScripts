@@ -1,6 +1,6 @@
-export class GANReviewToolService {
+export class GANReviewWikicodeGenerator {
 	getPassWikicodeForGANPage(reviewWikicode) {
-		return this.placeATOP(reviewWikicode, 'Passed ~~~~', 'green')
+		return this.placeATOP(reviewWikicode, 'Passed. ~~~~', 'green')
 	}
 
 	getPassWikicodeForTalkPage(talkWikicode, reviewTitle) {
@@ -52,7 +52,7 @@ export class GANReviewToolService {
 	}
 
 	getFailWikicodeForGANPage(reviewWikicode) {
-		return this.placeATOP(reviewWikicode, 'Unsuccessful ~~~~', 'red');
+		return this.placeATOP(reviewWikicode, 'Unsuccessful. ~~~~', 'red');
 	}
 
 	getFailWikicodeForTalkPage(talkWikicode, reviewTitle) {

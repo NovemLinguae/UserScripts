@@ -1,4 +1,8 @@
-export class GARCloserService {
+export class GARCloserWikicodeGenerator {
+	processKeepForGARPage(garPageWikicode) {
+		return this.placeATOP(garPageWikicode, 'Kept. ~~~~', 'green')
+	}
+
 	processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle) {
 		wikicode = this.removeTemplate('GAR/link', wikicode);
 		wikicode = this.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode);
@@ -13,7 +17,7 @@ export class GARCloserService {
 	/**
 	 * @param {'keep'|'delist'} keepOrDelist
 	 */
-	makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error) {
+	makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error) {
 		let textToAppend = `\n* `;
 
 		if ( error ) {
@@ -22,8 +26,13 @@ export class GARCloserService {
 
 		let keepOrDelistPastTense = this.getKeepOrDelistPastTense(keepOrDelist);
 		textToAppend += `[[User:${username}|${username}]] ${keepOrDelistPastTense} [[${reviewTitle}]] at ~~~~~. `;
-		textToAppend += `[[Special:Diff/${talkRevisionID}|[Talk]]]`;
 
+		if ( garRevisionID ) {
+			textToAppend += `[[Special:Diff/${garRevisionID}|[Atop]]]`;
+		}
+		if ( garRevisionID ) {
+			textToAppend += `[[Special:Diff/${talkRevisionID}|[Talk]]]`;
+		}
 		if ( articleRevisionID ) {
 			textToAppend += `[[Special:Diff/${articleRevisionID}|[Article]]]`;
 		}
@@ -35,6 +44,10 @@ export class GARCloserService {
 		}
 
 		return textToAppend;
+	}
+
+	processDelistForGARPage(garPageWikicode) {
+		return this.placeATOP(garPageWikicode, 'Delisted. ~~~~', 'red')
 	}
 
 	processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle) {
@@ -55,6 +68,41 @@ export class GARCloserService {
 	processDelistForGAList(wikicode, title) {
 		let regex = new RegExp(`'{0,3}\\[\\[${this.regExEscape(title)}.*\\]\\]'{0,3}\\n`);
 		wikicode = wikicode.replace(regex, '');
+		return wikicode;
+	}
+
+	/**
+	 * @private
+	 */
+	placeATOP(wikicode, result, color) {
+		let colorCode = '';
+		switch ( color ) {
+			case 'green':
+				colorCode = 'g';
+				break;
+			case 'red':
+				colorCode = 'r';
+				break;
+		}
+
+		// place top piece after first H3, if it exists
+		let prependText =
+`{{atop${colorCode}
+| status = 
+| result = ${result}
+}}`;
+		let hasH3 = wikicode.match(/^===[^=]+===$/m);
+		if ( hasH3 ) {
+			wikicode = wikicode.replace(/^(.*?===[^=]+===\n)(.*)$/s, '$1' + prependText + '\n$2');
+		} else {
+			wikicode = prependText + "\n" + wikicode;
+		}
+
+		// place bottom piece at end
+		let appendText = `{{abot}}`;
+		wikicode = wikicode.trim();
+		wikicode += `\n${appendText}\n`;
+
 		return wikicode;
 	}
 
@@ -256,7 +304,9 @@ export class GARCloserService {
 		let i = 0;
 		for ( let string of strings ) {
 			i++;
-			if ( i == 1 ) continue; // skip the template name, this is not a parameter 
+			if ( i == 1 ) {
+				continue; // skip the template name, this is not a parameter 
+			}
 			let hasEquals = string.indexOf('=');
 			if ( hasEquals === -1 ) {
 				parameters[unnamedParameterCount] = string;
