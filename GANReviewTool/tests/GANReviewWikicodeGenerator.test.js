@@ -98,6 +98,25 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 `;
 		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
 	});
+
+	test(`Should set |class=GA for templates that don't start with {{WikiProject`, () => {
+		let talkWikicode =
+`{{GA nominee|20:49, 10 May 2022 (UTC)|nominator=[[User:Sinopecynic|Sinopecynic]] ([[User talk:Sinopecynic|talk]])|page=1|subtopic=Art and architecture|status=onreview|note=}}
+{{WikiProject Visual arts|class=b}}
+{{environment|class=B|importance=mid}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
+		let output =
+`{{GA|~~~~~|topic=Art and architecture|page=1}}
+{{WikiProject Visual arts|class=GA}}
+{{environment|class=GA|importance=mid}}
+
+{{Talk:Thomas Carlyle (Millais)/GA1}}
+`;
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+	});
 });
 
 describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)', () => {

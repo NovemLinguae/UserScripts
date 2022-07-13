@@ -1,23 +1,64 @@
 export class GARCloserWikicodeGenerator {
 	processKeepForGARPage(garPageWikicode) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
 		return this.placeATOP(garPageWikicode, 'Kept. ~~~~', 'green')
 	}
 
 	processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+
 		wikicode = this.removeTemplate('GAR/link', wikicode);
 		wikicode = this.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode);
 		wikicode = this.updateArticleHistory('keep', wikicode, garPageTitle);
 		return wikicode;
 	}
 
-	makeCommunityAssessmentLogEntryToAppend(garTitle) {
-		return `\n{{${garTitle}}}`;
+	makeCommunityAssessmentLogEntry(garTitle, wikicode, newArchive, archiveTitle) {
+		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
+
+		let output = ``;
+		if ( newArchive ) {
+			let archiveNumber = this.getArchiveNumber(archiveTitle);
+			output +=
+`{| class="messagebox"
+|-
+| [[Image:Filing cabinet icon.svg|50px|Archive]]
+| This is an '''[[Wikipedia:How to archive a talk page|archive]]''' of past discussions. Its contents should be preserved in their current form. If you wish to start a new discussion or revive an old one, please do so on the <span class="plainlinks">[{{FULLURL:{{TALKSPACE}}:{{BASEPAGENAME}}}} current talk page]</span>.<!-- Template:Talkarchive -->
+|}
+{{Template:Process header green
+ | title    =  Good article reassessment
+ | section  = (archive)
+ | previous = ([[Wikipedia:Good article reassessment/Archive ${archiveNumber-1}|${archiveNumber-1}]])
+ | next     =    ([[Wikipedia:Good article reassessment/Archive ${archiveNumber+1}|Page ${archiveNumber+1}]]) 
+ | shortcut =
+ | notes    =
+}}
+__TOC__`;
+		} else {
+			output += wikicode;
+		}
+		output += `\n{{${garTitle}}}`
+		return output;
+	}
+
+	setGARArchiveTemplate(newArchiveTitle) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
+		let archiveNumber = this.getArchiveNumber(newArchiveTitle);
+		return `${archiveNumber}<noinclude>
+
+[[Category:Wikipedia GA templates|{{PAGENAME}}]]
+</noinclude>
+`;
 	}
 
 	/**
 	 * @param {'keep'|'delist'} keepOrDelist
 	 */
-	makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error) {
+	makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error) {
+		if ( arguments.length !== 10 ) throw new Error('Incorrect # of arguments');
+
 		let textToAppend = `\n* `;
 
 		if ( error ) {
@@ -42,15 +83,22 @@ export class GARCloserWikicodeGenerator {
 		if ( garLogRevisionID ) {
 			textToAppend += `[[Special:Diff/${garLogRevisionID}|[Log]]]`;
 		}
+		if ( garArchiveTemplateRevisionID ) {
+			textToAppend += `[[Special:Diff/${garArchiveTemplateRevisionID}|[Tmpl]]]`;
+		}
 
 		return textToAppend;
 	}
 
 	processDelistForGARPage(garPageWikicode) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
 		return this.placeATOP(garPageWikicode, 'Delisted. ~~~~', 'red')
 	}
 
 	processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+
 		wikicode = this.removeTemplate('GAR/link', wikicode);
 		wikicode = this.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode);
 		wikicode = this.updateArticleHistory('delist', wikicode, garPageTitle);
@@ -59,22 +107,38 @@ export class GARCloserWikicodeGenerator {
 	}
 
 	processDelistForArticle(wikicode) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
 		wikicode = wikicode.replace(/\{\{ga icon\}\}\n?/i, '');
 		wikicode = wikicode.replace(/\{\{ga article\}\}\n?/i, '');
 		wikicode = wikicode.replace(/\{\{good article\}\}\n?/i, '');
 		return wikicode;
 	}
 
-	processDelistForGAList(wikicode, title) {
-		let regex = new RegExp(`'{0,3}\\[\\[${this.regExEscape(title)}.*\\]\\]'{0,3}\\n`);
+	processDelistForGAList(wikicode, articleToRemove) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+
+		let regex = new RegExp(`'{0,3}\\[\\[${this.regExEscape(articleToRemove)}.*\\]\\]'{0,3}\\n`);
 		wikicode = wikicode.replace(regex, '');
 		return wikicode;
+	}
+
+	/**
+	 * Takes a Wikipedia page name with a number on the end, and returns that number.
+	 * @private
+	 */
+	getArchiveNumber(title) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
+		return parseInt(title.match(/\d{1,}$/));
 	}
 
 	/**
 	 * @private
 	 */
 	placeATOP(wikicode, result, color) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+
 		let colorCode = '';
 		switch ( color ) {
 			case 'green':
@@ -111,6 +175,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	regExEscape(string) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	}
 
@@ -118,6 +184,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	removeTemplate(templateName, wikicode) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+
 		let regex = new RegExp(`\\{\\{${this.regExEscape(templateName)}[^\\}]*\\}\\}\\n`, 'i');
 		return wikicode.replace(regex, '');
 	}
@@ -126,6 +194,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	regexGetFirstMatchString(regex, haystack) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+
 		let matches = haystack.match(regex);
 		if ( matches !== null && matches[1] !== undefined ) {
 			return matches[1];
@@ -138,6 +208,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+
 		let hasArticleHistory = Boolean(wikicode.match(/\{\{Article ? history([^\}]*)\}\}/gi));
 		let gaTemplateWikicode = this.regexGetFirstMatchString(/(\{\{GA[^\}]*\}\})/i, wikicode);
 		if ( ! hasArticleHistory && gaTemplateWikicode ) {
@@ -187,6 +259,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+
 		if ( ! talkPageWikicode ) {
 			return wikicodeToAdd;
 		}
@@ -272,6 +346,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	preg_position(regex, haystack) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+
 		let matches = [...haystack.matchAll(regex)];
 		let hasMatches = matches.length;
 		if ( hasMatches ) {
@@ -284,6 +360,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	deleteMiddleOfString(string, deleteStartPosition, deleteEndPosition) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+
 		let part1 = string.substr(0, deleteStartPosition);
 		let part2 = string.substr(deleteEndPosition);
 		
@@ -296,6 +374,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	getParametersFromTemplateWikicode(wikicodeOfSingleTemplate) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
 		wikicodeOfSingleTemplate = wikicodeOfSingleTemplate.slice(2, -2); // remove {{ and }}
 		// TODO: explode without exploding | inside of inner templates
 		let strings = wikicodeOfSingleTemplate.split('|');
@@ -326,6 +406,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	updateArticleHistory(keepOrDelist, wikicode, garPageTitle) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+
 		let nextActionNumber = this.determineNextActionNumber(wikicode);
 
 		if ( keepOrDelist !== 'keep' && keepOrDelist !== 'delist' ) {
@@ -362,6 +444,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	getKeepOrDelistPastTense(keepOrDelist) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
 		switch ( keepOrDelist ) {
 			case 'keep':
 				return 'kept';
@@ -375,6 +459,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	determineNextActionNumber(wikicode) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
 		let i = 1;
 		while ( true ) {
 			let regex = new RegExp(`\\|\\s*action${i}\\s*=`, 'i');
@@ -390,6 +476,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	firstTemplateGetParameterValue(wikicode, template, parameter) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+
 		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
 		// new algorithm:
 			// find start of template. use regex /i (ignore case)
@@ -408,6 +496,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	getArticleHistoryNewStatus(existingStatus, keepOrDelist) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+
 		if ( keepOrDelist === 'keep' ) {
 			return `\n|currentstatus = ${existingStatus}`;
 		} else {
@@ -419,6 +509,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+
 		// TODO: handle nested templates
 		let regex = new RegExp(`(\\{\\{${templateNameRegExNoDelimiters}[^\\}]*)(\\}\\})`, 'i');
 		return wikicode.replace(regex, `$1\n${codeToInsert}\n$2`);
@@ -428,6 +520,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	removeGAStatusFromWikiprojectBanners(wikicode) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
 		return wikicode.replace(/(\{\{WikiProject [^\}]*\|\s*class\s*=\s*)([^\}\|\s]*)/gi, '$1');
 	}
 
@@ -435,6 +529,8 @@ export class GARCloserWikicodeGenerator {
 	 * @private
 	 */
 	firstTemplateDeleteParameter(wikicode, template, parameter) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+
 		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
 
 		let regex = new RegExp(`\\|\\s*${parameter}\\s*=\\s*([^\\n\\|\\}]*)\\s*`, '');

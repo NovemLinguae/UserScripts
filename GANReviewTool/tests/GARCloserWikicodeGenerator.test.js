@@ -126,17 +126,60 @@ describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => 
 	});
 });
 
-describe('makeCommunityAssessmentLogEntryToAppend(garTitle)', () => {
-	it(`Should wrap garTitle in template syntax {{ }} and insert a newline`, () => {
+describe('makeCommunityAssessmentLogEntry(garTitle, wikicode, newArchive, archiveTitle)', () => {
+	it(`Should handle non-full archive`, () => {
 		let garTitle = `Wikipedia:Good article reassessment/American popular music/1`;
+		let newArchive = false;
+		let archiveTitle = `Wikipedia:Good article reassessment/Archive 67`;
+		let wikicode =
+`__TOC__
+{{Wikipedia:Good article reassessment/Trucking industry in the United States/2}}`;
 		let output =
-`
+`__TOC__
+{{Wikipedia:Good article reassessment/Trucking industry in the United States/2}}
 {{Wikipedia:Good article reassessment/American popular music/1}}`;
-		expect(wg.makeCommunityAssessmentLogEntryToAppend(garTitle)).toBe(output);
+		expect(wg.makeCommunityAssessmentLogEntry(garTitle, wikicode, newArchive, archiveTitle)).toBe(output);
+	});
+
+	it(`Should handle full archive`, () => {
+		let garTitle = `Wikipedia:Good article reassessment/American popular music/1`;
+		let newArchive = true;
+		let wikicode = ``;
+		let archiveTitle = `Wikipedia:Good article reassessment/Archive 67`;
+		let output =
+`{| class="messagebox"
+|-
+| [[Image:Filing cabinet icon.svg|50px|Archive]]
+| This is an '''[[Wikipedia:How to archive a talk page|archive]]''' of past discussions. Its contents should be preserved in their current form. If you wish to start a new discussion or revive an old one, please do so on the <span class="plainlinks">[{{FULLURL:{{TALKSPACE}}:{{BASEPAGENAME}}}} current talk page]</span>.<!-- Template:Talkarchive -->
+|}
+{{Template:Process header green
+ | title    =  Good article reassessment
+ | section  = (archive)
+ | previous = ([[Wikipedia:Good article reassessment/Archive 66|66]])
+ | next     =    ([[Wikipedia:Good article reassessment/Archive 68|Page 68]]) 
+ | shortcut =
+ | notes    =
+}}
+__TOC__
+{{Wikipedia:Good article reassessment/American popular music/1}}`;
+		expect(wg.makeCommunityAssessmentLogEntry(garTitle, wikicode, newArchive, archiveTitle)).toBe(output);
+	});});
+
+describe('setGARArchiveTemplate(archiveTitle)', () => {
+	it('Should increment 67 to 68', () => {
+		let newArchiveTitle = `Wikipedia:Good article reassessment/Archive 68`;
+		let output =
+`68<noinclude>
+
+[[Category:Wikipedia GA templates|{{PAGENAME}}]]
+</noinclude>
+`;
+		expect(wg.setGARArchiveTemplate(newArchiveTitle)).toBe(output);
 	});
 });
 
-describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)', () => {
+		let garArchiveTemplateRevisionID = 987;
+describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)', () => {
 	it(`Should handle individual pass`, () => {
 		let username = `Novem Linguae`;
 		let keepOrDelist = `keep`;
@@ -146,9 +189,10 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 		let articleRevisionID = undefined;
 		let gaListRevisionID = undefined;
 		let garLogRevisionID = undefined;
+		let garArchiveTemplateRevisionID = undefined;
 		let error = false;
 		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Talk:Geothermal energy/GA2]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]]`;
-		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)).toBe(output);
 	});
 
 	it(`Should handle individual fail`, () => {
@@ -160,9 +204,10 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 		let articleRevisionID = 456;
 		let gaListRevisionID = 789;
 		let garLogRevisionID = undefined;
+		let garArchiveTemplateRevisionID = undefined;
 		let error = false;
 		let output = `\n* [[User:Novem Linguae|Novem Linguae]] delisted [[Talk:Geothermal energy/GA2]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]]`;
-		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)).toBe(output);
 	});
 
 	it(`Should handle community pass`, () => {
@@ -174,9 +219,10 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 		let articleRevisionID = undefined;
 		let gaListRevisionID = undefined;
 		let garLogRevisionID = 456;
+		let garArchiveTemplateRevisionID = undefined;
 		let error = false;
 		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Log]]]`;
-		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)).toBe(output);
 	});
 
 	it(`Should handle community fail`, () => {
@@ -188,9 +234,25 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 		let articleRevisionID = 456;
 		let gaListRevisionID = 789;
 		let garLogRevisionID = 101112;
+		let garArchiveTemplateRevisionID = undefined;
 		let error = false;
 		let output = `\n* [[User:Novem Linguae|Novem Linguae]] delisted [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]][[Special:Diff/101112|[Log]]]`;
-		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)).toBe(output);
+	});
+
+	it(`Should handle community pass when the archive is full, requiring a new archive page`, () => {
+		let username = `Novem Linguae`;
+		let keepOrDelist = `keep`;
+		let reviewTitle = `Wikipedia:Good article reassessment/WIN Television/1`;
+		let garRevisionID = 987;
+		let talkRevisionID = 123;
+		let articleRevisionID = undefined;
+		let gaListRevisionID = undefined;
+		let garLogRevisionID = 456;
+		let garArchiveTemplateRevisionID = 987;
+		let error = false;
+		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Log]]][[Special:Diff/987|[Tmpl]]]`;
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)).toBe(output);
 	});
 
 	it(`Should handle error`, () => {
@@ -202,9 +264,10 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 		let articleRevisionID = 456;
 		let gaListRevisionID = 789;
 		let garLogRevisionID = 101112;
+		let garArchiveTemplateRevisionID = undefined;
 		let error = `ReferenceError: getPassWikicodeForGANPage is not defined`;
 		let output = `\n* <span style="color: red; font-weight: bold;">ERROR:</span> ReferenceError: getPassWikicodeForGANPage is not defined. [[User:Novem Linguae|Novem Linguae]] delisted [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]][[Special:Diff/101112|[Log]]]`;
-		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, error)).toBe(output);
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)).toBe(output);
 	});
 });
 
@@ -427,9 +490,9 @@ describe('processDelistForArticle(wikicode)', () => {
 	});
 });
 
-describe('processDelistForGAList(wikicode, title)', () => {
+describe('processDelistForGAList(wikicode, articleToRemove)', () => {
 	it(`Should remove when first in list`, () => {
-		let title = `American popular music`;
+		let articleToRemove = `American popular music`;
 		let wikicode =
 `=====Music by nation, people, region, or country=====
 {{#invoke:Good Articles|subsection|
@@ -441,11 +504,11 @@ describe('processDelistForGAList(wikicode, title)', () => {
 {{#invoke:Good Articles|subsection|
 [[Andorra in the Eurovision Song Contest]]
 }}`;
-		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
 	});
 
 	it(`Should remove when in middle of list`, () => {
-		let title = `Andorra in the Eurovision Song Contest`;
+		let articleToRemove = `Andorra in the Eurovision Song Contest`;
 		let wikicode =
 `=====Music by nation, people, region, or country=====
 {{#invoke:Good Articles|subsection|
@@ -459,11 +522,11 @@ describe('processDelistForGAList(wikicode, title)', () => {
 [[American popular music]]
 [[Test]]
 }}`;
-		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
 	});
 
 	it(`Should handle piped wikilink`, () => {
-		let title = `Andorra in the Eurovision Song Contest`;
+		let articleToRemove = `Andorra in the Eurovision Song Contest`;
 		let wikicode =
 `=====Music by nation, people, region, or country=====
 {{#invoke:Good Articles|subsection|
@@ -477,11 +540,11 @@ describe('processDelistForGAList(wikicode, title)', () => {
 [[American popular music]]
 [[Test]]
 }}`;
-		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
 	});
 
 	it(`Should handle piped wikilink surrounded by italics outside`, () => {
-		let title = `Andorra in the Eurovision Song Contest`;
+		let articleToRemove = `Andorra in the Eurovision Song Contest`;
 		let wikicode =
 `=====Music by nation, people, region, or country=====
 {{#invoke:Good Articles|subsection|
@@ -495,11 +558,11 @@ describe('processDelistForGAList(wikicode, title)', () => {
 [[American popular music]]
 [[Test]]
 }}`;
-		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
 	});
 
 	it(`Should handle piped wikilink surrounded by italics inside`, () => {
-		let title = `Andorra in the Eurovision Song Contest`;
+		let articleToRemove = `Andorra in the Eurovision Song Contest`;
 		let wikicode =
 `=====Music by nation, people, region, or country=====
 {{#invoke:Good Articles|subsection|
@@ -513,11 +576,11 @@ describe('processDelistForGAList(wikicode, title)', () => {
 [[American popular music]]
 [[Test]]
 }}`;
-		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
 	});
 
 	it(`Should remove when last in list`, () => {
-		let title = `Andorra in the Eurovision Song Contest`;
+		let articleToRemove = `Andorra in the Eurovision Song Contest`;
 		let wikicode =
 `=====Music by nation, people, region, or country=====
 {{#invoke:Good Articles|subsection|
@@ -529,11 +592,11 @@ describe('processDelistForGAList(wikicode, title)', () => {
 {{#invoke:Good Articles|subsection|
 [[American popular music]]
 }}`;
-		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
 	});
 
 	it(`Should remove when only item in list`, () => {
-		let title = `American popular music`;
+		let articleToRemove = `American popular music`;
 		let wikicode =
 `=====Music by nation, people, region, or country=====
 {{#invoke:Good Articles|subsection|
@@ -543,11 +606,11 @@ describe('processDelistForGAList(wikicode, title)', () => {
 `=====Music by nation, people, region, or country=====
 {{#invoke:Good Articles|subsection|
 }}`;
-		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
 	});
 
 	it(`Should do nothing when item not found`, () => {
-		let title = `Andorra in the Eurovision Song Contest`;
+		let articleToRemove = `Andorra in the Eurovision Song Contest`;
 		let wikicode =
 `=====Music by nation, people, region, or country=====
 {{#invoke:Good Articles|subsection|
@@ -558,7 +621,7 @@ describe('processDelistForGAList(wikicode, title)', () => {
 {{#invoke:Good Articles|subsection|
 [[American popular music]]
 }}`;
-		expect(wg.processDelistForGAList(wikicode, title)).toBe(output);
+		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
 	});
 });
 

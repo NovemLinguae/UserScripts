@@ -1,7 +1,9 @@
 // <nowiki>
 
+const { GANReviewController } = require("./modules/GANReviewController.js");
 const { GANReviewHTMLGenerator } = require("./modules/GANReviewHTMLGenerator.js");
 const { GANReviewWikicodeGenerator } = require("./modules/GANReviewWikicodeGenerator.js");
+const { GARCloserController } = require("./modules/GARCloserController.js");
 const { GARCloserHTMLGenerator } = require("./modules/GARCloserHTMLGenerator.js");
 const { GARCloserWikicodeGenerator } = require("./modules/GARCloserWikicodeGenerator.js");
 

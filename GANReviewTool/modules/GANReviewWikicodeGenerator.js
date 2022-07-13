@@ -262,7 +262,7 @@ export class GANReviewWikicodeGenerator {
 	 * @private
 	 */
 	changeWikiProjectArticleClassToGA(talkWikicode) {
-		return talkWikicode.replace(/(\{\{WikiProject [^\}]*\|\s*class\s*=\s*)([^\}\|\s]*)/gi, '$1GA');
+		return talkWikicode.replace(/(\|\s*class\s*=\s*)(a|b|c|start|stub|list|fa|fl)(?=[\}\s\|])/gi, '$1GA');
 	}
 
 	/**
