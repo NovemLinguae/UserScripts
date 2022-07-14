@@ -5,14 +5,15 @@ beforeEach(() => {
 	wg = new GARCloserWikicodeGenerator();
 });
 
-describe('processKeepForGARPage(garPageWikicode)', () => {
-	test('Should place {{atopg}}', () => {
+describe('processKeepForGARPage(garPageWikicode, message)', () => {
+	test('Should place {{atopg}}, and should provide default message if no message specified', () => {
 		let garPageWikicode = 
 `===GA Review===
 {{Good article tools}}
 <noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the rehg.''</includeonly>
 ::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
 `;
+		let message = '';
 		let output = 
 `===GA Review===
 {{atopg
@@ -24,7 +25,37 @@ describe('processKeepForGARPage(garPageWikicode)', () => {
 ::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
 {{abot}}
 `;
-		expect(wg.processKeepForGARPage(garPageWikicode)).toBe(output);
+		expect(wg.processKeepForGARPage(garPageWikicode, message)).toBe(output);
+	});
+
+	test('Should not place signature twice', () => {
+		let garPageWikicode = 
+`abc`;
+		let message = 'Test ~~~~';
+		let output = 
+`{{atopg
+| status = 
+| result = Test ~~~~
+}}
+abc
+{{abot}}
+`;
+		expect(wg.processKeepForGARPage(garPageWikicode, message)).toBe(output);
+	});
+
+	test(`Should handle custom message, and should add signature if user doesn't specify it`, () => {
+		let garPageWikicode = 
+`abc`;
+		let message = 'Test';
+		let output = 
+`{{atopg
+| status = 
+| result = Test ~~~~
+}}
+abc
+{{abot}}
+`;
+		expect(wg.processKeepForGARPage(garPageWikicode, message)).toBe(output);
 	});
 });
 
@@ -271,7 +302,7 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 	});
 });
 
-describe('processDelistForGARPage(garPageWikicode)', () => {
+describe('processDelistForGARPage(garPageWikicode, message)', () => {
 	test('Should place {{atopr}}', () => {
 		let garPageWikicode = 
 `===GA Review===
@@ -279,6 +310,7 @@ describe('processDelistForGARPage(garPageWikicode)', () => {
 <noinclude>{{al|{{#titleparts:2021 French Grand Prix/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This review is [[WP:transclusion|transcluded]] from [[Talk:2021 French Grand Prix/GA1]]. The edit link for this section can be used to add comments to the rehg.''</includeonly>
 ::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
 `;
+		let message = '';
 		let output = 
 `===GA Review===
 {{atopr
@@ -290,7 +322,7 @@ describe('processDelistForGARPage(garPageWikicode)', () => {
 ::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
 {{abot}}
 `;
-		expect(wg.processDelistForGARPage(garPageWikicode)).toBe(output);
+		expect(wg.processDelistForGARPage(garPageWikicode, message)).toBe(output);
 	});
 });
 

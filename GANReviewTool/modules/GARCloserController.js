@@ -41,7 +41,7 @@ export class GARCloserController {
 		}
 
 		// place HTML on page
-		this.$(`.mw-headline`).first().append(hg.getHTML());
+		this.$('#contentSub2').prepend(hg.getHTML())
 
 		this.$(`#GARCloser-Keep`).on('click', async () => {
 			await this.clickKeep();
@@ -70,6 +70,7 @@ export class GARCloserController {
 			}
 		} catch(err) {
 			this.error = err;
+			console.error(err);
 		}
 
 		await this.makeScriptLogEntry('keep');
@@ -78,7 +79,7 @@ export class GARCloserController {
 			this.pushStatus(`Done! Reloading...`);
 			location.reload();
 		} else {
-			this.pushStatus(`Error :(`);
+			this.pushStatus(`<span class="GARCloserTool-ErrorNotice">An error occurred :(</span>`);
 		}
 	}
 
@@ -100,6 +101,7 @@ export class GARCloserController {
 			}
 		} catch(err) {
 			this.error = err;
+			console.error(err);
 		}
 
 		await this.makeScriptLogEntry('delist');
@@ -108,7 +110,7 @@ export class GARCloserController {
 			this.pushStatus(`Done! Reloading...`);
 			location.reload();
 		} else {
-			this.pushStatus(`Error :(`);
+			this.pushStatus(`<span class="GARCloserTool-ErrorNotice">An error occurred :(</span>`);
 		}
 	}
 
@@ -147,7 +149,8 @@ export class GARCloserController {
 
 		this.pushStatus(`Place {{atop}} on GAR page`);
 		let wikicode = await this.getWikicode(this.garPageTitle);
-		wikicode = this.wg.processKeepForGARPage(wikicode);
+		let message = this.$(`#GARCloser-Message`).val();
+		wikicode = this.wg.processKeepForGARPage(wikicode, message);
 		this.garPageRevisionID = await this.makeEdit(this.garPageTitle, this.editSummary, wikicode);
 		if ( this.garPageRevisionID === undefined ) {
 			throw new Error('Failed to edit page');
@@ -162,7 +165,8 @@ export class GARCloserController {
 
 		this.pushStatus(`Place {{atop}} on GAR page`);
 		let wikicode = await this.getWikicode(this.garPageTitle);
-		wikicode = this.wg.processDelistForGARPage(wikicode);
+		let message = this.$(`#GARCloser-Message`).val();
+		wikicode = this.wg.processDelistForGARPage(wikicode, message);
 		this.garPageRevisionID = await this.makeEdit(this.garPageTitle, this.editSummary, wikicode);
 		if ( this.garPageRevisionID === undefined ) {
 			throw new Error('Failed to edit page');
@@ -173,7 +177,7 @@ export class GARCloserController {
 	 * @private
 	 */
 	async processKeepForTalkPage() {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
 		this.pushStatus(`Remove {{GAR/link}} from talk page, and update {{Article history}}`);
 		let wikicode = await this.getWikicode(this.talkPageTitle);
@@ -645,7 +649,8 @@ export class GARCloserController {
 	pushStatus(statusToAdd) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
-		this.$(`#GARCloser-Status`).html(statusToAdd);
+		this.$(`#GARCloserTool-Status`).show();
+		this.$(`#GARCloserTool-Status > p`).append('<br />' + statusToAdd);
 	}
 
 	/**

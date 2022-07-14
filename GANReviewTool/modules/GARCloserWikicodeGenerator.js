@@ -1,8 +1,14 @@
 export class GARCloserWikicodeGenerator {
-	processKeepForGARPage(garPageWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+	processKeepForGARPage(garPageWikicode, message) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 
-		return this.placeATOP(garPageWikicode, 'Kept. ~~~~', 'green')
+		if ( message === '' ) {
+			message = 'Kept.';
+		}
+		if ( ! message.includes('~~~~') ) {
+			message += ' ~~~~';
+		}
+		return this.placeATOP(garPageWikicode, message, 'green');
 	}
 
 	processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle) {
@@ -90,10 +96,16 @@ __TOC__`;
 		return textToAppend;
 	}
 
-	processDelistForGARPage(garPageWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+	processDelistForGARPage(garPageWikicode, message) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 
-		return this.placeATOP(garPageWikicode, 'Delisted. ~~~~', 'red')
+		if ( message === '' ) {
+			message = 'Delisted.';
+		}
+		if ( ! message.includes('~~~~') ) {
+			message += ' ~~~~';
+		}
+		return this.placeATOP(garPageWikicode, message, 'red');
 	}
 
 	processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle) {
