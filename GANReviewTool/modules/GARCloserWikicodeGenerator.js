@@ -1,19 +1,11 @@
 export class GARCloserWikicodeGenerator {
-	processKeepForGARPage(garPageWikicode, message) {
-		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
-		if ( message === '' ) {
-			message = 'Kept.';
-		}
-		if ( ! message.includes('~~~~') ) {
-			message += ' ~~~~';
-		}
-		return this.placeATOP(garPageWikicode, message, 'green');
+	processKeepForGARPage(garPageWikicode, message, isCommunityAssessment) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+		return this.processGARPage(garPageWikicode, message, isCommunityAssessment, 'Kept.', 'green');
 	}
 
 	processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		wikicode = this.removeTemplate('GAR/link', wikicode);
 		wikicode = this.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode);
 		wikicode = this.updateArticleHistory('keep', wikicode, garPageTitle);
@@ -48,15 +40,10 @@ __TOC__`;
 		return output;
 	}
 
-	setGARArchiveTemplate(newArchiveTitle) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
+	setGARArchiveTemplate(newArchiveTitle, wikicode) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 		let archiveNumber = this.getArchiveNumber(newArchiveTitle);
-		return `${archiveNumber}<noinclude>
-
-[[Category:Wikipedia GA templates|{{PAGENAME}}]]
-</noinclude>
-`;
+		return wikicode.replace(/^\d{1,}/, archiveNumber);
 	}
 
 	/**
@@ -96,21 +83,13 @@ __TOC__`;
 		return textToAppend;
 	}
 
-	processDelistForGARPage(garPageWikicode, message) {
-		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
-		if ( message === '' ) {
-			message = 'Delisted.';
-		}
-		if ( ! message.includes('~~~~') ) {
-			message += ' ~~~~';
-		}
-		return this.placeATOP(garPageWikicode, message, 'red');
+	processDelistForGARPage(garPageWikicode, message, isCommunityAssessment) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+		return this.processGARPage(garPageWikicode, message, isCommunityAssessment, 'Delisted.', 'red');
 	}
 
 	processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		wikicode = this.removeTemplate('GAR/link', wikicode);
 		wikicode = this.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode);
 		wikicode = this.updateArticleHistory('delist', wikicode, garPageTitle);
@@ -120,7 +99,6 @@ __TOC__`;
 
 	processDelistForArticle(wikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		wikicode = wikicode.replace(/\{\{ga icon\}\}\n?/i, '');
 		wikicode = wikicode.replace(/\{\{ga article\}\}\n?/i, '');
 		wikicode = wikicode.replace(/\{\{good article\}\}\n?/i, '');
@@ -129,10 +107,79 @@ __TOC__`;
 
 	processDelistForGAList(wikicode, articleToRemove) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
-		let regex = new RegExp(`'{0,3}\\[\\[${this.regExEscape(articleToRemove)}.*\\]\\]'{0,3}\\n`);
+		let regex = new RegExp(`'{0,3}"?\\[\\[${this.regExEscape(articleToRemove)}.*\\]\\]"?'{0,3}\\n`);
 		wikicode = wikicode.replace(regex, '');
 		return wikicode;
+	}
+
+	/**
+	 * @private
+	 */
+	processGARPage(garPageWikicode, message, isCommunityAssessment, defaultText, atopColor) {
+		if ( arguments.length !== 5 ) throw new Error('Incorrect # of arguments');
+		message = this.setMessageIfEmpty(defaultText, message);
+		message = this.addSignatureIfMissing(message);
+		let messageForAtop = this.getMessageForAtop(isCommunityAssessment, message);
+		let result = this.placeATOP(garPageWikicode, messageForAtop, atopColor);
+		if ( isCommunityAssessment ) {
+			result = this.replaceGARCurrentWithGARResult(message, result);
+		}
+		return result;
+	}
+
+	/**
+	 * @private
+	 */
+	addSignatureIfMissing(message) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+		if ( ! message.includes('~~~~') ) {
+			message += ' ~~~~';
+		}
+		return message;
+	}
+
+	/**
+	 * @private
+	 */
+	 setMessageIfEmpty(defaultText, message) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+		if ( message === '' ) {
+			message = defaultText;
+		}
+		return message;
+	}
+
+	/**
+	 * @private
+	 */
+	getMessageForAtop(isCommunityAssessment, message) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+		let messageForAtop = message;
+		if ( isCommunityAssessment ) {
+			messageForAtop = '';
+		}
+		return messageForAtop;
+	}
+
+	/**
+	 * {{GAR/current}} and {{GAR/result}} are templates used in community reassessment GARs. The first needs to be swapped for the second when closing community reassessment GARs.
+	 * @private
+	 */
+	replaceGARCurrentWithGARResult(message, wikicode) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+		message = message.replace(/ ?~~~~/g, '');
+		return wikicode.replace(/\{\{GAR\/current\}\}/i, `{{subst:GAR/result|result=${this.escapeTemplateParameter(message)}}} ~~~~`);
+	}
+
+	/**
+	 * @private
+	 */
+	escapeTemplateParameter(parameter) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+		// TODO: This needs repair. Should only escape the below if they are not inside of a template. Should not escape them at all times. Commenting out for now.
+		// parameter = parameter.replace(/\|/g, '{{!}}');
+		// parameter = parameter.replace(/=/g, '{{=}}');
+		return parameter;
 	}
 
 	/**
@@ -141,7 +188,6 @@ __TOC__`;
 	 */
 	getArchiveNumber(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return parseInt(title.match(/\d{1,}$/));
 	}
 
@@ -162,11 +208,9 @@ __TOC__`;
 		}
 
 		// place top piece after first H3, if it exists
+		let resultText = result ? `\n| result = ${result}\n` : '';
 		let prependText =
-`{{atop${colorCode}
-| status = 
-| result = ${result}
-}}`;
+`{{atop${colorCode}${resultText}}}`;
 		let hasH3 = wikicode.match(/^===[^=]+===$/m);
 		if ( hasH3 ) {
 			wikicode = wikicode.replace(/^(.*?===[^=]+===\n)(.*)$/s, '$1' + prependText + '\n$2');
@@ -188,7 +232,6 @@ __TOC__`;
 	 */
 	regExEscape(string) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	}
 
@@ -197,7 +240,6 @@ __TOC__`;
 	 */
 	removeTemplate(templateName, wikicode) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
 		let regex = new RegExp(`\\{\\{${this.regExEscape(templateName)}[^\\}]*\\}\\}\\n`, 'i');
 		return wikicode.replace(regex, '');
 	}
@@ -207,7 +249,6 @@ __TOC__`;
 	 */
 	regexGetFirstMatchString(regex, haystack) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
 		let matches = haystack.match(regex);
 		if ( matches !== null && matches[1] !== undefined ) {
 			return matches[1];
@@ -359,7 +400,6 @@ __TOC__`;
 	 */
 	preg_position(regex, haystack) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
 		let matches = [...haystack.matchAll(regex)];
 		let hasMatches = matches.length;
 		if ( hasMatches ) {
@@ -373,10 +413,8 @@ __TOC__`;
 	 */
 	deleteMiddleOfString(string, deleteStartPosition, deleteEndPosition) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		let part1 = string.substr(0, deleteStartPosition);
 		let part2 = string.substr(deleteEndPosition);
-		
 		let final_str = part1 + part2;
 		return final_str;
 	}
@@ -457,7 +495,6 @@ __TOC__`;
 	 */
 	getKeepOrDelistPastTense(keepOrDelist) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		switch ( keepOrDelist ) {
 			case 'keep':
 				return 'kept';
@@ -472,7 +509,6 @@ __TOC__`;
 	 */
 	determineNextActionNumber(wikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let i = 1;
 		while ( true ) {
 			let regex = new RegExp(`\\|\\s*action${i}\\s*=`, 'i');
@@ -509,7 +545,6 @@ __TOC__`;
 	 */
 	getArticleHistoryNewStatus(existingStatus, keepOrDelist) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
 		if ( keepOrDelist === 'keep' ) {
 			return `\n|currentstatus = ${existingStatus}`;
 		} else {
@@ -522,7 +557,6 @@ __TOC__`;
 	 */
 	firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		// TODO: handle nested templates
 		let regex = new RegExp(`(\\{\\{${templateNameRegExNoDelimiters}[^\\}]*)(\\}\\})`, 'i');
 		return wikicode.replace(regex, `$1\n${codeToInsert}\n$2`);
@@ -533,7 +567,6 @@ __TOC__`;
 	 */
 	removeGAStatusFromWikiprojectBanners(wikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return wikicode.replace(/(\{\{WikiProject [^\}]*\|\s*class\s*=\s*)([^\}\|\s]*)/gi, '$1');
 	}
 
@@ -542,9 +575,7 @@ __TOC__`;
 	 */
 	firstTemplateDeleteParameter(wikicode, template, parameter) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
-
 		let regex = new RegExp(`\\|\\s*${parameter}\\s*=\\s*([^\\n\\|\\}]*)\\s*`, '');
 		return wikicode.replace(regex, '');
 	}

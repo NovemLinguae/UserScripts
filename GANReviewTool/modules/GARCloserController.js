@@ -147,10 +147,10 @@ export class GARCloserController {
 	async processKeepForGARPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
-		this.pushStatus(`Place {{atop}} on GAR page`);
+		this.pushStatus(`Place {{atop}} on GAR page. Replace {{GAR/current}} if present.`);
 		let wikicode = await this.getWikicode(this.garPageTitle);
 		let message = this.$(`#GARCloser-Message`).val();
-		wikicode = this.wg.processKeepForGARPage(wikicode, message);
+		wikicode = this.wg.processKeepForGARPage(wikicode, message, this.isCommunityAssessment());
 		this.garPageRevisionID = await this.makeEdit(this.garPageTitle, this.editSummary, wikicode);
 		if ( this.garPageRevisionID === undefined ) {
 			throw new Error('Failed to edit page');
@@ -166,7 +166,7 @@ export class GARCloserController {
 		this.pushStatus(`Place {{atop}} on GAR page`);
 		let wikicode = await this.getWikicode(this.garPageTitle);
 		let message = this.$(`#GARCloser-Message`).val();
-		wikicode = this.wg.processDelistForGARPage(wikicode, message);
+		wikicode = this.wg.processDelistForGARPage(wikicode, message, this.isCommunityAssessment());
 		this.garPageRevisionID = await this.makeEdit(this.garPageTitle, this.editSummary, wikicode);
 		if ( this.garPageRevisionID === undefined ) {
 			throw new Error('Failed to edit page');
@@ -233,7 +233,8 @@ export class GARCloserController {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
 		this.pushStatus(`Update count at Template:GARarchive`);
-		let newTemplateWikicode = this.wg.setGARArchiveTemplate(archiveTitle);
+		let wikicode = await this.getWikicode('Template:GARarchive');
+		let newTemplateWikicode = this.wg.setGARArchiveTemplate(archiveTitle, wikicode);
 		this.garArchiveTemplateRevisionID = await this.makeEdit('Template:GARarchive', this.editSummary, newTemplateWikicode);
 		if ( this.garArchiveTemplateRevisionID === undefined ) {
 			throw new Error('Failed to edit page');

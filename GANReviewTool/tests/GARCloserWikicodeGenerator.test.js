@@ -5,8 +5,9 @@ beforeEach(() => {
 	wg = new GARCloserWikicodeGenerator();
 });
 
-describe('processKeepForGARPage(garPageWikicode, message)', () => {
+describe('processKeepForGARPage(garPageWikicode, message, isCommunityAssessment)', () => {
 	test('Should place {{atopg}}, and should provide default message if no message specified', () => {
+		let isCommunityAssessment = false;
 		let garPageWikicode = 
 `===GA Review===
 {{Good article tools}}
@@ -17,7 +18,6 @@ describe('processKeepForGARPage(garPageWikicode, message)', () => {
 		let output = 
 `===GA Review===
 {{atopg
-| status = 
 | result = Kept. ~~~~
 }}
 {{Good article tools}}
@@ -25,37 +25,79 @@ describe('processKeepForGARPage(garPageWikicode, message)', () => {
 ::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
 {{abot}}
 `;
-		expect(wg.processKeepForGARPage(garPageWikicode, message)).toBe(output);
+		expect(wg.processKeepForGARPage(garPageWikicode, message, isCommunityAssessment)).toBe(output);
 	});
 
+	test(`Should handle community reassessment, which has a slightly different format`, () => {
+		let isCommunityAssessment = true;
+		let garPageWikicode = 
+`===[[Wikipedia:Good article reassessment/NASA/1|NASA]]===
+
+: {{al|NASA|noname=yes}} • <span class="plainlinksneverexpand">[//en.wikipedia.org/w/index.php?title=Wikipedia:Good_article_reassessment/NASA/1&action=watch Watch article reassessment page]</span> • [[Talk:NASA/GA1|Most recent review]]
+: {{GAR/current}}<br/>
+<!-- Please add the rationale for reassessment below this comment. Subsequent discussion should be added below, until the reassessment is closed.-->
+I have never performed a good article review, nor a good article reassessment, so not confident in doing this as an individual reassessment.  ― [[User:Hebsen|Hebsen]] ([[User_talk:Hebsen|talk]]) 23:45, 27 May 2020 (UTC)
+`;
+		let message = 'Keep. Great work everyone. ~~~~';
+		let output = 
+`===[[Wikipedia:Good article reassessment/NASA/1|NASA]]===
+{{atopg}}
+
+: {{al|NASA|noname=yes}} • <span class="plainlinksneverexpand">[//en.wikipedia.org/w/index.php?title=Wikipedia:Good_article_reassessment/NASA/1&action=watch Watch article reassessment page]</span> • [[Talk:NASA/GA1|Most recent review]]
+: {{subst:GAR/result|result=Keep. Great work everyone.}} ~~~~<br/>
+<!-- Please add the rationale for reassessment below this comment. Subsequent discussion should be added below, until the reassessment is closed.-->
+I have never performed a good article review, nor a good article reassessment, so not confident in doing this as an individual reassessment.  ― [[User:Hebsen|Hebsen]] ([[User_talk:Hebsen|talk]]) 23:45, 27 May 2020 (UTC)
+{{abot}}
+`;
+		expect(wg.processKeepForGARPage(garPageWikicode, message, isCommunityAssessment)).toBe(output);
+	});
+
+/*
+	test(`Should template parameter escape the {{GAR/result}} reason parameter`, () => {
+		let isCommunityAssessment = true;
+		let garPageWikicode = 
+`===[[Wikipedia:Good article reassessment/NASA/1|NASA]]===
+: {{GAR/current}}<br/>
+`;
+		let message = 'Keep. Great work everyone. {{emoji|face=smiley}} 1+1=2 ~~~~';
+		let output = 
+`===[[Wikipedia:Good article reassessment/NASA/1|NASA]]===
+{{atopg}}
+: {{subst:GAR/result|result=Keep. Great work everyone. {{emoji|face=smiley}}}} 1+1{{=}}2 ~~~~<br/>
+{{abot}}
+`;
+		expect(wg.processKeepForGARPage(garPageWikicode, message, isCommunityAssessment)).toBe(output);
+	});
+*/
+
 	test('Should not place signature twice', () => {
+		let isCommunityAssessment = false;
 		let garPageWikicode = 
 `abc`;
 		let message = 'Test ~~~~';
 		let output = 
 `{{atopg
-| status = 
 | result = Test ~~~~
 }}
 abc
 {{abot}}
 `;
-		expect(wg.processKeepForGARPage(garPageWikicode, message)).toBe(output);
+		expect(wg.processKeepForGARPage(garPageWikicode, message, isCommunityAssessment)).toBe(output);
 	});
 
 	test(`Should handle custom message, and should add signature if user doesn't specify it`, () => {
+		let isCommunityAssessment = false;
 		let garPageWikicode = 
 `abc`;
 		let message = 'Test';
 		let output = 
 `{{atopg
-| status = 
 | result = Test ~~~~
 }}
 abc
 {{abot}}
 `;
-		expect(wg.processKeepForGARPage(garPageWikicode, message)).toBe(output);
+		expect(wg.processKeepForGARPage(garPageWikicode, message, isCommunityAssessment)).toBe(output);
 	});
 });
 
@@ -196,16 +238,22 @@ __TOC__
 		expect(wg.makeCommunityAssessmentLogEntry(garTitle, wikicode, newArchive, archiveTitle)).toBe(output);
 	});});
 
-describe('setGARArchiveTemplate(archiveTitle)', () => {
+describe('setGARArchiveTemplate(newArchiveTitle)', () => {
 	it('Should increment 67 to 68', () => {
 		let newArchiveTitle = `Wikipedia:Good article reassessment/Archive 68`;
+		let wikicode =
+`67<noinclude>
+
+[[Category:Wikipedia GA templates|{{PAGENAME}}]]
+</noinclude>
+`;
 		let output =
 `68<noinclude>
 
 [[Category:Wikipedia GA templates|{{PAGENAME}}]]
 </noinclude>
 `;
-		expect(wg.setGARArchiveTemplate(newArchiveTitle)).toBe(output);
+		expect(wg.setGARArchiveTemplate(newArchiveTitle, wikicode)).toBe(output);
 	});
 });
 
@@ -302,8 +350,9 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 	});
 });
 
-describe('processDelistForGARPage(garPageWikicode, message)', () => {
+describe('processDelistForGARPage(garPageWikicode, message, isCommunityAssessment)', () => {
 	test('Should place {{atopr}}', () => {
+		let isCommunityAssessment = false;
 		let garPageWikicode = 
 `===GA Review===
 {{Good article tools}}
@@ -314,7 +363,6 @@ describe('processDelistForGARPage(garPageWikicode, message)', () => {
 		let output = 
 `===GA Review===
 {{atopr
-| status = 
 | result = Delisted. ~~~~
 }}
 {{Good article tools}}
@@ -322,7 +370,7 @@ describe('processDelistForGARPage(garPageWikicode, message)', () => {
 ::I'm happy to support the nomination (and will pass now). I've pretty much given you a FAC review above, which is where the article should probably go. I trust that you'll make the neccesary changes I've outlined before taking it to that forum. Great article, fantastic work '''[[User:Lee Vilenski|<span style="color:green">Lee Vilenski</span>]] <sup>([[User talk:Lee Vilenski|talk]] • [[Special:Contribs/Lee Vilenski|contribs]])</sup>''' 12:13, 13 June 2022 (UTC)
 {{abot}}
 `;
-		expect(wg.processDelistForGARPage(garPageWikicode, message)).toBe(output);
+		expect(wg.processDelistForGARPage(garPageWikicode, message, isCommunityAssessment)).toBe(output);
 	});
 });
 
@@ -638,6 +686,24 @@ describe('processDelistForGAList(wikicode, articleToRemove)', () => {
 `=====Music by nation, people, region, or country=====
 {{#invoke:Good Articles|subsection|
 }}`;
+		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
+	});
+
+	it(`Should remove when non-piped wikilink surrounded by double quotes`, () => {
+		let articleToRemove = `I Don't Miss You at All`;
+		let wikicode =
+`=====2019 songs=====
+{{#invoke:Good Articles|subsection|
+[[29 (song)|"29" (song)]]
+"[[I Don't Miss You at All]]"
+"[[I Don't Search I Find]]"
+`;
+		let output =
+`=====2019 songs=====
+{{#invoke:Good Articles|subsection|
+[[29 (song)|"29" (song)]]
+"[[I Don't Search I Find]]"
+`;
 		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
 	});
 
