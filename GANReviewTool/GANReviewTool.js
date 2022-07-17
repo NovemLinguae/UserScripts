@@ -13,6 +13,10 @@ $(async function() {
 
 	let garController = new GARCloserController();
 	await garController.execute($, mw, location, new GARCloserWikicodeGenerator(), new GARCloserHTMLGenerator());
+
+	// TODO: extract utility functions such as escapeRegEx into a GARReviewToolUtil class
+	// TODO: split GARCloserController into GARCloserController, GARCloserIO, and GARCloserKeepDelistLogic. GARCloserIO can wrap all the IO junk such as $, mw, etc. Should make it easier to unit test.
+	// TODO: create Page object? could store title, wikicode, etc.
 });
 
 // </nowiki>

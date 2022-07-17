@@ -153,7 +153,7 @@ export class GARCloserController {
 		wikicode = this.wg.processKeepForGARPage(wikicode, message, this.isCommunityAssessment());
 		this.garPageRevisionID = await this.makeEdit(this.garPageTitle, this.editSummary, wikicode);
 		if ( this.garPageRevisionID === undefined ) {
-			throw new Error('Failed to edit page');
+			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
 		}
 	}
 
@@ -169,7 +169,7 @@ export class GARCloserController {
 		wikicode = this.wg.processDelistForGARPage(wikicode, message, this.isCommunityAssessment());
 		this.garPageRevisionID = await this.makeEdit(this.garPageTitle, this.editSummary, wikicode);
 		if ( this.garPageRevisionID === undefined ) {
-			throw new Error('Failed to edit page');
+			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
 		}
 	}
 
@@ -184,7 +184,7 @@ export class GARCloserController {
 		wikicode = this.wg.processKeepForTalkPage(wikicode, this.garPageTitle, this.talkPageTitle);
 		this.talkRevisionID = await this.makeEdit(this.talkPageTitle, this.editSummary, wikicode);
 		if ( this.talkRevisionID === undefined ) {
-			throw new Error('Failed to edit page');
+			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
 		}
 	}
 
@@ -222,7 +222,7 @@ export class GARCloserController {
 		let newWikicode = this.wg.makeCommunityAssessmentLogEntry(this.garPageTitle, wikicode, newArchive, archiveTitle);
 		this.garLogRevisionID = await this.makeEdit(archiveTitle, this.editSummary, newWikicode)
 		if ( this.garLogRevisionID === undefined ) {
-			throw new Error('Failed to edit page');
+			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
 		}
 	}
 
@@ -237,7 +237,7 @@ export class GARCloserController {
 		let newTemplateWikicode = this.wg.setGARArchiveTemplate(archiveTitle, wikicode);
 		this.garArchiveTemplateRevisionID = await this.makeEdit('Template:GARarchive', this.editSummary, newTemplateWikicode);
 		if ( this.garArchiveTemplateRevisionID === undefined ) {
-			throw new Error('Failed to edit page');
+			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
 		}
 	}
 
@@ -311,7 +311,7 @@ export class GARCloserController {
 		wikicode = this.wg.processDelistForTalkPage(wikicode, this.garPageTitle, this.talkPageTitle);
 		this.talkRevisionID = await this.makeEdit(this.talkPageTitle, this.editSummary, wikicode);
 		if ( this.talkRevisionID === undefined ) {
-			throw new Error('Failed to edit page');
+			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
 		}
 	}
 
@@ -490,7 +490,7 @@ export class GARCloserController {
 		wikicode = this.wg.processDelistForArticle(wikicode);
 		this.articleRevisionID = await this.makeEdit(this.parentArticle, this.editSummary, wikicode);
 		if ( this.articleRevisionID === undefined ) {
-			throw new Error('Failed to edit page');
+			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
 		}
 	}
 
@@ -505,7 +505,7 @@ export class GARCloserController {
 		wikicode = this.wg.processDelistForGAList(wikicode, this.parentArticle);
 		this.gaListRevisionID = await this.makeEdit(this.gaListTitle, this.editSummary, wikicode);
 		if ( this.gaListRevisionID === undefined ) {
-			throw new Error('Failed to edit page');
+			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
 		}
 	}
 

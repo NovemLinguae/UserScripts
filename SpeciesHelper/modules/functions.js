@@ -647,7 +647,7 @@ export function suggestShortDescriptionFromWikicode(wikicode2, disallowedList = 
 	// fix double spacing issues caused by above replace
 	wikicode2 = wikicode2.replace(/ {2,}/gi, ' ');
 	// delete anything after certain conjunctions
-	wikicode2 = wikicode2.replace(/ (?:And|Belonging|Commonly|Described|Discovered|Endemic|Found|Known|Native|Occurring|That|which).*$/is, '');
+	wikicode2 = wikicode2.replace(/ (?:And|Belonging|Commonly|Described|Discovered|Endemic|Found|Known|Native|Observed|Occurring|That|which).*$/is, '');
 	// delete anything after the first encountered preposition, including the preposition
 	wikicode2 = wikicode2.replace(/ (?:Aboard|About|Above|According to|Across|After|Against|Ago|Ahead|Along|Along with|Alongside|Amid|Among|Anti|Apart from|Around|As|As for|As per|As to|As well as|Aside from|Astride|At|Atop|Away|Bar|Barring|Because of|Before|Behind|Below|Beneath|Beside|Besides|Between|Beyond|But|By|Circa|Close to|Concerning|Considering|Contrary to|Counting|Depending on|Despite|Down|Due to|During|Except|Except for|Excepting|Excluding|Far|Following|For|Forward of|From|Further to|Given|Gone|In|Including|Inside|Instead of|Into|Less|Like|Minus|Near|Near to|Next to|Notwithstanding|Of|On|Opposite|Other than|Out|Over|Owing to|Past|Pending|Per|Plus|Prior to|Pro|Re|Regarding|Regardless of|Round|Save|Save for|Saving|Since|Than|Thanks to|Through|Throughout|till|To|Together with|Toward|towards|Under|Underneath|Unlike|Until|Up|Versus|Via|With|Within|Worth)[.,!? ].*$/is, '');
 	// trim

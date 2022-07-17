@@ -470,6 +470,42 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 }}`;
 		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
 	});
+
+	it(`should handle {{ArticleHistory}} containing a nested template`, () => {
+		let garPageTitle = `Wikipedia:Good article reassessment/Royce White/1`;
+		let talkPageTitle = `Talk:Royce White`;
+		let wikicode = 
+`{{GAR/link|17:09, 22 February 2022 (UTC)|page=2|GARpage=1|status= }}
+{{ArticleHistory
+|action1=GAN
+|action1date=04:22, 26 December 2011 (UTC)
+|action1link=Talk:Royce White/GA1
+|action1result=listed
+|action1oldid=467699196
+|dykdate=13 December 2011
+|dykentry=... that during '''[[Royce White]]'''{{\`s}} two-and-a-half-year hiatus from competitive [[basketball]], he spent time on his music career and learned how to play the [[piano]]?
+|currentstatus=GA
+|topic=sports
+}}`;
+		let output = 
+`{{ArticleHistory
+|action1=GAN
+|action1date=04:22, 26 December 2011 (UTC)
+|action1link=Talk:Royce White/GA1
+|action1result=listed
+|action1oldid=467699196
+|dykdate=13 December 2011
+|dykentry=... that during '''[[Royce White]]'''{{\`s}} two-and-a-half-year hiatus from competitive [[basketball]], he spent time on his music career and learned how to play the [[piano]]?
+|topic=sports
+
+|action2 = GAR
+|action2date = ~~~~~
+|action2link = Wikipedia:Good article reassessment/Royce White/1
+|action2result = delisted
+|currentstatus = DGA
+}}`;
+		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+	});
 });
 
 describe('processDelistForArticle(wikicode)', () => {
@@ -722,8 +758,6 @@ describe('processDelistForGAList(wikicode, articleToRemove)', () => {
 		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
 	});
 });
-
-/*
 
 // private methods
 
@@ -1066,4 +1100,101 @@ describe('convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)', 
 	});
 });
 
-*/
+describe('getStrPosOfEndOfFirstTemplateFound(wikicode, templateName)', () => {
+	it(`should handle needle template being 1st template on the page`, () => {
+		let wikicode = 
+`{{Good topic box}}`;
+		let templateNameArrayCaseInsensitive = 'good topic box';
+		let output = 18;
+		expect(wg.getStrPosOfEndOfFirstTemplateFound(wikicode, templateNameArrayCaseInsensitive)).toBe(output);
+	});
+
+	it(`should handle needle template being 1st template on the page`, () => {
+		let wikicode = 
+`Test{{Good topic box}}`;
+		let templateNameArrayCaseInsensitive = 'good topic box';
+		let output = 22;
+		expect(wg.getStrPosOfEndOfFirstTemplateFound(wikicode, templateNameArrayCaseInsensitive)).toBe(output);
+	});
+
+	it(`should handle needle template being 1st template on the page`, () => {
+		let wikicode = 
+`Test
+{{Good topic box}}`;
+		let templateNameArrayCaseInsensitive = 'good topic box';
+		let output = 23;
+		expect(wg.getStrPosOfEndOfFirstTemplateFound(wikicode, templateNameArrayCaseInsensitive)).toBe(output);
+	});
+
+	it(`should handle needle template being 1st template on the page`, () => {
+		let wikicode = 
+`Test
+{{Good topic box
+| algo                = old(120d)
+| archive             = Wikipedia talk:Featured and good topic candidates/%(year)d
+| archiveheader       = {{Automatic archive navigator}}
+| minthreadstoarchive = 1
+| minthreadsleft      = 4
+}}
+{{tmbox
+|text= '''Questions about a topic you are working on or about the process in general should be asked at [[Wikipedia talk:Featured and good topic questions|Featured and good topic questions]].'''  This page is primarily for discussion on proposals regarding the FTC process.
+}}`;
+		let templateNameArrayCaseInsensitive = 'good topic box';
+		let output = 249;
+		expect(wg.getStrPosOfEndOfFirstTemplateFound(wikicode, templateNameArrayCaseInsensitive)).toBe(output);
+	});
+
+	it(`should handle needle template being 2nd template on the page`, () => {
+		let wikicode = 
+`Test
+{{tmbox
+|text= '''Questions about a topic you are working on or about the process in general should be asked at [[Wikipedia talk:Featured and good topic questions|Featured and good topic questions]].'''  This page is primarily for discussion on proposals regarding the FTC process.
+}}
+{{Good topic box
+| algo                = old(120d)
+| archive             = Wikipedia talk:Featured and good topic candidates/%(year)d
+| archiveheader       = {{Automatic archive navigator}}
+| minthreadstoarchive = 1
+| minthreadsleft      = 4
+}}`;
+		let templateNameArrayCaseInsensitive = 'good topic box';
+		let output = 534;
+		expect(wg.getStrPosOfEndOfFirstTemplateFound(wikicode, templateNameArrayCaseInsensitive)).toBe(output);
+	});
+
+	it(`should handle template not found`, () => {
+		let wikicode = 
+`{{User:MiszaBot/config
+| algo                = old(120d)
+| archive             = Wikipedia talk:Featured and good topic candidates/%(year)d
+| archiveheader       = {{Automatic archive navigator}}
+| minthreadstoarchive = 1
+| minthreadsleft      = 4
+}}
+{{tmbox
+|text= '''Questions about a topic you are working on or about the process in general should be asked at [[Wikipedia talk:Featured and good topic questions|Featured and good topic questions]].'''  This page is primarily for discussion on proposals regarding the FTC process.
+}}`;
+		let templateNameArrayCaseInsensitive = 'good topic box';
+		let output = null;
+		expect(wg.getStrPosOfEndOfFirstTemplateFound(wikicode, templateNameArrayCaseInsensitive)).toBe(output);
+	});
+
+	it(`should handle nested templates`, () => {
+		let wikicode = 
+`{{GAR/link|17:09, 22 February 2022 (UTC)|page=2|GARpage=1|status= }}
+{{ArticleHistory
+|action1=GAN
+|action1date=04:22, 26 December 2011 (UTC)
+|action1link=Talk:Royce White/GA1
+|action1result=listed
+|action1oldid=467699196
+|dykdate=13 December 2011
+|dykentry=... that during '''[[Royce White]]'''{{\`s}} two-and-a-half-year hiatus from competitive [[basketball]], he spent time on his music career and learned how to play the [[piano]]?
+|currentstatus=GA
+|topic=sports
+}}`;
+		let templateNameArrayCaseInsensitive = 'ArticleHistory';
+		let output = 469;
+		expect(wg.getStrPosOfEndOfFirstTemplateFound(wikicode, templateNameArrayCaseInsensitive)).toBe(output);
+	});
+});

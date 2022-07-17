@@ -2,7 +2,7 @@
 
 mw.hook('wikipage.content').add(async function($content){
 	async function getWikitextFromCache(title) {
-		var api = new mw.Api();
+		var api = new mw.ForeignApi('https://en.wikipedia.org/w/api.php');
 		var wikitext = '';
 		await api.get( {
 			action: 'query',
@@ -45,8 +45,12 @@ mw.hook('wikipage.content').add(async function($content){
 	ADMINHIGHLIGHT_NAMESPACES = [-1,2,3];
 	mw.loader.using(['mediawiki.util','mediawiki.Uri', 'mediawiki.Title'], function() {
 		// Note: .plainlinks is for Wikipedia Signpost articles
-		
+
+
 		mw.util.addCSS(".override-signature-colors, .override-signature-colors span, .plainlinks .override-signature-colors.external, .override-signature-colors b, .override-signature-colors font {color: #0645ad !important; background-color: transparent !important;}");
+		
+		// no perms
+		mw.util.addCSS(".userhighlighter_noperms {border: 1px solid black !important;}"); // darkgray
 		
 		// extended confirmed (53,000)
 		mw.util.addCSS(".userhighlighter_excon, .userhighlighter_excon span, .plainlinks .userhighlighter_excon.external, .userhighlighter_excon b, .userhighlighter_excon font {background-color: lightgray !important;}"); // darkgray
@@ -95,7 +99,8 @@ mw.hook('wikipage.content').add(async function($content){
 				let isRedLinkUserPage = url.startsWith('/w/index.php?title=User:') && url.endsWith('&action=edit&redlink=1');
 				if ( ! $.isEmptyObject(uri.query) && ! isRedLinkUserPage ) return;
 				
-				if ( uri.host == 'en.wikipedia.org' ) {
+				// wgServer is in the format //meta.wikimedia.org
+				if ( uri.host == mw.config.get('wgServer').slice(2) ) {
 					// Figure out the wikipedia article title of the link
 					let titleParameterOfURL = mw.util.getParamValue('title', url); // for links in the format /w/index.php?title=Blah
 					let URI = decodeURIComponent(uri.path.slice(6)); // for links in the format /wiki/PageName. Slice off the /wiki/ (first 6 characters)
@@ -112,7 +117,8 @@ mw.hook('wikipage.content').add(async function($content){
 						
 						let hasAdvancedPermissions = false;
 						
-						if (global[user] == 1) {
+						// in addition to folks in the global group, highlight anybody with "WMF" in their name, case insensitive. this should not generate false positives because WMF is on the username blacklist.
+						if (global[user] == 1 || user.match(/WMF/i)) {
 							link.addClass(link.attr('class') + ' userhighlighter_steward');
 							if (link.attr("title") == null || link.attr("title").startsWith("User:")) link.attr("title", "Steward");
 							hasAdvancedPermissions = true;
@@ -151,6 +157,10 @@ mw.hook('wikipage.content').add(async function($content){
 						// If the user has any advanced perms, they are likely to have a signature, so be aggressive about overriding the background and foreground color. That way there's no risk their signature is unreadable due to background color and foreground color being too similar. Don't do this for users without advanced perms... being able to see a redlinked username is useful.
 						if ( hasAdvancedPermissions ) {
 							link.addClass(link.attr('class') + ' override-signature-colors');
+						// If they have no perms, just draw a box around their username, to make it more visible.
+						} else if ( ! hasAdvancedPermissions && link.hasClass('userlink') ) {
+							link.addClass(link.attr('class') + " userhighlighter_noperms");
+							if (link.attr("title") == null || link.attr("title").startsWith("User:")) link.attr("title", "Less than 500 edits");
 						}
 					}
 				}

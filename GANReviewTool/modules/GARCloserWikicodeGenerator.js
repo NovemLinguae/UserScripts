@@ -485,7 +485,7 @@ __TOC__`;
 
 		addToArticleHistory += currentStatusString + topicString;
 
-		wikicode = this.firstTemplateInsertCode(wikicode, 'Article ?history', addToArticleHistory);
+		wikicode = this.firstTemplateInsertCode(wikicode, ['Article history', 'ArticleHistory'], addToArticleHistory);
 
 		return wikicode;
 	}
@@ -554,12 +554,58 @@ __TOC__`;
 
 	/**
 	 * @private
+	 * @param {Array} templateNameArrayCaseInsensitive
 	 */
-	firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert) {
+	firstTemplateInsertCode(wikicode, templateNameArrayCaseInsensitive, codeToInsert) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-		// TODO: handle nested templates
-		let regex = new RegExp(`(\\{\\{${templateNameRegExNoDelimiters}[^\\}]*)(\\}\\})`, 'i');
-		return wikicode.replace(regex, `$1\n${codeToInsert}\n$2`);
+		for ( let templateName of templateNameArrayCaseInsensitive ) {
+			let strPosOfEndOfFirstTemplate = this.getStrPosOfEndOfFirstTemplateFound(wikicode, templateName);
+			if ( strPosOfEndOfFirstTemplate !== null ) {
+				let insertPosition = strPosOfEndOfFirstTemplate - 2; // 2 characters from the end, right before }}
+				let result = this.insertStringIntoStringAtPosition(wikicode, `\n${codeToInsert}\n`, insertPosition);
+				return result;
+			}
+		}
+	}
+
+	/**
+	 * CC BY-SA 4.0, jAndy, https://stackoverflow.com/a/4364902/3480193
+	 * @private
+	 */
+	insertStringIntoStringAtPosition(bigString, insertString, position) {
+		return [
+			bigString.slice(0, position),
+			insertString,
+			bigString.slice(position)
+		].join('');
+	}
+
+	/**
+	 * Grabs string position of the END of first {{template}} contained in wikicode. Case insensitive. Returns null if no template found. Handles nested templates.
+	 * @private
+	 * @returns {int|null}
+	 */
+	getStrPosOfEndOfFirstTemplateFound(wikicode, templateName) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+		let starting_position = wikicode.toLowerCase().indexOf("{{" + templateName.toLowerCase());
+		if ( starting_position === -1 ) return null;
+		let counter = 0;
+		let length = wikicode.length;
+		for ( let i = starting_position + 2; i < length; i++ ) {
+			let next_two = wikicode.substr(i, 2);
+			if ( next_two == "{{" ) {
+				counter++;
+				continue;
+			} else if ( next_two == "}}" ) {
+				if ( counter == 0 ) {
+					return i + 2; // +2 to account for next_two being }} (2 characters)
+				} else {
+					counter--;
+					continue;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

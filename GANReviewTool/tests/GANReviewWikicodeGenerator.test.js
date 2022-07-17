@@ -931,8 +931,6 @@ describe('getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisio
 	});
 });
 
-/*
-
 // Private methods. Only unit testing public methods. Best practice for easier refactoring.
 
 describe('placeATOP(wikicode, result, color)', () => {
@@ -1982,5 +1980,3 @@ describe('getEndOfStringPositionOfLastMatch(haystack, regex)', () => {
 		expect(wg.getEndOfStringPositionOfLastMatch(haystack, regex)).toBe(output);
 	});
 });
-
-*/

@@ -40,7 +40,7 @@ $(async function() {
 			format: 'json',
 			page_id: pageID,
 		} );
-		// if old page
+		// if old page (purged from pagetriagelist table by cronjob after 365 days)
 		if ( response.pagetriagelist.result !== 'success' || response.pagetriagelist.pages.length === 0 ) return true;
 		// if new page that has been marked as reviewed
 		if ( response.pagetriagelist.pages[0].patrol_status === '1' || response.pagetriagelist.pages[0].patrol_status === '3' ) return true;
