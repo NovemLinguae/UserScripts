@@ -38,7 +38,7 @@ describe('getPassWikicodeForGANPage(reviewWikicode)', () => {
 	});
 });
 
-describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
+describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)', () => {
 	test('Should handle no {{Article history}} present', () => {
 		let talkWikicode =
 `{{GA nominee|20:49, 10 May 2022 (UTC)|nominator=[[User:Sinopecynic|Sinopecynic]] ([[User talk:Sinopecynic|talk]])|page=1|subtopic=Art and architecture|status=onreview|note=}}
@@ -47,13 +47,14 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 {{Talk:Thomas Carlyle (Millais)/GA1}}
 `;
 		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
+		let gaSubpageShortTitle = `Video games`;
 		let output =
-`{{GA|~~~~~|topic=Art and architecture|page=1}}
+`{{GA|~~~~~|topic=Video games|page=1}}
 {{WikiProject Visual arts|class=GA}}
 
 {{Talk:Thomas Carlyle (Millais)/GA1}}
 `;
-		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
 	});
 
 	test('Should handle {{Article history}} present', () => {
@@ -75,6 +76,7 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 {{Talk:Thomas Carlyle (Millais)/GA1}}
 `;
 		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
+		let gaSubpageShortTitle = `Warfare`;
 		let output =
 `{{Article history
 |ftname=Kanye West studio albums
@@ -84,19 +86,19 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 |action1result = failed
 |action1oldid = 1083301278
 
-|topic=music
 
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = Thomas Carlyle (Millais)/GA1
 |action2result = listed
 |currentstatus = GA
+|topic = Warfare
 }}
 {{WikiProject Visual arts|class=GA}}
 
 {{Talk:Thomas Carlyle (Millais)/GA1}}
 `;
-		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
 	});
 
 	test(`Should set |class=GA for templates that don't start with {{WikiProject`, () => {
@@ -108,14 +110,15 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 {{Talk:Thomas Carlyle (Millais)/GA1}}
 `;
 		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
+		let gaSubpageShortTitle = `Sports and recreation`;
 		let output =
-`{{GA|~~~~~|topic=Art and architecture|page=1}}
+`{{GA|~~~~~|topic=Sports and recreation|page=1}}
 {{WikiProject Visual arts|class=GA}}
 {{environment|class=GA|importance=mid}}
 
 {{Talk:Thomas Carlyle (Millais)/GA1}}
 `;
-		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
 	});
 });
 
@@ -862,13 +865,13 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 |dykentry = ... that [[SpaceX]]'s reusable '''[[SpaceX Starship|Starship]]''' launch vehicle has twice as much thrust as the [[Apollo program]]'s [[Saturn&nbsp;V]]?
 |dyknom = Template:Did you know nominations/SpaceX Starship
 
-|topic = Physics and astronomy
 
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = SpaceX Starship/GA2
 |action2result = failed
 |currentstatus = FGAN
+|topic = Physics and astronomy
 }}
 
 {{Talk:SpaceX Starship/GA2}}
@@ -877,7 +880,7 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 	});
 });
 
-describe('getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)', () => {
+describe('getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)', () => {
 	test('Should handle a pass', () => {
 		let username = 'Sammi Brie';
 		let passOrFail = 'pass';
@@ -886,9 +889,8 @@ describe('getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisio
 		let talkRevisionID = `1094307532`;
 		let gaRevisionID = `1094307538`;
 		let error = false;
-		let needsATOP = true;
 		let output = `\n* [[User:Sammi Brie|Sammi Brie]] passed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307525|[Atop]]][[Special:Diff/1094307532|[Talk]]][[Special:Diff/1094307538|[List]]]`;
-		expect(wg.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
+		expect(wg.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)).toBe(output);
 	});
 
 	test('Should handle a fail', () => {
@@ -899,9 +901,8 @@ describe('getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisio
 		let talkRevisionID = `1094307532`;
 		let gaRevisionID = ``;
 		let error = false;
-		let needsATOP = true;
 		let output = `\n* [[User:Sammi Brie|Sammi Brie]] failed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307525|[Atop]]][[Special:Diff/1094307532|[Talk]]]`;
-		expect(wg.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
+		expect(wg.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)).toBe(output);
 	});
 
 	test('Should handle an error', () => {
@@ -912,9 +913,8 @@ describe('getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisio
 		let talkRevisionID = undefined;
 		let gaRevisionID = undefined;
 		let error = `ReferenceError: getPassWikicodeForGANPage is not defined`;
-		let needsATOP = true;
-		let output = `\n* <span style="color: red; font-weight: bold;">ERROR:</span> ReferenceError: getPassWikicodeForGANPage is not defined. [[User:Novem Linguae|Novem Linguae]] passed [[Talk:Thomas Carlyle (Millais)/GA1]] at ~~~~~. [[Special:Diff/undefined|[Atop]]][[Special:Diff/undefined|[Talk]]]`;
-		expect(wg.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
+		let output = `\n* <span style="color: red; font-weight: bold;">ERROR:</span> ReferenceError: getPassWikicodeForGANPage is not defined. [[User:Novem Linguae|Novem Linguae]] passed [[Talk:Thomas Carlyle (Millais)/GA1]] at ~~~~~. `;
+		expect(wg.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)).toBe(output);
 	});
 
 	test('Should not display [Atop] diff if user selected not to place {{Atop}}', () => {
@@ -925,9 +925,8 @@ describe('getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisio
 		let talkRevisionID = `1094307532`;
 		let gaRevisionID = `1094307538`;
 		let error = false;
-		let needsATOP = false;
 		let output = `\n* [[User:Sammi Brie|Sammi Brie]] passed [[Talk:1982 World's Fair/GA1]] at ~~~~~. [[Special:Diff/1094307532|[Talk]]][[Special:Diff/1094307538|[List]]]`;
-		expect(wg.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP)).toBe(output);
+		expect(wg.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)).toBe(output);
 	});
 });
 
@@ -1448,13 +1447,13 @@ describe('updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedO
 |dykentry = ... that [[SpaceX]]'s reusable '''[[SpaceX Starship|Starship]]''' launch vehicle has twice as much thrust as the [[Apollo program]]'s [[Saturn&nbsp;V]]?
 |dyknom = Template:Did you know nominations/SpaceX Starship
 
-|topic = Physics and astronomy
 
 |action12 = GAN
 |action12date = ~~~~~
 |action12link = Talk:SpaceX Starship/GA2
 |action12result = failed
 |currentstatus = DGA
+|topic = Physics and astronomy
 }}
 `;
 		expect(wg.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed)).toBe(output);

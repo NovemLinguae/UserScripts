@@ -12,4 +12,4 @@ User scripts in folders tend to contain some or all of the following:
 
 # Unit tests
 
-I like unit tests. Lots of Wikipedia user scripts can be broken into true functions that input 1 string (wikicode) and output 1 string (wikicode). So they are a perfect fit for unit tests. Userscripts with a lot of unit tests include DraftCleaner and SpeciesHelper.
+I like unit tests. Lots of Wikipedia user scripts can be broken into true functions that input 1 string (wikicode) and output 1 string (wikicode). So they are a perfect fit for unit tests. Userscripts with a lot of unit tests include GANReviewTool, DraftCleaner, and SpeciesHelper.

@@ -40,12 +40,17 @@ $(async function() {
 			format: 'json',
 			page_id: pageID,
 		} );
-		// if old page (purged from pagetriagelist table by cronjob after 365 days)
-		if ( response.pagetriagelist.result !== 'success' || response.pagetriagelist.pages.length === 0 ) return true;
-		// if new page that has been marked as reviewed
-		if ( response.pagetriagelist.pages[0].patrol_status === '1' || response.pagetriagelist.pages[0].patrol_status === '3' ) return true;
-		// if new page that has not been marked as reviewed
-		return false;
+
+		// no result
+		if ( response.pagetriagelist.result !== 'success' || response.pagetriagelist.pages.length === 0 ) {
+			return true;
+		// 1, 2, or 3
+		} else if ( parseInt(response.pagetriagelist.pages[0].patrol_status) > 0 ) {
+			return true;
+		// 0
+		} else {
+			return false;
+		}
 	}
 
 	async function afdExists(title) {

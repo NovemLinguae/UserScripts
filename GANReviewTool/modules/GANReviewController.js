@@ -10,134 +10,267 @@ export class GANReviewController {
 	 * @param {GANReviewHTMLGenerator} hg
 	 */
 	async execute($, mw, location, wg, hg) {
-		let title = mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
-		title = title.replace(/_/g, ' '); // underscores to spaces. prevents some bugs later
-		if ( ! this.shouldRunOnThisPageQuickChecks(title, mw) ) return;
+		if ( arguments.length !== 5 ) throw new Error('Incorrect # of arguments');
 
-		// only run if this review hasn't already been closed. check for {{atop}}
-		let reviewWikicode = await this.getWikicode(title, mw);
-		if ( reviewWikicode.match(/\{\{atop/i) ) return;
+		this.$ = $;
+		this.mw = mw;
+		this.location = location;
+		this.wg = wg;
+		this.hg = hg;
 
-		// only run if talk page has {{GA nominee}}
-		let gaTitle = this.getGATitle(title);
-		let gaTalkTitle = this.getGATalkTitle(gaTitle);
-		let talkWikicode = await this.getWikicode(gaTalkTitle, mw);
-		if ( title !== 'User:Novem_Linguae/sandbox' && ! talkWikicode.match(/\{\{GA nominee/i) ) return;
+		this.ganReviewPageTitle = this.mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
+		this.ganReviewPageTitle = this.ganReviewPageTitle.replace(/_/g, ' '); // underscores to spaces. prevents some bugs later
 
-		// display HTML form
-		$('#contentSub2').prepend(hg.getHTML(gaTitle));
+		if ( ! this.shouldRunOnThisPageQuickChecks(this.ganReviewPageTitle) ) return;
+		if ( ! await this.shouldRunOnThisPageSlowChecks() ) return;
 
-		// Show a warning if viewer is not the creator of the page
-		let pageCreator = await this.getPageCreator(title, mw);
-		if ( pageCreator !== mw.config.get('wgUserName') ) {
-			$('.GANReviewTool-NotCreatorNotice').show();
-		} else {
-			$('#GANReviewTool-MainForm').show();
-		}
+		this.displayForm();
+		await this.warnUserIfNotReviewCreator();
+		this.handleUserChangingFormType();
 
-		$('#GANReviewTool-ReviewAnywayLink').on('click', () => { // must use arrow functions in classes. else "this" keyword is not properly recognized, and can't acess class methods
-			$('.GANReviewTool-NotCreatorNotice').hide();
-			$('#GANReviewTool-MainForm').show();
-		});
-
-		// Show or hide different parts of the form depending on whether the user clicks pass or fail
-		$(`[name="GANReviewTool-PassOrFail"]`).on('change', () => { // must use arrow functions in classes. else "this" keyword is not properly recognized, and can't acess class methods
-			if ( $(`[name="GANReviewTool-PassOrFail"]:checked`).val() === 'pass' ) {
-				$(`#GANReviewTool-PassDiv`).show();
-			} else {
-				$(`#GANReviewTool-PassDiv`).hide();
-			}
-		});
-
-		// Submit button
-		$(`#GANReviewTool-Submit`).on('click', async () => { // must use arrow functions in classes. else "this" keyword is not properly recognized, and can't acess class methods
-			// if pass, a WP:GA subpage heading must be selected
-			let passOrFail = $(`[name="GANReviewTool-PassOrFail"]:checked`).val();
-			let needsATOP = $(`[name="GANReviewTool-ATOPYesNo"]`).is(":checked");
-			let gaSubpageHeading = document.querySelector(`[name="GANReviewTool-Topic"]`); // TODO: change this to jquery, so less dependencies, more unit testable
-			gaSubpageHeading = gaSubpageHeading.options[gaSubpageHeading.selectedIndex];
-			gaSubpageHeading = gaSubpageHeading.text;
-			if ( passOrFail === 'pass' && ! gaSubpageHeading ) {
-				$(`#GANReviewTool-FormValidationError`).show();
-				return;
-			}
-
-			$(`#GANReviewTool-Form`).hide();
-			$(`#GANReviewTool-ProcessingMessage`).show();
-
-			let editSummarySuffix = ' ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
-
-			let reviewTitle = title;
-			let reviewRevisionID, talkRevisionID, gaRevisionID;
-			let error = false;
-
-			try {
-				if ( passOrFail === 'pass' ) {
-					let editSummary = `promote [[${gaTitle}]] to good article` + editSummarySuffix;
-
-					if ( needsATOP ) {
-						this.pushStatus('Placing {{atop}} and {{abot}} on GA review page.', $);
-						reviewWikicode = await this.getWikicode(title, mw); // get this wikicode again, in case it changed between page load and "submit" button click
-						reviewWikicode = wg.getPassWikicodeForGANPage(reviewWikicode);
-						reviewRevisionID = await this.makeEdit(reviewTitle, editSummary, reviewWikicode, mw);
-					}
-					
-					this.pushStatus('Deleting {{GA nominee}} from article talk page.', $);
-					this.pushStatus('Adding {{GA}} or {{Article history}} to article talk page.', $);
-					this.pushStatus('Changing WikiProject template class parameters to GA on article talk page.', $);
-					talkWikicode = await this.getWikicode(gaTalkTitle, mw); // get this wikicode again, in case it changed between page load and "submit" button click
-					talkWikicode = wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle);
-					talkRevisionID = await this.makeEdit(gaTalkTitle, editSummary, talkWikicode, mw);
-
-					this.pushStatus('Adding to appropriate subpage of [[WP:GA]]', $);
-					let gaSubpageTitle = $(`[name="GANReviewTool-Topic"]`).val();
-					gaSubpageTitle = `Wikipedia:Good articles/` + gaSubpageTitle;
-					let gaDisplayTitle = $(`[name="GANReviewTool-DisplayWikicode"]`).val();
-					let gaSubpageWikicode = await this.getWikicode(gaSubpageTitle, mw);
-					gaSubpageWikicode = wg.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle);
-					gaRevisionID = await this.makeEdit(gaSubpageTitle, editSummary, gaSubpageWikicode, mw);
-				} else if ( passOrFail === 'fail' ) {
-					let editSummary = `close GAN as unsuccessful` + editSummarySuffix;
-
-					if ( needsATOP ) {
-						this.pushStatus('Placing {{atop}} and {{abot}} on GA review page.', $);
-						reviewWikicode = await this.getWikicode(title, mw); // get this wikicode again, in case it changed between page load and "submit" button click
-						reviewWikicode = wg.getFailWikicodeForGANPage(reviewWikicode);
-						reviewRevisionID = await this.makeEdit(reviewTitle, editSummary, reviewWikicode, mw);
-					}
-
-					this.pushStatus('Deleting {{GA nominee}} from article talk page.', $);
-					this.pushStatus('Adding {{FailedGA}} or {{Article history}} to article talk page.', $);
-					talkWikicode = await this.getWikicode(gaTalkTitle, mw); // get this wikicode again, in case it changed between page load and "submit" button click
-					talkWikicode = wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle);
-					talkRevisionID = await this.makeEdit(gaTalkTitle, editSummary, talkWikicode, mw);
-				}
-			} catch(err) {
-				this.pushStatus('<span class="GANReviewTool-ErrorNotice">An error occurred :(</span>', $);
-				error = err;
-			}
-
-			// always log no matter what. hopefully log some errors so I can fix them
-			this.pushStatus('Adding to log', $);
-			let editSummary = `log [[${gaTitle}]]` + editSummarySuffix;
-			let username = mw.config.get('wgUserName');
-			let textToAppend = wg.getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error, needsATOP);
-			await this.appendToPage('User:Novem Linguae/Scripts/GANReviewTool/GANReviewLog', editSummary, textToAppend, mw);
-
-			if ( ! error ) {
-				this.pushStatus('Script complete. Refreshing page.', $);
-				// TODO: 1 second delay?
-
-				location.reload();
-			}
+		this.$(`#GANReviewTool-Submit`).on('click', async () => {
+			await this.clickSubmit();
 		});
 	}
 
 	/**
 	 * @private
 	 */
-	async getWikicode(title, mw) {
-		let api = new mw.Api();
+	async clickSubmit() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.readFormAndSetVariables();
+
+		// if pass, a WP:GA subpage heading must be selected
+		if ( this.passOrFail === 'pass' && ! this.detailedTopic ) {
+			this.$(`#GANReviewTool-FormValidationError`).show();
+			return;
+		}
+
+		this.$(`#GANReviewTool-Form`).hide();
+		this.$(`#GANReviewTool-ProcessingMessage`).show();
+
+		this.editSummarySuffix = ' ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
+		this.reviewTitle = this.ganReviewPageTitle;
+		this.error = false;
+		try {
+			if ( this.passOrFail === 'pass' ) {
+				await this.doPass();
+			} else if ( this.passOrFail === 'fail' ) {
+				await this.doFail();
+			}
+		} catch(err) {
+			this.pushStatus('<span class="GANReviewTool-ErrorNotice">An error occurred :(</span>');
+			this.error = err;
+		}
+
+		await this.writeToLog();
+
+		if ( ! this.error ) {
+			this.pushStatus('Script complete. Refreshing page.');
+			// TODO: 1 second delay?
+
+			location.reload();
+		}
+	}
+
+	/**
+	 * @private
+	 */
+	async doPass() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.editSummary = `promote [[${this.gaTitle}]] to good article` + this.editSummarySuffix;
+		this.gaSubpageShortTitle = this.$(`[name="GANReviewTool-Topic"]`).val();
+
+		if ( this.needsATOP ) {
+			await this.processPassForGANPage();
+		}
+		await this.processPassForTalkPage();
+		await this.processPassForGASubPage();
+	}
+
+	/**
+	 * @private
+	 */
+	async doFail() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.editSummary = `close [[${this.gaTitle}]] good article nomination as unsuccessful` + this.editSummarySuffix;
+
+		if ( this.needsATOP ) {
+			await this.processFailForGANPage();
+		}
+		await this.processFailForTalkPage();
+	}
+
+	/**
+	 * @private
+	 */
+	async processFailForGANPage() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.pushStatus('Placing {{atop}} and {{abot}} on GA review page.');
+		let reviewWikicode = await this.getWikicode(this.ganReviewPageTitle); // get this wikicode again, in case it changed between page load and "submit" button click
+		reviewWikicode = this.wg.getFailWikicodeForGANPage(reviewWikicode);
+		this.reviewRevisionID = await this.makeEdit(this.reviewTitle, this.editSummary, reviewWikicode);
+	}
+
+	/**
+	 * @private
+	 */
+	async processFailForTalkPage() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.pushStatus('Deleting {{GA nominee}} from article talk page.');
+		this.pushStatus('Adding {{FailedGA}} or {{Article history}} to article talk page.');
+		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
+		talkWikicode = this.wg.getFailWikicodeForTalkPage(talkWikicode, this.reviewTitle);
+		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
+	}
+
+	/**
+	 * @private
+	 */
+	async processPassForTalkPage() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.pushStatus('Deleting {{GA nominee}} from article talk page.');
+		this.pushStatus('Adding {{GA}} or {{Article history}} to article talk page.');
+		this.pushStatus('Changing WikiProject template class parameters to GA on article talk page.');
+		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
+		talkWikicode = this.wg.getPassWikicodeForTalkPage(talkWikicode, this.reviewTitle, this.gaSubpageShortTitle);
+		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
+	}
+
+	/**
+	 * @private
+	 */
+	async processPassForGASubPage() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.pushStatus('Adding to appropriate subpage of [[WP:GA]]');
+		let gaSubpageLongTitle = `Wikipedia:Good articles/` + this.gaSubpageShortTitle;
+		let gaDisplayTitle = this.$(`[name="GANReviewTool-DisplayWikicode"]`).val();
+		let gaSubpageWikicode = await this.getWikicode(gaSubpageLongTitle);
+		gaSubpageWikicode = this.wg.getPassWikicodeForGAListPage(this.detailedTopic, gaSubpageWikicode, this.gaTitle, gaDisplayTitle);
+		this.gaRevisionID = await this.makeEdit(gaSubpageLongTitle, this.editSummary, gaSubpageWikicode);
+	}
+
+	/**
+	 * @private
+	 */
+	async processPassForGANPage() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.pushStatus('Placing {{atop}} and {{abot}} on GA review page.');
+		let reviewWikicode = await this.getWikicode(this.ganReviewPageTitle); // get this wikicode again, in case it changed between page load and "submit" button click
+		reviewWikicode = this.wg.getPassWikicodeForGANPage(reviewWikicode);
+		this.reviewRevisionID = await this.makeEdit(this.reviewTitle, this.editSummary, reviewWikicode);
+	}
+	
+	/**
+	 * @private
+	 */
+	readFormAndSetVariables() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.passOrFail = this.$(`[name="GANReviewTool-PassOrFail"]:checked`).val();
+		this.needsATOP = this.$(`[name="GANReviewTool-ATOPYesNo"]`).is(":checked");
+		this.detailedTopic = document.querySelector(`[name="GANReviewTool-Topic"]`); // TODO: change this to jquery, so less dependencies, more unit testable
+		this.detailedTopic = this.detailedTopic.options[this.detailedTopic.selectedIndex];
+		this.detailedTopic = this.detailedTopic.text;
+	}
+
+	/**
+	 * Show or hide different parts of the form depending on whether the user clicks pass or fail.
+	 * @private
+	 */
+	handleUserChangingFormType() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.$(`[name="GANReviewTool-PassOrFail"]`).on('change', () => {
+			if ( this.$(`[name="GANReviewTool-PassOrFail"]:checked`).val() === 'pass' ) {
+				this.$(`#GANReviewTool-PassDiv`).show();
+			} else {
+				this.$(`#GANReviewTool-PassDiv`).hide();
+				this.$(`#GANReviewTool-FormValidationError`).hide();
+			}
+		});
+	}
+
+	/**
+	 * Show a warning if viewer is not the creator of the GAN Review page. This is to help prevent accidentally closing the wrong GAN Review.
+	 * @private
+	 */
+	async warnUserIfNotReviewCreator() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		let pageCreator = await this.getPageCreator(this.ganReviewPageTitle);
+		if ( pageCreator !== this.mw.config.get('wgUserName') ) {
+			this.$('.GANReviewTool-NotCreatorNotice').show();
+		} else {
+			this.$('#GANReviewTool-MainForm').show();
+		}
+
+		this.$('#GANReviewTool-ReviewAnywayLink').on('click', () => {
+			this.$('.GANReviewTool-NotCreatorNotice').hide();
+			this.$('#GANReviewTool-MainForm').show();
+		});
+	}
+
+	/**
+	 * @private
+	 */
+	displayForm() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.$('#contentSub2').prepend(this.hg.getHTML(this.gaTitle));
+	}
+
+	/**
+	 * @private
+	 */
+	async shouldRunOnThisPageSlowChecks() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		// only run if this review hasn't already been closed. check for {{atop}}
+		let reviewWikicode = await this.getWikicode(this.ganReviewPageTitle);
+		if ( reviewWikicode.match(/\{\{atop/i) ) {
+			return false;
+		}
+
+		// only run if talk page has {{GA nominee}}
+		this.gaTitle = this.getGATitle(this.ganReviewPageTitle);
+		this.gaTalkTitle = this.getGATalkTitle(this.gaTitle);
+		let talkWikicode = await this.getWikicode(this.gaTalkTitle);
+		if ( this.ganReviewPageTitle !== 'User:Novem_Linguae/sandbox' && ! talkWikicode.match(/\{\{GA nominee/i) ) {
+			return false;
+		}
+
+		return true;
+	}
+	
+	/**
+	 * @private
+	 */
+	async writeToLog() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		// always log no matter what. hopefully log some errors so I can fix them
+		this.pushStatus('Adding to log');
+		let username = this.mw.config.get('wgUserName');
+		let textToAppend = this.wg.getLogMessageToAppend(username, this.passOrFail, this.reviewTitle, this.reviewRevisionID, this.talkRevisionID, this.gaRevisionID, this.error);
+		await this.appendToPage('User:Novem Linguae/Scripts/GANReviewTool/GANReviewLog', this.editSummary, textToAppend);
+	}
+
+	/**
+	 * @private
+	 */
+	async getWikicode(title) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
+		let api = new this.mw.Api();
 		let params = {
 			"action": "parse",
 			"page": title,
@@ -153,8 +286,10 @@ export class GANReviewController {
 	/**
 	 * @private
 	 */
-	async makeEdit(title, editSummary, wikicode, mw) {
-		let api = new mw.Api();
+	async makeEdit(title, editSummary, wikicode) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+
+		let api = new this.mw.Api();
 		let params = {
 			"action": "edit",
 			"format": "json",
@@ -170,8 +305,10 @@ export class GANReviewController {
 	/**
 	 * @private
 	 */
-	async getPageCreator(title, mw) {
-		let api = new mw.Api();
+	async getPageCreator(title) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
+		let api = new this.mw.Api();
 		let params = {
 			action: 'query',
 			prop: 'revisions',
@@ -192,8 +329,10 @@ export class GANReviewController {
 	 * Lets you append without getting the Wikicode first. Saves an API query.
 	 * @private
 	 */
-	async appendToPage(title, editSummary, wikicodeToAppend, mw) {
-		let api = new mw.Api();
+	async appendToPage(title, editSummary, wikicodeToAppend) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+
+		let api = new this.mw.Api();
 		let params = {
 			"action": "edit",
 			"format": "json",
@@ -209,30 +348,34 @@ export class GANReviewController {
 	/**
 	 * @private
 	 */
-	pushStatus(statusToAdd, $) {
-		$(`#GANReviewTool-ProcessingMessage > p`).append('<br />' + statusToAdd);
+	pushStatus(statusToAdd) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
+		this.$(`#GANReviewTool-ProcessingMessage > p`).append('<br />' + statusToAdd);
 	}
 
 	/**
 	 * @private
 	 */
-	shouldRunOnThisPageQuickChecks(title, mw) {
+	shouldRunOnThisPageQuickChecks(title) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
 		// don't run when not viewing articles
-		let action = mw.config.get('wgAction');
+		let action = this.mw.config.get('wgAction');
 		if ( action != 'view' ) return false;
 		
 		// don't run when viewing diffs
-		let isDiff = mw.config.get('wgDiffNewId');
+		let isDiff = this.mw.config.get('wgDiffNewId');
 		if ( isDiff ) return false;
 		
-		let isDeletedPage = ( ! mw.config.get('wgCurRevisionId') );
+		let isDeletedPage = ( ! this.mw.config.get('wgCurRevisionId') );
 		if ( isDeletedPage ) return false;
 
 		// always run in Novem's sandbox
 		if ( title === 'User:Novem_Linguae/sandbox' ) return true;
 		
 		// only run in talk namespace
-		let namespace = mw.config.get('wgNamespaceNumber');
+		let namespace = this.mw.config.get('wgNamespaceNumber');
 		let isTalkNamespace = ( namespace === 1 );
 		if ( ! isTalkNamespace ) return false;
 
@@ -246,6 +389,8 @@ export class GANReviewController {
 	 * @private
 	 */
 	isGASubPage(title) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
 		return Boolean(title.match(/\/GA\d{1,2}$/));
 	}
 
@@ -253,6 +398,8 @@ export class GANReviewController {
 	 * @private
 	 */
 	getGATitle(title) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
 		title = title.replace('Talk:', '');
 		title = title.replace(/_/g, ' ');
 		title = title.match(/^[^\/]*/)[0];
@@ -263,6 +410,8 @@ export class GANReviewController {
 	 * @private
 	 */
 	getGATalkTitle(gaTitle) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
 		if ( gaTitle.includes(':') ) {
 			return gaTitle.replace(/^([^:]*)(:.*)$/gm, '$1 talk$2');
 		} else {
