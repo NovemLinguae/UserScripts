@@ -41,7 +41,7 @@ export class GARCloserController {
 		}
 
 		// place HTML on page
-		this.$('#contentSub2').prepend(hg.getHTML())
+		this.$('#mw-content-text').prepend(hg.getHTML())
 
 		this.$(`#GARCloser-Keep`).on('click', async () => {
 			await this.clickKeep();

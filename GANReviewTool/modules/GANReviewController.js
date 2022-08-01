@@ -225,7 +225,8 @@ export class GANReviewController {
 	displayForm() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
-		this.$('#contentSub2').prepend(this.hg.getHTML(this.gaTitle));
+		
+		this.$('#mw-content-text').prepend(this.hg.getHTML(this.gaTitle));
 	}
 
 	/**

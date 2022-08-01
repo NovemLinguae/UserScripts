@@ -120,6 +120,38 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 `;
 		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
 	});
+
+	test(`Should place {{GA}} below {{Talk page header}}`, () => {
+		let talkWikicode =
+`{{Talk page header}}
+{{GA nominee|05:05, 8 June 2022 (UTC)|nominator=[[User:InfiniteNexus|InfiniteNexus]] ([[User talk:InfiniteNexus|talk]])|page=1|subtopic=Computing and engineering|status=onhold|note=}}
+{{WikiProject banner shell|
+{{WikiProject Computing|class=B|importance=mid|hardware=yes|hardware-importance=mid}}
+{{WikiProject Electronics|class=B|importance=mid}}
+{{WikiProject Google|class=B|importance=high}}
+{{WikiProject Technology|class=B|b1=yes|b2=yes|b3=yes|b4=yes|b5=yes|b6=yes}}
+{{WikiProject Telecommunications|class=B|importance=mid}}
+}}
+{{DYK talk|13 November|2021|entry=... that the '''[[Pixel 6|Pixel&nbsp;6]]''' is the first smartphone to be powered by the Google Tensor [[system on a chip]] (SoC)?|nompage=Template:Did you know nominations/Pixel 6}}
+{{Annual readership}}
+`;
+		let reviewTitle = `Pixel 6/GA1`;
+		let gaSubpageShortTitle = `Engineering and technology`;
+		let output =
+`{{Talk page header}}
+{{GA|~~~~~|topic=Engineering and technology|page=1}}
+{{WikiProject banner shell|
+{{WikiProject Computing|class=GA|importance=mid|hardware=yes|hardware-importance=mid}}
+{{WikiProject Electronics|class=GA|importance=mid}}
+{{WikiProject Google|class=GA|importance=high}}
+{{WikiProject Technology|class=GA|b1=yes|b2=yes|b3=yes|b4=yes|b5=yes|b6=yes}}
+{{WikiProject Telecommunications|class=GA|importance=mid}}
+}}
+{{DYK talk|13 November|2021|entry=... that the '''[[Pixel 6|Pixel&nbsp;6]]''' is the first smartphone to be powered by the Google Tensor [[system on a chip]] (SoC)?|nompage=Template:Did you know nominations/Pixel 6}}
+{{Annual readership}}
+`;
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
+	});
 });
 
 describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)', () => {

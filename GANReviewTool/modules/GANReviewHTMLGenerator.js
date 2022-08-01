@@ -5,6 +5,7 @@ export class GANReviewHTMLGenerator {
 	#GANReviewTool {
 		border: 1px solid black;
 		padding: 1em;
+		margin-bottom: 1em;
 	}
 
 	#GANReviewTool h2 {

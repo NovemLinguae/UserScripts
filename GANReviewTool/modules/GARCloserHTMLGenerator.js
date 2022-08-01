@@ -8,6 +8,7 @@ export class GARCloserHTMLGenerator {
 	#GARCloserTool {
 		border: 1px solid black;
 		padding: 1em;
+		margin-bottom: 1em;
 	}
 
 	#GARCloserTool h2 {
