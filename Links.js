@@ -102,6 +102,10 @@ $(async function() {
 		// central auth
 		userLinks += `<li><a href="/wiki/Special:CentralAuth?target=${usernameURI}">Central auth</a></li>`;
 
+		// user rights
+		userLinks += `<li><a href="/wiki/Special:Log?type=rights&user=&page=${usernameURI}">User rights log</a></li>`;
+		userLinks += `<li><a href="https://meta.wikimedia.org/wiki/Special:Log?type=rights&user=&page=${usernameURI}@enwiki">User rights log (meta)</a></li>`;
+
 		// rename  log
 		// All modern renames seem to be put into both en:Special:Log->User rename log AND meta:Special:Log->User rename log.
 		// One older rename was put only into meta:Special:Log->User rename log.

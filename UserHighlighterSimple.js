@@ -34,6 +34,7 @@ mw.hook('wikipage.content').add(async function($content){
 	let arbcom = dataJSON['arbcom'];
 	let bureaucrats = dataJSON['bureaucrat'];
 	let admins = dataJSON['sysop'];
+	let formeradmins = dataJSON['formeradmin'];
 	let newPageReviewers = dataJSON['patroller'];
 	let tenThousandEdits = dataJSON['10k'];
 	let extendedConfirmed = {
@@ -45,7 +46,7 @@ mw.hook('wikipage.content').add(async function($content){
 	ADMINHIGHLIGHT_NAMESPACES = [-1,2,3];
 	mw.loader.using(['mediawiki.util','mediawiki.Uri', 'mediawiki.Title'], function() {
 		// Note: .plainlinks is for Wikipedia Signpost articles
-
+		// Highest specificity goes on bottom. So if you want an admin+steward to be highlighted steward, place the steward CSS below the admin CSS in this section.
 
 		mw.util.addCSS(".override-signature-colors, .override-signature-colors span, .plainlinks .override-signature-colors.external, .override-signature-colors b, .override-signature-colors font {color: #0645ad !important; background-color: transparent !important;}");
 		
@@ -60,6 +61,9 @@ mw.hook('wikipage.content').add(async function($content){
 		
 		// New page reviewer (714)
 		mw.util.addCSS(".userhighlighter_npruser, .userhighlighter_npruser span, .plainlinks .userhighlighter_npruser.external, .userhighlighter_npruser b, .userhighlighter_npruser font {background-color: #99f !important;}");
+		
+		// Former admin
+		mw.util.addCSS(".userhighlighter_formeradmin, .userhighlighter_formeradmin span, .plainlinks .userhighlighter_formeradmin.external, .userhighlighter_formeradmin b, .userhighlighter_formeradmin font {background-color: #D3AC8B !important;}");
 		
 		// Admin
 		mw.util.addCSS(".userhighlighter_sysop, .userhighlighter_sysop span, .plainlinks .userhighlighter_sysop.external, .userhighlighter_sysop b, .userhighlighter_sysop font {background-color: #9ff !important;}");
@@ -136,6 +140,11 @@ mw.hook('wikipage.content').add(async function($content){
 						if (admins[user] == 1) {
 							link.addClass(link.attr('class') + ' userhighlighter_sysop');
 							if (link.attr("title") == null || link.attr("title").startsWith("User:")) link.attr("title", "Admin");
+							hasAdvancedPermissions = true;
+						}
+						if (formeradmins[user] == 1) {
+							link.addClass(link.attr('class') + ' userhighlighter_formeradmin');
+							if (link.attr("title") == null || link.attr("title").startsWith("User:")) link.attr("title", "Former Admin");
 							hasAdvancedPermissions = true;
 						}
 						if(newPageReviewers[user] == 1) {
