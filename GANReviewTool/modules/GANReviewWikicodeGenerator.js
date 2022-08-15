@@ -44,7 +44,7 @@ export class GANReviewWikicodeGenerator {
 			let line = gaSubpageWikicode.slice(startOfLine, endOfLine);
 			let lineWithSomeFormattingRemoved = this.removeFormattingThatInterferesWithSort(line);
 			let displayTitleWithSomeFormattingRemoved = this.removeFormattingThatInterferesWithSort(gaDisplayTitle);
-			if ( ! this.aSortsLowerAlphabeticallyThanB(lineWithSomeFormattingRemoved, displayTitleWithSomeFormattingRemoved) ) {
+			if ( ! this.aSortsLowerThanB(lineWithSomeFormattingRemoved, displayTitleWithSomeFormattingRemoved) ) {
 				insertPosition = startOfLine;
 				break;
 			}
@@ -446,7 +446,7 @@ export class GANReviewWikicodeGenerator {
 	/**
 	 * @private
 	 */
-	aSortsLowerAlphabeticallyThanB(a, b) {
+	aSortsLowerThanB(a, b) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 
 		// JavaScript appears to use an ASCII sort. See https://en.wikipedia.org/wiki/ASCII#Printable_characters
@@ -460,7 +460,13 @@ export class GANReviewWikicodeGenerator {
 
 		let arr1 = [a, b];
 		let arr2 = [a, b];
-		return JSON.stringify(arr1.sort()) === JSON.stringify(arr2);
+
+		// Sort numerically, not lexographically.
+		// Fixes a bug where the sort is 79, 8, 80 instead of 8, 79, 80
+		// Jon Wyatt, CC BY-SA 4.0, https://stackoverflow.com/a/44197285/3480193
+		let sortNumerically = (a, b) => a.localeCompare(b, 'en', { numeric: true });
+
+		return JSON.stringify(arr1.sort(sortNumerically)) === JSON.stringify(arr2);
 	}
 
 	/**

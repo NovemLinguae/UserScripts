@@ -39,7 +39,7 @@ export class GANReviewHTMLGenerator {
 		display: none;
 	}
 
-	#GANReviewTool-FormValidationError {
+	.GANReviewTool-ValidationError {
 		display: none;
 		color: red;
 		font-weight: bold;
@@ -110,7 +110,6 @@ export class GANReviewHTMLGenerator {
 						<option value="Art and architecture">=====Architecture=====</option>
 						<option value="Art and architecture">=====Architecture – Bridges and tunnels=====</option>
 						<option value="Art and architecture">=====Architecture – Buildings=====</option>
-						<option value="Art and architecture">=====Architecture – Forts and fortifications=====</option>
 						<option value="Art and architecture">=====Architecture – Hotels and inns=====</option>
 						<option value="Art and architecture">=====Architecture – Houses and residences=====</option>
 						<option value="Art and architecture">=====Architecture – Lighthouses=====</option>
@@ -739,10 +738,15 @@ export class GANReviewHTMLGenerator {
 
 			<p>
 				<button id="GANReviewTool-Submit">Submit</button>
-				<span id="GANReviewTool-FormValidationError">
-					You must select a topic from the combo box above.
-				</span>
 			</p>
+
+			<div id="GANReviewTool-NoTopicMessage" class="GANReviewTool-ValidationError">
+				You must select a topic from the combo box above.
+			</div>
+
+			<div id="GANReviewTool-NoPipesMessage" class="GANReviewTool-ValidationError">
+				"Wikicode to display" should not contain a pipe "|"
+			</div>
 		</div>
 	</div>
 

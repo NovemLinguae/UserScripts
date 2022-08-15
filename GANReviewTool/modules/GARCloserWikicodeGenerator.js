@@ -207,13 +207,13 @@ __TOC__`;
 				break;
 		}
 
-		// place top piece after first H3, if it exists
+		// place top piece after first H2 or H3, if it exists
 		let resultText = result ? `\n| result = ${result}\n` : '';
 		let prependText =
 `{{atop${colorCode}${resultText}}}`;
-		let hasH3 = wikicode.match(/^===[^=]+===$/m);
-		if ( hasH3 ) {
-			wikicode = wikicode.replace(/^(.*?===[^=]+===\n)(.*)$/s, '$1' + prependText + '\n$2');
+		let hasH2OrH3 = wikicode.match(/^===?[^=]+===?$/m);
+		if ( hasH2OrH3 ) {
+			wikicode = wikicode.replace(/^(.*?===?[^=]+===?\n)(.*)$/s, '$1' + prependText + '\n$2');
 		} else {
 			wikicode = prependText + "\n" + wikicode;
 		}

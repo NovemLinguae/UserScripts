@@ -372,6 +372,26 @@ describe('processDelistForGARPage(garPageWikicode, message, isCommunityAssessmen
 `;
 		expect(wg.processDelistForGARPage(garPageWikicode, message, isCommunityAssessment)).toBe(output);
 	});
+
+	test(`Should handle H2`, () => {
+		let isCommunityAssessment = false;
+		let garPageWikicode = 
+`==GA Reassessment==
+<noinclude>{{al|{{#titleparts:First Macedonian War/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This discussion is [[WP:transclusion|transcluded]] from [[Talk:First Macedonian War/GA1]]. The edit link for this section can be used to add comments to the reassessment.''</includeonly>
+<!-- Please add all reassessment comments below this comment, and do not alter what is above. To keep the discussion within a single section, please do not use level 2 headers (==...==) below to break up the reassessment. Use level 3 (===...===), level 4 and so on.-->
+`;
+		let message = '';
+		let output = 
+`==GA Reassessment==
+{{atopr
+| result = Delisted. ~~~~
+}}
+<noinclude>{{al|{{#titleparts:First Macedonian War/GA1|-1}}|noname=yes}}<br/></noinclude><includeonly>:''This discussion is [[WP:transclusion|transcluded]] from [[Talk:First Macedonian War/GA1]]. The edit link for this section can be used to add comments to the reassessment.''</includeonly>
+<!-- Please add all reassessment comments below this comment, and do not alter what is above. To keep the discussion within a single section, please do not use level 2 headers (==...==) below to break up the reassessment. Use level 3 (===...===), level 4 and so on.-->
+{{abot}}
+`;
+		expect(wg.processDelistForGARPage(garPageWikicode, message, isCommunityAssessment)).toBe(output);
+	});
 });
 
 describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => {

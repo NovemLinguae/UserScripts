@@ -26,10 +26,12 @@ mw.hook('wikipage.content').add(async function($content){
 	let global = {
 		...dataJSON['founder'],
 		...dataJSON['steward'],
-		...dataJSON['sysadmin'],
-		...dataJSON['staff'],
-		...dataJSON['global-interface-editor'],
-		...dataJSON['wmf-supportsafety'],
+		//...dataJSON['sysadmin'],
+		//...dataJSON['staff'],
+		//...dataJSON['global-interface-editor'],
+		//...dataJSON['wmf-supportsafety'],
+		//...dataJSON['mediawikiPlusTwo'],
+		//...dataJSON['global-sysop'],
 	};
 	let arbcom = dataJSON['arbcom'];
 	let bureaucrats = dataJSON['bureaucrat'];
@@ -74,7 +76,7 @@ mw.hook('wikipage.content').add(async function($content){
 		// arbcom
 		mw.util.addCSS(".userhighlighter_arbcom, .userhighlighter_arbcom span, .plainlinks .userhighlighter_arbcom.external, .userhighlighter_arbcom b, .userhighlighter_arbcom font {background-color: #FF3F3F !important; color: white !important;}");
 		
-		// steward
+		// global: wmf, software engineers, stewards
 		mw.util.addCSS(".userhighlighter_steward, .userhighlighter_steward span, .plainlinks .userhighlighter_steward.external, .userhighlighter_steward b, .userhighlighter_steward font {background-color: hotpink !important; color: #0645ad !important; }");
 		
 		$('#article a, #bodyContent a, #mw_contentholder a').each(function(index,linkraw){
@@ -122,9 +124,9 @@ mw.hook('wikipage.content').add(async function($content){
 						let hasAdvancedPermissions = false;
 						
 						// in addition to folks in the global group, highlight anybody with "WMF" in their name, case insensitive. this should not generate false positives because WMF is on the username blacklist.
-						if (global[user] == 1 || user.match(/WMF/i)) {
+						if (global[user] == 1 || user.match(/WMF/i) || user.match(/WMDE/i)) {
 							link.addClass(link.attr('class') + ' userhighlighter_steward');
-							if (link.attr("title") == null || link.attr("title").startsWith("User:")) link.attr("title", "Steward");
+							if (link.attr("title") == null || link.attr("title").startsWith("User:")) link.attr("title", "WMF, Software Engineer, Steward, or Global Sysop");
 							hasAdvancedPermissions = true;
 						}
 						if(bureaucrats[user] == 1) {

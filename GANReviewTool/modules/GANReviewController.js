@@ -41,9 +41,8 @@ export class GANReviewController {
 
 		this.readFormAndSetVariables();
 
-		// if pass, a WP:GA subpage heading must be selected
-		if ( this.passOrFail === 'pass' && ! this.detailedTopic ) {
-			this.$(`#GANReviewTool-FormValidationError`).show();
+		let hasFormValidationErrors = this.validateForm();
+		if ( hasFormValidationErrors ) {
 			return;
 		}
 
@@ -72,6 +71,30 @@ export class GANReviewController {
 
 			location.reload();
 		}
+	}
+
+	/**
+	 * @return {boolean} hasFormValidationErrors
+	 * @private
+	 */
+	validateForm() {
+		this.$(`.GANReviewTool-ValidationError`).hide();
+
+		let hasFormValidationErrors = false;
+
+		// if pass, a WP:GA subpage heading must be selected
+		if ( this.passOrFail === 'pass' && ! this.detailedTopic ) {
+			this.$(`#GANReviewTool-NoTopicMessage`).show();
+			hasFormValidationErrors = true;
+		}
+
+		// "Wikicode to display" text box must not contain a pipe. Prevents this kind of thing from being written to the [[WP:GA]] subpages: [[HMS Resistance (1801)|HMS Resistance (1801)|HMS ''Resistance'' (1801)]]
+		if ( this.$(`[name="GANReviewTool-DisplayWikicode"]`).val().includes('|') ) {
+			this.$(`#GANReviewTool-NoPipesMessage`).show();
+			hasFormValidationErrors = true;
+		}
+
+		return hasFormValidationErrors;
 	}
 
 	/**
@@ -194,7 +217,7 @@ export class GANReviewController {
 				this.$(`#GANReviewTool-PassDiv`).show();
 			} else {
 				this.$(`#GANReviewTool-PassDiv`).hide();
-				this.$(`#GANReviewTool-FormValidationError`).hide();
+				this.$(`#GANReviewTool-NoTopicMessage`).hide();
 			}
 		});
 	}

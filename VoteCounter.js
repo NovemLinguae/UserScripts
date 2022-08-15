@@ -198,6 +198,7 @@ $(async function() {
 		'disambiguate',
 		'withdraw',
 		'setindex',
+		'refine',
 		// MFD
 		'historical', // mark historical
 		// TFD

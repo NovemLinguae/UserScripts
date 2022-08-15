@@ -474,7 +474,7 @@ describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTi
 	test('Should ignore {{Further}} when it is present in the list', () => {
 		let gaSubpageHeading = `=====Landforms=====`;
 		let gaTitle = `ABC`;
-		let gaDisplayTitle = `{{ABC}}`;
+		let gaDisplayTitle = `ABC`;
 		let gaSubpageWikicode =
 `===== Landforms =====
 {{Further}}
@@ -490,12 +490,12 @@ describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTi
 `===== Landforms =====
 {{Further}}
 {{#invoke:Good Articles|subsection|
+[[ABC]]
 [[Alepotrypa Cave|''Aleoptrypa Cave'']]
 [[Alepotrypa Cave|'Hello]]
 [[Ampato]]
 [[Andagua volcanic field]]
 [[Antofalla]]
-[[ABC|{{ABC}}]]
 }}
 `;
 		expect(wg.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
@@ -820,6 +820,28 @@ __NOTOC__
 `;
 		expect(wg.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
+
+	test('sort in numerical order, not lexographical order', () => {
+		let gaSubpageHeading = `=====Actors, directors, models, performers, and celebrities=====`;
+		let gaTitle = `Ontario Highway 8`;
+		let gaDisplayTitle = `Ontario Highway 8`;
+		let gaSubpageWikicode =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Ontario Highway 79]]
+[[Ontario Highway 81]]
+}}
+`;
+		let output =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+[[Ontario Highway 8]]
+[[Ontario Highway 79]]
+[[Ontario Highway 81]]
+}}
+`;
+		expect(wg.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
 });
 
 describe('getFailWikicodeForGANPage(reviewWikicode)', () => {
@@ -907,6 +929,40 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 }}
 
 {{Talk:SpaceX Starship/GA2}}
+`;
+		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+	});
+
+	test('Should handle {{Vital article|topic=', () => {
+		let talkWikicode = 
+`{{GA nominee|21:10, 1 August 2022 (UTC)|nominator=[[User:Paavamjinn|Paavamjinn]] ([[User talk:Paavamjinn|talk]])|page=5|subtopic=Sports and recreation|status=|note=}}
+{{Vital article|level=4|topic=People|class=B}}
+{{ArticleHistory
+|action1       = GAN
+|action1date   = 09:41, 6 August 2021 (UTC)
+|action1link   = Talk:Cristiano Ronaldo/GA4
+|action1result = not listed
+|action1oldid  = 1036984152
+|currentstatus = FGAN
+|topic         = sports
+}}
+`;
+		let reviewTitle = `Talk:Cristiano Ronaldo/GA5`;
+		let output = 
+`{{Vital article|level=4|topic=People|class=B}}
+{{ArticleHistory
+|action1       = GAN
+|action1date   = 09:41, 6 August 2021 (UTC)
+|action1link   = Talk:Cristiano Ronaldo/GA4
+|action1result = not listed
+|action1oldid  = 1036984152
+|action2 = GAN
+|action2date = ~~~~~
+|action2link = Talk:Cristiano Ronaldo/GA5
+|action2result = failed
+|currentstatus = FGAN
+|topic = Sports and recreation
+}}
 `;
 		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
 	});
@@ -1658,33 +1714,33 @@ describe('insertStringIntoStringAtPosition(bigString, insertString, position)', 
 	});
 });
 
-describe('aSortsLowerAlphabeticallyThanB(a, b)', () => {
+describe('aSortsLowerThanB(a, b)', () => {
 	test('a, b', () => {
 		let a = 'a';
 		let b = 'b';
 		let output = true;
-		expect(wg.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
+		expect(wg.aSortsLowerThanB(a, b)).toBe(output);
 	});
 
 	test('b, a', () => {
 		let a = 'b';
 		let b = 'a';
 		let output = false;
-		expect(wg.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
+		expect(wg.aSortsLowerThanB(a, b)).toBe(output);
 	});
 
 	test('numbers should sort lower than letters', () => {
 		let a = '1';
 		let b = 'a';
 		let output = true;
-		expect(wg.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
+		expect(wg.aSortsLowerThanB(a, b)).toBe(output);
 	});
 
 	test('lowercase vs uppercase should evaluate the same', () => {
 		let a = 'de Havilland, Olivia';
 		let b = 'Rao, Amrita';
 		let output = true;
-		expect(wg.aSortsLowerAlphabeticallyThanB(a, b)).toBe(output);
+		expect(wg.aSortsLowerThanB(a, b)).toBe(output);
 	});
 });
 
