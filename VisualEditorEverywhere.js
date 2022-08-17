@@ -4,21 +4,14 @@
 // TODO: add support for [edit] links in diffs
 
 if( jQuery !== undefined && mediaWiki !== undefined ) {
-	function showVEEditLink() {
-		$('.mw-editsection-visualeditor, .mw-editsection-divider').show();
-	}
-
-	let articleName = mw.config.get('wgPageName');
-	articleName = encodeURIComponent(articleName); // fix bug involving & not getting converted to &amp;
-	let buttonIsPresent = $('#ca-ve-edit').length;
-	let pageIsUserScript = articleName.match(/(?:\.js|\.css)$/);
-	
-	if ( ! buttonIsPresent && ! pageIsUserScript ) {
+	function insertVETab() {
 		// Insert Edit tab at top of page
-		let htmlToInsert = '<li id="ca-ve-edit" class="collapsible"><a href="/w/index.php?title='+articleName+'&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">Edit</a></li>';
+		let htmlToInsert = '<li id="ca-ve-edit" class="collapsible"><a href="/w/index.php?title='+articleName+'&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">VEdit</a></li>';
 		$('#ca-edit').before(htmlToInsert);
 		$('#ca-ve-edit').show();
+	}
 
+	function insertVESectionLink() {
 		// Insert [ edit ] by each section
 		// Foreach edit button
 		$('.mw-editsection').each(function() {
@@ -27,7 +20,7 @@ if( jQuery !== undefined && mediaWiki !== undefined ) {
 			let veEditHref = $(this).find('a').attr('href').replace('&action=edit', '&veaction=edit');
 
 			// Generate HTML to insert
-			htmlToInsert = '<a href="" class="mw-editsection-visualeditor">edit</a>    <span class="mw-editsection-divider"> | </span>';
+			htmlToInsert = '<a href="" class="mw-editsection-visualeditor">vedit</a>    <span class="mw-editsection-divider"> | </span>';
 
 			// Insert the HTML right after the bracket (the first span contained in .mw-editsection is <span class="mw-editsection-bracket">s
 			// Inline tags such as <span> do not work with :nth-child, .before(), etc. Must use :first-of-type.
@@ -44,7 +37,21 @@ if( jQuery !== undefined && mediaWiki !== undefined ) {
 		new MutationObserver(() => {
 			showVEEditLink();
 		}).observe($('.mw-editsection-visualeditor, .mw-editsection-divider')[0], {childList: true});
-		*/		
+		*/
+	}
+
+	function showVEEditLink() {
+		$('.mw-editsection-visualeditor, .mw-editsection-divider').show();
+	}
+
+	let articleName = mw.config.get('wgPageName');
+	articleName = encodeURIComponent(articleName); // fix bug involving & not getting converted to &amp;
+	let buttonIsPresent = $('#ca-ve-edit').length;
+	let pageIsUserScript = articleName.match(/(?:\.js|\.css)$/);
+	
+	if ( ! buttonIsPresent && ! pageIsUserScript ) {
+		insertVETab();
+		insertVESectionLink();
 	}
 }
 

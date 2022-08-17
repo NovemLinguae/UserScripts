@@ -301,7 +301,7 @@ export class GANReviewWikicodeGenerator {
 	changeWikiProjectArticleClassToGA(talkWikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
-		return talkWikicode.replace(/(\|\s*class\s*=\s*)(a|b|c|start|stub|list|fa|fl)(?=[\}\s\|])/gi, '$1GA');
+		return talkWikicode.replace(/(\|\s*class\s*=\s*)(a|b|c|start|stub|list|fa|fl)?(?=[\}\s\|])/gi, '$1GA');
 	}
 
 	/**
@@ -335,12 +335,12 @@ export class GANReviewWikicodeGenerator {
 		}
 
 		// always write our own topic. especially importnat for passing, because we want to use what the reviewer picked in the combo box, not what was already in the template.
-		talkWikicode = this.firstTemplateDeleteParameter(talkWikicode, 'Article history', 'topic');
+		talkWikicode = this.firstTemplateDeleteParameter(talkWikicode, 'Article ?history', 'topic');
 		let topicString = `\n|topic = ${topic}`;
 
 		// https://en.wikipedia.org/wiki/Template:Article_history#How_to_use_in_practice
 		let existingStatus = this.firstTemplateGetParameterValue(talkWikicode, 'Artricle history', 'currentstatus')
-		talkWikicode = this.firstTemplateDeleteParameter(talkWikicode, 'Article history', 'currentstatus');
+		talkWikicode = this.firstTemplateDeleteParameter(talkWikicode, 'Article ?history', 'currentstatus');
 		let currentStatusString = this.getArticleHistoryNewStatus(existingStatus, listedOrFailed);
 
 		let addToArticleHistory = 
@@ -417,15 +417,70 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	/**
+	 * @param {RegExp} regex
 	 * @private
 	 */
-	firstTemplateDeleteParameter(wikicode, template, parameter) {
+	preg_position(regex, haystack) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+		let matches = [...haystack.matchAll(regex)];
+		let hasMatches = matches.length;
+		if ( hasMatches ) {
+			return matches[0]['index'];
+		}
+		return false;
+	}
+
+	/**
+	 * @private
+	 */
+	findEndOfTemplate(wikicode, templateStartPosition) {
+		// TODO: handle triple braces, handle <nowiki> tags
+		let nesting = 0;
+		let templateEndPosition = -1;
+		for ( let i = templateStartPosition + 1 /* +1 to skip the first {{, will throw off our nesting count */; i < wikicode.length; i++ ) {
+			let nextTwoChars = wikicode.slice(i, i + 2);
+			if ( nextTwoChars === '{{' ) {
+				nesting++;
+				continue;
+			} else if ( nextTwoChars === '}}' ) {
+				if ( nesting > 0 ) {
+					nesting--;
+					continue;
+				} else {
+					templateEndPosition = i + 2;
+					break;
+				}
+			}
+		}
+		return templateEndPosition;
+	}
+
+	/**
+	 * @private
+	 */
+	firstTemplateDeleteParameter(wikicode, templateRegEx, parameter) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
-		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
+		// templateStartPosition
+		let regex = new RegExp('\{\{' + templateRegEx, 'gi');
+		let templateStartPosition = this.preg_position(regex, wikicode);
 
-		let regex = new RegExp(`\\|\\s*${parameter}\\s*=\\s*([^\\n\\|\\}]*)\\s*`, '');
-		return wikicode.replace(regex, '');
+		// templateEndPosition
+		let templateEndPosition = this.findEndOfTemplate(wikicode, templateStartPosition);
+
+		// slice
+		let firstPiece = wikicode.slice(0, templateStartPosition);
+		let secondPiece = wikicode.slice(templateStartPosition, templateEndPosition);
+		let thirdPiece = wikicode.slice(templateEndPosition);
+
+		// replace only inside the slice
+		let regex2 = new RegExp(`\\|\\s*${parameter}\\s*=\\s*([^\\n\\|\\}]*)\\s*`, '');
+		secondPiece = secondPiece.replace(regex2, '');
+
+		// glue back together
+		wikicode = firstPiece + secondPiece + thirdPiece;
+
+		return wikicode;
 	}
 
 	/**

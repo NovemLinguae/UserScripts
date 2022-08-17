@@ -152,6 +152,22 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 `;
 		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
 	});
+
+	test(`Should change empty |class= to |class=GA`, () => {
+		let talkWikicode =
+`{{GA nominee|17:35, 8 June 2022 (UTC)|nominator=[[User:Underclass King|Underclass King]] ([[User talk:Underclass King|talk]])|page=1|subtopic=Television|status=onreview|note=}}
+{{WikiProject Television|class=}}
+{{WikiProject LGBT studies|class=Start}}
+`;
+		let reviewTitle = `Talk:Seriously, Dude, I'm Gay/GA1`;
+		let gaSubpageShortTitle = `Media and drama`;
+		let output =
+`{{GA|~~~~~|topic=Media and drama|page=1}}
+{{WikiProject Television|class=GA}}
+{{WikiProject LGBT studies|class=GA}}
+`;
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
+	});
 });
 
 describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)', () => {
@@ -956,6 +972,7 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 |action1link   = Talk:Cristiano Ronaldo/GA4
 |action1result = not listed
 |action1oldid  = 1036984152
+
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = Talk:Cristiano Ronaldo/GA5

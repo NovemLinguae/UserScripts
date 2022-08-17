@@ -14,6 +14,7 @@ HideRollbackOnTemplates.js
 Morebits/
 node_modules
 PendingChanges.js
+PreviousNames.js
 publish_old.php
 publish.config.php
 PurgeButton.js
