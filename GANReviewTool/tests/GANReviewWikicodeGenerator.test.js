@@ -168,6 +168,48 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 `;
 		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
 	});
+
+	test(`Should change {{WikiProject}} template with no parameters to include |class=GA`, () => {
+		let talkWikicode =
+`{{GA nominee|17:35, 8 June 2022 (UTC)|nominator=[[User:Underclass King|Underclass King]] ([[User talk:Underclass King|talk]])|page=1|subtopic=Television|status=onreview|note=}}
+{{WikiProject Television}}
+`;
+		let reviewTitle = `Talk:Seriously, Dude, I'm Gay/GA1`;
+		let gaSubpageShortTitle = `Media and drama`;
+		let output =
+`{{GA|~~~~~|topic=Media and drama|page=1}}
+{{WikiProject Television|class=GA}}
+`;
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
+	});
+
+	/*
+	test(`When the [[MOS:TALKORDER]] of the page is wrong, err on the side of placing {{GA}} higher`, () => {
+		let talkWikicode =
+`{{GA nominee|20:56, 20 August 2022 (UTC)|nominator=[[User:Aoidh|Aoidh]] ([[User talk:Aoidh|talk]])|page=1|subtopic=Computing and engineering|status=onhold|note=}}
+{{Talk header}}
+{{WikiProject banner shell|1=
+{{WikiProject Linux|class=B|importance=low}}
+{{WikiProject Computing |class=B |importance= |free-software=yes |free-software-importance=low |software=yes }}
+}}
+{{American English}}
+{{Annual readership|expanded=true}}
+`;
+		let reviewTitle = `Talk:Seriously, Dude, I'm Gay/GA1`;
+		let gaSubpageShortTitle = `Engineering and technology`;
+		let output =
+`{{Talk header}}
+{{GA|~~~~~|topic=Engineering and technology|page=1}}
+{{WikiProject banner shell|1=
+{{WikiProject Linux|class=GA|importance=low}}
+{{WikiProject Computing |class=GA |importance= |free-software=yes |free-software-importance=low |software=yes }}
+}}
+{{American English}}
+{{Annual readership|expanded=true}}
+`;
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
+	});
+	*/
 });
 
 describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)', () => {
@@ -854,6 +896,24 @@ __NOTOC__
 [[Ontario Highway 8]]
 [[Ontario Highway 79]]
 [[Ontario Highway 81]]
+}}
+`;
+		expect(wg.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
+	});
+
+	test(`don't used a piped wikilink for stuff in double quotes`, () => {
+		let gaSubpageHeading = `=====Actors, directors, models, performers, and celebrities=====`;
+		let gaTitle = `Ontario Highway 8`;
+		let gaDisplayTitle = `"Ontario Highway 8"`;
+		let gaSubpageWikicode =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+}}
+`;
+		let output =
+`=====Actors, directors, models, performers, and celebrities=====
+{{#invoke:Good Articles|subsection|
+"[[Ontario Highway 8]]"
 }}
 `;
 		expect(wg.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);

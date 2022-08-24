@@ -613,7 +613,7 @@ __TOC__`;
 	 */
 	removeGAStatusFromWikiprojectBanners(wikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-		return wikicode.replace(/(\{\{WikiProject [^\}]*\|\s*class\s*=\s*)([^\}\|\s]*)/gi, '$1');
+		return wikicode.replace(/(\|\s*class\s*=\s*)([^\}\|\s]*)/gi, '$1');
 	}
 
 	/**

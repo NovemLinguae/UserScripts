@@ -6,7 +6,8 @@
 if( jQuery !== undefined && mediaWiki !== undefined ) {
 	function insertVETab() {
 		// Insert Edit tab at top of page
-		let htmlToInsert = '<li id="ca-ve-edit" class="collapsible"><a href="/w/index.php?title='+articleName+'&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">VEdit</a></li>';
+		let htmlClass = mw.config.get('skin') === 'vector-2022' ? 'mw-list-item' : 'collapsible';
+		let htmlToInsert = `<li id="ca-ve-edit" class="${htmlClass}"><a href="/w/index.php?title=${articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">VEdit</a></li>`;
 		$('#ca-edit').before(htmlToInsert);
 		$('#ca-ve-edit').show();
 	}

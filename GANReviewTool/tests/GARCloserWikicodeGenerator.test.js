@@ -526,6 +526,72 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 }}`;
 		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
 	});
+
+	it(`should handle {{football|class=GA`, () => {
+		let garPageTitle = `Talk:Sudan women's national football team/GA3`;
+		let talkPageTitle = `Talk:Sudan women's national football team`;
+		let wikicode = 
+`{{GAR/link|16:08, 2 July 2022 (UTC)|page=3|GARpage=1|status= }}
+{{ArticleHistory
+|action1=GAN
+|action1date=06:39, 9 June 2012
+|action1link=Talk:Sudan women's national football team/GA1
+|action1result=not listed
+|action1oldid=496005773
+
+|action2=GAN
+|action2date=17:10, 17 June 2012
+|action2link=Talk:Sudan women's national football team/GA2
+|action2result=listed
+|action2oldid=498047652
+
+|dykdate=29 April 2012
+|dykentry=... that while [[FIFA]] inquired about the creation of a '''[[Sudan women's national football team|Sudanese women's national football team]]''', the Islamic Fiqh Council in [[Sudan]] issued a [[fatwa]] forbidding it?
+|nompage=Template:Did you know nominations/Sudan women's national football team
+|currentstatus=GA
+|topic=sports
+}}
+{{WikiProjectBannerShell|blp=no|1=
+{{WikiProject Africa|class=GA|importance=MID|Sudan=yes|Sudan-importance=low}}
+{{WikiProject Women's sport|class=GA|importance=mid|footy=yes}}
+{{football|class=GA|importance=mid|Africa=yes|National=Mid|women=High}}
+}}
+{{British English}}
+`;
+		let output = 
+`{{ArticleHistory
+|action1=GAN
+|action1date=06:39, 9 June 2012
+|action1link=Talk:Sudan women's national football team/GA1
+|action1result=not listed
+|action1oldid=496005773
+
+|action2=GAN
+|action2date=17:10, 17 June 2012
+|action2link=Talk:Sudan women's national football team/GA2
+|action2result=listed
+|action2oldid=498047652
+
+|dykdate=29 April 2012
+|dykentry=... that while [[FIFA]] inquired about the creation of a '''[[Sudan women's national football team|Sudanese women's national football team]]''', the Islamic Fiqh Council in [[Sudan]] issued a [[fatwa]] forbidding it?
+|nompage=Template:Did you know nominations/Sudan women's national football team
+|topic=sports
+
+|action3 = GAR
+|action3date = ~~~~~
+|action3link = Talk:Sudan women's national football team/GA3
+|action3result = delisted
+|currentstatus = DGA
+}}
+{{WikiProjectBannerShell|blp=no|1=
+{{WikiProject Africa|class=|importance=MID|Sudan=yes|Sudan-importance=low}}
+{{WikiProject Women's sport|class=|importance=mid|footy=yes}}
+{{football|class=|importance=mid|Africa=yes|National=Mid|women=High}}
+}}
+{{British English}}
+`;
+		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+	});
 });
 
 describe('processDelistForArticle(wikicode)', () => {

@@ -112,6 +112,8 @@ export class GANReviewWikicodeGenerator {
 			return `[[${gaTitle}]]\n`;
 		} else if ( gaDisplayTitle === `''${gaTitle}''` ) { // put italics on the outside, when possible
 			return `''[[${gaTitle}]]''\n`;
+		} else if ( gaDisplayTitle === `"${gaTitle}"` ) { // put double quotes on the outside, when possible
+			return `"[[${gaTitle}]]"\n`;
 		} else {
 			return `[[${gaTitle}|${gaDisplayTitle}]]\n`;
 		}
@@ -263,6 +265,23 @@ export class GANReviewWikicodeGenerator {
 	addWikicodeAfterTemplates(wikicode, templates, codeToAdd) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
+		/* Started to write a lexer that would solve the edge case of putting the {{GA}} template too low when the [[MOS:TALKORDER]] is incorrect. It's a lot of work though. Pausing for now.
+
+		// Note: the MOS:TALKORDER $templates variable is fed to us as a parameter
+		let whitespace = ["\t", "\n", " "];
+		let lastTemplateNameBuffer = '';
+		let currentTemplateNameBuffer = '';
+		let templateNestingCount = 0;
+		for ( i = 0; i < wikicode.length; i++ ) {
+			let toCheck = wikicode.slice(i);
+			if ( toCheck.startsWith('{{') {
+				templateNestingCount++;
+			} else if ( toCheck.startsWith('}}') ) {
+				templateNestingCount--;
+			}
+			// TODO: need to build the templateNameBuffer. need to look for termination characters | or }
+		*/
+
 		let insertPosition = 0;
 		for ( let template of templates ) {
 			// TODO: handle nested templates
@@ -301,7 +320,13 @@ export class GANReviewWikicodeGenerator {
 	changeWikiProjectArticleClassToGA(talkWikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
-		return talkWikicode.replace(/(\|\s*class\s*=\s*)(a|b|c|start|stub|list|fa|fl)?(?=[\}\s\|])/gi, '$1GA');
+		// replace existing |class=
+		talkWikicode = talkWikicode.replace(/(\|\s*class\s*=\s*)(a|b|c|start|stub|list|fa|fl)?(?=[\}\s\|])/gi, '$1GA');
+
+		// add |class= to {{WikiProject}} templates containing no parameters
+		talkWikicode = talkWikicode.replace(/(\{\{WikiProject [^\|\}]+)(\}\})/gi, `$1|class=GA$2`);
+
+		return talkWikicode;
 	}
 
 	/**
