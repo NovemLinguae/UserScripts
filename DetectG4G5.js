@@ -146,7 +146,8 @@ $(async function() {
 	}
 
 	if ( await afdExists(title) && ! await hasAFDTemplate(title) ) {
-		displayWarning('<span style="font-weight:bold">CSD G4:</span> There is an AFD page for this article. It may qualify for CSD G4.');
+		let href = mw.config.get('wgArticlePath').replace('$1', 'Wikipedia:Articles_for_deletion/' + title);
+		displayWarning(`<span style="font-weight:bold">CSD G4:</span> There is an <a href="${href}">AFD page</a> for this article. It may qualify for CSD G4.`);
 	}
 
 	let pageCreator = await getPageCreator(title);

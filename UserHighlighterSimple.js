@@ -7,10 +7,10 @@ class UserHighlighterSimple {
 		mw.util.addCSS(`
 			.plainlinks .${htmlClass}.external,
 			.${htmlClass},
-			.${htmlClass} span,
 			.${htmlClass} b,
 			.${htmlClass} big,
-			.${htmlClass} font {
+			.${htmlClass} font,
+			.${htmlClass} span {
 				${cssDeclaration}
 			}
 		`);
@@ -37,20 +37,20 @@ class UserHighlighterSimple {
 
 	setHighlightColors() {
 		// Highest specificity goes on bottom. So if you want an admin+steward to be highlighted steward, place the steward CSS below the admin CSS in this section.
-		this.addCSS('override-signature-colors', `
+		this.addCSS('UHS-override-signature-colors', `
 			color: #0645ad !important;
 			background-color: transparent !important;
 			background: unset !important;
 		`);
-		mw.util.addCSS(`.userhighlighter_noperms { border: 1px solid black !important; }`);
-		this.addCSS('userhighlighter_excon', `background-color: lightgray !important;`);
-		this.addCSS('userhighlighter_tenk', `background-color: #9c9 !important;`);
-		this.addCSS('userhighlighter_npruser', `background-color: #99f !important;`);
-		this.addCSS('userhighlighter_formeradmin', `background-color: #D3AC8B !important;`);
-		this.addCSS('userhighlighter_sysop', `background-color: #9ff !important;`);
-		this.addCSS('userhighlighter_bureaucrat', `background-color: orange !important; color: #0645ad !important;`);
-		this.addCSS('userhighlighter_arbcom', `background-color: #FF3F3F !important; color: white !important;`);
-		this.addCSS('userhighlighter_steward', `background-color: hotpink !important; color: #0645ad !important;`);
+		mw.util.addCSS(`.UHS-no-permissions { border: 1px solid black !important; }`);
+		this.addCSS('UHS-500edits-bot-trustedIP', `background-color: lightgray !important;`);
+		this.addCSS('UHS-10000edits', `background-color: #9c9 !important;`);
+		this.addCSS('UHS-new-page-reviewer', `background-color: #99f !important;`);
+		this.addCSS('UHS-former-administrator', `background-color: #D3AC8B !important;`);
+		this.addCSS('UHS-administrator', `background-color: #9ff !important;`);
+		this.addCSS('UHS-bureaucrat', `background-color: orange !important; color: #0645ad !important;`);
+		this.addCSS('UHS-arbitration-committee', `background-color: #FF3F3F !important; color: white !important;`);
+		this.addCSS('UHS-steward-wmf-founder', `background-color: hotpink !important; color: #0645ad !important;`);
 	}
 
 	async getUsernames() {
@@ -82,7 +82,7 @@ class UserHighlighterSimple {
 	}
 
 	hasHREF(url) {
-		return url;
+		return Boolean(url);
 	}
 
 	isAnchor(url) {
@@ -110,12 +110,12 @@ class UserHighlighterSimple {
 		}
 	}
 
-	inSpecialUserOrUserTalk() {
+	inSpecialUserOrUserTalkNamespace() {
 		return $.inArray(this.mwtitle.getNamespaceId(), [-1,2,3]) >= 0;
 	}
 
-	linksToUser() {
-		var url = this.link.attr('href');
+	linksToAUser() {
+		var url = this.$link.attr('href');
 		
 		if ( ! this.hasHREF(url) || this.isAnchor(url) || ! this.isHTTPorHTTPS(url) ) {
 			return false;
@@ -127,7 +127,8 @@ class UserHighlighterSimple {
 		// Example: The pagination links, diff links, and revision links on the Special:Contributions page
 		// Those all have "query strings" such as "&oldid=1003511328"
 		// Exception: Users without a user page (red link) need to be highlighted
-		let isRedLinkUserPage = url.startsWith('/w/index.php?title=User:') && url.endsWith('&action=edit&redlink=1');
+		// Exception: The uncommon case of a missing user talk page should also be highlighted (renamed users)
+		let isRedLinkUserPage = url.startsWith('/w/index.php?title=User') && url.endsWith('&action=edit&redlink=1');
 		if ( ! $.isEmptyObject(uri.query) && ! isRedLinkUserPage ) {
 			return false;
 		}
@@ -142,7 +143,7 @@ class UserHighlighterSimple {
 		let title = this.getTitle(url, uri);
 		this.mwtitle = new mw.Title(title);
 		
-		if ( ! this.inSpecialUserOrUserTalk() ) {
+		if ( ! this.inSpecialUserOrUserTalkNamespace() ) {
 			return false;
 		}
 
@@ -160,40 +161,40 @@ class UserHighlighterSimple {
 
 	checkForPermission(listOfUsernames, className, descriptionForHover) {
 		if ( listOfUsernames[this.user] == 1 ) {
-			this.addClassAndTitle(className, descriptionForHover);
+			this.addClassAndHoverText(className, descriptionForHover);
 		}
 	}
 
-	addClassAndTitle(className, descriptionForHover) {
-		this.link.addClass(this.link.attr('class') + ` ${className}`);
+	addClassAndHoverText(className, descriptionForHover) {
+		this.$link.addClass(this.$link.attr('class') + ` ${className}`);
 
-		if ( this.link.attr("title") == null || this.link.attr("title").startsWith("User:") ) {
-			this.link.attr("title", descriptionForHover);
+		if ( this.$link.attr("title") == null || this.$link.attr("title").startsWith("User:") ) {
+			this.$link.attr("title", descriptionForHover);
 		}
 
 		this.hasAdvancedPermissions = true;
 	}
 
-	addClassAndTitleIfNeeded() {
+	addClassesAndHoverTextToLinkIfNeeded() {
 		// in addition to folks in the global group, highlight anybody with "WMF" in their name, case insensitive. this should not generate false positives because WMF is on the username blacklist.
 		if ( this.user.match(/WMF/i) ) {
-			this.addClassAndTitle('userhighlighter_steward', 'WMF, Steward, or Founder');
+			this.addClassAndHoverText('UHS-steward-wmf-founder', 'WMF, Steward, or Founder');
 		}
 
-		this.checkForPermission(this.global, 'userhighlighter_steward', 'WMF, Steward, or Founder');
-		this.checkForPermission(this.bureaucrats, 'userhighlighter_bureaucrat', 'Bureaucrat');
-		this.checkForPermission(this.arbcom, 'userhighlighter_arbcom', 'Arbitration Committee member');
-		this.checkForPermission(this.admins, 'userhighlighter_sysop', 'Admin');
-		this.checkForPermission(this.formeradmins, 'userhighlighter_formeradmin', 'Former Admin');
-		this.checkForPermission(this.newPageReviewers, 'userhighlighter_npruser', 'New page reviewer');
-		this.checkForPermission(this.tenThousandEdits, 'userhighlighter_tenk', 'More than 10,000 edits');
-		this.checkForPermission(this.extendedConfirmed, 'userhighlighter_excon', 'Extended confirmed');
+		this.checkForPermission(this.global, 'UHS-steward-wmf-founder', 'WMF, Steward, or Founder');
+		this.checkForPermission(this.bureaucrats, 'UHS-bureaucrat', 'Bureaucrat');
+		this.checkForPermission(this.arbcom, 'UHS-arbitration-committee', 'Arbitration Committee member');
+		this.checkForPermission(this.admins, 'UHS-administrator', 'Admin');
+		this.checkForPermission(this.formeradmins, 'UHS-former-administrator', 'Former Admin');
+		this.checkForPermission(this.newPageReviewers, 'UHS-new-page-reviewer', 'New page reviewer');
+		this.checkForPermission(this.tenThousandEdits, 'UHS-10000edits', 'More than 10,000 edits');
+		this.checkForPermission(this.extendedConfirmed, 'UHS-500edits-bot-trustedIP', 'Extended confirmed');
 
 		// If they have no perms, just draw a box around their username, to make it more visible.
-		if ( ! this.hasAdvancedPermissions && this.link.hasClass('userlink') ) {
-			this.link.addClass( this.link.attr('class') + " userhighlighter_noperms" );
-			if (this.link.attr("title") == null || this.link.attr("title").startsWith("User:")) {
-				this.link.attr("title", "Less than 500 edits");
+		if ( ! this.hasAdvancedPermissions && this.$link.hasClass('userlink') ) {
+			this.$link.addClass( this.$link.attr('class') + " UHS-no-permissions" );
+			if (this.$link.attr("title") == null || this.$link.attr("title").startsWith("User:")) {
+				this.$link.attr("title", "Less than 500 edits");
 			}
 		}
 	}
@@ -202,21 +203,21 @@ class UserHighlighterSimple {
 		await this.getUsernames();
 		this.setHighlightColors();
 		let that = this;
-		$('#article a, #bodyContent a, #mw_contentholder a').each(function(index, linkraw){
+		$('#article a, #bodyContent a, #mw_contentholder a').each(function(index, element){
 			try {
-				that.link = $(linkraw);
-				if ( ! that.linksToUser() ) {
+				that.$link = $(element);
+				if ( ! that.linksToAUser() ) {
 					return;
 				}
 				that.user = that.getUserName();
 				that.hasAdvancedPermissions = false;
-				that.addClassAndTitleIfNeeded();
+				that.addClassesAndHoverTextToLinkIfNeeded();
 				// If the user has any advanced perms, they are likely to have a signature, so be aggressive about overriding the background and foreground color. That way there's no risk their signature is unreadable due to background color and foreground color being too similar. Don't do this for users without advanced perms... being able to see a redlinked username is useful.
 				if ( that.hasAdvancedPermissions ) {
-					that.link.addClass(that.link.attr('class') + ' override-signature-colors');
+					that.$link.addClass(that.$link.attr('class') + ' UHS-override-signature-colors');
 				}
 			} catch(e) {
-				console.error('UserHighlighterSimple link parsing error:', e.message, that.link);
+				console.error('UserHighlighterSimple link parsing error:', e.message, that.$link);
 			}
 		});
 	}

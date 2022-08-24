@@ -3,10 +3,10 @@
 
 /*
 Adds some buttons (Cite iNaturalist, Cite WoRMS, Cite NCBI, Cite Other) to the edit screen of Template:Taxonomy subpages, and pre-fills it assuming it is a genus. Helpful for quickly creating Template:Taxonomy subpages, which is useful when getting {{Speciesbox}} to work with new species.
-
-TODO:
-- fix bug where button doesn't work sometimes when clicked
 */
+
+// TODO: fix bug where button doesn't work sometimes when clicked
+// TODO: if no talk page, create talk page and add correct WikiProject templates: amphibians and reptiles, animals, arthropods, beetles, birds, diptera, fishes, fungi, gastropods, insects, lepidoptera, mammals, marine life, microbiology, paleontology, plants
 
 /** Has to be global for HTML onClick="addCite()" to work */
 function addCite(website) {

@@ -163,6 +163,12 @@ leading
 underpin
 exemplify
 exemplified
+fully integrated
+fully-integrated
+highly specialized
+award-winning
+leader in
+leading
 
 	`;
 	
