@@ -211,7 +211,7 @@ class NPPSG {
 
 		// https://www.washingtonpost.com/monkey-cage/ is yellow, washingtonpost.com main domain is green. delete all, then add back as green
 		this.deleteAll('washingtonpost.com');
-		this.sources.yellow.push('washingtonpost.com');
+		this.sources.green.push('washingtonpost.com');
 		
 		// cse.google.com is a false posiitive from a "useful links" section. delete.
 		this.deleteAll('cse.google.com');
@@ -223,6 +223,7 @@ class NPPSG {
 		
 		// can't add to NPPSG because of spam blacklist. add manually here.
 		this.sources.red.push('breitbart.com', 'infowars.com', 'filmreference.com', 'verywellfamily.com', 'verywellhealth.com', 'verywellmind.com', 'nairaland.com', 'globalresearch.ca', 'rocketrobinsoccerintoronto.com', 'lulu.com', 'examiner.com', 'famousbirthdays.com', 'almanachdegotha.org', 'swarajyamag.com', 'opindia.com', 'rightlog.in', 'tfipost.com', 'southfront.org', 'thereligionofpeace.com', 'asianwiki.com', 'metal-observer.com', 'metalwani.com');
+		this.sources.preprint.push('vixra.org');
 		
 		// make Wikipedia purple. if Wikipedia link present, need to replace with sources from the corresponding article
 		//this.deleteAll('Wikipedia', 'wikipedia.org');
@@ -293,38 +294,17 @@ class NPPSG {
 	}
 }
 
-window.addEventListener('DOMContentLoaded', (e) => {
-	let input = document.getElementById('input');
-	let execute = document.getElementById('execute');
-	let output = document.getElementById('output');
-	
+window.addEventListener('DOMContentLoaded', async function (e) {
+	let inputTextArea = document.getElementById('input');
+	let executeButton = document.getElementById('execute');
+	let outputTextArea = document.getElementById('output');
+		
+	// inputTextArea.innerHTML should already have our sources loaded in it, grabbed from two pages onwiki. PHP does this for us. Had to do it in PHP because CORS policy does not let us do third party AJAX in JavaScript.
+
 	let nppsg1 = new NPPSG();
-	
-	// load NPPSG.txt into input box
-	try {
-		let fileToLoad = './NPPSG.txt';
-		let xmlhttp = new XMLHttpRequest();
-		xmlhttp.open('GET', fileToLoad, false);
-		xmlhttp.send();
-		input.innerHTML = xmlhttp.responseText;
-	} catch(DOMException) {
-		input.innerHTML = "Error loading file. Maybe related to filepath or CORS?";
-	}
-	
-	// load MySources.txt into input box
-	try {
-		let fileToLoad = './MySources.txt';
-		let xmlhttp = new XMLHttpRequest();
-		xmlhttp.open('GET', fileToLoad, false);
-		xmlhttp.send();
-		input.innerHTML += "\n\n" + xmlhttp.responseText;
-	} catch(DOMException) {
-		input.innerHTML = "Error loading file. Maybe related to filepath or CORS?";
-	}
-	
-	execute.addEventListener('click', function(e) {
-		output.value = nppsg1.getOutput(input.value);
+	executeButton.addEventListener('click', function(e) {
+		outputTextArea.value = nppsg1.getOutput(inputTextArea.value);
 	});
 	
-	execute.dispatchEvent(new Event('click'));
+	executeButton.dispatchEvent(new Event('click'));
 });
