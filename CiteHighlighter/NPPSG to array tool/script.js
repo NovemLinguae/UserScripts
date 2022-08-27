@@ -208,6 +208,10 @@ class NPPSG {
 		// huffpost is all 3 colors. override to yellow
 		this.deleteAll('HuffPost', 'huffpost.com', 'huffingtonpost.com');
 		this.sources.yellow.push('HuffPost', 'huffpost.com', 'huffingtonpost.com');
+
+		// https://www.washingtonpost.com/monkey-cage/ is yellow, washingtonpost.com main domain is green. delete all, then add back as green
+		this.deleteAll('washingtonpost.com');
+		this.sources.yellow.push('washingtonpost.com');
 		
 		// cse.google.com is a false posiitive from a "useful links" section. delete.
 		this.deleteAll('cse.google.com');
