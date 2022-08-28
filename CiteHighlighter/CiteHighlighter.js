@@ -57,7 +57,7 @@ class CiteHighlighter {
 		new MutationObserver(function (mutations) {
 			var el = document.getElementsByClassName('rt-tooltip')[0];
 			if (el) {
-				for (let color in colors) {
+				for (let color in this.colors) {
 					if (typeof sources[color] === 'undefined') continue;
 
 					for (let source of sources[color]) {
