@@ -52,30 +52,6 @@ class CiteHighlighter {
 		return wikitext;
 	}
 
-	/** Observe and highlight popups created by the gadget Reference Tooltips. */
-	observeAndAddClassesToTooltips() {
-		new MutationObserver(function (mutations) {
-			var el = document.getElementsByClassName('rt-tooltip')[0];
-			if (el) {
-				for (let color in this.colors) {
-					if (typeof sources[color] === 'undefined') continue;
-
-					for (let source of sources[color]) {
-						if (wikicode.includes(source) || source === 'nih.gov' || source === 'twitter.com') {
-							if (source.includes('.') && !source.includes(' ')) {
-								$(el).has(`a[href*="${source.toLowerCase()}"]`).addClass('cite-highlighter-' + color);
-								$(el).has(`a[href*="${source.toLowerCase()}"]`).children().first().addClass('cite-highlighter-' + color);
-							}
-						}
-					}
-				}
-			}
-		}).observe(document.body, {
-			subtree: false,
-			childList: true,
-		});
-	}
-
 	getUnreliableWords() {
 		// /(blog|blogspot|caard|\/comment|fandom|forum|preprint|railfan|thread|weebly|wix|wordpress|blockchain|crypto|innovative|podcast|about|newswire|release|announce|acquire)/gm
 		return [
@@ -220,7 +196,7 @@ class CiteHighlighter {
 		}
 	}
 
-	writeCSSForEachColor() {
+	writeCSS() {
 		for ( let key in this.colors ) {
 			mw.util.addCSS('.cite-highlighter-' + key + ' {background-color: ' + this.colors[key] + ';}');
 			mw.util.addCSS('.rt-tooltipTail.cite-highlighter-' + key + '::after {background: ' + this.colors[key] + ';}');
@@ -263,6 +239,30 @@ class CiteHighlighter {
 		}
 	}
 
+	/** Observe and highlight popups created by the gadget Reference Tooltips. */
+	observeAndAddClassesToTooltips() {
+		new MutationObserver(function (mutations) {
+			var el = document.getElementsByClassName('rt-tooltip')[0];
+			if (el) {
+				for (let color in this.colors) {
+					if (typeof sources[color] === 'undefined') continue;
+
+					for (let source of sources[color]) {
+						if (wikicode.includes(source) || source === 'nih.gov' || source === 'twitter.com') {
+							if (source.includes('.') && !source.includes(' ')) {
+								$(el).has(`a[href*="${source.toLowerCase()}"]`).addClass('cite-highlighter-' + color);
+								$(el).has(`a[href*="${source.toLowerCase()}"]`).children().first().addClass('cite-highlighter-' + color);
+							}
+						}
+					}
+				}
+			}
+		}).observe(document.body, {
+			subtree: false,
+			childList: true,
+		});
+	}
+	
 	/**
 	  * Be more aggressive with this list of words. Doesn't have to be the domain name. Can be
 	  * anywhere in the URL. Example unreliableWord: blog.
@@ -282,29 +282,19 @@ class CiteHighlighter {
 	async execute() {
 		this.sources = await this.getListOfSourcesAndRatings();
 		this.unreliableWordsForOrangeHighlighting = this.getUnreliableWords();
-
 		this.setConfigVariableDefaultsIfNeeded();
-
 		this.articleTitle = mw.config.get('wgPageName');
 		if ( this.isSlowPage() ) {
 			return;
 		}
-
 		this.highlightSourceListsMoreAggressively();
 		this.highlightDraftsMoreAggressively();
-
 		this.preventWikipediaFalsePositives();
-		
 		this.colors = this.getColors();
-
-		this.writeCSSForEachColor();
-		
+		this.writeCSS();
 		this.wikicode = await this.getWikicode(this.articleTitle);
-
 		this.addHTMLClassesToRefs();
-
 		this.addHTMLClassesForUnreliableWords();
-
 		this.observeAndAddClassesToTooltips();
 	}
 }
