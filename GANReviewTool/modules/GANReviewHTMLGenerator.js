@@ -1,5 +1,8 @@
 export class GANReviewHTMLGenerator {
 	getHTML(gaTitle) {
+		let defaultDisplayText = this.getDefaultDisplayText(gaTitle);
+		defaultDisplayText = this.escapeHtml(defaultDisplayText);
+
 		return `
 <style>
 	#GANReviewTool {
@@ -731,7 +734,7 @@ export class GANReviewHTMLGenerator {
 					Parentheses at the end should not be formatted: <code>''Revolver'' (Beatles album)</code><br />
 					Artwork, poetry, etc. may also require special formatting<br />
 					More info at [[<a href="/wiki/Wikipedia:Manual_of_Style/Titles_of_works#Italics">MOS:TITLE#Italics</a>]] and [[<a href="/wiki/Wikipedia:Manual_of_Style/Titles_of_works#Quotation_marks">MOS:TITLE#Quotation marks</a>]]<br />
-					<input type="text" name="GANReviewTool-DisplayWikicode" value="${this.escapeHtml(gaTitle)}" />
+					<input type="text" name="GANReviewTool-DisplayWikicode" value="${defaultDisplayText}" />
 				</p>
 			</div>
 			<!-- endif -->
@@ -770,5 +773,89 @@ export class GANReviewHTMLGenerator {
 			.replace(/>/g, "&gt;")
 			.replace(/"/g, "&quot;")
 			.replace(/'/g, "&#039;");
+	}
+
+	getDefaultDisplayText(gaTitle) {
+		let endsWithParentheticalDisambiguator = gaTitle.match(/^.+ \(.+\)$/);
+		if ( ! endsWithParentheticalDisambiguator ) {
+			return gaTitle;
+		}
+		
+		let suffixesThatTriggerItalics = [
+			'album',
+			'book',
+			'comic',
+			'comics',
+			'film series',
+			'film',
+			'magazine',
+			'manga',
+			'novel',
+			'painting',
+			'poem',
+			'sculpture',
+			'season 1',
+			'season 10',
+			'season 2',
+			'season 3',
+			'season 4',
+			'season 5',
+			'season 6',
+			'season 7',
+			'season 8',
+			'season 9',
+			'series 1',
+			'series 10',
+			'series 2',
+			'series 3',
+			'series 4',
+			'series 5',
+			'series 6',
+			'series 7',
+			'series 8',
+			'series 9',
+			'soundtrack',
+		];
+		let suffixesThatTriggerDoubleQuotes = [
+			'song',
+		];
+		let suffixesThatTriggerDoubleQuotesAndItalics = [
+			'30 Rock',
+			'Family Guy',
+			'Fringe',
+			'Glee',
+			'Lost',
+			'Parks and Recreation',
+			'South Park',
+			'Star Trek: Enterprise',
+			'Star Trek: The Next Generation',
+			'The Office',
+			'The Simpsons',
+			'The Walking Dead',
+			'The X-Files'
+		];
+
+		let firstHalf = gaTitle.match(/^(.+) \((.+)\)$/)[1];
+		let secondHalf = gaTitle.match(/^(.+) \((.+)\)$/)[2];
+		
+		for ( let suffixToCheck of suffixesThatTriggerItalics ) {
+			if ( gaTitle.endsWith(suffixToCheck + ')') ) {
+				return `''${firstHalf}'' (${secondHalf})`;
+			}
+		}
+		
+		for ( let suffixToCheck of suffixesThatTriggerDoubleQuotes ) {
+			if ( gaTitle.endsWith(suffixToCheck + ')') ) {
+				return `"${firstHalf}" (${secondHalf})`;
+			}
+		}
+		
+		for ( let suffixToCheck of suffixesThatTriggerDoubleQuotesAndItalics ) {
+			if ( gaTitle.endsWith(suffixToCheck + ')') ) {
+				return `"${firstHalf}" (''${secondHalf}'')`;
+			}
+		}
+
+		return gaTitle;
 	}
 }

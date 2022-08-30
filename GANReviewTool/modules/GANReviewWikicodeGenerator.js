@@ -320,6 +320,8 @@ export class GANReviewWikicodeGenerator {
 	changeWikiProjectArticleClassToGA(talkWikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
+		// TODO: need to rewrite this to handle the following test case: {{WikiProject Energy|importance=Mid}}. Should add |rating=GA
+
 		// replace existing |class=
 		talkWikicode = talkWikicode.replace(/(\|\s*class\s*=\s*)(a|b|c|start|stub|list|fa|fl)?(?=[\}\s\|])/gi, '$1GA');
 
