@@ -967,6 +967,24 @@ __NOTOC__
 `;
 		expect(wg.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
+
+	test(`should throw an error if it can't find |subheading|\\n near the title`, () => {
+		let gaSubpageHeading = `=====Cue sports=====`;
+		let gaTitle = `Ontario Highway 8`;
+		let gaDisplayTitle = `"Ontario Highway 8"`;
+		let gaSubpageWikicode =
+`=====Cue sports=====
+{{#invoke:Good Articles|subsection|[[1927 World Snooker Championship]]
+[[1928 World Snooker Championship]]
+}}
+
+=====Curling=====
+{{#invoke:Good Articles|subsection|
+[[2013 Continental Cup of Curling]]
+}}
+`;
+		expect(() => {wg.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)}).toThrow();
+	});
 });
 
 describe('getFailWikicodeForGANPage(reviewWikicode)', () => {

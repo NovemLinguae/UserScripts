@@ -33,12 +33,17 @@ export class GANReviewWikicodeGenerator {
 		// find heading
 		let headingStartPosition = this.getGASubpageHeadingPosition(gaSubpageHeading, gaSubpageWikicode);
 		// now move down a bit, to the first line with an item. skip {{Further}}, {{#invoke:Good Articles|subsection|, etc.
-		headingStartPosition = this.findFirstStringAfterPosition('|subsection|\n', gaSubpageWikicode, headingStartPosition) + 13;
-		let headingEndPosition = this.findFirstStringAfterPosition('}}', gaSubpageWikicode, headingStartPosition);
+		let subsectionStartPosition = this.findFirstStringAfterPosition('|subsection|\n', gaSubpageWikicode, headingStartPosition) + 13;
+		let headingEndPosition = this.findFirstStringAfterPosition('\n}}', gaSubpageWikicode, headingStartPosition) + 1;
 		gaDisplayTitle = gaDisplayTitle.trim();
+		// Make sure we found the right start position, and not the section below.
+		if ( subsectionStartPosition > headingEndPosition ) {
+			throw new Error('getPassWikicodeForGAListPage: Unable to find |subheading|\\n');
+		}
+
 		let wikicodeToInsert = this.getWikicodeToInsert(gaTitle, gaDisplayTitle);
 		let insertPosition;
-		let startOfLine = headingStartPosition;
+		let startOfLine = subsectionStartPosition;
 		while ( startOfLine < headingEndPosition ) {
 			let endOfLine = this.findFirstStringAfterPosition('\n', gaSubpageWikicode, startOfLine);
 			let line = gaSubpageWikicode.slice(startOfLine, endOfLine);
