@@ -42,7 +42,6 @@ I have never performed a good article review, nor a good article reassessment, s
 		let output = 
 `===[[Wikipedia:Good article reassessment/NASA/1|NASA]]===
 {{atopg}}
-
 : {{al|NASA|noname=yes}} • <span class="plainlinksneverexpand">[//en.wikipedia.org/w/index.php?title=Wikipedia:Good_article_reassessment/NASA/1&action=watch Watch article reassessment page]</span> • [[Talk:NASA/GA1|Most recent review]]
 : {{subst:GAR/result|result=Keep. Great work everyone.}} ~~~~<br/>
 <!-- Please add the rationale for reassessment below this comment. Subsequent discussion should be added below, until the reassessment is closed.-->
@@ -95,6 +94,24 @@ abc
 | result = Test ~~~~
 }}
 abc
+{{abot}}
+`;
+		expect(wg.processKeepForGARPage(garPageWikicode, message, isCommunityAssessment)).toBe(output);
+	});
+
+	test(`Should trim line breaks between heading and first text`, () => {
+		let isCommunityAssessment = true;
+		let garPageWikicode = 
+`===Test===
+
+
+test2
+`;
+		let message = '';
+		let output = 
+`===Test===
+{{atopg}}
+test2
 {{abot}}
 `;
 		expect(wg.processKeepForGARPage(garPageWikicode, message, isCommunityAssessment)).toBe(output);
@@ -195,6 +212,46 @@ describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => 
 {{WikiProject United States|class=GA|importance=Mid|USMusic=yes|USMusic-importance=High}}
 {{WikiProject Rock music|class=GA|importance=high}}
 }}`;
+		expect(wg.processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+	});
+
+	it(`Should handle {{GAR/link}} not ending in \\n`, () => {
+		let garPageTitle = `Wikipedia:Good article reassessment/Proxima Centauri b/1`;
+		let talkPageTitle = `Talk:Proxima Centauri b`;
+		let wikicode =
+`{{GAR/link|10:35, 13 December 2021 (UTC)|page=3|GARpage=1|status= }}{{Talk header}}
+{{GA|16:22, 26 February 2017 (UTC)|oldid=767553501|topic=Physics and astronomy|page=2}}
+{{Vital article|class=GA|level=5|link=Wikipedia:Vital articles/Level/5/Physical sciences/Astronomy|topic=Science|subpage=Astronomy|anchor=Notable exoplanets (11 articles)}}
+{{British English Oxford spelling}}
+{{WikiProject Astronomy|class=GA|importance=mid|object=yes}}
+{{ITN talk|24 August|2016}}
+
+[[/archive 1]]
+== New study regarding life-supporting chances ==`;
+		let output =
+`{{Talk header}}
+{{Vital article|class=GA|level=5|link=Wikipedia:Vital articles/Level/5/Physical sciences/Astronomy|topic=Science|subpage=Astronomy|anchor=Notable exoplanets (11 articles)}}
+{{British English Oxford spelling}}
+{{Article history
+|topic = Physics and astronomy
+
+|action1 = GAN
+|action1date = 16:22, 26 February 2017 (UTC)
+|action1link = Talk:Proxima Centauri b/GA2
+|action1result = listed
+|action1oldid = 767553501
+
+|action2 = GAR
+|action2date = ~~~~~
+|action2link = Wikipedia:Good article reassessment/Proxima Centauri b/1
+|action2result = kept
+|currentstatus = GA
+}}
+{{WikiProject Astronomy|class=GA|importance=mid|object=yes}}
+{{ITN talk|24 August|2016}}
+
+[[/archive 1]]
+== New study regarding life-supporting chances ==`;
 		expect(wg.processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
 	});
 });
@@ -592,10 +649,87 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 `;
 		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
 	});
+
+	it(`should remove {{GAR request}}`, () => {
+		let garPageTitle = `Wikipedia:Good article reassessment/Once Upon a Time (game)/1`;
+		let talkPageTitle = `Talk:Once Upon a Time (game)`;
+		let wikicode = 
+`{{GAR/link|06:50, 15 August 2022 (UTC)|page=2|GARpage=1|status= }}
+{{Article history
+|action1=GAN
+|action1date=12:42, 27 July 2008 (UTC)
+|action1result=listed
+|action1oldid=228181192
+|currentstatus=GA
+|topic=everydaylife
+}}
+{{BTGProject|class=GA|importance=low}}
+{{GAR request}}
+
+==Release date==
+`;
+		let output = 
+`{{Article history
+|action1=GAN
+|action1date=12:42, 27 July 2008 (UTC)
+|action1result=listed
+|action1oldid=228181192
+|topic=everydaylife
+
+|action2 = GAR
+|action2date = ~~~~~
+|action2link = Wikipedia:Good article reassessment/Once Upon a Time (game)/1
+|action2result = delisted
+|currentstatus = DGA
+}}
+{{BTGProject|class=|importance=low}}
+
+==Release date==
+`;
+		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+	});
+
+	it(`should handle {{ArticleHistory}} with no space`, () => {
+		let garPageTitle = `Wikipedia:Good article reassessment/Once Upon a Time (game)/1`;
+		let talkPageTitle = `Talk:Once Upon a Time (game)`;
+		let wikicode = 
+`{{GAR/link|06:50, 15 August 2022 (UTC)|page=2|GARpage=1|status= }}
+{{ArticleHistory
+|action1=GAN
+|action1date=12:42, 27 July 2008 (UTC)
+|action1result=listed
+|action1oldid=228181192
+|currentstatus=GA
+|topic=everydaylife
+}}
+{{BTGProject|class=GA|importance=low}}
+
+==Release date==
+`;
+		let output = 
+`{{ArticleHistory
+|action1=GAN
+|action1date=12:42, 27 July 2008 (UTC)
+|action1result=listed
+|action1oldid=228181192
+|topic=everydaylife
+
+|action2 = GAR
+|action2date = ~~~~~
+|action2link = Wikipedia:Good article reassessment/Once Upon a Time (game)/1
+|action2result = delisted
+|currentstatus = DGA
+}}
+{{BTGProject|class=|importance=low}}
+
+==Release date==
+`;
+		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+	});
 });
 
 describe('processDelistForArticle(wikicode)', () => {
-	it(`Should remove {{Good article}}`, () => {
+	it(`Should remove {{Good article}} 1`, () => {
 		let wikicode =
 `{{Short description|None}}
 {{Good article}}
@@ -636,7 +770,7 @@ describe('processDelistForArticle(wikicode)', () => {
 		expect(wg.processDelistForArticle(wikicode)).toBe(output);
 	});
 
-	it(`Should remove {{Good Article}}`, () => {
+	it(`Should remove {{Good Article}} 2`, () => {
 		let wikicode =
 `{{Short description|None}}
 {{Good Article}}
@@ -688,6 +822,20 @@ describe('processDelistForArticle(wikicode)', () => {
 		let output =
 `{{Short description|None}}
 {{USmusicgenres}}`;
+		expect(wg.processDelistForArticle(wikicode)).toBe(output);
+	});
+
+	it(`Should remove extra line breaks`, () => {
+		let wikicode =
+`{{Authority control}}
+
+{{good article}}
+
+{{Use mdy dates|date=December 2014}}`;
+		let output =
+`{{Authority control}}
+
+{{Use mdy dates|date=December 2014}}`;
 		expect(wg.processDelistForArticle(wikicode)).toBe(output);
 	});
 });

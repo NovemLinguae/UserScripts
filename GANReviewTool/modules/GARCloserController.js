@@ -489,9 +489,7 @@ export class GARCloserController {
 		let wikicode = await this.getWikicode(this.parentArticle);
 		wikicode = this.wg.processDelistForArticle(wikicode);
 		this.articleRevisionID = await this.makeEdit(this.parentArticle, this.editSummary, wikicode);
-		if ( this.articleRevisionID === undefined ) {
-			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
-		}
+		// If we can't remove {{Good article}}, don't throw an error like in the other code paths, just continue. There are cases where this is desirable. For example, maybe the GA got merged and redirected, so the {{Good article}} template itself is no longer present.
 	}
 
 	/**
@@ -522,7 +520,11 @@ export class GARCloserController {
 		let namespace = this.mw.config.get('wgNamespaceNumber');
 		let isTalkNamespace = ( namespace === 1 );
 		let isGASubPage = this.isGASubPage(this.garPageTitle);
-		let couldBeIndividualReassessment = isTalkNamespace && isGASubPage;
+
+		let garPageWikicode = await this.getWikicode(this.garPageTitle);
+		let hasGARCurrentTemplate = garPageWikicode.match(/\{\{GAR\/current\}\}/i);
+
+		let couldBeIndividualReassessment = isTalkNamespace && isGASubPage && hasGARCurrentTemplate;
 
 		if ( couldBeIndividualReassessment ) {
 			parentArticle = this.getIndividualReassessmentParentArticle(this.garPageTitle);

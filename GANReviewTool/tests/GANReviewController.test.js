@@ -104,6 +104,29 @@ describe('getGATalkTitle(gaTitle)', () => {
 	});
 });
 
+describe('getGASubPageEditSummary(editSummary, detailedTopic)', () => {
+	test('should handle an h5 that contains no extra spaces', () => {
+		let editSummary = `promote [[Atari Games Corp. v. Oman]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])`;
+		let detailedTopic = `=====Video game history and development=====`;
+		let output = '/* Video game history and development */ promote [[Atari Games Corp. v. Oman]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
+		expect(controller.getGASubPageEditSummary(editSummary, detailedTopic)).toBe(output);
+	});
+
+	test('should handle an h5 that contains extra spaces', () => {
+		let editSummary = `promote [[Atari Games Corp. v. Oman]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])`;
+		let detailedTopic = `===== Video game history and development =====`;
+		let output = '/* Video game history and development */ promote [[Atari Games Corp. v. Oman]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
+		expect(controller.getGASubPageEditSummary(editSummary, detailedTopic)).toBe(output);
+	});
+
+	test('should strip out italics', () => {
+		let editSummary = `promote [[Rock and Hard Place]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])`;
+		let detailedTopic = `=====''Better Call Saul''=====`;
+		let output = '/* Better Call Saul */ promote [[Rock and Hard Place]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
+		expect(controller.getGASubPageEditSummary(editSummary, detailedTopic)).toBe(output);
+	});
+});
+
 /*
 
 // Not working yet

@@ -177,7 +177,8 @@ export class GANReviewController {
 		let gaDisplayTitle = this.$(`[name="GANReviewTool-DisplayWikicode"]`).val();
 		let gaSubpageWikicode = await this.getWikicode(gaSubpageLongTitle);
 		gaSubpageWikicode = this.wg.getPassWikicodeForGAListPage(this.detailedTopic, gaSubpageWikicode, this.gaTitle, gaDisplayTitle);
-		this.gaRevisionID = await this.makeEdit(gaSubpageLongTitle, this.editSummary, gaSubpageWikicode);
+		let gaSubPageEditSummary = this.getGASubPageEditSummary(this.editSummary, this.detailedTopic);
+		this.gaRevisionID = await this.makeEdit(gaSubpageLongTitle, gaSubPageEditSummary, gaSubpageWikicode);
 	}
 
 	/**
@@ -440,5 +441,24 @@ export class GANReviewController {
 		} else {
 			return 'Talk:' + gaTitle;
 		}
+	}
+
+	/**
+	 * @param {string} detailedTopic The heading name, with leading and trailing === to denote it as a heading
+	 * @private
+	 */
+	getGASubPageEditSummary(editSummary, detailedTopic) {
+		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+
+		// remove heading syntax == and trim
+		detailedTopic = detailedTopic.match(/={2,6} ?(.+?) ?={2,6}/)[1];
+
+		// remove '' style formatting, this should not go in the anchor. #''Test'' should be #Test
+		detailedTopic = detailedTopic.replace(/'{2,}/g, '');
+		
+		// prepend /* heading */
+		editSummary = `/* ${detailedTopic} */ ${editSummary}`;
+
+		return editSummary;
 	}
 }

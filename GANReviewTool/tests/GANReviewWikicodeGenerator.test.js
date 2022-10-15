@@ -184,6 +184,7 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 	});
 
 	/*
+	// TODO:
 	test(`Should change {{WikiProject}} template with importance parameters but no class parameters to include |class=GA`, () => {
 		let talkWikicode =
 `{{GA nominee|17:35, 8 June 2022 (UTC)|nominator=[[User:Underclass King|Underclass King]] ([[User talk:Underclass King|talk]])|page=1|subtopic=Television|status=onreview|note=}}
@@ -200,6 +201,7 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
 	});
 
+	// TODO:
 	test(`When the [[MOS:TALKORDER]] of the page is wrong, err on the side of placing {{GA}} higher`, () => {
 		let talkWikicode =
 `{{GA nominee|20:56, 20 August 2022 (UTC)|nominator=[[User:Aoidh|Aoidh]] ([[User talk:Aoidh|talk]])|page=1|subtopic=Computing and engineering|status=onhold|note=}}
@@ -225,7 +227,38 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 `;
 		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
 	});
-	*/
+
+	// TODO:
+	test(`Should create {{Article history}} when {{Failed GA}} is present, for pass`, () => {
+		let talkWikicode =
+`{{GA nominee|19:38, 1 September 2022 (UTC)|nominator=[[User:ChessEric|ChessEric]] ([[User talk:ChessEric|talk]] <b>·</b> [[Special:Contribs/ChessEric|contribs]])|page=2|subtopic=Earth sciences|status=onhold|note=}}
+{{FailedGA|01:59, 26 August 2022 (UTC)|topic=Earth sciences|page=1}}
+{{WikiProject Weather |class=C |importance=Low |thunderstorms-and-tornadoes-task-force=yes}}
+
+{{Talk:Tornado outbreak of June 19, 1951/GA1}}`;
+		let reviewTitle = `Talk:Tornado outbreak of June 19, 1951/GA2`;
+		let gaSubpageShortTitle = `Natural sciences`;
+		let output =
+`{{Article history
+|topic = Natural sciences
+|currentstatus = GA
+
+|action1 = GAN
+|action1date = 01:59, 26 August 2022 (UTC)
+|action1link = Talk:Tornado outbreak of June 19, 1951/GA1
+|action1result = failed
+
+|action2 = GAN
+|action2date = ~~~~~
+|action2link = Talk:Tornado outbreak of June 19, 1951/GA2
+|action2result = listed
+}}
+{{WikiProject Weather |class=GA |importance=Low |thunderstorms-and-tornadoes-task-force=yes}}
+
+{{Talk:Tornado outbreak of June 19, 1951/GA1}}`;
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
+	});
+*/
 });
 
 describe('getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)', () => {
@@ -1059,6 +1092,39 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 `;
 		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
 	});
+
+/*
+	// TODO: likely need to create an ArticleHistoryCreator class, and run it on every talk page
+	test(`Should create {{Article history}} when {{Failed GA}} is present, for fail`, () => {
+		let talkWikicode =
+`{{GA nominee|19:38, 1 September 2022 (UTC)|nominator=[[User:ChessEric|ChessEric]] ([[User talk:ChessEric|talk]] <b>·</b> [[Special:Contribs/ChessEric|contribs]])|page=2|subtopic=Earth sciences|status=onhold|note=}}
+{{FailedGA|01:59, 26 August 2022 (UTC)|topic=Earth sciences|page=1}}
+{{WikiProject Weather |class=C |importance=Low |thunderstorms-and-tornadoes-task-force=yes}}
+
+{{Talk:Tornado outbreak of June 19, 1951/GA1}}`;
+		let reviewTitle = `Talk:Tornado outbreak of June 19, 1951/GA2`;
+		let gaSubpageShortTitle = `Natural sciences`;
+		let output =
+`{{Article history
+|topic = Natural sciences
+|currentstatus = FGAN
+
+|action1 = GAN
+|action1date = 01:59, 26 August 2022 (UTC)
+|action1link = Talk:Tornado outbreak of June 19, 1951/GA1
+|action1result = failed
+
+|action2 = GAN
+|action2date = ~~~~~
+|action2link = Talk:Tornado outbreak of June 19, 1951/GA2
+|action2result = failed
+}}
+{{WikiProject Weather |class=GA |importance=Low |thunderstorms-and-tornadoes-task-force=yes}}
+
+{{Talk:Tornado outbreak of June 19, 1951/GA1}}`;
+		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
+	});
+*/
 });
 
 describe('getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)', () => {

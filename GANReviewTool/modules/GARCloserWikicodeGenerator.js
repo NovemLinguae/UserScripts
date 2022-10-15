@@ -90,7 +90,8 @@ __TOC__`;
 
 	processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-		wikicode = this.removeTemplate('GAR/link', wikicode);
+		wikicode = this.removeTemplate('GAR/link', wikicode); // "this article is undergoing a GAR"
+		wikicode = this.removeTemplate('GAR request', wikicode); // "maybe this article needs a GAR"
 		wikicode = this.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode);
 		wikicode = this.updateArticleHistory('delist', wikicode, garPageTitle);
 		wikicode = this.removeGAStatusFromWikiprojectBanners(wikicode);
@@ -99,9 +100,16 @@ __TOC__`;
 
 	processDelistForArticle(wikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-		wikicode = wikicode.replace(/\{\{ga icon\}\}\n?/i, '');
-		wikicode = wikicode.replace(/\{\{ga article\}\}\n?/i, '');
-		wikicode = wikicode.replace(/\{\{good article\}\}\n?/i, '');
+		let gaTemplateNames = ['ga icon', 'ga article', 'good article'];
+		for ( let templateName of gaTemplateNames ) {
+			// handle lots of line breaks: \n\n{{templateName}}\n\n -> \n\n
+			let regex = new RegExp('\\n\\n\\{\\{' + templateName + '\\}\\}\\n\\n', 'i');
+			wikicode = wikicode.replace(regex, '\n\n');
+			
+			// handle normal: {{templateName}}\n -> '', {{templateName}} -> ''
+			regex = new RegExp('\\{\\{' + templateName + '\\}\\}\\n?', 'i');
+			wikicode = wikicode.replace(regex, '');
+		}
 		return wikicode;
 	}
 
@@ -213,7 +221,7 @@ __TOC__`;
 `{{atop${colorCode}${resultText}}}`;
 		let hasH2OrH3 = wikicode.match(/^===?[^=]+===?$/m);
 		if ( hasH2OrH3 ) {
-			wikicode = wikicode.replace(/^(.*?===?[^=]+===?\n)(.*)$/s, '$1' + prependText + '\n$2');
+			wikicode = wikicode.replace(/^(.*?===?[^=]+===?\n)\n*(.*)$/s, '$1' + prependText + '\n$2');
 		} else {
 			wikicode = prependText + "\n" + wikicode;
 		}
@@ -240,7 +248,7 @@ __TOC__`;
 	 */
 	removeTemplate(templateName, wikicode) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-		let regex = new RegExp(`\\{\\{${this.regExEscape(templateName)}[^\\}]*\\}\\}\\n`, 'i');
+		let regex = new RegExp(`\\{\\{${this.regExEscape(templateName)}[^\\}]*\\}\\}\\n?`, 'i');
 		return wikicode.replace(regex, '');
 	}
 
@@ -263,7 +271,7 @@ __TOC__`;
 	convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 
-		let hasArticleHistory = Boolean(wikicode.match(/\{\{Article ? history([^\}]*)\}\}/gi));
+		let hasArticleHistory = Boolean(wikicode.match(/\{\{Article ?history([^\}]*)\}\}/gi));
 		let gaTemplateWikicode = this.regexGetFirstMatchString(/(\{\{GA[^\}]*\}\})/i, wikicode);
 		if ( ! hasArticleHistory && gaTemplateWikicode ) {
 			// delete {{ga}} template

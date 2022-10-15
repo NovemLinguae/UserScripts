@@ -82,7 +82,7 @@ export class GANReviewHTMLGenerator {
 			</p>
 
 			<p>
-				<input type="checkbox" name="GANReviewTool-ATOPYesNo" value="1" checked /> Apply {{<a href="/wiki/Template:Archive_top">atop</a>}} template to GA review
+				<input type="checkbox" name="GANReviewTool-ATOPYesNo" value="1" checked /> Place {{<a href="/wiki/Template:Archive_top">Archive top</a>}} and {{Archive bottom}} templates on GA review page
 			</p>
 
 			<!-- if pass -->
