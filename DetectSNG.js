@@ -2,7 +2,7 @@
 
 /*
 - Let reviewer know when certain [[WP:SNG]] keywords are detected. This helps to determine if the article meets an obscure SNG and is therefore notable.
-- Displays a green bar at the top of the article, listing the detected keywords.
+- Displays a green bar at the top of unreviewed articles, listing the detected keywords.
 - Examples: Pulitzer Prize, Nobel Prize, House of Representatives, Olympics, National Football League, Order of the British Empire
 - Long lists include:
 	- National legislatures
@@ -17,6 +17,7 @@
 	- Highest gallantry awards (WP:ANYBIO stuff... Medal Of Honor, etc.)
 */
 
+// TODO: update NSPORTS keywords, currently has a bunch from pre-RFC
 // TODO: link to relevant SNG
 // TODO: put dictionary in a separate file, call it with the API and set cache settings, less network traffic
 // TODO: make an offline tool that converts the dictionary to JSON, then just post the JSON, for faster loading
@@ -68,7 +69,27 @@ $(async function() {
 	function escapeRegEx(string) {
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	}
-	
+
+	async function isReviewed(pageID) {
+		let api = new mw.Api();
+		let response = await api.get( {
+			action: 'pagetriagelist',
+			format: 'json',
+			page_id: pageID,
+		} );
+
+		// no result
+		if ( response.pagetriagelist.result !== 'success' || response.pagetriagelist.pages.length === 0 ) {
+			return true;
+		// 1, 2, or 3
+		} else if ( parseInt(response.pagetriagelist.pages[0].patrol_status) > 0 ) {
+			return true;
+		// 0
+		} else {
+			return false;
+		}
+	}
+
 	// don't run when not viewing articles
 	let action = mw.config.get('wgAction');
 	if ( action != 'view' ) return;
@@ -84,6 +105,10 @@ $(async function() {
 	let namespace = mw.config.get('wgNamespaceNumber');
 	let title = getArticleName();
 	if ( ! [0, 118].includes(namespace) && title != 'User:Novem_Linguae/sandbox' ) return;
+
+	// Only run on unpatrolled pages
+	let pageID = mw.config.get('wgArticleId');
+	if ( await isReviewed(pageID) ) return;
 	
 	let wordString = `
 	

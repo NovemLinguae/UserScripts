@@ -115,10 +115,11 @@ class CiteHighlighter {
 	  */
 	isSlowPage() {
 		if (
-			mw.config.get('wgAction') == 'history' ||
-			this.articleTitle == 'Main_Page' ||
-			this.articleTitle == 'Wikipedia:Featured_articles' ||
-			this.articleTitle == 'Special:Watchlist'
+			mw.config.get('wgAction') === 'history' ||
+			this.articleTitle === 'Main_Page' ||
+			this.articleTitle === 'Wikipedia:Featured_articles' ||
+			this.articleTitle === 'Special:Watchlist' ||
+			this.articleTitle === 'Wikipedia:New_page_patrol_source_guide'
 		) {
 			return true;
 		}
@@ -133,7 +134,7 @@ class CiteHighlighter {
 	highlightSourceListsMoreAggressively() {
 		let highlightEverythingList = [
 			'Wikipedia:Reliable_sources/Perennial_sources',
-			'Wikipedia:New_page_patrol_source_guide',
+			// 'Wikipedia:New_page_patrol_source_guide', // so slow that I hard-coded this never to load by placing a check in isSlowPage()
 			'Wikipedia:WikiProject_Albums/Sources',
 			'Wikipedia:WikiProject_Video_games/Sources#Reliable_sources',
 			'Wikipedia:WikiProject_Anime_and_manga/Online_reliable_sources',

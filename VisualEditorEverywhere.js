@@ -1,6 +1,6 @@
 //<nowiki>
 
-// TODO: fix the race condition
+// TODO: fix the race condition. still present as of 08/31/22. got it when clicking from WT:NPPC to WP:NPPC. not consistently reproducible.
 // TODO: add support for [edit] links in diffs
 
 if( jQuery !== undefined && mediaWiki !== undefined ) {
