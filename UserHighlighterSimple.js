@@ -95,7 +95,9 @@ class UserHighlighterSimple {
 			url.lastIndexOf("/", 0) === 0;
 	}
 
-	// Figure out the wikipedia article title of the link
+	/**
+	  * Figure out the wikipedia article title of the link
+	  */
 	getTitle(url, uri) {
 		// for links in the format /w/index.php?title=Blah
 		let titleParameterOfURL = mw.util.getParamValue('title', url);
@@ -133,7 +135,7 @@ class UserHighlighterSimple {
 			return false;
 		}
 		
-		// wgServer is not in the format //meta.wikimedia.org
+		// if wgServer is not in the format //meta.wikimedia.org
 		// if en.wikipedia.org != en.wikipedia.org
 		// TODO: when I figure it out, need to document what edge case this fixes
 		if ( uri.host != mw.config.get('wgServer').slice(2) ) {

@@ -968,7 +968,7 @@ __NOTOC__
 		expect(wg.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)).toBe(output);
 	});
 
-	test(`should throw an error if it can't find |subheading|\\n near the title`, () => {
+	test(`should throw an error if it can't find |subsection|\\n near the title`, () => {
 		let gaSubpageHeading = `=====Cue sports=====`;
 		let gaTitle = `Ontario Highway 8`;
 		let gaDisplayTitle = `"Ontario Highway 8"`;
