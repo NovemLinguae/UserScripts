@@ -27,8 +27,6 @@ class Tool {
 
 			output.push(buffer);
 		}
-
-		// format it in JSON
 		
 		return JSON.stringify(output, null, 4);
 	}
