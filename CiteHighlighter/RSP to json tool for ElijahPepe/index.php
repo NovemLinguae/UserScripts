@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us">
 	<head>
-		<title>Cite Highlighter - table to bulleted list tool</title>
+		<title>RSP to JSON tool for ElijahPepe</title>
 		<link rel="stylesheet" href="style.css" />
 		<script type="module" src="script.js"></script>
 		<meta charset="utf-8">
