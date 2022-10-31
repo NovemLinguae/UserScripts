@@ -179,7 +179,7 @@ class UserHighlighterSimple {
 
 	addClassesAndHoverTextToLinkIfNeeded() {
 		// in addition to folks in the global group, highlight anybody with "WMF" in their name, case insensitive. this should not generate false positives because WMF is on the username blacklist.
-		if ( this.user.match(/WMF/i) ) {
+		if ( this.user.match(/^[^\/]*WMF/i) ) {
 			this.addClassAndHoverText('UHS-steward-wmf-founder', 'WMF, Steward, or Founder');
 		}
 
