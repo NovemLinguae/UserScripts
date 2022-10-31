@@ -5,8 +5,8 @@ export class GANReviewWikicodeGenerator {
 		return this.placeATOP(reviewWikicode, 'Passed. ~~~~', 'green')
 	}
 
-	getPassWikicodeForTalkPage(talkWikicode, reviewTitle, topic) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+	getPassWikicodeForTalkPage(talkWikicode, reviewTitle, topic, oldid) {
+		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
 
 		// Deleting {{GA nominee}} from article talk page.
 		let gaPageNumber = this.getTemplateParameter(talkWikicode, 'GA nominee', 'page');
@@ -16,9 +16,9 @@ export class GANReviewWikicodeGenerator {
 		// TODO: get top revision ID of main article, pass it into below functions, have it add the revision ID
 		let boolHasArticleHistoryTemplate = this.hasArticleHistoryTemplate(talkWikicode);
 		if ( boolHasArticleHistoryTemplate ) {
-			talkWikicode = this.updateArticleHistory(talkWikicode, topic, reviewTitle, 'listed');
+			talkWikicode = this.updateArticleHistory(talkWikicode, topic, reviewTitle, 'listed', oldid);
 		} else {
-			talkWikicode = this.addGATemplate(talkWikicode, topic, gaPageNumber);
+			talkWikicode = this.addGATemplate(talkWikicode, topic, gaPageNumber, oldid);
 		}
 
 		// Changing WikiProject template class parameters to GA on article talk page.
@@ -67,8 +67,8 @@ export class GANReviewWikicodeGenerator {
 		return this.placeATOP(reviewWikicode, 'Unsuccessful. ~~~~', 'red');
 	}
 
-	getFailWikicodeForTalkPage(talkWikicode, reviewTitle) {
-		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
+	getFailWikicodeForTalkPage(talkWikicode, reviewTitle, oldid) {
+		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
 		// Deleting {{GA nominee}} from article talk page.
 		let topic = this.getTopicFromGANomineeTemplate(talkWikicode);
@@ -79,9 +79,9 @@ export class GANReviewWikicodeGenerator {
 		// TODO: get top revision ID of main article, pass it into below functions, have it add the revision ID
 		let boolHasArticleHistoryTemplate = this.hasArticleHistoryTemplate(talkWikicode);
 		if ( boolHasArticleHistoryTemplate ) {
-			talkWikicode = this.updateArticleHistory(talkWikicode, topic, reviewTitle, 'failed');
+			talkWikicode = this.updateArticleHistory(talkWikicode, topic, reviewTitle, 'failed', oldid);
 		} else {
-			talkWikicode = this.addFailedGATemplate(talkWikicode, topic, gaPageNumber);
+			talkWikicode = this.addFailedGATemplate(talkWikicode, topic, gaPageNumber, oldid);
 		}
 
 		return talkWikicode;
@@ -213,20 +213,20 @@ export class GANReviewWikicodeGenerator {
 	/**
 	 * @private
 	 */
-	addGATemplate(talkWikicode, topic, gaPageNumber) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+	addGATemplate(talkWikicode, topic, gaPageNumber, oldid) {
+		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
 
-		let codeToAdd = `{{GA|~~~~~|topic=${topic}|page=${gaPageNumber}}}\n`;
+		let codeToAdd = `{{GA|~~~~~|topic=${topic}|page=${gaPageNumber}|oldid=${oldid}}}\n`;
 		return this.addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd);
 	}
 
 	/**
 	 * @private
 	 */
-	addFailedGATemplate(talkWikicode, topic, gaPageNumber) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+	addFailedGATemplate(talkWikicode, topic, gaPageNumber, oldid) {
+		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
 
-		let codeToAdd = `{{FailedGA|~~~~~|topic=${topic}|page=${gaPageNumber}}}\n`;
+		let codeToAdd = `{{FailedGA|~~~~~|topic=${topic}|page=${gaPageNumber}|oldid=${oldid}}}\n`;
 		return this.addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd);
 	}
 
@@ -357,8 +357,8 @@ export class GANReviewWikicodeGenerator {
 	/**
 	 * @private
 	 */
-	updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed) {
-		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
+	updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed, oldid) {
+		if ( arguments.length !== 5 ) throw new Error('Incorrect # of arguments');
 
 		let nextActionNumber = this.determineNextActionNumber(talkWikicode);
 
@@ -379,7 +379,8 @@ export class GANReviewWikicodeGenerator {
 `|action${nextActionNumber} = GAN
 |action${nextActionNumber}date = ~~~~~
 |action${nextActionNumber}link = ${nominationPageTitle}
-|action${nextActionNumber}result = ${listedOrFailed}`;
+|action${nextActionNumber}result = ${listedOrFailed}
+|action${nextActionNumber}oldid = ${oldid}`;
 
 		addToArticleHistory += currentStatusString + topicString;
 

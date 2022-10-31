@@ -148,7 +148,8 @@ export class GANReviewController {
 		this.pushStatus('Deleting {{GA nominee}} from article talk page.');
 		this.pushStatus('Adding {{FailedGA}} or {{Article history}} to article talk page.');
 		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
-		talkWikicode = this.wg.getFailWikicodeForTalkPage(talkWikicode, this.reviewTitle);
+		let oldid = await this.getRevisionIDOfNewestRevision(this.gaTitle);
+		talkWikicode = this.wg.getFailWikicodeForTalkPage(talkWikicode, this.reviewTitle, oldid);
 		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
 	}
 
@@ -162,7 +163,8 @@ export class GANReviewController {
 		this.pushStatus('Adding {{GA}} or {{Article history}} to article talk page.');
 		this.pushStatus('Changing WikiProject template class parameters to GA on article talk page.');
 		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
-		talkWikicode = this.wg.getPassWikicodeForTalkPage(talkWikicode, this.reviewTitle, this.gaSubpageShortTitle);
+		let oldid = await this.getRevisionIDOfNewestRevision(this.gaTitle);
+		talkWikicode = this.wg.getPassWikicodeForTalkPage(talkWikicode, this.reviewTitle, this.gaSubpageShortTitle, oldid);
 		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
 	}
 
@@ -191,6 +193,27 @@ export class GANReviewController {
 		let reviewWikicode = await this.getWikicode(this.ganReviewPageTitle); // get this wikicode again, in case it changed between page load and "submit" button click
 		reviewWikicode = this.wg.getPassWikicodeForGANPage(reviewWikicode);
 		this.reviewRevisionID = await this.makeEdit(this.reviewTitle, this.editSummary, reviewWikicode);
+	}
+
+	/**
+	 * @private
+	 */
+	async getRevisionIDOfNewestRevision(pageTitle) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
+		let api = new this.mw.Api();
+		let params = {
+			"action": "query",
+			"format": "json",
+			"prop": "revisions",
+			"titles": pageTitle,
+			"formatversion": "2",
+			"rvlimit": "1",
+			"rvdir": "older"
+		};
+		let result = await api.post(params);
+		let revisionID = result['query']['pages'][0]['revisions'][0]['revid'];
+		return revisionID;
 	}
 	
 	/**

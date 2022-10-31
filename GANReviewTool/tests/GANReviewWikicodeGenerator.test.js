@@ -48,13 +48,14 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 `;
 		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
 		let gaSubpageShortTitle = `Video games`;
+		let oldid = 1111;
 		let output =
-`{{GA|~~~~~|topic=Video games|page=1}}
+`{{GA|~~~~~|topic=Video games|page=1|oldid=1111}}
 {{WikiProject Visual arts|class=GA}}
 
 {{Talk:Thomas Carlyle (Millais)/GA1}}
 `;
-		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle, oldid)).toBe(output);
 	});
 
 	test('Should handle {{Article history}} present', () => {
@@ -77,6 +78,7 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 `;
 		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
 		let gaSubpageShortTitle = `Warfare`;
+		let oldid = 1111;
 		let output =
 `{{Article history
 |ftname=Kanye West studio albums
@@ -91,6 +93,7 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 |action2date = ~~~~~
 |action2link = Thomas Carlyle (Millais)/GA1
 |action2result = listed
+|action2oldid = 1111
 |currentstatus = GA
 |topic = Warfare
 }}
@@ -98,7 +101,7 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 
 {{Talk:Thomas Carlyle (Millais)/GA1}}
 `;
-		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle, oldid)).toBe(output);
 	});
 
 	test(`Should set |class=GA for templates that don't start with {{WikiProject`, () => {
@@ -111,14 +114,15 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 `;
 		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
 		let gaSubpageShortTitle = `Sports and recreation`;
+		let oldid = 1111;
 		let output =
-`{{GA|~~~~~|topic=Sports and recreation|page=1}}
+`{{GA|~~~~~|topic=Sports and recreation|page=1|oldid=1111}}
 {{WikiProject Visual arts|class=GA}}
 {{environment|class=GA|importance=mid}}
 
 {{Talk:Thomas Carlyle (Millais)/GA1}}
 `;
-		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle, oldid)).toBe(output);
 	});
 
 	test(`Should place {{GA}} below {{Talk page header}}`, () => {
@@ -137,9 +141,10 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 `;
 		let reviewTitle = `Pixel 6/GA1`;
 		let gaSubpageShortTitle = `Engineering and technology`;
+		let oldid = 1111;
 		let output =
 `{{Talk page header}}
-{{GA|~~~~~|topic=Engineering and technology|page=1}}
+{{GA|~~~~~|topic=Engineering and technology|page=1|oldid=1111}}
 {{WikiProject banner shell|
 {{WikiProject Computing|class=GA|importance=mid|hardware=yes|hardware-importance=mid}}
 {{WikiProject Electronics|class=GA|importance=mid}}
@@ -150,7 +155,7 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 {{DYK talk|13 November|2021|entry=... that the '''[[Pixel 6|Pixel&nbsp;6]]''' is the first smartphone to be powered by the Google Tensor [[system on a chip]] (SoC)?|nompage=Template:Did you know nominations/Pixel 6}}
 {{Annual readership}}
 `;
-		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle, oldid)).toBe(output);
 	});
 
 	test(`Should change empty |class= to |class=GA`, () => {
@@ -161,12 +166,13 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 `;
 		let reviewTitle = `Talk:Seriously, Dude, I'm Gay/GA1`;
 		let gaSubpageShortTitle = `Media and drama`;
+		let oldid = 1111;
 		let output =
-`{{GA|~~~~~|topic=Media and drama|page=1}}
+`{{GA|~~~~~|topic=Media and drama|page=1|oldid=1111}}
 {{WikiProject Television|class=GA}}
 {{WikiProject LGBT studies|class=GA}}
 `;
-		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle, oldid)).toBe(output);
 	});
 
 	test(`Should change {{WikiProject}} template with no parameters to include |class=GA`, () => {
@@ -176,11 +182,12 @@ describe('getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTi
 `;
 		let reviewTitle = `Talk:Seriously, Dude, I'm Gay/GA1`;
 		let gaSubpageShortTitle = `Media and drama`;
+		let oldid = 1111;
 		let output =
-`{{GA|~~~~~|topic=Media and drama|page=1}}
+`{{GA|~~~~~|topic=Media and drama|page=1|oldid=1111}}
 {{WikiProject Television|class=GA}}
 `;
-		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
+		expect(wg.getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle, oldid)).toBe(output);
 	});
 
 	/*
@@ -1019,13 +1026,14 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 {{Talk:Thomas Carlyle (Millais)/GA1}}
 `;
 		let reviewTitle = `Thomas Carlyle (Millais)/GA1`;
+		let oldid = 1111;
 		let output = 
-`{{FailedGA|~~~~~|topic=Art and architecture|page=1}}
+`{{FailedGA|~~~~~|topic=Art and architecture|page=1|oldid=1111}}
 {{WikiProject Visual arts|class=b}}
 
 {{Talk:Thomas Carlyle (Millais)/GA1}}
 `;
-		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle, oldid)).toBe(output);
 	});
 
 	test('Should handle {{Article history}} present', () => {
@@ -1050,6 +1058,7 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 {{Talk:SpaceX Starship/GA2}}
 `;
 		let reviewTitle = `SpaceX Starship/GA2`;
+		let oldid = 1111;
 		let output = 
 `{{ArticleHistory
 |action1 = GAN
@@ -1067,13 +1076,14 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 |action2date = ~~~~~
 |action2link = SpaceX Starship/GA2
 |action2result = failed
+|action2oldid = 1111
 |currentstatus = FGAN
 |topic = Physics and astronomy
 }}
 
 {{Talk:SpaceX Starship/GA2}}
 `;
-		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle, oldid)).toBe(output);
 	});
 
 	test('Should handle {{Vital article|topic=', () => {
@@ -1091,6 +1101,7 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 }}
 `;
 		let reviewTitle = `Talk:Cristiano Ronaldo/GA5`;
+		let oldid = 1111;
 		let output = 
 `{{Vital article|level=4|topic=People|class=B}}
 {{ArticleHistory
@@ -1104,11 +1115,12 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 |action2date = ~~~~~
 |action2link = Talk:Cristiano Ronaldo/GA5
 |action2result = failed
+|action2oldid = 1111
 |currentstatus = FGAN
 |topic = Sports and recreation
 }}
 `;
-		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle)).toBe(output);
+		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle, oldid)).toBe(output);
 	});
 
 /*
@@ -1375,10 +1387,11 @@ describe('addGATemplate(talkWikicode, topic, gaPageNumber)', () => {
 		let talkWikicode = `Test Test`;
 		let topic = 'agriculture, food, and drink';
 		let gaPageNumber = 2;
+		let oldid = 1111;
 		let output =
-`{{GA|~~~~~|topic=agriculture, food, and drink|page=2}}
+`{{GA|~~~~~|topic=agriculture, food, and drink|page=2|oldid=1111}}
 Test Test`;
-		expect(wg.addGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+		expect(wg.addGATemplate(talkWikicode, topic, gaPageNumber, oldid)).toBe(output);
 	});
 
 	test('Below {{Talk Header}}', () => {
@@ -1387,11 +1400,12 @@ Test Test`;
 Test Test`;
 		let topic = 'agriculture, food, and drink';
 		let gaPageNumber = 2;
+		let oldid = 1111;
 		let output =
 `{{Talk Header}}
-{{GA|~~~~~|topic=agriculture, food, and drink|page=2}}
+{{GA|~~~~~|topic=agriculture, food, and drink|page=2|oldid=1111}}
 Test Test`;
-		expect(wg.addGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+		expect(wg.addGATemplate(talkWikicode, topic, gaPageNumber, oldid)).toBe(output);
 	});
 
 	test('Below {{talkheader}}', () => {
@@ -1400,11 +1414,12 @@ Test Test`;
 Test Test`;
 		let topic = 'agriculture, food, and drink';
 		let gaPageNumber = 2;
+		let oldid = 1111;
 		let output =
 `{{talkheader}}
-{{GA|~~~~~|topic=agriculture, food, and drink|page=2}}
+{{GA|~~~~~|topic=agriculture, food, and drink|page=2|oldid=1111}}
 Test Test`;
-		expect(wg.addGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+		expect(wg.addGATemplate(talkWikicode, topic, gaPageNumber, oldid)).toBe(output);
 	});
 });
 
@@ -1434,10 +1449,11 @@ describe('addFailedGATemplate(talkWikicode, topic, gaPageNumber)', () => {
 		let talkWikicode = `Test Test`;
 		let topic = 'agriculture, food, and drink';
 		let gaPageNumber = 2;
+		let oldid = 1111;
 		let output =
-`{{FailedGA|~~~~~|topic=agriculture, food, and drink|page=2}}
+`{{FailedGA|~~~~~|topic=agriculture, food, and drink|page=2|oldid=1111}}
 Test Test`;
-		expect(wg.addFailedGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+		expect(wg.addFailedGATemplate(talkWikicode, topic, gaPageNumber, oldid)).toBe(output);
 	});
 
 	test('below {{Talk Header}}', () => {
@@ -1446,11 +1462,12 @@ Test Test`;
 Test Test`;
 		let topic = 'agriculture, food, and drink';
 		let gaPageNumber = 2;
+		let oldid = 1111;
 		let output =
 `{{Talk Header}}
-{{FailedGA|~~~~~|topic=agriculture, food, and drink|page=2}}
+{{FailedGA|~~~~~|topic=agriculture, food, and drink|page=2|oldid=1111}}
 Test Test`;
-		expect(wg.addFailedGATemplate(talkWikicode, topic, gaPageNumber)).toBe(output);
+		expect(wg.addFailedGATemplate(talkWikicode, topic, gaPageNumber, oldid)).toBe(output);
 	});
 });
 
@@ -1530,6 +1547,7 @@ describe('updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedO
 		let topic = 'agriculture';
 		let nominationPageTitle = 'Talk:Cow tipping/GA1';
 		let listedOrFailed = 'listed';
+		let oldid = 1111;
 		let output =
 `{{Talk header|archive_age=31|archive_bot=Lowercase sigmabot III}}
 {{Article history
@@ -1542,10 +1560,11 @@ describe('updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedO
 |action2date = ~~~~~
 |action2link = Talk:Cow tipping/GA1
 |action2result = listed
+|action2oldid = 1111
 |currentstatus = GA
 |topic = agriculture
 }}`;
-		expect(wg.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed)).toBe(output);
+		expect(wg.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed, oldid)).toBe(output);
 	});
 
 	test('listed, FFAC/GA', () => {
@@ -1561,6 +1580,7 @@ describe('updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedO
 		let topic = 'Natural Sciences';
 		let nominationPageTitle = 'Talk:Agriculture/GA2';
 		let listedOrFailed = 'listed';
+		let oldid = 1111;
 		let output =
 `{{Article history
 |action1=FAC
@@ -1573,10 +1593,11 @@ describe('updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedO
 |action2date = ~~~~~
 |action2link = Talk:Agriculture/GA2
 |action2result = listed
+|action2oldid = 1111
 |currentstatus = FFAC/GA
 |topic = Natural Sciences
 }}`;
-		expect(wg.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed)).toBe(output);
+		expect(wg.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed, oldid)).toBe(output);
 	});
 
 	test('failed, DGA', () => {
@@ -1650,6 +1671,7 @@ describe('updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedO
 		let topic = 'Physics and astronomy';
 		let nominationPageTitle = 'Talk:SpaceX Starship/GA2';
 		let listedOrFailed = 'failed';
+		let oldid = 1111;
 		let output =
 `{{ArticleHistory
 |action1 = GAN
@@ -1717,11 +1739,12 @@ describe('updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedO
 |action12date = ~~~~~
 |action12link = Talk:SpaceX Starship/GA2
 |action12result = failed
+|action12oldid = 1111
 |currentstatus = DGA
 |topic = Physics and astronomy
 }}
 `;
-		expect(wg.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed)).toBe(output);
+		expect(wg.updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed, oldid)).toBe(output);
 	});
 });
 
