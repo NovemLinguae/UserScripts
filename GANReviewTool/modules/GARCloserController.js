@@ -117,6 +117,27 @@ export class GARCloserController {
 	/**
 	 * @private
 	 */
+	async getRevisionIDOfNewestRevision(pageTitle) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
+		let api = new this.mw.Api();
+		let params = {
+			"action": "query",
+			"format": "json",
+			"prop": "revisions",
+			"titles": pageTitle,
+			"formatversion": "2",
+			"rvlimit": "1",
+			"rvdir": "older"
+		};
+		let result = await api.post(params);
+		let revisionID = result['query']['pages'][0]['revisions'][0]['revid'];
+		return revisionID;
+	}
+
+	/**
+	 * @private
+	 */
 	async hasGARLinkTemplate(title) {
 		let wikicode = await this.getWikicode(title);
 		return Boolean(wikicode.match(/\{\{GAR\/link/i));
@@ -181,7 +202,8 @@ export class GARCloserController {
 
 		this.pushStatus(`Remove {{GAR/link}} from talk page, and update {{Article history}}`);
 		let wikicode = await this.getWikicode(this.talkPageTitle);
-		wikicode = this.wg.processKeepForTalkPage(wikicode, this.garPageTitle, this.talkPageTitle);
+		let oldid = await this.getRevisionIDOfNewestRevision(this.parentArticle);
+		wikicode = this.wg.processKeepForTalkPage(wikicode, this.garPageTitle, this.talkPageTitle, oldid);
 		this.talkRevisionID = await this.makeEdit(this.talkPageTitle, this.editSummary, wikicode);
 		if ( this.talkRevisionID === undefined ) {
 			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
@@ -308,7 +330,8 @@ export class GARCloserController {
 		this.pushStatus(`Remove {{GAR/link}} from talk page, update {{Article history}}, remove |class=GA`);
 		let wikicode = await this.getWikicode(this.talkPageTitle);
 		this.gaListTitle = this.getGAListTitleFromTalkPageWikicode(wikicode);
-		wikicode = this.wg.processDelistForTalkPage(wikicode, this.garPageTitle, this.talkPageTitle);
+		let oldid = await this.getRevisionIDOfNewestRevision(this.parentArticle);
+		wikicode = this.wg.processDelistForTalkPage(wikicode, this.garPageTitle, this.talkPageTitle, oldid);
 		this.talkRevisionID = await this.makeEdit(this.talkPageTitle, this.editSummary, wikicode);
 		if ( this.talkRevisionID === undefined ) {
 			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');

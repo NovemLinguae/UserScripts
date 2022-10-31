@@ -4,11 +4,11 @@ export class GARCloserWikicodeGenerator {
 		return this.processGARPage(garPageWikicode, message, isCommunityAssessment, 'Kept.', 'green');
 	}
 
-	processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+	processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle, oldid) {
+		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
 		wikicode = this.removeTemplate('GAR/link', wikicode);
 		wikicode = this.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode);
-		wikicode = this.updateArticleHistory('keep', wikicode, garPageTitle);
+		wikicode = this.updateArticleHistory('keep', wikicode, garPageTitle, oldid);
 		return wikicode;
 	}
 
@@ -88,12 +88,12 @@ __TOC__`;
 		return this.processGARPage(garPageWikicode, message, isCommunityAssessment, 'Delisted.', 'red');
 	}
 
-	processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+	processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle, oldid) {
+		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
 		wikicode = this.removeTemplate('GAR/link', wikicode); // "this article is undergoing a GAR"
 		wikicode = this.removeTemplate('GAR request', wikicode); // "maybe this article needs a GAR"
 		wikicode = this.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode);
-		wikicode = this.updateArticleHistory('delist', wikicode, garPageTitle);
+		wikicode = this.updateArticleHistory('delist', wikicode, garPageTitle, oldid);
 		wikicode = this.removeGAStatusFromWikiprojectBanners(wikicode);
 		return wikicode;
 	}
@@ -463,8 +463,8 @@ __TOC__`;
 	 * @param {'keep'|'delist'} keepOrDelist
 	 * @private
 	 */
-	updateArticleHistory(keepOrDelist, wikicode, garPageTitle) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+	updateArticleHistory(keepOrDelist, wikicode, garPageTitle, oldid) {
+		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
 
 		let nextActionNumber = this.determineNextActionNumber(wikicode);
 
@@ -489,7 +489,8 @@ __TOC__`;
 `|action${nextActionNumber} = GAR
 |action${nextActionNumber}date = ~~~~~
 |action${nextActionNumber}link = ${garPageTitle}
-|action${nextActionNumber}result = ${result}`;
+|action${nextActionNumber}result = ${result}
+|action${nextActionNumber}oldid = ${oldid}`;
 
 		addToArticleHistory += currentStatusString + topicString;
 
@@ -591,7 +592,7 @@ __TOC__`;
 	/**
 	 * Grabs string position of the END of first {{template}} contained in wikicode. Case insensitive. Returns null if no template found. Handles nested templates.
 	 * @private
-	 * @returns {int|null}
+	 * @returns {number|null}
 	 */
 	getStrPosOfEndOfFirstTemplateFound(wikicode, templateName) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');

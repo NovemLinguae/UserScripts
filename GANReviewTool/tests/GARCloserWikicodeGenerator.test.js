@@ -122,6 +122,7 @@ describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => 
 	it(`Should remove {{GAR/link}}, add action4 to {{Article history}}, leave currentstatus alone, leave class=GA alone`, () => {
 		let garPageTitle = `Wikipedia:Good article reassessment/American popular music/1`;
 		let talkPageTitle = `Talk:American popular music`;
+		let oldid = 1111;
 		let wikicode =
 `{{GAR/link|13:56, 16 March 2022 (UTC)|page=1|GARpage=1|status= }}
 {{Article history|action1=PR
@@ -168,6 +169,7 @@ describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => 
 |action4date = ~~~~~
 |action4link = Wikipedia:Good article reassessment/American popular music/1
 |action4result = kept
+|action4oldid = 1111
 |currentstatus = GA
 }}
 {{WikiProject banner shell|1=
@@ -176,12 +178,13 @@ describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => 
 {{WikiProject United States|class=GA|importance=Mid|USMusic=yes|USMusic-importance=High}}
 {{WikiProject Rock music|class=GA|importance=high}}
 }}`;
-		expect(wg.processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle, oldid)).toBe(output);
 	});
 
 	it(`Should remove {{GAR/link}}, remove {{GA}}, add {{Article history}}, leave currentstatus alone, leave class=GA alone`, () => {
 		let garPageTitle = `Wikipedia:Good article reassessment/American popular music/1`;
 		let talkPageTitle = `Talk:American popular music`;
+		let oldid = 1111;
 		let wikicode =
 `{{GAR/link|13:56, 16 March 2022 (UTC)|page=1|GARpage=1|status= }}
 {{GA|20:19, 29 June 2022 (UTC)|topic=Language and literature|page=1}}
@@ -204,6 +207,7 @@ describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => 
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/American popular music/1
 |action2result = kept
+|action2oldid = 1111
 |currentstatus = GA
 }}
 {{WikiProject banner shell|1=
@@ -212,12 +216,13 @@ describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => 
 {{WikiProject United States|class=GA|importance=Mid|USMusic=yes|USMusic-importance=High}}
 {{WikiProject Rock music|class=GA|importance=high}}
 }}`;
-		expect(wg.processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle, oldid)).toBe(output);
 	});
 
 	it(`Should handle {{GAR/link}} not ending in \\n`, () => {
 		let garPageTitle = `Wikipedia:Good article reassessment/Proxima Centauri b/1`;
 		let talkPageTitle = `Talk:Proxima Centauri b`;
+		let oldid = 1111;
 		let wikicode =
 `{{GAR/link|10:35, 13 December 2021 (UTC)|page=3|GARpage=1|status= }}{{Talk header}}
 {{GA|16:22, 26 February 2017 (UTC)|oldid=767553501|topic=Physics and astronomy|page=2}}
@@ -245,6 +250,7 @@ describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => 
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/Proxima Centauri b/1
 |action2result = kept
+|action2oldid = 1111
 |currentstatus = GA
 }}
 {{WikiProject Astronomy|class=GA|importance=mid|object=yes}}
@@ -252,7 +258,7 @@ describe('processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () => 
 
 [[/archive 1]]
 == New study regarding life-supporting chances ==`;
-		expect(wg.processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle, oldid)).toBe(output);
 	});
 });
 
@@ -455,6 +461,7 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 	it(`Should remove {{GAR/link}}, add action4 to {{Article history}}, set currentstatus to DGA, and remove class=GA`, () => {
 		let garPageTitle = `Wikipedia:Good article reassessment/American popular music/1`;
 		let talkPageTitle = `Talk:American popular music`;
+		let oldid = 1111;
 		let wikicode =
 `{{GAR/link|13:56, 16 March 2022 (UTC)|page=1|GARpage=1|status= }}
 {{Article history|action1=PR
@@ -501,6 +508,7 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 |action4date = ~~~~~
 |action4link = Wikipedia:Good article reassessment/American popular music/1
 |action4result = delisted
+|action4oldid = 1111
 |currentstatus = DGA
 }}
 {{WikiProject banner shell|1=
@@ -509,12 +517,13 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 {{WikiProject United States|class=|importance=Mid|USMusic=yes|USMusic-importance=High}}
 {{WikiProject Rock music|class=|importance=high}}
 }}`;
-		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle, oldid)).toBe(output);
 	});
 
 	it(`Should remove {{GAR/link}}, remove {{GA}}, add {{Article history}}, and remove class=GA`, () => {
 		let garPageTitle = `Wikipedia:Good article reassessment/American popular music/1`;
 		let talkPageTitle = `Talk:American popular music`;
+		let oldid = 1111;
 		let wikicode =
 `{{GAR/link|13:56, 16 March 2022 (UTC)|page=1|GARpage=1|status= }}
 {{GA|20:19, 29 June 2022 (UTC)|topic=Language and literature|page=1}}
@@ -537,6 +546,7 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/American popular music/1
 |action2result = delisted
+|action2oldid = 1111
 |currentstatus = DGA
 }}
 {{WikiProject banner shell|1=
@@ -545,12 +555,13 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 {{WikiProject United States|class=|importance=Mid|USMusic=yes|USMusic-importance=High}}
 {{WikiProject Rock music|class=|importance=high}}
 }}`;
-		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle, oldid)).toBe(output);
 	});
 
 	it(`should handle {{ArticleHistory}} containing a nested template`, () => {
 		let garPageTitle = `Wikipedia:Good article reassessment/Royce White/1`;
 		let talkPageTitle = `Talk:Royce White`;
+		let oldid = 1111;
 		let wikicode = 
 `{{GAR/link|17:09, 22 February 2022 (UTC)|page=2|GARpage=1|status= }}
 {{ArticleHistory
@@ -579,14 +590,16 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/Royce White/1
 |action2result = delisted
+|action2oldid = 1111
 |currentstatus = DGA
 }}`;
-		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle, oldid)).toBe(output);
 	});
 
 	it(`should handle {{football|class=GA`, () => {
 		let garPageTitle = `Talk:Sudan women's national football team/GA3`;
 		let talkPageTitle = `Talk:Sudan women's national football team`;
+		let oldid = 1111;
 		let wikicode = 
 `{{GAR/link|16:08, 2 July 2022 (UTC)|page=3|GARpage=1|status= }}
 {{ArticleHistory
@@ -638,6 +651,7 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 |action3date = ~~~~~
 |action3link = Talk:Sudan women's national football team/GA3
 |action3result = delisted
+|action3oldid = 1111
 |currentstatus = DGA
 }}
 {{WikiProjectBannerShell|blp=no|1=
@@ -647,12 +661,13 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 }}
 {{British English}}
 `;
-		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle, oldid)).toBe(output);
 	});
 
 	it(`should remove {{GAR request}}`, () => {
 		let garPageTitle = `Wikipedia:Good article reassessment/Once Upon a Time (game)/1`;
 		let talkPageTitle = `Talk:Once Upon a Time (game)`;
+		let oldid = 1111;
 		let wikicode = 
 `{{GAR/link|06:50, 15 August 2022 (UTC)|page=2|GARpage=1|status= }}
 {{Article history
@@ -680,18 +695,20 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/Once Upon a Time (game)/1
 |action2result = delisted
+|action2oldid = 1111
 |currentstatus = DGA
 }}
 {{BTGProject|class=|importance=low}}
 
 ==Release date==
 `;
-		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle, oldid)).toBe(output);
 	});
 
 	it(`should handle {{ArticleHistory}} with no space`, () => {
 		let garPageTitle = `Wikipedia:Good article reassessment/Once Upon a Time (game)/1`;
 		let talkPageTitle = `Talk:Once Upon a Time (game)`;
+		let oldid = 1111;
 		let wikicode = 
 `{{GAR/link|06:50, 15 August 2022 (UTC)|page=2|GARpage=1|status= }}
 {{ArticleHistory
@@ -718,13 +735,14 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/Once Upon a Time (game)/1
 |action2result = delisted
+|action2oldid = 1111
 |currentstatus = DGA
 }}
 {{BTGProject|class=|importance=low}}
 
 ==Release date==
 `;
-		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)).toBe(output);
+		expect(wg.processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle, oldid)).toBe(output);
 	});
 });
 
