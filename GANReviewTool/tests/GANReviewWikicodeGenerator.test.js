@@ -1220,7 +1220,7 @@ describe('getOnHoldWikicodeForTalkPage(talkWikicode)', () => {
 		let talkWikicode =
 `{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=|note=}}`;
 		let output =
-`{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|note=|status=onhold}}`;
+`{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}`;
 		expect(wg.getOnHoldWikicodeForTalkPage(talkWikicode)).toBe(output);
 	});
 
@@ -1228,7 +1228,7 @@ describe('getOnHoldWikicodeForTalkPage(talkWikicode)', () => {
 		let talkWikicode =
 `{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=2ndopinion|note=}}`;
 		let output =
-`{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|note=|status=onhold}}`;
+`{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}`;
 		expect(wg.getOnHoldWikicodeForTalkPage(talkWikicode)).toBe(output);
 	});
 
@@ -1236,7 +1236,7 @@ describe('getOnHoldWikicodeForTalkPage(talkWikicode)', () => {
 		let talkWikicode =
 `{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}`;
 		let output =
-`{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|note=|status=onhold}}`;
+`{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}`;
 		expect(wg.getOnHoldWikicodeForTalkPage(talkWikicode)).toBe(output);
 	});
 
@@ -1246,7 +1246,7 @@ describe('getOnHoldWikicodeForTalkPage(talkWikicode)', () => {
 {{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}`;
 		let output =
 `{{Talk header}}
-{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|note=|status=onhold}}`;
+{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}`;
 		expect(wg.getOnHoldWikicodeForTalkPage(talkWikicode)).toBe(output);
 	});
 
@@ -1255,7 +1255,7 @@ describe('getOnHoldWikicodeForTalkPage(talkWikicode)', () => {
 `{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}
 {{WikiProject Football}}`;
 		let output =
-`{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|note=|status=onhold}}
+`{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}
 {{WikiProject Football}}`;
 		expect(wg.getOnHoldWikicodeForTalkPage(talkWikicode)).toBe(output);
 	});
@@ -1267,7 +1267,7 @@ describe('getOnHoldWikicodeForTalkPage(talkWikicode)', () => {
 {{WikiProject Football}}`;
 		let output =
 `{{Talk header}}
-{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|note=|status=onhold}}
+{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}
 {{WikiProject Football}}`;
 		expect(wg.getOnHoldWikicodeForTalkPage(talkWikicode)).toBe(output);
 	});
@@ -1276,7 +1276,7 @@ describe('getOnHoldWikicodeForTalkPage(talkWikicode)', () => {
 		let talkWikicode =
 `{{Talk header}}{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}{{WikiProject Football}}`;
 		let output =
-`{{Talk header}}{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|note=|status=onhold}}{{WikiProject Football}}`;
+`{{Talk header}}{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}{{WikiProject Football}}`;
 		expect(wg.getOnHoldWikicodeForTalkPage(talkWikicode)).toBe(output);
 	});
 });

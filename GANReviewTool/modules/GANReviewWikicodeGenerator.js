@@ -106,13 +106,21 @@ export class GANReviewWikicodeGenerator {
 	 * @private
 	 */
 	changeGANomineeTemplateStatus(talkWikicode, newStatus) {
-		// delete old status
-		talkWikicode = talkWikicode.replace(/({{GA nominee[^\}]*)\|\s*status\s*=\s*[^\}\|]*/i, '$1');
+		// already has correct status
+		let regex = new RegExp(`({{GA nominee[^\\}]*\\|\\s*status\\s*=\\s*${newStatus})`, 'i');
+		let alreadyHasCorrectStatus = talkWikicode.match(regex);
+		if ( alreadyHasCorrectStatus ) {
+			return talkWikicode;
+		}
 
-		// insert new status
-		talkWikicode = talkWikicode.replace(/({{GA nominee[^\}]*)(}})/i, `$1|status=${newStatus}$2`);
+		// has a status, but needs to be changed
+		let hasStatus = talkWikicode.match(/({{GA nominee[^\}]*\|\s*status\s*=\s*)[^\}\|]*/i);
+		if ( hasStatus ) {
+			return talkWikicode.replace(/({{GA nominee[^\}]*\|\s*status\s*=\s*)[^\}\|]*/i, `$1${newStatus}`);
+		}
 
-		return talkWikicode;
+		// if no old status, insert new status
+		return talkWikicode.replace(/({{GA nominee[^\}]*)(}})/i, `$1|status=${newStatus}$2`);
 	}
 
 	getLogMessageToAppend(username, action, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error) {
