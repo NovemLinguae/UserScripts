@@ -53,10 +53,16 @@ export class GANReviewController {
 		this.reviewTitle = this.ganReviewPageTitle;
 		this.error = false;
 		try {
-			if ( this.passOrFail === 'pass' ) {
+			if ( this.action === 'pass' ) {
 				await this.doPass();
-			} else if ( this.passOrFail === 'fail' ) {
+			} else if ( this.action === 'fail' ) {
 				await this.doFail();
+			} else if ( this.action === 'placeOnHold' ) {
+				await this.placeOnHold();
+			} else if ( this.action === 'askSecondOpinion' ) {
+				await this.askSecondOpinion();
+			} else if ( this.action === 'answerSecondOpinion' ) {
+				await this.answerSecondOpinion();
 			}
 		} catch(err) {
 			this.pushStatus('<span class="GANReviewTool-ErrorNotice">An error occurred :(</span>');
@@ -73,6 +79,66 @@ export class GANReviewController {
 		}
 	}
 
+	async placeOnHold() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.editSummary = `placed [[${this.gaTitle}]] GAN nomination on hold` + this.editSummarySuffix;
+
+		await this.processOnHoldForTalkPage();
+	}
+
+	async askSecondOpinion() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.editSummary = `asked for a 2nd opinion regarding [[${this.gaTitle}]] GAN nomination` + this.editSummarySuffix;
+
+		await this.processAskSecondOpinionForTalkPage();
+	}
+
+	async answerSecondOpinion() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.editSummary = `answered 2nd opinion request regarding [[${this.gaTitle}]] GAN nomination` + this.editSummarySuffix;
+
+		await this.processAnswerSecondOpinionForTalkPage();
+	}
+
+	/**
+	 * @private
+	 */
+	async processOnHoldForTalkPage() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.pushStatus('Marking article talk page status as "on hold"');
+		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
+		talkWikicode = this.wg.getOnHoldWikicodeForTalkPage(talkWikicode);
+		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
+	}
+
+	/**
+	 * @private
+	 */
+	async processAskSecondOpinionForTalkPage() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.pushStatus('Marking article talk page status as "asking for a second opinion"');
+		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
+		talkWikicode = this.wg.getAskSecondOpinionWikicodeForTalkPage(talkWikicode);
+		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
+	}
+
+	/**
+	 * @private
+	 */
+	async processAnswerSecondOpinionForTalkPage() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		this.pushStatus('Marking article talk page status as "answered second opinion request (onreview)"');
+		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
+		talkWikicode = this.wg.getAnswerSecondOpinionWikicodeForTalkPage(talkWikicode);
+		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
+	}
+
 	/**
 	 * @return {boolean} hasFormValidationErrors
 	 * @private
@@ -83,7 +149,7 @@ export class GANReviewController {
 		let hasFormValidationErrors = false;
 
 		// if pass, a WP:GA subpage heading must be selected
-		if ( this.passOrFail === 'pass' && ! this.detailedTopic ) {
+		if ( this.action === 'pass' && ! this.detailedTopic ) {
 			this.$(`#GANReviewTool-NoTopicMessage`).show();
 			hasFormValidationErrors = true;
 		}
@@ -222,7 +288,7 @@ export class GANReviewController {
 	readFormAndSetVariables() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
-		this.passOrFail = this.$(`[name="GANReviewTool-PassOrFail"]:checked`).val();
+		this.action = this.$(`[name="GANReviewTool-PassOrFail"]:checked`).val();
 		this.needsATOP = this.$(`[name="GANReviewTool-ATOPYesNo"]`).is(":checked");
 		this.detailedTopic = document.querySelector(`[name="GANReviewTool-Topic"]`); // TODO: change this to jquery, so less dependencies, more unit testable
 		this.detailedTopic = this.detailedTopic.options[this.detailedTopic.selectedIndex];
@@ -239,9 +305,15 @@ export class GANReviewController {
 		this.$(`[name="GANReviewTool-PassOrFail"]`).on('change', () => {
 			if ( this.$(`[name="GANReviewTool-PassOrFail"]:checked`).val() === 'pass' ) {
 				this.$(`#GANReviewTool-PassDiv`).show();
-			} else {
+				this.$('#GANReviewTool-PassFailDiv').show();
+			} else if ( this.$(`[name="GANReviewTool-PassOrFail"]:checked`).val() === 'fail' ) {
 				this.$(`#GANReviewTool-PassDiv`).hide();
 				this.$(`#GANReviewTool-NoTopicMessage`).hide();
+				this.$('#GANReviewTool-PassFailDiv').show();
+			} else { // onHold, askSecondOpinion, answerSecondOpinion
+				this.$(`#GANReviewTool-PassDiv`).hide();
+				this.$(`#GANReviewTool-NoTopicMessage`).hide();
+				this.$('#GANReviewTool-PassFailDiv').hide();
 			}
 		});
 	}
@@ -307,7 +379,7 @@ export class GANReviewController {
 		// always log no matter what. hopefully log some errors so I can fix them
 		this.pushStatus('Adding to log');
 		let username = this.mw.config.get('wgUserName');
-		let textToAppend = this.wg.getLogMessageToAppend(username, this.passOrFail, this.reviewTitle, this.reviewRevisionID, this.talkRevisionID, this.gaRevisionID, this.error);
+		let textToAppend = this.wg.getLogMessageToAppend(username, this.action, this.reviewTitle, this.reviewRevisionID, this.talkRevisionID, this.gaRevisionID, this.error);
 		await this.appendToPage('User:Novem Linguae/Scripts/GANReviewTool/GANReviewLog', this.editSummary, textToAppend);
 	}
 

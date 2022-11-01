@@ -87,14 +87,62 @@ export class GANReviewWikicodeGenerator {
 		return talkWikicode;
 	}
 
-	getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error) {
+	getOnHoldWikicodeForTalkPage(talkWikicode) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+		return this.changeGANomineeTemplateStatus(talkWikicode, 'onhold');
+	}
+
+	getAskSecondOpinionWikicodeForTalkPage(talkWikicode) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+		return this.changeGANomineeTemplateStatus(talkWikicode, '2ndopinion');
+	}
+
+	getAnswerSecondOpinionWikicodeForTalkPage(talkWikicode) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+		return this.changeGANomineeTemplateStatus(talkWikicode, 'onreview');
+	}
+
+	/**
+	 * @private
+	 */
+	changeGANomineeTemplateStatus(talkWikicode, newStatus) {
+		// delete old status
+		talkWikicode = talkWikicode.replace(/({{GA nominee[^\}]*)\|\s*status\s*=\s*[^\}\|]*/i, '$1');
+
+		// insert new status
+		talkWikicode = talkWikicode.replace(/({{GA nominee[^\}]*)(}})/i, `$1|status=${newStatus}$2`);
+
+		return talkWikicode;
+	}
+
+	getLogMessageToAppend(username, action, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error) {
 		if ( arguments.length !== 7 ) throw new Error('Incorrect # of arguments');
 
 		let textToAppend = `\n* `;
 		if ( error ) {
 			textToAppend += `<span style="color: red; font-weight: bold;">ERROR:</span> ${error}. `
 		}
-		textToAppend += `[[User:${username}|${username}]] ${passOrFail}ed [[${reviewTitle}]] at ~~~~~. `;
+
+		let verb = '';
+		switch ( action ) {
+			case 'pass':
+				verb = 'passed';
+				break;
+			case 'fail':
+				verb = 'failed';
+				break;
+			case 'placeOnHold':
+				verb = 'placed on hold';
+				break;
+			case 'askSecondOpinion':
+				verb = 'asked second opinion regarding';
+				break;
+			case 'answerSecondOpinion':
+				verb = 'answered second opinion regarding';
+				break;
+		}
+		textToAppend += `[[User:${username}|${username}]] ${verb} [[${reviewTitle}]] at ~~~~~. `;
+
 		if ( reviewRevisionID ) {
 			textToAppend += `[[Special:Diff/${reviewRevisionID}|[Atop]]]`;
 		}
@@ -104,6 +152,7 @@ export class GANReviewWikicodeGenerator {
 		if ( gaRevisionID ) {
 			textToAppend += `[[Special:Diff/${gaRevisionID}|[List]]]`;
 		}
+
 		return textToAppend;
 	}
 
