@@ -298,7 +298,7 @@ export class GANReviewWikicodeGenerator {
 		switch ( templateName ) {
 			case 'FailedGA':
 			case 'GA':
-				templatesThatGoBefore = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Talkheader', 'Talk page header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English']; // [[MOS:TALKORDER]]
+				templatesThatGoBefore = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Talkheader', 'Talk page header', 'Talkpage', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English']; // [[MOS:TALKORDER]]
 				break;
 			default:
 				throw new Error('addTemplateInCorrectMOSTalkOrderPosition: Supplied template is not in dictionary. Unsure where to place it.');
