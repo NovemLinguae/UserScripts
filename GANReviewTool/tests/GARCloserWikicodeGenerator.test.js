@@ -1009,6 +1009,40 @@ describe('processDelistForGAList(wikicode, articleToRemove)', () => {
 }}`;
 		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
 	});
+
+
+	it(`Should handle rare case of the item being listed twice`, () => {
+		let articleToRemove = `Multilateral Investment Guarantee Agency`;
+		let wikicode =
+`===== Globalization =====
+{{#invoke:Good Articles|subsection|
+[[Globalization and women in China]]
+[[Multilateral Investment Guarantee Agency]]
+[[Spanish flu]]
+}}
+
+=====Businesses and organizations=====
+{{#invoke:Good Articles|subsection|
+''[[The Accounting Review]]''
+[[Multilateral Investment Guarantee Agency]]
+[[Mzoli's]]
+}}
+`;
+		let output =
+`===== Globalization =====
+{{#invoke:Good Articles|subsection|
+[[Globalization and women in China]]
+[[Spanish flu]]
+}}
+
+=====Businesses and organizations=====
+{{#invoke:Good Articles|subsection|
+''[[The Accounting Review]]''
+[[Mzoli's]]
+}}
+`;
+		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
+	});
 });
 
 // private methods
