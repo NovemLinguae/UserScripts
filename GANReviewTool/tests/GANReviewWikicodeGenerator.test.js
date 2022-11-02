@@ -1124,7 +1124,7 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 	});
 
 	/*
-	// TODO: should handle nested templates
+	// TODO
 	test('Should handle nested templates', () => {
 		let talkWikicode = 
 `{{GA nominee|14:41, 19 October 2022 (UTC)|nominator=––[[User:FormalDude|<span style="color: #0151D2; font-family: Microsoft Sans Serif; letter-spacing: -.3px;">'''Formal'''{{color|black|'''Dude'''}}</span>]] [[User talk:FormalDude|<span style="color:#0151D2;font-family: Microsoft Sans Serif;font-size:90%;">'''(talk)'''</span>]]|page=1|subtopic=Politics and government|status=2ndopinion|note=}}
@@ -1139,7 +1139,7 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 	*/
 
 	/*
-	// TODO: likely need to create an ArticleHistoryCreator class, and run it on every talk page
+	// TODO
 	test(`Should create {{Article history}} when {{Failed GA}} is present, for fail`, () => {
 		let talkWikicode =
 `{{GA nominee|19:38, 1 September 2022 (UTC)|nominator=[[User:ChessEric|ChessEric]] ([[User talk:ChessEric|talk]] <b>·</b> [[Special:Contribs/ChessEric|contribs]])|page=2|subtopic=Earth sciences|status=onhold|note=}}
