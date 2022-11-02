@@ -4,7 +4,7 @@ import { GARCloserWikicodeGenerator } from "./GARCloserWikicodeGenerator";
 export class GARCloserController {
 	/**
 	 * @param {function} $ jQuery
-	 * @param {Object} mw mediawiki, https://doc.wikimedia.org/mediawiki-core/master/js/#!/api/mw
+	 * @param {mw} mw mediawiki, https://doc.wikimedia.org/mediawiki-core/master/js/#!/api/mw
 	 * @param {Location} location https://developer.mozilla.org/en-US/docs/Web/API/Window/location
 	 * @param {GARCloserWikicodeGenerator} wg
 	 * @param {GARCloserHTMLGenerator} hg
