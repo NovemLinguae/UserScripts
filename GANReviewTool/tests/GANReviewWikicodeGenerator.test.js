@@ -1401,6 +1401,23 @@ describe('getTopicFromGANomineeTemplate(talkWikicode)', () => {
 		let output = 'Media and drama';
 		expect(wg.getTopicFromGANomineeTemplate(talkWikicode)).toBe(output);
 	});
+
+	test('line breaks, and space between | and parameterName', () => {
+		let talkWikicode =
+`{{talkpage}}
+{{GA nominee
+| 17:45, 6 October 2022 (UTC)
+| nominator            = — [[User:JuanGLP|<span style="background-image:linear-gradient(90deg,#8A4FBF,#9B6DC6,#B691D2,#CBAED7);color:black;padding:2.5px">'''JuanGLP'''</span>]] (<span style="font-size:85%;">[[User talk:JuanGLP|talk]]</span>)
+| page                 = 1
+| subtopic             = Music
+| status               =
+| note                 =
+}}
+{{WikiProject banner shell}}
+`;
+		let output = 'Music';
+		expect(wg.getTopicFromGANomineeTemplate(talkWikicode)).toBe(output);
+	});
 });
 
 describe('deleteGANomineeTemplate(talkWikicode)', () => {
@@ -1458,6 +1475,25 @@ describe('getTemplateParameter(wikicode, templateName, parameterName)', () => {
 		let templateName = 'GA nominee';
 		let parameterName = 'topic';
 		let output = null;
+		expect(wg.getTemplateParameter(wikicode, templateName, parameterName)).toBe(output);
+	});
+
+	test('line breaks, and space between | and parameterName', () => {
+		let wikicode =
+`{{talkpage}}
+{{GA nominee
+| 17:45, 6 October 2022 (UTC)
+| nominator            = — [[User:JuanGLP|<span style="background-image:linear-gradient(90deg,#8A4FBF,#9B6DC6,#B691D2,#CBAED7);color:black;padding:2.5px">'''JuanGLP'''</span>]] (<span style="font-size:85%;">[[User talk:JuanGLP|talk]]</span>)
+| page                 = 1
+| subtopic             = Music
+| status               =
+| note                 =
+}}
+{{WikiProject banner shell}}
+`;
+		let templateName = 'GA nominee';
+		let parameterName = 'page';
+		let output = '1';
 		expect(wg.getTemplateParameter(wikicode, templateName, parameterName)).toBe(output);
 	});
 });

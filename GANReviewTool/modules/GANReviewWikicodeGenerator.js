@@ -239,7 +239,7 @@ export class GANReviewWikicodeGenerator {
 
 		templateName = this.regExEscape(templateName);
 		parameterName = this.regExEscape(parameterName);
-		let regex = new RegExp(`\\{\\{${templateName}[^\\}]+\\|${parameterName}\\s*=\\s*([^\\}\\|]+)\\s*[^\\}]*\\}\\}`, 'i');
+		let regex = new RegExp(`\\{\\{${templateName}[^\\}]+\\|\\s*${parameterName}\\s*=\\s*([^\\}\\|]+)\\s*[^\\}]*\\}\\}`, 'i');
 		let parameterValue = wikicode.match(regex)
 		if ( Array.isArray(parameterValue) && parameterValue[1] !== undefined ) {
 			return parameterValue[1].trim();
