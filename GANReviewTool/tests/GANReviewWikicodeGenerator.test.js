@@ -1123,7 +1123,22 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle, oldid)).toBe(output);
 	});
 
-/*
+	/*
+	// TODO: should handle nested templates
+	test('Should handle nested templates', () => {
+		let talkWikicode = 
+`{{GA nominee|14:41, 19 October 2022 (UTC)|nominator=––[[User:FormalDude|<span style="color: #0151D2; font-family: Microsoft Sans Serif; letter-spacing: -.3px;">'''Formal'''{{color|black|'''Dude'''}}</span>]] [[User talk:FormalDude|<span style="color:#0151D2;font-family: Microsoft Sans Serif;font-size:90%;">'''(talk)'''</span>]]|page=1|subtopic=Politics and government|status=2ndopinion|note=}}
+`;
+		let reviewTitle = `Talk:Democracy in Iraq/GA1`;
+		let oldid = 1111;
+		let output = 
+`{{FailedGA|~~~~~|topic=Politics and government|page=1|oldid=1111}}
+`;
+		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle, oldid)).toBe(output);
+	});
+	*/
+
+	/*
 	// TODO: likely need to create an ArticleHistoryCreator class, and run it on every talk page
 	test(`Should create {{Article history}} when {{Failed GA}} is present, for fail`, () => {
 		let talkWikicode =
@@ -1154,7 +1169,7 @@ describe('getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 {{Talk:Tornado outbreak of June 19, 1951/GA1}}`;
 		expect(wg.getFailWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortTitle)).toBe(output);
 	});
-*/
+	*/
 });
 
 describe('getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)', () => {
@@ -1232,7 +1247,7 @@ describe('getOnHoldWikicodeForTalkPage(talkWikicode)', () => {
 		expect(wg.getOnHoldWikicodeForTalkPage(talkWikicode)).toBe(output);
 	});
 
-	test(`Should handle |status=onhold (same status that we're trying to set`, () => {
+	test(`Should handle |status=onhold (same status that we're trying to set)`, () => {
 		let talkWikicode =
 `{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}`;
 		let output =
@@ -1289,6 +1304,16 @@ describe('getAskSecondOpinionWikicodeForTalkPage(talkWikicode)', () => {
 `{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|note=|status=2ndopinion}}`;
 		expect(wg.getAskSecondOpinionWikicodeForTalkPage(talkWikicode)).toBe(output);
 	});
+
+	/*
+	test('Should handle nested templates', () => {
+		let talkWikicode =
+`{{GA nominee|14:41, 19 October 2022 (UTC)|nominator=––[[User:FormalDude|<span style="color: #0151D2; font-family: Microsoft Sans Serif; letter-spacing: -.3px;">'''Formal'''{{color|black|'''Dude'''}}</span>]] [[User talk:FormalDude|<span style="color:#0151D2;font-family: Microsoft Sans Serif;font-size:90%;">'''(talk)'''</span>]]|page=1|subtopic=Politics and government|status=|note=}}`;
+		let output =
+`{{GA nominee|14:41, 19 October 2022 (UTC)|nominator=––[[User:FormalDude|<span style="color: #0151D2; font-family: Microsoft Sans Serif; letter-spacing: -.3px;">'''Formal'''{{color|black|'''Dude'''}}</span>]] [[User talk:FormalDude|<span style="color:#0151D2;font-family: Microsoft Sans Serif;font-size:90%;">'''(talk)'''</span>]]|page=1|subtopic=Politics and government|status=2ndopinion|note=}}`;
+		expect(wg.getAskSecondOpinionWikicodeForTalkPage(talkWikicode)).toBe(output);
+	});
+	*/
 });
 
 describe('getAnswerSecondOpinionWikicodeForTalkPage(talkWikicode)', () => {
