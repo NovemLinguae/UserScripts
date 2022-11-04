@@ -1,55 +1,23 @@
 //<nowiki>
 
 class CiteHighlighter {
-	/** CAREFUL. This is case sensitive. */
-	deleteAll(haystack, ...strings) {
-		for ( let string of strings ) {
-			for ( let key in haystack ) {
-				haystack[key] = this.deleteFromArray(haystack[key], string);
-			}
+	async execute() {
+		this.sources = await this.getListOfSourcesAndRatings();
+		this.unreliableWordsForOrangeHighlighting = this.getUnreliableWords();
+		this.setConfigVariableDefaultsIfNeeded();
+		this.articleTitle = mw.config.get('wgPageName');
+		if ( this.isSlowPage() ) {
+			return;
 		}
-	}
-
-	deleteFromArray(haystack, needle) {
-		const index = haystack.indexOf(needle);
-		if (index > -1) {
-			haystack.splice(index, 1);
-		}
-		return haystack;
-	}
-	
-	async getWikicode(title) {
-		if ( ! mw.config.get('wgCurRevisionId') ) return ''; // if page is deleted, return blank
-		var wikicode = '';
-		title = encodeURIComponent(title);
-		await $.ajax({
-			url: '/w/api.php?action=parse&page='+title+'&prop=wikitext&formatversion=2&format=json',
-			success: function (result) {
-				wikicode = result['parse']['wikitext'];
-			},
-			dataType: "json",
-			async: false
-		});
-		return wikicode;
-	}
-
-	async getWikitextFromCache(title) {
-		var api = new mw.ForeignApi('https://en.wikipedia.org/w/api.php');
-		var wikitext = '';
-		await api.get( {
-			action: 'query',
-			prop: 'revisions',
-			titles: title,
-			rvslots: '*',
-			rvprop: 'content',
-			formatversion: '2',
-			uselang: 'content', // needed for caching
-			smaxage: '86400', // cache for 1 day
-			maxage: '86400' // cache for 1 day
-		} ).done( function ( data ) {
-			wikitext = data.query.pages[0].revisions[0].slots.main.content;
-		} );
-		return wikitext;
+		this.highlightSourceListsMoreAggressively();
+		this.highlightDraftsMoreAggressively();
+		this.preventWikipediaFalsePositives();
+		this.colors = this.getColors();
+		this.writeCSS();
+		this.wikicode = await this.getWikicode(this.articleTitle);
+		this.addHTMLClassesToRefs();
+		this.addHTMLClassesForUnreliableWords();
+		this.observeAndAddClassesToTooltips();
 	}
 
 	getUnreliableWords() {
@@ -90,7 +58,7 @@ class CiteHighlighter {
 	}
 
 	async getListOfSourcesAndRatings() {
-		let sources = await this.getWikitextFromCache('User:Novem Linguae/Scripts/CiteHighlighter/SourcesJSON.js');
+		let sources = await this.getWikicodeFromCache('User:Novem Linguae/Scripts/CiteHighlighter/SourcesJSON.js');
 		sources = JSON.parse(sources);
 		return sources;
 	}
@@ -108,11 +76,11 @@ class CiteHighlighter {
 	}
 
 	/**
-	  * Don't highlight certain pages, for speed and visual appearance reasons.
-	  *
-	  * On pages with a lot of links (watchlist, WP:FA), highlighting EVERYTHING will double the
-	  * load time. e.g. watchlist 5 seconds -> 10 seconds.
-	  */
+	 * Don't highlight certain pages, for speed and visual appearance reasons.
+	 *
+	 * On pages with a lot of links (watchlist, WP:FA), highlighting EVERYTHING will double the
+	 * load time. e.g. watchlist 5 seconds -> 10 seconds.
+	 */
 	isSlowPage() {
 		if (
 			mw.config.get('wgAction') === 'history' ||
@@ -128,9 +96,9 @@ class CiteHighlighter {
 	}
 
 	/**
-	  * If page is a source quality list, highlight everything, even if highlightEverything = false;
-	  * Goal: easily see if the script is highlighting anything wrong.
-	  */
+	 * If page is a source quality list, highlight everything, even if highlightEverything =
+	 * false. Goal: easily see if the script is highlighting anything wrong.
+	 */
 	highlightSourceListsMoreAggressively() {
 		let highlightEverythingList = [
 			'Wikipedia:Reliable_sources/Perennial_sources',
@@ -150,9 +118,9 @@ class CiteHighlighter {
 	}
 
 	/**
-	  * If page is a draft, highlight everything, as the # of links is small, and oftentimes
-	  * inline citations are malformed
-	  */
+	 * If page is a draft, highlight everything, as the # of links is small, and oftentimes
+	 * inline citations are malformed
+	 */
 	highlightDraftsMoreAggressively() {
 		if ( mw.config.get('wgNamespaceNumber') == 118 ) {
 			window.citeHighlighterHighlightEverything = true;
@@ -160,8 +128,8 @@ class CiteHighlighter {
 	}
 
 	/**
-	  * If highlightEverything = true, delete wikipedia.org and wiktionary. Too many false positives.
-	  */
+	 * If highlightEverything = true, delete wikipedia.org and wiktionary. Too many false positives.
+	 */
 	preventWikipediaFalsePositives() {
 		if ( window.citeHighlighterHighlightEverything ) {
 			this.deleteAll(this.sources, 'en.wikipedia.org', 'wikipedia.org', 'wiktionary.org');
@@ -206,33 +174,23 @@ class CiteHighlighter {
 
 	addHTMLClassesToRefs() {
 		for ( let color in this.colors ) {
-			if ( typeof this.sources[color] === 'undefined' ) continue;
+			let colorIsMissing = typeof this.sources[color] === 'undefined';
+			if ( colorIsMissing ) continue;
 			
 			for ( let source of this.sources[color] ) {
-				// This code makes the algorithm more efficient, by not adding CSS for sources that aren't found in the wikicode.
-				// I programmed some exceptions to fix bugs. For example:
-				// - {{Cite journal}} with a pubmed ID generates nih.gov without putting it in the wikicode
-				// - {{Cite tweet}} generates twitter.com without putting it in the wikicode
-				if ( this.wikicode.includes(source) || source === 'nih.gov' || source === 'twitter.com' ) {
-					// highlight external links, if it contains a period and no space (i.e. a domain name)
-					if ( source.includes('.') && ! source.includes(' ') ) {
-						// highlight whole cite
-						// [title="source" i]... the "i" part is not working in :has() for some reason
-						// use .toLowerCase() for now
-						// using .addClass() instead of .css() or .attr('style') because I'm having issues getting medrs to override arXiv/Wikidata/other red sources
-						$('li[id^="cite_note-"]').has('a[href*="/'+source.toLowerCase()+'"]').addClass('cite-highlighter-' + color);
-						$('li[id^="cite_note-"]').has('a[href*=".'+source.toLowerCase()+'"]').addClass('cite-highlighter-' + color);
-						
-						// Also support any {{Cite}} template in a list. For example, a works cited section supporting a references section consisting of "Smith 1986, pp. 573-574" type citations. Example: https://en.wikipedia.org/wiki/C._J._Cregg#Articles_and_tweets
-						$('li').has('.citation a[href*="/'+source.toLowerCase()+'"]').addClass('cite-highlighter-' + color);
-						$('li').has('.citation a[href*=".'+source.toLowerCase()+'"]').addClass('cite-highlighter-' + color);
+				// Don't check the DOM for every domain. Too expensive. Instead, examine the wikitext and only check the DOM for domains found in the wikitext.
 
+				// alwaysIncludeDomains are domains that we should always write a CSS rule for, even if they are not found in the wikitext. This makes sure that domains in {{Cite}} templates are detected. For example, {{Cite journal}} uses nih.gov, and {{Cite tweet}} uses twitter.com
+				let isAlwaysIncludeDomain = source === 'nih.gov' || source === 'twitter.com';
+				
+				if ( this.wikicode.includes(source) || isAlwaysIncludeDomain ) {
+					let isExternalLinkContainingDomainName = source.includes('.') && ! source.includes(' ');
+					if ( isExternalLinkContainingDomainName ) {
+						this.highlightCitation(source, color);
+						this.highlightUnorderedListItem(source, color);
+						
 						if ( window.citeHighlighterHighlightEverything ) {
-							// highlight external link only
-							// !important; needed for highlighting PDF external links. otherwise the HTML that generates the PDF icon has higher specificity, and makes it transparent
-							// [title="source" i]... the "i" means case insensitive. Default is case sensitive.
-							mw.util.addCSS('#bodyContent a[href*="/'+source+'" i] {background-color: '+this.colors[color]+' !important;}');
-							mw.util.addCSS('#bodyContent a[href*=".'+source+'" i] {background-color: '+this.colors[color]+' !important;}');
+							this.highlightExternalLinks(source, color);
 						}
 					}
 				}
@@ -240,10 +198,35 @@ class CiteHighlighter {
 		}
 	}
 
-	/** Observe and highlight popups created by the gadget Reference Tooltips. */
+	highlightCitation(source, color) {
+		// highlight whole cite
+		// [title="source" i]... the "i" part is not working in :has() for some reason
+		// use .toLowerCase() for now
+		// using .addClass() instead of .css() or .attr('style') because I'm having issues getting medrs to override arXiv/Wikidata/other red sources
+		$('li[id^="cite_note-"]').has('a[href*="/'+source.toLowerCase()+'"]').addClass('cite-highlighter-' + color);
+		$('li[id^="cite_note-"]').has('a[href*=".'+source.toLowerCase()+'"]').addClass('cite-highlighter-' + color);
+	}
+
+	highlightUnorderedListItem(source, color) {
+		// Also support any {{Cite}} template inside an unordered list. For example, a works cited section supporting a references section consisting of "Smith 1986, pp. 573-574" type citations. Example: https://en.wikipedia.org/wiki/C._J._Cregg#Articles_and_tweets
+		$('li').has('.citation a[href*="/'+source.toLowerCase()+'"]').addClass('cite-highlighter-' + color);
+		$('li').has('.citation a[href*=".'+source.toLowerCase()+'"]').addClass('cite-highlighter-' + color);
+	}
+
+	highlightExternalLinks(source, color) {
+		// highlight external link only
+		// !important; needed for highlighting PDF external links. otherwise the HTML that generates the PDF icon has higher specificity, and makes it transparent
+		// [title="source" i]... the "i" means case insensitive. Default is case sensitive.
+		mw.util.addCSS('#bodyContent a[href*="/'+source+'" i] {background-color: '+this.colors[color]+' !important;}');
+		mw.util.addCSS('#bodyContent a[href*=".'+source+'" i] {background-color: '+this.colors[color]+' !important;}');
+	}
+
+	/**
+	 * Observe and highlight popups created by the gadget Reference Tooltips.
+	 */
 	observeAndAddClassesToTooltips() {
 		new MutationObserver(function (mutations) {
-			var el = document.getElementsByClassName('rt-tooltip')[0];
+			let el = document.getElementsByClassName('rt-tooltip')[0];
 			if (el) {
 				for (let color in this.colors) {
 					if (typeof sources[color] === 'undefined') continue;
@@ -265,9 +248,9 @@ class CiteHighlighter {
 	}
 	
 	/**
-	  * Be more aggressive with this list of words. Doesn't have to be the domain name. Can be
-	  * anywhere in the URL. Example unreliableWord: blog.
-	  */
+	 * Be more aggressive with this list of words. Doesn't have to be the domain name. Can be
+	 * anywhere in the URL. Example unreliableWord: blog.
+	 */
 	addHTMLClassesForUnreliableWords() {
 		for ( let word of this.unreliableWordsForOrangeHighlighting ) {
 			let color = 'unreliableWord';
@@ -280,23 +263,57 @@ class CiteHighlighter {
 		}
 	}
 
-	async execute() {
-		this.sources = await this.getListOfSourcesAndRatings();
-		this.unreliableWordsForOrangeHighlighting = this.getUnreliableWords();
-		this.setConfigVariableDefaultsIfNeeded();
-		this.articleTitle = mw.config.get('wgPageName');
-		if ( this.isSlowPage() ) {
-			return;
+	/**
+	 * CAREFUL. This is case sensitive.
+	 */
+	deleteAll(haystack, ...strings) {
+		for ( let string of strings ) {
+			for ( let key in haystack ) {
+				haystack[key] = this.deleteFromArray(haystack[key], string);
+			}
 		}
-		this.highlightSourceListsMoreAggressively();
-		this.highlightDraftsMoreAggressively();
-		this.preventWikipediaFalsePositives();
-		this.colors = this.getColors();
-		this.writeCSS();
-		this.wikicode = await this.getWikicode(this.articleTitle);
-		this.addHTMLClassesToRefs();
-		this.addHTMLClassesForUnreliableWords();
-		this.observeAndAddClassesToTooltips();
+	}
+
+	deleteFromArray(haystack, needle) {
+		const index = haystack.indexOf(needle);
+		if (index > -1) {
+			haystack.splice(index, 1);
+		}
+		return haystack;
+	}
+	
+	async getWikicode(title) {
+		let pageIsDeleted = ! mw.config.get('wgCurRevisionId');
+		if ( pageIsDeleted ) return '';
+
+		let api = new mw.Api();
+		let response = await api.get( {
+			action: 'parse',
+			page: title,
+			prop: 'wikitext',
+			formatversion: '2',
+			format: 'json'
+		} );
+		let wikicode = response.parse.wikitext;
+		return wikicode;		
+	}
+
+	async getWikicodeFromCache(title) {
+		// ForeignApi so that CiteHighlighter can be loaded on any wiki
+		let api = new mw.ForeignApi('https://en.wikipedia.org/w/api.php');
+		let response = await api.get( {
+			action: 'query',
+			prop: 'revisions',
+			titles: title,
+			rvslots: '*',
+			rvprop: 'content',
+			formatversion: '2',
+			uselang: 'content', // needed for caching
+			smaxage: '86400', // cache for 1 day
+			maxage: '86400' // cache for 1 day
+		} );
+		let wikicode = response.query.pages[0].revisions[0].slots.main.content;
+		return wikicode;
 	}
 }
 
