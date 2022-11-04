@@ -734,7 +734,7 @@ export class GANReviewHTMLGenerator {
 					<p>
 						<strong>Wikicode to display when adding this to the list of good articles at [[<a href="/wiki/Wikipedia:Good_articles">WP:GA</a>]]</strong><br />
 						People should be in format: <code>Lastname, Firstname</code><br />
-						Albums, television shows, <a href="/wiki/Genus">genus</a>, <a href="/wiki/Binomial_nomenclature">species</a> should be italicized: <code>''Jeopardy''</code><br />
+						Albums, television shows, <a href="/wiki/Genus">genus</a>, <a href="/wiki/Binomial_nomenclature">species</a>, court cases should be italicized: <code>''Jeopardy''</code><br />
 						Television episodes should be surrounded by double quotes: <code>"Episode name"</code><br />
 						Parentheses at the end should not be formatted: <code>''Revolver'' (Beatles album)</code><br />
 						Artwork, poetry, etc. may also require special formatting<br />
