@@ -19,7 +19,7 @@ class UserHighlighterSimple {
 					that.$link.addClass(that.$link.attr('class') + ' UHS-override-signature-colors');
 				}
 			} catch(e) {
-				console.error('UserHighlighterSimple link parsing error:', e.message, that.$link);
+				console.error('UserHighlighterSimple link parsing error:', e.message, that.$link.html());
 			}
 		});
 	}
