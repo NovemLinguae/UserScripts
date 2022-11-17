@@ -145,7 +145,8 @@ class UserHighlighterSimple {
 		if ( ! this.hasHREF(url) || this.isAnchor(url) || ! this.isHTTPorHTTPS(url) ) {
 			return false;
 		}
-		
+
+		url = this.addDomainIfMissing(url);
 		var uri = new mw.Uri(url);
 		
 		// Skip links with query strings
@@ -173,6 +174,16 @@ class UserHighlighterSimple {
 		}
 
 		return true;
+	}
+
+	/**
+	 * mw.Uri(url) expects a complete URL. If we get something like /wiki/User:Test, convert it to https://en.wikipedia.org/wiki/User:Test. Without this, UserHighlighterSimple doesn't work on metawiki.
+	 */
+	addDomainIfMissing(url) {
+		if ( url.startsWith('/') ) {
+			url = window.location.origin + url;
+		}
+		return url;
 	}
 
 	getUserName() {
