@@ -1,6 +1,29 @@
 //<nowiki>
 
 class UserHighlighterSimple {
+	async execute() {
+		await this.getUsernames();
+		this.setHighlightColors();
+		let that = this;
+		$('#article a, #bodyContent a, #mw_contentholder a').each(function(index, element){
+			try {
+				that.$link = $(element);
+				if ( ! that.linksToAUser() ) {
+					return;
+				}
+				that.user = that.getUserName();
+				that.hasAdvancedPermissions = false;
+				that.addClassesAndHoverTextToLinkIfNeeded();
+				// If the user has any advanced perms, they are likely to have a signature, so be aggressive about overriding the background and foreground color. That way there's no risk their signature is unreadable due to background color and foreground color being too similar. Don't do this for users without advanced perms... being able to see a redlinked username is useful.
+				if ( that.hasAdvancedPermissions ) {
+					that.$link.addClass(that.$link.attr('class') + ' UHS-override-signature-colors');
+				}
+			} catch(e) {
+				console.error('UserHighlighterSimple link parsing error:', e.message, that.$link);
+			}
+		});
+	}
+
 	addCSS(htmlClass, cssDeclaration) {
 		// .plainlinks is for Wikipedia Signpost articles
 		// To support additional custom signature edge cases, add to the selectors here.
@@ -199,29 +222,6 @@ class UserHighlighterSimple {
 				this.$link.attr("title", "Less than 500 edits");
 			}
 		}
-	}
-
-	async execute() {
-		await this.getUsernames();
-		this.setHighlightColors();
-		let that = this;
-		$('#article a, #bodyContent a, #mw_contentholder a').each(function(index, element){
-			try {
-				that.$link = $(element);
-				if ( ! that.linksToAUser() ) {
-					return;
-				}
-				that.user = that.getUserName();
-				that.hasAdvancedPermissions = false;
-				that.addClassesAndHoverTextToLinkIfNeeded();
-				// If the user has any advanced perms, they are likely to have a signature, so be aggressive about overriding the background and foreground color. That way there's no risk their signature is unreadable due to background color and foreground color being too similar. Don't do this for users without advanced perms... being able to see a redlinked username is useful.
-				if ( that.hasAdvancedPermissions ) {
-					that.$link.addClass(that.$link.attr('class') + ' UHS-override-signature-colors');
-				}
-			} catch(e) {
-				console.error('UserHighlighterSimple link parsing error:', e.message, that.$link);
-			}
-		});
 	}
 }
 
