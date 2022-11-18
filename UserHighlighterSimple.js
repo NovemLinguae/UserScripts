@@ -154,7 +154,7 @@ class UserHighlighterSimple {
 		// Those all have "query strings" such as "&oldid=1003511328"
 		// Exception: Users without a user page (red link) need to be highlighted
 		// Exception: The uncommon case of a missing user talk page should also be highlighted (renamed users)
-		let isRedLinkUserPage = url.startsWith('/w/index.php?title=User') && url.endsWith('&action=edit&redlink=1');
+		let isRedLinkUserPage = url.includes('/w/index.php?title=User') && url.endsWith('&action=edit&redlink=1');
 		if ( ! $.isEmptyObject(uri.query) && ! isRedLinkUserPage ) {
 			return false;
 		}
