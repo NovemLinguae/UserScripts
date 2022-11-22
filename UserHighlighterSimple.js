@@ -6,6 +6,7 @@ class UserHighlighterSimple {
 		this.setHighlightColors();
 		let that = this;
 		$('#article a, #bodyContent a, #mw_contentholder a').each(function(index, element){
+			// TODO: maybe remove this try catch. it displays that.$link.prop('href') to the console which is nice, but it hides the stack trace so I can't see what line the error occurred on
 			try {
 				that.$link = $(element);
 				if ( ! that.linksToAUser() ) {
@@ -19,7 +20,7 @@ class UserHighlighterSimple {
 					that.$link.addClass(that.$link.attr('class') + ' UHS-override-signature-colors');
 				}
 			} catch(e) {
-				console.error('UserHighlighterSimple link parsing error:', e.message, that.$link.html());
+				console.error('UserHighlighterSimple link parsing error:', e.message, that.$link.prop('href'));
 			}
 		});
 	}
@@ -135,18 +136,26 @@ class UserHighlighterSimple {
 		}
 	}
 
-	inSpecialUserOrUserTalkNamespace() {
-		return $.inArray(this.mwtitle.getNamespaceId(), [-1,2,3]) >= 0;
+	notInSpecialUserOrUserTalkNamespace() {
+		let namespace = this.mwtitle.getNamespaceId();
+		let notInSpecialUserOrUserTalkNamespace = $.inArray(namespace, [-1,2,3]) === -1;
+		return notInSpecialUserOrUserTalkNamespace;
 	}
 
 	linksToAUser() {
-		var url = this.$link.attr('href');
+		let url = this.$link.attr('href');
 		
 		if ( ! this.hasHREF(url) || this.isAnchor(url) || ! this.isHTTPorHTTPS(url) ) {
 			return false;
 		}
 
 		url = this.addDomainIfMissing(url);
+
+		// mw.Uri(url) throws an error if it can't find a URI. So need to detect it ourselves before that code is reached.
+		if ( this.hasNoURI(url) ) {
+			return false;
+		}
+
 		var uri = new mw.Uri(url);
 		
 		// Skip links with query strings
@@ -169,11 +178,28 @@ class UserHighlighterSimple {
 		let title = this.getTitle(url, uri);
 		this.mwtitle = new mw.Title(title);
 		
-		if ( ! this.inSpecialUserOrUserTalkNamespace() ) {
+		if ( this.notInSpecialUserOrUserTalkNamespace() ) {
 			return false;
 		}
 
 		return true;
+	}
+
+	hasNoURI(url) {
+		let endsInSlash = url.endsWith('/');
+		let numberOfSlashes = this.countInstances(url, '/');
+		if ( numberOfSlashes === 3 && endsInSlash ) {
+			return true;
+		} else if ( numberOfSlashes === 2 ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// Brandon Frohbieter, CC BY-SA 4.0, https://stackoverflow.com/a/4009771/3480193
+	countInstances(string, word) {
+		return string.split(word).length - 1;
 	}
 
 	/**
