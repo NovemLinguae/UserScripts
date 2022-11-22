@@ -84,6 +84,7 @@ class UserHighlighterSimple {
 		this.global = {
 			...dataJSON['founder'],
 			...dataJSON['steward'],
+			...dataJSON['boardOfTrustees'],
 			// WMF is hard-coded a bit further down. The script detects those strings in the username. This is safe to do because the WMF string is blacklisted from names, so has to be specially created.
 			//...dataJSON['sysadmin'],
 			//...dataJSON['staff'],
@@ -240,10 +241,10 @@ class UserHighlighterSimple {
 	addClassesAndHoverTextToLinkIfNeeded() {
 		// in addition to folks in the global group, highlight anybody with "WMF" in their name, case insensitive. this should not generate false positives because WMF is on the username blacklist.
 		if ( this.user.match(/^[^\/]*WMF/i) ) {
-			this.addClassAndHoverText('UHS-steward-wmf-founder', 'WMF, Steward, or Founder');
+			this.addClassAndHoverText('UHS-steward-wmf-founder', 'WMF, Steward, Founder, or Board of Trustees');
 		}
 
-		this.checkForPermission(this.global, 'UHS-steward-wmf-founder', 'WMF, Steward, or Founder');
+		this.checkForPermission(this.global, 'UHS-steward-wmf-founder', 'WMF, Steward, Founder, or Board of Trustees');
 		this.checkForPermission(this.bureaucrats, 'UHS-bureaucrat', 'Bureaucrat');
 		this.checkForPermission(this.arbcom, 'UHS-arbitration-committee', 'Arbitration Committee member');
 		this.checkForPermission(this.admins, 'UHS-administrator', 'Admin');
