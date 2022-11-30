@@ -85,9 +85,9 @@ class UserHighlighterSimple {
 			...dataJSON['founder'],
 			...dataJSON['steward'],
 			...dataJSON['boardOfTrustees'],
+			...dataJSON['staff'],
 			// WMF is hard-coded a bit further down. The script detects those strings in the username. This is safe to do because the WMF string is blacklisted from names, so has to be specially created.
 			//...dataJSON['sysadmin'],
-			//...dataJSON['staff'],
 			//...dataJSON['global-interface-editor'],
 			//...dataJSON['wmf-supportsafety'],
 			//...dataJSON['mediawikiPlusTwo'],
