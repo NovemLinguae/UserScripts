@@ -14,10 +14,9 @@ $(async function() {
 	let garController = new GARCloserController();
 	await garController.execute($, mw, location, new GARCloserWikicodeGenerator(), new GARCloserHTMLGenerator());
 
-	// TODO: create an environment class such as Environment, State, Output, or GANReviewIO. It can wrap all the IO junk such as $, mw, etc. Should make it easier to mock and unit test.
-
-	// TODO: extract utility functions such as escapeRegEx into a GARReviewToolUtil class
-	// TODO: create Page object? could store title, wikicode, etc.
+	// TODO: extract API calls into a MediaWikiApi class, which is essentially the model. can be 1 class used by both GANReviewController and GARCloserController
+	// TODO: extract $ and location into a Browser class, which is essentially the view. maybe also merge HTMLGenerators into this class
+	// TODO: selenium tests
 });
 
 // </nowiki>
