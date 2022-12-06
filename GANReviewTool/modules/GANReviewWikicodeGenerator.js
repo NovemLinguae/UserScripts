@@ -30,34 +30,10 @@ export class GANReviewWikicodeGenerator {
 	getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle) {
 		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
 
-		// find heading
-		let headingStartPosition = this.getGASubpageHeadingPosition(gaSubpageHeading, gaSubpageWikicode);
-		// now move down a bit, to the first line with an item. skip {{Further}}, {{#invoke:Good Articles|subsection|, etc.
-		let subsectionStartPosition = this.findFirstStringAfterPosition('|subsection|\n', gaSubpageWikicode, headingStartPosition) + 13;
-		let headingEndPosition = this.findFirstStringAfterPosition('\n}}', gaSubpageWikicode, headingStartPosition) + 1;
 		gaDisplayTitle = gaDisplayTitle.trim();
-		// Make sure we found the right start position, and not the section below.
-		if ( subsectionStartPosition > headingEndPosition ) {
-			throw new Error('getPassWikicodeForGAListPage: Unable to find |subheading|\\n');
-		}
-
+		this.findSectionStartAndEnd(gaSubpageHeading, gaSubpageWikicode, gaDisplayTitle);
+		let insertPosition = this.findAlphabeticalInsertPosition(gaSubpageWikicode, gaDisplayTitle);
 		let wikicodeToInsert = this.getWikicodeToInsert(gaTitle, gaDisplayTitle);
-		let insertPosition;
-		let startOfLine = subsectionStartPosition;
-		while ( startOfLine < headingEndPosition ) {
-			let endOfLine = this.findFirstStringAfterPosition('\n', gaSubpageWikicode, startOfLine);
-			let line = gaSubpageWikicode.slice(startOfLine, endOfLine);
-			let lineWithSomeFormattingRemoved = this.removeFormattingThatInterferesWithSort(line);
-			let displayTitleWithSomeFormattingRemoved = this.removeFormattingThatInterferesWithSort(gaDisplayTitle);
-			if ( ! this.aSortsLowerThanB(lineWithSomeFormattingRemoved, displayTitleWithSomeFormattingRemoved) ) {
-				insertPosition = startOfLine;
-				break;
-			}
-			startOfLine = endOfLine + 1;
-		}
-		if ( ! insertPosition ) {
-			insertPosition = headingEndPosition;
-		}
 		return this.insertStringIntoStringAtPosition(gaSubpageWikicode, wikicodeToInsert, insertPosition);
 	}
 
@@ -100,6 +76,44 @@ export class GANReviewWikicodeGenerator {
 	getAnswerSecondOpinionWikicodeForTalkPage(talkWikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		return this.changeGANomineeTemplateStatus(talkWikicode, 'onreview');
+	}
+
+	/**
+	 * @private
+	 */
+	findSectionStartAndEnd(gaSubpageHeading, gaSubpageWikicode, gaDisplayTitle) {
+		// find heading
+		let headingStartPosition = this.getGASubpageHeadingPosition(gaSubpageHeading, gaSubpageWikicode);
+		// now move down a bit, to the first line with an item. skip {{Further}}, {{#invoke:Good Articles|subsection|, etc.
+		this.subsectionStartPosition = this.findFirstStringAfterPosition('|subsection|\n', gaSubpageWikicode, headingStartPosition) + 13;
+		this.headingEndPosition = this.findFirstStringAfterPosition('\n}}', gaSubpageWikicode, headingStartPosition) + 1;
+		// Make sure we found the right start position, and not the section below.
+		if ( this.subsectionStartPosition > this.headingEndPosition ) {
+			throw new Error('getPassWikicodeForGAListPage: Unable to find |subheading|\\n');
+		}
+	}
+
+	/**
+	 * @private
+	 */
+	findAlphabeticalInsertPosition(gaSubpageWikicode, gaDisplayTitle) {
+		let insertPosition;
+		let startOfLine = this.subsectionStartPosition;
+		while ( startOfLine < this.headingEndPosition ) {
+			let endOfLine = this.findFirstStringAfterPosition('\n', gaSubpageWikicode, startOfLine);
+			let line = gaSubpageWikicode.slice(startOfLine, endOfLine);
+			let lineWithSomeFormattingRemoved = this.removeFormattingThatInterferesWithSort(line);
+			let displayTitleWithSomeFormattingRemoved = this.removeFormattingThatInterferesWithSort(gaDisplayTitle);
+			if ( ! this.aSortsLowerThanB(lineWithSomeFormattingRemoved, displayTitleWithSomeFormattingRemoved) ) {
+				insertPosition = startOfLine;
+				break;
+			}
+			startOfLine = endOfLine + 1;
+		}
+		if ( ! insertPosition ) {
+			insertPosition = this.headingEndPosition;
+		}
+		return insertPosition;
 	}
 
 	/**
