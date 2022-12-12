@@ -525,9 +525,7 @@ export class GARCloserController {
 		let wikicode = await this.getWikicode(this.gaListTitle);
 		wikicode = this.wg.processDelistForGAList(wikicode, this.parentArticle);
 		this.gaListRevisionID = await this.makeEdit(this.gaListTitle, this.editSummary, wikicode);
-		if ( this.gaListRevisionID === undefined ) {
-			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
-		}
+		// Don't throw an error if we can't find the link to delete. Probably means it was already deleted.
 	}
 
 	/**
