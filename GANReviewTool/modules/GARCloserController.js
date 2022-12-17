@@ -79,7 +79,7 @@ export class GARCloserController {
 			this.pushStatus(`Done! Reloading...`);
 			location.reload();
 		} else {
-			this.pushStatus(`<span class="GARCloserTool-ErrorNotice">An error occurred :(</span>`);
+			this.pushStatus(`<span class="GARCloserTool-ErrorNotice">An error occurred :( Details: ${this.error.message}</span>`);
 		}
 	}
 
