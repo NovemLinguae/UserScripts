@@ -141,7 +141,7 @@ export class GANReviewHTMLGenerator {
 							<option value="Engineering and technology" disabled>===Transport===</option>
 							<option value="Engineering and technology">=====Air transport=====</option>
 							<option value="Engineering and technology">=====Maritime transport=====</option>
-							<option value="Engineering and technology">=====Rail transport=====</option>
+							<option value="Engineering and technology">====Rail transport====</option>
 							<option value="Engineering and technology">=====Rail bridges, tunnels, and stations=====</option>
 							<option value="Engineering and technology">=====Trains and locomotives=====</option>
 							<option value="Engineering and technology">=====Road infrastructure: Canada=====</option>
