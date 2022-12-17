@@ -992,6 +992,35 @@ __NOTOC__
 `;
 		expect(() => {wg.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)}).toThrow();
 	});
+
+	test(`should throw error when heading does not exist`, () => {
+		let gaSubpageHeading = `=====Rail transport=====`;
+		let gaTitle = `Ontario Highway 8`;
+		let gaDisplayTitle = `"Ontario Highway 8"`;
+		let gaSubpageWikicode =
+`
+===[[File:Nuvola apps display.png|22px|left|alt=|link=]] Computing and engineering===
+<div class="wp-ga-topic-back">[[#Engineering and technology|back]]</div>
+<div class="mw-collapsible-content">
+<!--The level 5 GA subtopics on this page may be first subdivided into new level 4 GA subtopics; see other GA topic pages-->
+<!--The level 5 GA subtopics on this page may be subdivided into new level 5 GA subtopics and other level 5 GA subtopics may be added; see other GA topic pages-->
+
+=====Computer-related organizations and people=====
+{{#invoke:Good Articles|subsection|
+[[Bomis]]
+[[Dansk Datamatik Center]]
+}}
+
+====Rail transport====
+{{#invoke:Good Articles|subsection|
+[[2 Line (Sound Transit)]]
+[[7 (New York City Subway service)]]
+[[7 Subway Extension]]
+[[9 (New York City Subway service)]]
+}}
+`;
+		expect(() => {wg.getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)}).toThrow();
+	});
 });
 
 describe('getFailWikicodeForGANPage(reviewWikicode)', () => {
@@ -1978,8 +2007,7 @@ describe('getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)', ()
 	test('No match', () => {
 		let wikicode = `blah blah blah`;
 		let shortenedVersionInComboBox = `=====Bodies of water and water formations=====`;
-		let output = -1;
-		expect(wg.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
+		expect(() => {wg.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)}).toThrow();
 	});
 
 	test('Input no space in front of ===, wikicode yes space in front of ===', () => {

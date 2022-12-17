@@ -735,17 +735,21 @@ export class GANReviewWikicodeGenerator {
 	getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 
-		// chop off equals at beginning and end of line. we want to isolate a smaller piece to use as our needle.
+		// split the heading into equalsSignOnOneSide + needle + equalsSignOnOneSide
 		let needle = /^={2,5}\s*(.*?)\s*={2,5}$/gm.exec(shortenedVersionInComboBox)[1];
-		// keep the === === equals signs surrounding the heading the same. to prevent matching the wrong heading when there are multiple headings with the same needle, e.g. ===Art=== and =====Art=====
 		let equalsSignsOnOneSide = /^(={2,5})/gm.exec(shortenedVersionInComboBox)[1];
-		// then insert this needle into a wide regex that includes equals, optional spaces next to the equals, and optional [[File:]]
+
+		// build a wider regex that includes equals, optional spaces next to the equals, and optional [[File:]]
 		let regex = new RegExp(`^${equalsSignsOnOneSide}\\s*(?:\\[\\[File:[^\\]]*\\]\\]\\s*)?${this.regExEscape(needle)}\\s*${equalsSignsOnOneSide}$`, 'gm');
 		let result = regex.exec(wikicode);
-		// if needle not found in haystack, return -1
-		if ( ! Array.isArray(result) ) return -1;
-		// else return location of first match
-		return result.index;
+
+		let resultNotFound = result === null;
+		if ( resultNotFound ) {
+			throw new Error('WP:GA subpage heading insert location not found. Is there a typo in GANReviewHTMLGenerator.js? Please add this article to the correct WP:GA subpage manually.');
+		} else {
+			let headingPosition = result.index;
+			return headingPosition;
+		}
 	}
 
 	/**
