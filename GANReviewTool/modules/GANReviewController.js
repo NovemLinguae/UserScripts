@@ -521,7 +521,7 @@ export class GANReviewController {
 
 		title = title.replace('Talk:', '');
 		title = title.replace(/_/g, ' ');
-		title = title.match(/^[^\/]*/)[0];
+		title = title.replace(/\/[^\/]+$/, ''); // chop off /GA1 from the end of title
 		return title;
 	}
 

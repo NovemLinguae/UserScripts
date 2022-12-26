@@ -82,6 +82,12 @@ describe('getGATitle(title)', () => {
 		let output = '2021 French Grand Prix';
 		expect(controller.getGATitle(title)).toBe(output);
 	});
+
+	test('should handle title with slash in it', () => {
+		let title = `Talk:Forge Park/495 station/GA1`;
+		let output = 'Forge Park/495 station';
+		expect(controller.getGATitle(title)).toBe(output);
+	});
 });
 
 describe('getGATalkTitle(gaTitle)', () => {
@@ -100,6 +106,12 @@ describe('getGATalkTitle(gaTitle)', () => {
 	test('two colons', () => {
 		let gaTitle = `User:Novem Linguae:test`;
 		let output = 'User talk:Novem Linguae:test';
+		expect(controller.getGATalkTitle(gaTitle)).toBe(output);
+	});
+
+	test('should handle title with slash in it', () => {
+		let gaTitle = `Forge Park/495 station`;
+		let output = 'Talk:Forge Park/495 station';
 		expect(controller.getGATalkTitle(gaTitle)).toBe(output);
 	});
 });
