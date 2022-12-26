@@ -256,9 +256,11 @@ class CiteHighlighter {
 			let color = 'unreliableWord';
 			if ( this.wikicode.includes(word) ) {
 				$('li[id^="cite_note-"]').has('a[href*="'+word.toLowerCase()+'"]').addClass('cite-highlighter-' + color);
+				/* Too many false positives. Turning off for now. See https://github.com/NovemLinguae/UserScripts/issues/146 and https://github.com/NovemLinguae/UserScripts/issues/148
 				if ( window.citeHighlighterHighlightEverything ) {
 					mw.util.addCSS('#bodyContent a[href*="'+word+'" i] {background-color: '+this.colors[color]+' !important;}');
 				}
+				*/
 			}
 		}
 	}
