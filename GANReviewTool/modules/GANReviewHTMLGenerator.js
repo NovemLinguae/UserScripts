@@ -213,6 +213,7 @@ export class GANReviewHTMLGenerator {
 							<option value="Language and literature">=====Plays=====</option>
 							<option value="Language and literature">=====Poetry=====</option>
 							<option value="Language and literature">=====Short fiction and anthologies=====</option>
+							<option value="Language and literature">=====Tolkien=====</option>
 							<option value="Language and literature">=====Words and linguistics=====</option>
 							<option value="Language and literature">=====Writers, publishers, and critics=====</option>
 
@@ -507,13 +508,13 @@ export class GANReviewHTMLGenerator {
 							<option value="Social sciences and society" disabled>==Social sciences and society==</option>
 							<option value="Social sciences and society" disabled>===Culture, sociology, and psychology===</option>
 							<option value="Social sciences and society">=====Culture and cultural studies=====</option>
+							<option value="Social sciences and society">=====Clothing, fashion, and beauty=====</option>
 							<option value="Social sciences and society">=====Cultural symbols=====</option>
 							<option value="Social sciences and society">=====Internet culture=====</option>
 							<option value="Social sciences and society">=====Cultural organizations and events=====</option>
 							<option value="Social sciences and society">=====Ethnic groups=====</option>
 							<option value="Social sciences and society">=====Psychology and psychologists=====</option>
 							<option value="Social sciences and society">=====Anthropology, anthropologists, sociology and sociologists=====</option>
-							<option value="Social sciences and society">=====Globalization=====</option>
 							<option value="Social sciences and society" disabled>===Education===</option>
 							<option value="Social sciences and society">=====Educational institutions=====</option>
 							<option value="Social sciences and society">=====Educators=====</option>
