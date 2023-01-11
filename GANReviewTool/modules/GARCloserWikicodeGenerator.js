@@ -64,7 +64,7 @@ __TOC__`;
 		if ( garRevisionID ) {
 			textToAppend += `[[Special:Diff/${garRevisionID}|[Atop]]]`;
 		}
-		if ( garRevisionID ) {
+		if ( talkRevisionID ) {
 			textToAppend += `[[Special:Diff/${talkRevisionID}|[Talk]]]`;
 		}
 		if ( articleRevisionID ) {
