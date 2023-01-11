@@ -4,6 +4,7 @@ export class DraftCleaner {
 	cleanDraft(wikicode, namespaceNumber, titleWithNamespaceAndSpaces) {
 		// run before other stuff
 		wikicode = this.deleteSomeHTMLTags(wikicode);
+		wikicode = this.deleteNonAFCDraftTags(wikicode);
 
 		wikicode = this.fixWikilinksContainingURL(wikicode);
 		wikicode = this.fixExternalLinksToWikipediaArticles(wikicode);
@@ -462,7 +463,13 @@ export class DraftCleaner {
 		wikicode = wikicode.replace(/<\/?nowiki( [^>]*)?\/?>/g, '');
 		wikicode = wikicode.replace(/<\/?u( [^>]*)?\/?>/g, '');
 		wikicode = wikicode.replace(/(?:<big>|<\/big>)/g, '');
+		return wikicode;
+	}
 
+	deleteNonAFCDraftTags(wikicode) {
+		wikicode = wikicode.replace(/{{Preloaddraft submit}}\n{0,2}/gi, '');
+		wikicode = wikicode.replace(/<!-- When you move this draft into article space, please link it to the Wikidata entry and remove the QID in the infobox code\. -->\n{0,2}/gi, '');
+		wikicode = wikicode.replace(/{{Draft}}\n{0,2}/gi, '');
 		return wikicode;
 	}
 

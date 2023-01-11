@@ -1131,6 +1131,12 @@ describe('deleteSomeHTMLTags(wikicode)', () => {
 		let output = `Test <utest> test`;
 		expect(dc.deleteSomeHTMLTags(wikicode)).toBe(output);
 	});
+
+	test('<big>', () => {
+		let wikicode = `<big><big>See also</big></big><br>`;
+		let output = `See also<br>`;
+		expect(dc.deleteSomeHTMLTags(wikicode)).toBe(output);
+	});
 });
 
 describe('deleteWeirdUnicodeCharacters(wikicode)', () => {
@@ -1249,14 +1255,6 @@ describe('fixExternalLinksToWikipediaArticles(wikicode)', () => {
 		let wikicode = `[https://en.wikipedia.org/wiki/%7B]`;
 		let output = `[[{]]`;
 		expect(dc.fixExternalLinksToWikipediaArticles(wikicode)).toBe(output);
-	});
-});
-
-describe('deleteBigTag(wikicode)', () => {
-	test('Normal', () => {
-		let wikicode = `<big><big>See also</big></big><br>`;
-		let output = `See also<br>`;
-		expect(dc.deleteBigTag(wikicode)).toBe(output);
 	});
 });
 
@@ -1493,6 +1491,45 @@ describe(`deleteMultipleReferenceTags(wikicode)`, () => {
 {{reflist}}
 `;
 		expect(dc.deleteMultipleReferenceTags(wikicode)).toBe(output);
+	});
+});
+
+describe(`deleteNonAFCDraftTags(wikicode)`, () => {
+	test(`{{Draft}}`, () => {
+		let wikicode =
+`{{AfC submission|||ts=20230111111105|u=Memezmoj|ns=118}}
+{{draft}}
+{{Infobox settlement`;
+		let output =
+`{{AfC submission|||ts=20230111111105|u=Memezmoj|ns=118}}
+{{Infobox settlement`;
+		expect(dc.deleteNonAFCDraftTags(wikicode)).toBe(output);
+	});
+
+	test(`{{Preloaddraft submit}}`, () => {
+		let wikicode =
+`{{Preloaddraft submit}}
+
+<!-- When you move this draft into article space, please link it to the Wikidata entry and remove the QID in the infobox code. -->
+
+{{Infobox person/Wikidata
+   |qid=Q110155583
+   |fetchwikidata=ALL
+ 
+   |dateformat=mdy
+}}
+
+'''Alice Phillips Withrow'''`;
+		let output =
+`{{Infobox person/Wikidata
+   |qid=Q110155583
+   |fetchwikidata=ALL
+ 
+   |dateformat=mdy
+}}
+
+'''Alice Phillips Withrow'''`;
+		expect(dc.deleteNonAFCDraftTags(wikicode)).toBe(output);
 	});
 });
 
