@@ -38,6 +38,7 @@ export class DraftCleaner {
 		wikicode = this.deleteDuplicateReferencesSection(wikicode);
 		wikicode = this.deleteBlankLinesBetweenBullets(wikicode);
 		wikicode = this.removeUnderscoresFromWikilinks(wikicode);
+		wikicode = this.fixPipedWikilinksWithIdenticalParameters(wikicode);
 		wikicode = this.removeBorderFromImagesInInfoboxes(wikicode);
 		wikicode = this.removeExtraAFCSubmissionTemplates(wikicode);
 		wikicode = this.moveAFCSubmissionTemplatesToTop(wikicode);
@@ -75,10 +76,6 @@ export class DraftCleaner {
 		wikicode = this.trimEmptyLines(wikicode);
 		wikicode = this.deleteMoreThanTwoEntersInARow(wikicode);
 		return wikicode;
-	}
-
-	_escapeRegEx(string) {
-		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	}
 
 	// surround bare URL's with <ref></ref>
@@ -526,6 +523,16 @@ export class DraftCleaner {
 		return wikicode;
 	}
 
+	fixPipedWikilinksWithIdenticalParameters(wikicode) {
+		let matches = wikicode.matchAll(/\[\[([^|\]]+)\|([^\]]+)\]\]/g);
+		for ( let match of matches ) {
+			if ( match[1] === match[2] ) {
+				wikicode = this._replaceAll(wikicode, `[[${match[1]}|${match[1]}]]`, `[[${match[1]}]]`);
+			}
+		}
+		return wikicode;
+	}
+
 	removeBorderFromImagesInInfoboxes(wikicode) {
 		wikicode = wikicode.replace(/(\|\s*logo\s*=\s*)\[\[File:([^\]\|]*)[^\]\]]*\]\]/g, '$1$2');
 		wikicode = wikicode.replace(/(\|\s*cover\s*=\s*)\[\[File:([^\]\|]*)[^\]\]]*\]\]/g, '$1$2');
@@ -570,5 +577,15 @@ export class DraftCleaner {
 
 	_toSentenceCase(string) {
 		return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+	}
+
+	_replaceAll(haystack, needle, replacement) {
+		let regex = new RegExp(this._escapeRegEx(needle), 'g');
+		haystack = haystack.replace(regex, replacement);
+		return haystack;
+	}
+
+	_escapeRegEx(string) {
+		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	}
 }

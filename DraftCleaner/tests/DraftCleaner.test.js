@@ -1573,6 +1573,35 @@ describe(`moveAFCSubmissionTemplatesToTop(wikicode)`, () => {
 	});
 });
 
+describe(`_replaceAll(haystack, needle, replacement)`, () => {
+	test(`Normal`, () => {
+		let haystack = `Testing. 123.`;
+		let needle = `.`;
+		let replacement = `!`;
+		let output = `Testing! 123!`;
+		expect(dc._replaceAll(haystack, needle, replacement)).toBe(output);
+	});
+});
+
+describe(`fixPipedWikilinksWithIdenticalParameters(wikicode)`, () => {
+	test(`Normal`, () => {
+		let wikicode =
+`[[Test 1]]
+[[Test 2|Test 2]]
+[[Test_3|Test 3]]
+[[Test 4 (different)|Test 4]]`;
+		let output =
+`[[Test 1]]
+[[Test 2]]
+[[Test_3|Test 3]]
+[[Test 4 (different)|Test 4]]`;
+
+		expect(dc.fixPipedWikilinksWithIdenticalParameters(wikicode)).toBe(output);
+	});
+});
+
+
+
 // TODO: inlineExternalLinksToRefs() - false positive involving external links in bibliography sections
 // TODO: run DraftCleaner on big articles and FAs, write tests for false positives
 // TODO: create suggested functions and tests, see DraftCleaner->cleanDraft() comments
