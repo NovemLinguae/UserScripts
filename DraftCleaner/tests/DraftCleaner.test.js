@@ -1560,6 +1560,7 @@ describe(`moveAFCSubmissionTemplatesToTop(wikicode)`, () => {
 `;
 		let output =
 `{{AfC submission|||ts=20230109235951|u=Meghaninmotion|ns=118}}
+----
 
 == References ==
 {{reflist}}

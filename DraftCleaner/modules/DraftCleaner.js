@@ -556,7 +556,7 @@ export class DraftCleaner {
 			wikicode = wikicode.replace(/{{AfC submission[^\}\}]*\}\}\n?/gm, '');
 
 			// insert template at top
-			wikicode = hasTemplateAtBottom[1] + "\n\n" + wikicode;
+			wikicode = hasTemplateAtBottom[1] + "\n----\n\n" + wikicode;
 		}
 		return wikicode;
 	}
