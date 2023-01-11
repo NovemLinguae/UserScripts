@@ -131,6 +131,9 @@ export class GARCloserController {
 			"rvdir": "older"
 		};
 		let result = await api.post(params);
+		if ( result['query']['pages'][0]['missing'] ) {
+			throw new Error(`getRevisionIDOfNewestRevision: Page appears to have zero revisions`);
+		}
 		let revisionID = result['query']['pages'][0]['revisions'][0]['revid'];
 		return revisionID;
 	}
