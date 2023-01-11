@@ -739,8 +739,8 @@ export class GANReviewWikicodeGenerator {
 		let needle = /^={2,5}\s*(.*?)\s*={2,5}$/gm.exec(shortenedVersionInComboBox)[1];
 		let equalsSignsOnOneSide = /^(={2,5})/gm.exec(shortenedVersionInComboBox)[1];
 
-		// build a wider regex that includes equals, optional spaces next to the equals, and optional [[File:]]
-		let regex = new RegExp(`^${equalsSignsOnOneSide}\\s*(?:\\[\\[File:[^\\]]*\\]\\]\\s*)?${this.regExEscape(needle)}\\s*${equalsSignsOnOneSide}$`, 'gm');
+		// build a wider regex that includes equals, optional spaces next to the equals, optional [[File:]], and optional HTML comments
+		let regex = new RegExp(`^${equalsSignsOnOneSide}\\s*(?:\\[\\[File:[^\\]]*\\]\\]\\s*)?${this.regExEscape(needle)}\\s*\s*(?:<!--[^\\-]*-->)?\\s*${equalsSignsOnOneSide}$`, 'gm');
 		let result = regex.exec(wikicode);
 
 		let resultNotFound = result === null;

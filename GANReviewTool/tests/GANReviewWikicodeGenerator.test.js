@@ -2035,6 +2035,13 @@ describe('getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)', ()
 		let output = 74;
 		expect(wg.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
 	});
+
+	test('should handle comment in heading', () => {
+		let wikicode = `=====Aircraft<!-- civilian aircraft only. Military aircraft covered under warfare -->=====`;
+		let shortenedVersionInComboBox = `=====Aircraft=====`;
+		let output = 0;
+		expect(wg.getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode)).toBe(output);
+	});
 });
 
 describe('findFirstStringAfterPosition(needle, haystack, position)', () => {
