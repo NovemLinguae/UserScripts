@@ -139,11 +139,18 @@ export class GANReviewHTMLGenerator {
 							<option value="Engineering and technology">=====Software=====</option>
 							<option value="Engineering and technology">=====Websites and the Internet=====</option>
 							<option value="Engineering and technology" disabled>===Transport===</option>
-							<option value="Engineering and technology">=====Air transport=====</option>
-							<option value="Engineering and technology">=====Maritime transport=====</option>
+							<option value="Engineering and technology">====Air transport====</option>
+							<option value="Engineering and technology">=====Air transport people=====</option>
+							<option value="Engineering and technology">=====Civilian aircraft=====</option>
+							<option value="Engineering and technology">=====Airlines=====</option>
+							<option value="Engineering and technology">=====Airports and terminals =====</option>
+							<option value="Engineering and technology">=====Aviation incidents=====</option>
+							<option value="Engineering and technology">====Maritime transport====</option>
+							<option value="Engineering and technology">=====Civilian ships=====</option>
 							<option value="Engineering and technology">====Rail transport====</option>
 							<option value="Engineering and technology">=====Rail bridges, tunnels, and stations=====</option>
 							<option value="Engineering and technology">=====Trains and locomotives=====</option>
+							<option value="Engineering and technology" disabled>====Road infrastructure====</option>
 							<option value="Engineering and technology">=====Road infrastructure: Canada=====</option>
 							<option value="Engineering and technology">=====Road infrastructure: United States=====</option>
 							<option value="Engineering and technology">=====Road infrastructure: Northeastern United States=====</option>
