@@ -1533,6 +1533,33 @@ describe(`deleteNonAFCDraftTags(wikicode)`, () => {
 	});
 });
 
+describe(`moveAFCSubmissionTemplatesToTop(wikicode)`, () => {
+	test(`{{Draft}}`, () => {
+		let wikicode =
+`== References ==
+{{reflist}}
+
+{{Authority control}}
+{{DEFAULTSORT:Rhoderick, Maude}}
+[[Category:Created via preloaddraft]]
+
+{{AfC submission|||ts=20230109235951|u=Meghaninmotion|ns=118}}
+`;
+		let output =
+`{{AfC submission|||ts=20230109235951|u=Meghaninmotion|ns=118}}
+
+== References ==
+{{reflist}}
+
+{{Authority control}}
+{{DEFAULTSORT:Rhoderick, Maude}}
+[[Category:Created via preloaddraft]]
+
+`;
+		expect(dc.moveAFCSubmissionTemplatesToTop(wikicode)).toBe(output);
+	});
+});
+
 // TODO: inlineExternalLinksToRefs() - false positive involving external links in bibliography sections
 // TODO: run DraftCleaner on big articles and FAs, write tests for false positives
 // TODO: create suggested functions and tests, see DraftCleaner->cleanDraft() comments

@@ -40,6 +40,7 @@ export class DraftCleaner {
 		wikicode = this.removeUnderscoresFromWikilinks(wikicode);
 		wikicode = this.removeBorderFromImagesInInfoboxes(wikicode);
 		wikicode = this.removeExtraAFCSubmissionTemplates(wikicode);
+		wikicode = this.moveAFCSubmissionTemplatesToTop(wikicode);
 
 		// all ==sections== should start with a capital letter
 		// after swap, if citation has no spaces on either side, and is not touching two other citations, add a space on the right
@@ -536,6 +537,18 @@ export class DraftCleaner {
 		let hasUnsubmittedTemplate = wikicode.match(/{{AfC submission\|t\|/);
 		if ( hasSubmittedTemplate && hasUnsubmittedTemplate ) {
 			wikicode = wikicode.replace(/{{AfC submission\|t\|[^\}\}]*\}\}\n?/gm, '');
+		}
+		return wikicode;
+	}
+
+	moveAFCSubmissionTemplatesToTop(wikicode) {
+		let hasTemplateAtBottom = wikicode.match(/\n[^\n]+\n*({{AfC submission[^\}]*}})\s*$/i);
+		if ( hasTemplateAtBottom ) {
+			// delete all submission templates
+			wikicode = wikicode.replace(/{{AfC submission[^\}\}]*\}\}\n?/gm, '');
+
+			// insert template at top
+			wikicode = hasTemplateAtBottom[1] + "\n\n" + wikicode;
 		}
 		return wikicode;
 	}
