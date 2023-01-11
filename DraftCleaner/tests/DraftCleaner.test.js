@@ -1083,6 +1083,19 @@ describe('disableCategoriesInDraftspace(wikicode, namespace)', () => {
 [[:Category:Indian emigrants to the United Arab Emirates]]`;
 		expect(dc.disableCategoriesInDraftspace(wikicode, namespace)).toBe(output);
 	});
+
+	test(`Don't disable [[Category:Created with preloaddraft]]`, () => {
+		let namespace = 118;
+		let wikicode =
+`[[Category:Test]]
+[[Category:Created via preloaddraft]]
+[[Category:Test2]]`;
+		let output =
+`[[:Category:Test]]
+[[Category:Created via preloaddraft]]
+[[:Category:Test2]]`;
+		expect(dc.disableCategoriesInDraftspace(wikicode, namespace)).toBe(output);
+	});
 });
 
 describe('deleteSomeHTMLTags(wikicode)', () => {
