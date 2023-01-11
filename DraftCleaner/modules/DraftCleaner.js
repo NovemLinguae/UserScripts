@@ -4,7 +4,6 @@ export class DraftCleaner {
 	cleanDraft(wikicode, namespaceNumber, titleWithNamespaceAndSpaces) {
 		// run before other stuff
 		wikicode = this.deleteSomeHTMLTags(wikicode);
-		wikicode = this.deleteBigTag(wikicode);
 
 		wikicode = this.fixWikilinksContainingURL(wikicode);
 		wikicode = this.fixExternalLinksToWikipediaArticles(wikicode);
@@ -462,6 +461,8 @@ export class DraftCleaner {
 		wikicode = wikicode.replace(/<\/?em( [^>]*)?\/?>/g, '');
 		wikicode = wikicode.replace(/<\/?nowiki( [^>]*)?\/?>/g, '');
 		wikicode = wikicode.replace(/<\/?u( [^>]*)?\/?>/g, '');
+		wikicode = wikicode.replace(/(?:<big>|<\/big>)/g, '');
+
 		return wikicode;
 	}
 
@@ -486,10 +487,6 @@ export class DraftCleaner {
 		}
 
 		return wikicode;
-	}
-
-	deleteBigTag(wikicode) {
-		return wikicode.replace(/(?:<big>|<\/big>)/g, '');
 	}
 
 	deleteEmptySections(wikicode) {
