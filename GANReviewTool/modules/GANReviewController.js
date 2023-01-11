@@ -65,7 +65,7 @@ export class GANReviewController {
 				await this.answerSecondOpinion();
 			}
 		} catch(err) {
-			this.pushStatus(`<span class="GANReviewTool-ErrorNotice">An error occurred :( Details: ${err.message}</span>`);
+			this.pushStatus(`<span class="GANReviewTool-ErrorNotice">An error occurred :( Details: ${err}</span>`);
 			this.error = err;
 		}
 
