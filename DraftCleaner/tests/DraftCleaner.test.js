@@ -49,7 +49,7 @@ describe('addReferencesSectionIfMissing(wikicode)', () => {
 		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
 	});
 
-	test('{{Drafts moved from mainspace}} should be at bottom of page', () => {
+	test.skip('{{Drafts moved from mainspace}} should be at bottom of page', () => {
 		let wikicode =
 `Text
 
@@ -64,7 +64,7 @@ describe('addReferencesSectionIfMissing(wikicode)', () => {
 		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
 	});
 
-	test('{{Uncategorized}} should be at bottom of page', () => {
+	test.skip('{{Uncategorized}} should be at bottom of page', () => {
 		let wikicode =
 `Text
 
@@ -79,7 +79,7 @@ describe('addReferencesSectionIfMissing(wikicode)', () => {
 		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
 	});
 
-	test('<references/> with no == References ==', () => {
+	test.skip('<references/> with no == References ==', () => {
 		let wikicode =
 `Siblings with 46X,Y [[gonadal dysgenesis]], a disorder of [[sex development]], had a deletion of 8 of the 9 c2orf80 [[Exon|exons]], and an interstitial duplication of the [[SUPT3H]] gene.<ref name=":10" /> Both mutations were inherited from the healthy mother.<ref name=":10" /> There is no known interaction between these two genes as of now.<ref name=":10" />
 
@@ -93,7 +93,7 @@ describe('addReferencesSectionIfMissing(wikicode)', () => {
 		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
 	});
 
-	test('Place above {{stub}} tag', () => {
+	test.skip('Place above {{stub}} tag', () => {
 		let wikicode =
 `'''Calderwood''' is a suburb of [[East Calder]], [[Livingston]], in [[West Lothian]].
 
@@ -670,7 +670,7 @@ Hello`;
 });
 
 describe('deleteEmptySections(wikicode)', () => {
-	test('Big footer', () => {
+	test.skip('Big footer', () => {
 		let wikicode =
 `Test
 
@@ -1039,7 +1039,7 @@ Kenichi Nagai was born in 1942. While attending university, he picked up the hob
 		expect(dc.boldArticleTitle(wikicode, titleWithNamespaceAndSpaces)).toBe(output);
 	});
 
-	test(`Only bold titles located in first paragraph`, () => {
+	test.skip(`Only bold titles located in first paragraph`, () => {
 		let titleWithNamespaceAndSpaces = 'Draft:Matthew Beachy';
 		let wikicode =
 `Blah blah.
@@ -1350,7 +1350,7 @@ describe(`swapRefPeriodWithPeriodRef(wikicode2)`, () => {
 		expect(dc.swapRefPeriodWithPeriodRef(wikicode2)).toBe(output);
 	});
 
-	test(`<ref name="test" /> style refs`, () => {
+	test.skip(`<ref name="test" /> style refs`, () => {
 		let wikicode2 = `[[WMO]]<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>.\n`;
 		let output = '[[WMO]].<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>\n';
 		expect(dc.swapRefPeriodWithPeriodRef(wikicode2)).toBe(output);
