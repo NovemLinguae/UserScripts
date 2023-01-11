@@ -332,7 +332,10 @@ export class GARCloserController {
 
 		this.pushStatus(`Remove {{GAR/link}} from talk page, update {{Article history}}, remove |class=GA`);
 		let wikicode = await this.getWikicode(this.talkPageTitle);
+
+		// while we have the talk page wikicode, go ahead and figure out the gaListTitle. saves an API query later
 		this.gaListTitle = this.getGAListTitleFromTalkPageWikicode(wikicode);
+
 		let oldid = await this.getRevisionIDOfNewestRevision(this.parentArticle);
 		wikicode = this.wg.processDelistForTalkPage(wikicode, this.garPageTitle, this.talkPageTitle, oldid);
 		this.talkRevisionID = await this.makeEdit(this.talkPageTitle, this.editSummary, wikicode);
@@ -541,14 +544,18 @@ export class GARCloserController {
 		let parentArticle = ``;
 		
 		// CASE 1: INDIVIDUAL ==================================
+		// Example: Talk:Cambodia women's national football team/GA3
+
 		let namespace = this.mw.config.get('wgNamespaceNumber');
 		let isTalkNamespace = ( namespace === 1 );
+
 		let isGASubPage = this.isGASubPage(this.garPageTitle);
 
+		// Check this so that we don't accidentally run on GAN subpages, which use the same title formatting
 		let garPageWikicode = await this.getWikicode(this.garPageTitle);
-		let hasGARCurrentTemplate = garPageWikicode.match(/\{\{GAR\/current\}\}/i);
+		let hasGAReassessmentHeading = garPageWikicode.match(/==GA Reassessment==/i);
 
-		let couldBeIndividualReassessment = isTalkNamespace && isGASubPage && hasGARCurrentTemplate;
+		let couldBeIndividualReassessment = isTalkNamespace && isGASubPage && hasGAReassessmentHeading;
 
 		if ( couldBeIndividualReassessment ) {
 			parentArticle = this.getIndividualReassessmentParentArticle(this.garPageTitle);
@@ -559,6 +566,8 @@ export class GARCloserController {
 		}
 
 		// CASE 2: COMMUNITY ===================================
+		// Example: Wikipedia:Good article reassessment/Cambodia women's national football team/2
+
 		let couldBeCommunityReassessment = this.garPageTitle.startsWith('Wikipedia:Good article reassessment/');
 		if ( couldBeCommunityReassessment ) {
 			parentArticle = this.getCommunityReassessmentParentArticle(this.garPageTitle);
