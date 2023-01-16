@@ -119,3 +119,43 @@ describe('getGAListTitleFromTalkPageWikicode(wikicode)', () => {
 		expect(controller.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
 	});
 });
+
+describe('getGAListTitleFromTalkPageWikicode(wikicode)', () => {
+	it(`Should handle {{Article history}}`, () => {
+		let wikicode = `{{Article history|topic=sports}}`;
+		let output = 'Wikipedia:Good articles/Sports and recreation';
+		expect(controller.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should handle {{GA}}`, () => {
+		let wikicode = `{{GA|topic=sports}}`;
+		let output = 'Wikipedia:Good articles/Sports and recreation';
+		expect(controller.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should be case insensitive`, () => {
+		let wikicode = `{{aRTiClE HiStOrY|ToPiC=SpOrTs}}`;
+		let output = 'Wikipedia:Good articles/Sports and recreation';
+		expect(controller.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should ignore {{Vital article}}`, () => {
+		let wikicode =
+`{{Vital article|level=5|topic=People|subpage=Entertainers|class=}}
+{{Article history|action1=GAN
+|action1date=22:40, 2 June 2008
+|action1link=/GA1
+|action1result=listed
+|action1oldid=216607709
+|topic=sports
+|currentstatus = DGA
+}}`;
+		let output = 'Wikipedia:Good articles/Sports and recreation';
+		expect(controller.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should throw an error if no |topic= found`, () => {
+		let wikicode = `Test :)`;
+		expect(() => {controller.getGAListTitleFromTalkPageWikicode(wikicode)}).toThrow();
+	});
+});

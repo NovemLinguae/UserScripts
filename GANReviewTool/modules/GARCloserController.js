@@ -503,9 +503,13 @@ export class GARCloserController {
 			'weapons and buildings': 'Wikipedia:Good articles/Warfare',
 			'weapons': 'Wikipedia:Good articles/Warfare',
 		}
-		let topic = wikicode.match(/\|\s*(?:sub)?topic\s*=\s*([^\|\}\n]+)/i)[1];
+		let topic = wikicode.match(/(?:\{\{Article history|\{\{GA).*?\|\s*(?:sub)?topic\s*=\s*([^\|\}\n]+)/is)[1];
 		topic = topic.toLowerCase();
-		return dictionary[topic];
+		let gaListTitle = dictionary[topic];
+		if ( ! gaListTitle ) {
+			throw new Error(`Unable to determine WP:GA subpage. Is the |topic= on the article's talk page correct?`);
+		}
+		return gaListTitle;
 	}
 
 	/**
