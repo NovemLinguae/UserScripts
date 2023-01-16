@@ -57,16 +57,7 @@ class VoteCounterController {
 			let sectionWikicode = this.wikicode.slice(startPosition, endPosition); // slice and substring (which both use (startPos, endPos)) are the same. substr(startPos, length) is deprecated.
 
 			if ( isXFD ) {
-				// add a vote for the nominator
-				let proposeMerging = sectionWikicode.match(/'''Propose merging'''/i);
-				if ( proposeMerging ) {
-					sectionWikicode += "'''merge'''";
-				} else {
-					sectionWikicode += "'''delete'''";
-				}
-
-				// delete "result of the discussion was X", to prevent it from being counted
-				sectionWikicode = sectionWikicode.replace(/The result of the discussion was(?::'')? '''[^']+'''/ig, '');
+				sectionWikicode = this._adjustVotesForEachHeading(sectionWikicode);
 			}
 
 			this.vcc = new VoteCounterCounter(sectionWikicode, this.listOfValidVoteStrings);
@@ -82,6 +73,21 @@ class VoteCounterController {
 
 			this._insertHtmlAtEachHeading(startPosition, allHTML);
 		}
+	}
+
+	_adjustVotesForEachHeading(sectionWikicode) {
+		// add a vote for the nominator
+		let proposeMerging = sectionWikicode.match(/'''Propose merging'''/i);
+		if ( proposeMerging ) {
+			sectionWikicode += "'''merge'''";
+		} else {
+			sectionWikicode += "'''delete'''";
+		}
+
+		// delete "result of the discussion was X", to prevent it from being counted
+		sectionWikicode = sectionWikicode.replace(/The result of the discussion was(?::'')? '''[^']+'''/ig, '');
+
+		return sectionWikicode;
 	}
 
 	_insertHtmlAtEachHeading(startPosition, allHtml) {
