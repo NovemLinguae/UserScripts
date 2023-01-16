@@ -53,13 +53,7 @@ class VoteCounterController {
 		for ( let i = 0; i < numberOfHeadings ; i++ ) {
 			let startPosition = listOfHeadingLocations[i];
 
-			let endPosition;
-			let lastSection = i === numberOfHeadings - 1;
-			if ( lastSection ) {
-				endPosition = this.wikicode.length;
-			} else {
-				endPosition = listOfHeadingLocations[i + 1]; // Don't subtract 1. That will delete a character.
-			}
+			let endPosition = this._calculateSectionEndPosition(i, numberOfHeadings, this.wikicode, listOfHeadingLocations);
 			
 			let sectionWikicode = this.wikicode.slice(startPosition, endPosition); // slice and substring (which both use (startPos, endPos)) are the same. substr(startPos, length) is deprecated.
 
@@ -94,6 +88,15 @@ class VoteCounterController {
 				// insert HTML
 				$(headingForJQuery).parent().first().after(allHTML); // prepend is interior, before is exterior
 			}
+		}
+	}
+
+	_calculateSectionEndPosition(i, numberOfHeadings, wikicode, listOfHeadingLocations) {
+		let lastSection = i === numberOfHeadings - 1;
+		if ( lastSection ) {
+			return wikicode.length;
+		} else {
+			return listOfHeadingLocations[i + 1]; // Don't subtract 1. That will delete a character.
 		}
 	}
 
