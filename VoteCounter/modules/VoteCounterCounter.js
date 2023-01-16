@@ -1,5 +1,6 @@
-class VoteCounter {
-	getVoteString(wikicode, votesToCount) {
+class VoteCounterCounter {
+	/** Count the votes in this constructor. Then use a couple public methods (below) to retrieve the vote counts in whatever format the user desires. */
+	constructor(wikicode, votesToCount) {
 		this.originalWikicode = wikicode;
 		this.modifiedWikicode = wikicode;
 		this.votesToCount = votesToCount;
@@ -30,6 +31,26 @@ class VoteCounter {
 		this.voteString = this.voteString.slice(0, -2); // trim extra comma at end
 		
 		this.voteString = this._htmlEscape(this.voteString);
+	}
+
+	getHeadingForJQuery() {
+		let firstLine = this.originalWikicode.split('\n')[0];
+		let htmlHeadingID = this._convertWikicodeHeadingToHTMLSectionID(firstLine);
+		let jQuerySearchString = '[id="' + this._doubleQuoteEscape(htmlHeadingID) + '"]';
+		return jQuerySearchString;
+	}
+
+	getVotes() {
+		return this.votes;
+	}
+
+	getVoteSum() {
+		return this.voteSum;
+	}
+
+	/* HTML escaped */
+	getVoteString() {
+		return this.voteString;
 	}
 
 	_countRegExMatches(matches) {
@@ -79,26 +100,6 @@ class VoteCounter {
 
 	_doubleQuoteEscape(str) {
 		return str.replace(/"/g, '\\"');
-	}
-
-	getHeadingForJQuery() {
-		let firstLine = this.originalWikicode.split('\n')[0];
-		let htmlHeadingID = this._convertWikicodeHeadingToHTMLSectionID(firstLine);
-		let jQuerySearchString = '[id="' + this._doubleQuoteEscape(htmlHeadingID) + '"]';
-		return jQuerySearchString;
-	}
-
-	getVotes() {
-		return this.votes;
-	}
-
-	getVoteSum() {
-		return this.voteSum;
-	}
-
-	/* HTML escaped */
-	getVoteString() {
-		return this.voteString;
 	}
 
 	_htmlEscape(unsafe)	{
