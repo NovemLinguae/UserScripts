@@ -40,8 +40,7 @@ class VoteCounterController {
 		// generate HTML
 		let allHTML = `<div id="VoteCounter"><span style="font-weight: bold;">${voteString}</span> <small>(approximately)</small>${percentsHTML}</div>`;
 
-		// insert HTML
-		$('#contentSub').before(allHTML);
+		this._insertHtmlAtTopOnly(allHTML);
 	}
 
 	_countVotesForEachHeading() {
@@ -58,37 +57,53 @@ class VoteCounterController {
 			let sectionWikicode = this.wikicode.slice(startPosition, endPosition); // slice and substring (which both use (startPos, endPos)) are the same. substr(startPos, length) is deprecated.
 
 			if ( isXFD ) {
-				let proposeMerging = sectionWikicode.match(/'''Propose merging'''/i);
 				// add a vote for the nominator
+				let proposeMerging = sectionWikicode.match(/'''Propose merging'''/i);
 				if ( proposeMerging ) {
 					sectionWikicode += "'''merge'''";
 				} else {
 					sectionWikicode += "'''delete'''";
 				}
+
 				// delete "result of the discussion was X", to prevent it from being counted
 				sectionWikicode = sectionWikicode.replace(/The result of the discussion was(?::'')? '''[^']+'''/ig, '');
 			}
 
 			this.vcc = new VoteCounterCounter(sectionWikicode, this.listOfValidVoteStrings);
+
+			// don't display votecounter string if there's less than 3 votes in the section
 			let voteSum = this.vcc.getVoteSum();
-			if ( voteSum < 3 ) continue;
+			if ( voteSum < 3 ) {
+				continue;
+			}
+
 			let voteString = this.vcc.getVoteString();
 			let allHTML = `<div id="VoteCounter" style="color: darkgreen; border: 1px solid black;"><span style="font-weight: bold;">${voteString}</span> <small>(approximately)</small></div>`;
 
-			let isLead = startPosition === 0;
-			if ( isLead ) {
-				// insert HTML
-				$('#contentSub').before(allHTML);
-			} else {
-				let headingForJQuery = this.vcc.getHeadingForJQuery(startPosition);
-				if ( ! $(headingForJQuery).length ) {
-					console.error('User:Novem Linguae/Scripts/VoteCounter.js: ERROR: Heading ID not found. This indicates a bug in _convertWikicodeHeadingToHTMLSectionID() that Novem Linguae needs to fix. Please report this on his talk page along with the page name and heading ID. The heading ID is: ' + headingForJQuery)
-				}
-
-				// insert HTML
-				$(headingForJQuery).parent().first().after(allHTML); // prepend is interior, before is exterior
-			}
+			this._insertHtmlAtEachHeading(startPosition, allHTML);
 		}
+	}
+
+	_insertHtmlAtEachHeading(startPosition, allHtml) {
+		let isLead = startPosition === 0;
+		if ( isLead ) {
+			// insert HTML
+			$('#contentSub').before(allHtml);
+		} else { // if ( isHeading )
+			let headingForJQuery = this.vcc.getHeadingForJQuery(startPosition);
+
+			let headingNotFound = ! $(headingForJQuery).length;
+			if ( headingNotFound ) {
+				console.error('User:Novem Linguae/Scripts/VoteCounter.js: ERROR: Heading ID not found. This indicates a bug in _convertWikicodeHeadingToHTMLSectionID() that Novem Linguae needs to fix. Please report this on his talk page along with the page name and heading ID. The heading ID is: ' + headingForJQuery)
+			}
+
+			// insert HTML
+			$(headingForJQuery).parent().first().after(allHtml); // prepend is interior, before is exterior
+		}
+	}
+
+	_insertHtmlAtTopOnly(allHtml) {
+		$('#contentSub').before(allHtml);
 	}
 
 	_calculateSectionEndPosition(i, numberOfHeadings, wikicode, listOfHeadingLocations) {
