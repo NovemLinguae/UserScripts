@@ -11,13 +11,13 @@ class VoteCounterController {
 		this.listOfValidVoteStrings = this._getListOfValidVoteStrings();
 
 		if ( this.isAfd || this.isMfd || isGAR ) {
-			this._handleAfdMfdOrGar();
+			this._countVotesForEntirePage();
 		} else {
-			this._handleEverythingElse();
+			this._countVotesForEachHeading();
 		}
 	}
 
-	_handleAfdMfdOrGar() {
+	_countVotesForEntirePage() {
 		// delete everything above the first heading, to prevent the closer's vote from being counted
 		this.wikicode = this.wikicode.replace(/^.*?(===.*)$/s, '$1');
 
@@ -44,31 +44,23 @@ class VoteCounterController {
 		$('#contentSub').before(allHTML);
 	}
 
-	_getListOfHeadingLocations(wikicode) {
-		let matches = wikicode.matchAll(/(?<=\n)(?===)/g);
-		let sections = [0];
-		for ( let match of matches ) {
-			sections.push(match.index);
-		}
-		return sections;
-	}
-
-	_handleEverythingElse() {
-		let sections = this._getListOfHeadingLocations(this.wikicode);
-
+	_countVotesForEachHeading() {
+		let listOfHeadingLocations = this._getListOfHeadingLocations(this.wikicode);
 		let isXFD = this.title.match(/_for_(?:deletion|discussion)\//i);
-		
-		// now that we know where the fenceposts are, calculate everything else, then inject the appropriate HTML
-		let sectionsLength = sections.length;
-		for ( let i = 0; i < sectionsLength ; i++ ) {
-			let startPosition = sections[i];
-			let lastSection = i === sectionsLength - 1;
+		let numberOfHeadings = listOfHeadingLocations.length;
+
+		// foreach heading
+		for ( let i = 0; i < numberOfHeadings ; i++ ) {
+			let startPosition = listOfHeadingLocations[i];
+
 			let endPosition;
+			let lastSection = i === numberOfHeadings - 1;
 			if ( lastSection ) {
 				endPosition = this.wikicode.length;
 			} else {
-				endPosition = sections[i + 1]; // Don't subtract 1. That will delete a character.
+				endPosition = listOfHeadingLocations[i + 1]; // Don't subtract 1. That will delete a character.
 			}
+			
 			let sectionWikicode = this.wikicode.slice(startPosition, endPosition); // slice and substring (which both use (startPos, endPos)) are the same. substr(startPos, length) is deprecated.
 
 			if ( isXFD ) {
@@ -103,6 +95,15 @@ class VoteCounterController {
 				$(headingForJQuery).parent().first().after(allHTML); // prepend is interior, before is exterior
 			}
 		}
+	}
+
+	_getListOfHeadingLocations(wikicode) {
+		let matches = wikicode.matchAll(/(?<=\n)(?===)/g);
+		let listOfHeadingLocations = [0];
+		for ( let match of matches ) {
+			listOfHeadingLocations.push(match.index);
+		}
+		return listOfHeadingLocations;
 	}
 
 	_getAfdAndMfdPercentsHtml() {
