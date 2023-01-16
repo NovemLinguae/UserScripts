@@ -4,91 +4,103 @@ class VoteCounterController {
 			return;
 		}
 
-		let isAFD = this.title.match(/^Wikipedia:Articles_for_deletion\//i);
-		let isMFD = this.title.match(/^Wikipedia:Miscellany_for_deletion\//i);
+		this.isAfd = this.title.match(/^Wikipedia:Articles_for_deletion\//i);
+		this.isMfd = this.title.match(/^Wikipedia:Miscellany_for_deletion\//i);
 		let isGAR = this.title.match(/^Wikipedia:Good_article_reassessment\//i);
 
 		this.listOfValidVoteStrings = this._getListOfValidVoteStrings();
 
-		if ( isAFD || isMFD || isGAR ) {
-			// delete everything above the first heading, to prevent the closer's vote from being counted
-			this.wikicode = this.wikicode.replace(/^.*?(===.*)$/s, '$1');
-
-			// add a delete vote. the nominator is assumed to be voting delete
-			if ( isAFD || isMFD ) {
-				this.wikicode += "'''delete'''";
-			}
-
-			this.vcc = new VoteCounterCounter(this.wikicode, this.listOfValidVoteStrings);
-			let voteString = this.vcc.getVoteString();
-			if ( ! voteString ) {
-				return;
-			}
-
-			let percentsHTML = '';
-			if ( isAFD || isMFD ) {
-				percentsHTML = this._getAfdAndMfdPercentsHtml();
-			}
-
-			// generate HTML
-			let allHTML = `<div id="VoteCounter"><span style="font-weight: bold;">${voteString}</span> <small>(approximately)</small>${percentsHTML}</div>`;
-
-			// insert HTML
-			$('#contentSub').before(allHTML);
+		if ( this.isAfd || this.isMfd || isGAR ) {
+			this._handleAfdMfdOrGar();
 		} else {
-			// make a list of the strpos of each heading
-			let matches = this.wikicode.matchAll(/(?<=\n)(?===)/g);
-			let sections = [0];
-			for ( let match of matches ) {
-				sections.push(match.index);
+			this._handleEverythingElse();
+		}
+	}
+
+	_handleAfdMfdOrGar() {
+		// delete everything above the first heading, to prevent the closer's vote from being counted
+		this.wikicode = this.wikicode.replace(/^.*?(===.*)$/s, '$1');
+
+		// add a delete vote. the nominator is assumed to be voting delete
+		if ( this.isAfd || this.isMfd ) {
+			this.wikicode += "'''delete'''";
+		}
+
+		this.vcc = new VoteCounterCounter(this.wikicode, this.listOfValidVoteStrings);
+		let voteString = this.vcc.getVoteString();
+		if ( ! voteString ) {
+			return;
+		}
+
+		let percentsHTML = '';
+		if ( this.isAfd || this.isMfd ) {
+			percentsHTML = this._getAfdAndMfdPercentsHtml();
+		}
+
+		// generate HTML
+		let allHTML = `<div id="VoteCounter"><span style="font-weight: bold;">${voteString}</span> <small>(approximately)</small>${percentsHTML}</div>`;
+
+		// insert HTML
+		$('#contentSub').before(allHTML);
+	}
+
+	_getListOfHeadingLocations(wikicode) {
+		let matches = wikicode.matchAll(/(?<=\n)(?===)/g);
+		let sections = [0];
+		for ( let match of matches ) {
+			sections.push(match.index);
+		}
+		return sections;
+	}
+
+	_handleEverythingElse() {
+		let sections = this._getListOfHeadingLocations(this.wikicode);
+
+		let isXFD = this.title.match(/_for_(?:deletion|discussion)\//i);
+		
+		// now that we know where the fenceposts are, calculate everything else, then inject the appropriate HTML
+		let sectionsLength = sections.length;
+		for ( let i = 0; i < sectionsLength ; i++ ) {
+			let startPosition = sections[i];
+			let lastSection = i === sectionsLength - 1;
+			let endPosition;
+			if ( lastSection ) {
+				endPosition = this.wikicode.length;
+			} else {
+				endPosition = sections[i + 1]; // Don't subtract 1. That will delete a character.
+			}
+			let sectionWikicode = this.wikicode.slice(startPosition, endPosition); // slice and substring (which both use (startPos, endPos)) are the same. substr(startPos, length) is deprecated.
+
+			if ( isXFD ) {
+				let proposeMerging = sectionWikicode.match(/'''Propose merging'''/i);
+				// add a vote for the nominator
+				if ( proposeMerging ) {
+					sectionWikicode += "'''merge'''";
+				} else {
+					sectionWikicode += "'''delete'''";
+				}
+				// delete "result of the discussion was X", to prevent it from being counted
+				sectionWikicode = sectionWikicode.replace(/The result of the discussion was(?::'')? '''[^']+'''/ig, '');
 			}
 
-			let isXFD = this.title.match(/_for_(?:deletion|discussion)\//i);
-			
-			// now that we know where the fenceposts are, calculate everything else, then inject the appropriate HTML
-			let sectionsLength = sections.length;
-			for ( let i = 0; i < sectionsLength ; i++ ) {
-				let startPosition = sections[i];
-				let lastSection = i === sectionsLength - 1;
-				let endPosition;
-				if ( lastSection ) {
-					endPosition = this.wikicode.length;
-				} else {
-					endPosition = sections[i + 1]; // Don't subtract 1. That will delete a character.
-				}
-				let sectionWikicode = this.wikicode.slice(startPosition, endPosition); // slice and substring (which both use (startPos, endPos)) are the same. substr(startPos, length) is deprecated.
+			this.vcc = new VoteCounterCounter(sectionWikicode, this.listOfValidVoteStrings);
+			let voteSum = this.vcc.getVoteSum();
+			if ( voteSum < 3 ) continue;
+			let voteString = this.vcc.getVoteString();
+			let allHTML = `<div id="VoteCounter" style="color: darkgreen; border: 1px solid black;"><span style="font-weight: bold;">${voteString}</span> <small>(approximately)</small></div>`;
 
-				if ( isXFD ) {
-					let proposeMerging = sectionWikicode.match(/'''Propose merging'''/i);
-					// add a vote for the nominator
-					if ( proposeMerging ) {
-						sectionWikicode += "'''merge'''";
-					} else {
-						sectionWikicode += "'''delete'''";
-					}
-					// delete "result of the discussion was X", to prevent it from being counted
-					sectionWikicode = sectionWikicode.replace(/The result of the discussion was(?::'')? '''[^']+'''/ig, '');
+			let isLead = startPosition === 0;
+			if ( isLead ) {
+				// insert HTML
+				$('#contentSub').before(allHTML);
+			} else {
+				let headingForJQuery = this.vcc.getHeadingForJQuery(startPosition);
+				if ( ! $(headingForJQuery).length ) {
+					console.error('User:Novem Linguae/Scripts/VoteCounter.js: ERROR: Heading ID not found. This indicates a bug in _convertWikicodeHeadingToHTMLSectionID() that Novem Linguae needs to fix. Please report this on his talk page along with the page name and heading ID. The heading ID is: ' + headingForJQuery)
 				}
 
-				let vc = new VoteCounterCounter(sectionWikicode, this.listOfValidVoteStrings);
-				let voteSum = this.vcc.getVoteSum();
-				if ( voteSum < 3 ) continue;
-				let voteString = this.vcc.getVoteString();
-				let allHTML = `<div id="VoteCounter" style="color: darkgreen; border: 1px solid black;"><span style="font-weight: bold;">${voteString}</span> <small>(approximately)</small></div>`;
-
-				let isLead = startPosition === 0;
-				if ( isLead ) {
-					// insert HTML
-					$('#contentSub').before(allHTML);
-				} else {
-					let headingForJQuery = this.vcc.getHeadingForJQuery(startPosition);
-					if ( ! $(headingForJQuery).length ) {
-						console.error('User:Novem Linguae/Scripts/VoteCounter.js: ERROR: Heading ID not found. This indicates a bug in _convertWikicodeHeadingToHTMLSectionID() that Novem Linguae needs to fix. Please report this on his talk page along with the page name and heading ID. The heading ID is: ' + headingForJQuery)
-					}
-					
-					// insert HTML
-					$(headingForJQuery).parent().first().after(allHTML); // prepend is interior, before is exterior
-				}
+				// insert HTML
+				$(headingForJQuery).parent().first().after(allHTML); // prepend is interior, before is exterior
 			}
 		}
 	}
