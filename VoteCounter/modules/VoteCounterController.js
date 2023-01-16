@@ -1,30 +1,25 @@
 class VoteCounterController {
 	async execute() {
-		if ( ! this._shouldRun() ) {
+		if ( ! await this._shouldRun() ) {
 			return;
 		}
-
-		// get wikitext
-		let wikicode = await this._getWikicode(this.title);
-
-		if ( ! wikicode ) return;
 
 		let isAFD = this.title.match(/^Wikipedia:Articles_for_deletion\//i);
 		let isMFD = this.title.match(/^Wikipedia:Miscellany_for_deletion\//i);
 		let isGAR = this.title.match(/^Wikipedia:Good_article_reassessment\//i);
 
-		let votesToCount = this._getVotesToCount();
+		let listOfValidVoteStrings = this._getListOfValidVoteStrings();
 
 		if ( isAFD || isMFD || isGAR ) {
 			// delete everything above the first heading, to prevent the closer's vote from being counted
-			wikicode = wikicode.replace(/^.*?(===.*)$/s, '$1');
-			
+			this.wikicode = this.wikicode.replace(/^.*?(===.*)$/s, '$1');
+
 			// add a delete vote. the nominator is assumed to be voting delete
 			if ( isAFD || isMFD ) {
-				wikicode += "'''delete'''";
+				this.wikicode += "'''delete'''";
 			}
 
-			let vc = new Counter(wikicode, votesToCount);
+			let vc = new Counter(this.wikicode, listOfValidVoteStrings);
 			let votes = vc.getVotes();
 			let voteString = vc.getVoteString();
 
@@ -33,7 +28,7 @@ class VoteCounterController {
 			let percentsHTML = '';
 			if ( isAFD || isMFD ) {
 				let counts = {};
-				for ( let key of votesToCount ) {
+				for ( let key of listOfValidVoteStrings ) {
 					let value = votes[key];
 					if ( typeof value === 'undefined' ) {
 						value = 0;
@@ -54,7 +49,7 @@ class VoteCounterController {
 			$('#contentSub').before(allHTML);
 		} else {
 			// make a list of the strpos of each heading
-			let matches = wikicode.matchAll(/(?<=\n)(?===)/g);
+			let matches = this.wikicode.matchAll(/(?<=\n)(?===)/g);
 			let sections = [0];
 			for ( let match of matches ) {
 				sections.push(match.index);
@@ -69,11 +64,11 @@ class VoteCounterController {
 				let lastSection = i === sectionsLength - 1;
 				let endPosition;
 				if ( lastSection ) {
-					endPosition = wikicode.length;
+					endPosition = this.wikicode.length;
 				} else {
 					endPosition = sections[i + 1]; // Don't subtract 1. That will delete a character.
 				}
-				let sectionWikicode = wikicode.slice(startPosition, endPosition); // slice and substring (which both use (startPos, endPos)) are the same. substr(startPos, length) is deprecated.
+				let sectionWikicode = this.wikicode.slice(startPosition, endPosition); // slice and substring (which both use (startPos, endPos)) are the same. substr(startPos, length) is deprecated.
 
 				if ( isXFD ) {
 					let proposeMerging = sectionWikicode.match(/'''Propose merging'''/i);
@@ -87,7 +82,7 @@ class VoteCounterController {
 					sectionWikicode = sectionWikicode.replace(/The result of the discussion was(?::'')? '''[^']+'''/ig, '');
 				}
 
-				let vc = new VoteCounterCounter(sectionWikicode, votesToCount);
+				let vc = new VoteCounterCounter(sectionWikicode, listOfValidVoteStrings);
 				let voteSum = vc.getVoteSum();
 				if ( voteSum < 3 ) continue;
 				let voteString = vc.getVoteString();
@@ -125,7 +120,7 @@ class VoteCounterController {
 		return mw.config.get('wgPageName');
 	}
 
-	_getVotesToCount() {
+	_getListOfValidVoteStrings() {
 		return [
 			// AFD
 			'keep',
@@ -191,7 +186,7 @@ class VoteCounterController {
 		];
 	}
 
-	_shouldRun() {
+	async _shouldRun() {
 		// don't run when not viewing articles
 		let action = mw.config.get('wgAction');
 		if ( action != 'view' ) {
@@ -212,6 +207,12 @@ class VoteCounterController {
 			}
 		}
 
+		// get wikitext
+		this.wikicode = await this._getWikicode(this.title);
+		if ( ! this.wikicode ) {
+			return;
+		}
+		
 		return true;
 	}
 };
