@@ -313,7 +313,7 @@ $(async function() {
 			} else {
 				let headingForJQuery = vc.getHeadingForJQuery(startPosition);
 				if ( ! $(headingForJQuery).length ) {
-					console.warn('User:Novem Linguae/Scripts/VoteCounter.js: ERROR: Heading ID not found. This indicates a bug in _convertWikicodeHeadingToHTMLSectionID() that Novem Linguae needs to fix. Please report this on his talk page along with the page name and heading ID. The heading ID is: ' + headingForJQuery)
+					console.error('User:Novem Linguae/Scripts/VoteCounter.js: ERROR: Heading ID not found. This indicates a bug in _convertWikicodeHeadingToHTMLSectionID() that Novem Linguae needs to fix. Please report this on his talk page along with the page name and heading ID. The heading ID is: ' + headingForJQuery)
 				}
 				$(headingForJQuery).parent().first().after(allHTML); // prepend is interior, before is exterior
 			}
