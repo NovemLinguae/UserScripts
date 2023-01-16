@@ -8,7 +8,7 @@ class VoteCounterController {
 		let isMFD = this.title.match(/^Wikipedia:Miscellany_for_deletion\//i);
 		let isGAR = this.title.match(/^Wikipedia:Good_article_reassessment\//i);
 
-		let listOfValidVoteStrings = this._getListOfValidVoteStrings();
+		this.listOfValidVoteStrings = this._getListOfValidVoteStrings();
 
 		if ( isAFD || isMFD || isGAR ) {
 			// delete everything above the first heading, to prevent the closer's vote from being counted
@@ -19,33 +19,21 @@ class VoteCounterController {
 				this.wikicode += "'''delete'''";
 			}
 
-			let vc = new Counter(this.wikicode, listOfValidVoteStrings);
-			let votes = vc.getVotes();
-			let voteString = vc.getVoteString();
-
-			if ( ! voteString ) return;
+			this.vcc = new VoteCounterCounter(this.wikicode, this.listOfValidVoteStrings);
+			let voteString = this.vcc.getVoteString();
+			if ( ! voteString ) {
+				return;
+			}
 
 			let percentsHTML = '';
 			if ( isAFD || isMFD ) {
-				let counts = {};
-				for ( let key of listOfValidVoteStrings ) {
-					let value = votes[key];
-					if ( typeof value === 'undefined' ) {
-						value = 0;
-					}
-					counts[key] = value;
-				}
-				let keep = counts['keep'] + counts['stubify'] + counts['stubbify'] + counts['TNT'];
-				let _delete = counts['delete'] + counts['redirect'] + counts['merge'] + counts['draftify'] + counts['userfy'];
-				let total = keep + _delete;
-				let keepPercent = keep / total;
-				let deletePercent = _delete / total;
-				keepPercent = Math.round(keepPercent * 100);
-				deletePercent = Math.round(deletePercent * 100);
-				percentsHTML = `<br /><span style="font-weight: bold;">${keepPercent}% <abbr this.title="Keep, Stubify, TNT">Keep-ish</abbr>, ${deletePercent}% <abbr this.title="Delete, Redirect, Merge, Draftify, Userfy">Delete-ish</abbr></span>`;
+				percentsHTML = this._getAfdAndMfdPercentsHtml();
 			}
 
-			allHTML = `<div id="VoteCounter"><span style="font-weight: bold;">${voteString}</span> <small>(approximately)</small>${percentsHTML}</div>`;
+			// generate HTML
+			let allHTML = `<div id="VoteCounter"><span style="font-weight: bold;">${voteString}</span> <small>(approximately)</small>${percentsHTML}</div>`;
+
+			// insert HTML
 			$('#contentSub').before(allHTML);
 		} else {
 			// make a list of the strpos of each heading
@@ -82,24 +70,48 @@ class VoteCounterController {
 					sectionWikicode = sectionWikicode.replace(/The result of the discussion was(?::'')? '''[^']+'''/ig, '');
 				}
 
-				let vc = new VoteCounterCounter(sectionWikicode, listOfValidVoteStrings);
-				let voteSum = vc.getVoteSum();
+				let vc = new VoteCounterCounter(sectionWikicode, this.listOfValidVoteStrings);
+				let voteSum = this.vcc.getVoteSum();
 				if ( voteSum < 3 ) continue;
-				let voteString = vc.getVoteString();
+				let voteString = this.vcc.getVoteString();
 				let allHTML = `<div id="VoteCounter" style="color: darkgreen; border: 1px solid black;"><span style="font-weight: bold;">${voteString}</span> <small>(approximately)</small></div>`;
 
 				let isLead = startPosition === 0;
 				if ( isLead ) {
+					// insert HTML
 					$('#contentSub').before(allHTML);
 				} else {
-					let headingForJQuery = vc.getHeadingForJQuery(startPosition);
+					let headingForJQuery = this.vcc.getHeadingForJQuery(startPosition);
 					if ( ! $(headingForJQuery).length ) {
 						console.error('User:Novem Linguae/Scripts/VoteCounter.js: ERROR: Heading ID not found. This indicates a bug in _convertWikicodeHeadingToHTMLSectionID() that Novem Linguae needs to fix. Please report this on his talk page along with the page name and heading ID. The heading ID is: ' + headingForJQuery)
 					}
+					
+					// insert HTML
 					$(headingForJQuery).parent().first().after(allHTML); // prepend is interior, before is exterior
 				}
 			}
 		}
+	}
+
+	_getAfdAndMfdPercentsHtml() {
+		let counts = {};
+		let votes = this.vcc.getVotes();
+		for ( let key of this.listOfValidVoteStrings ) {
+			let value = votes[key];
+			if ( typeof value === 'undefined' ) {
+				value = 0;
+			}
+			counts[key] = value;
+		}
+		let keep = counts['keep'] + counts['stubify'] + counts['stubbify'] + counts['TNT'];
+		let _delete = counts['delete'] + counts['redirect'] + counts['merge'] + counts['draftify'] + counts['userfy'];
+		let total = keep + _delete;
+		let keepPercent = keep / total;
+		let deletePercent = _delete / total;
+		keepPercent = Math.round(keepPercent * 100);
+		deletePercent = Math.round(deletePercent * 100);
+		let percentsHTML = `<br /><span style="font-weight: bold;">${keepPercent}% <abbr this.title="Keep, Stubify, TNT">Keep-ish</abbr>, ${deletePercent}% <abbr this.title="Delete, Redirect, Merge, Draftify, Userfy">Delete-ish</abbr></span>`;
+		return percentsHTML;
 	}
 
 	async _getWikicode(title) {
