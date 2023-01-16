@@ -25,10 +25,10 @@ export class GARCloserWikicodeGenerator {
 | This is an '''[[Wikipedia:How to archive a talk page|archive]]''' of past discussions. Its contents should be preserved in their current form. If you wish to start a new discussion or revive an old one, please do so on the <span class="plainlinks">[{{FULLURL:{{TALKSPACE}}:{{BASEPAGENAME}}}} current talk page]</span>.<!-- Template:Talkarchive -->
 |}
 {{Template:Process header green
- | title    =  Good article reassessment
+ | title    = Good article reassessment
  | section  = (archive)
- | previous = ([[Wikipedia:Good article reassessment/Archive ${archiveNumber-1}|${archiveNumber-1}]])
- | next     =    ([[Wikipedia:Good article reassessment/Archive ${archiveNumber+1}|Page ${archiveNumber+1}]]) 
+ | previous = ([[Wikipedia:Good article reassessment/Archive ${archiveNumber-1}|Page ${archiveNumber-1}]])
+ | next     = ([[Wikipedia:Good article reassessment/Archive ${archiveNumber+1}|Page ${archiveNumber+1}]]) 
  | shortcut =
  | notes    =
 }}

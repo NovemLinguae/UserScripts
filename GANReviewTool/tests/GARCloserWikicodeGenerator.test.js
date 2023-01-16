@@ -290,10 +290,10 @@ describe('makeCommunityAssessmentLogEntry(garTitle, wikicode, newArchive, archiv
 | This is an '''[[Wikipedia:How to archive a talk page|archive]]''' of past discussions. Its contents should be preserved in their current form. If you wish to start a new discussion or revive an old one, please do so on the <span class="plainlinks">[{{FULLURL:{{TALKSPACE}}:{{BASEPAGENAME}}}} current talk page]</span>.<!-- Template:Talkarchive -->
 |}
 {{Template:Process header green
- | title    =  Good article reassessment
+ | title    = Good article reassessment
  | section  = (archive)
- | previous = ([[Wikipedia:Good article reassessment/Archive 66|66]])
- | next     =    ([[Wikipedia:Good article reassessment/Archive 68|Page 68]]) 
+ | previous = ([[Wikipedia:Good article reassessment/Archive 66|Page 66]])
+ | next     = ([[Wikipedia:Good article reassessment/Archive 68|Page 68]]) 
  | shortcut =
  | notes    =
 }}
