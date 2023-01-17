@@ -1,4 +1,4 @@
-class VoteCounterController {
+export class VoteCounterController {
 	async execute() {
 		if ( ! await this._shouldRun() ) {
 			return;

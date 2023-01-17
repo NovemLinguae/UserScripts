@@ -1,4 +1,4 @@
-class VoteCounterCounter {
+export class VoteCounterCounter {
 	/** Count the votes in this constructor. Then use a couple public methods (below) to retrieve the vote counts in whatever format the user desires. */
 	constructor(wikicode, votesToCount) {
 		this.originalWikicode = wikicode;
