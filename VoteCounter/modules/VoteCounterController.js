@@ -85,7 +85,7 @@ export class VoteCounterController {
 		}
 
 		// delete "result of the discussion was X", to prevent it from being counted
-		sectionWikicode = sectionWikicode.replace(/The result of the discussion was(?::'')? '''[^']+'''/ig, '');
+		sectionWikicode = sectionWikicode.replace(/The result of the discussion was.*'''[^']+'''.*$/igm, '');
 
 		return sectionWikicode;
 	}
