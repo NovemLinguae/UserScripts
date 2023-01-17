@@ -503,7 +503,7 @@ export class GARCloserController {
 			'weapons and buildings': 'Wikipedia:Good articles/Warfare',
 			'weapons': 'Wikipedia:Good articles/Warfare',
 		}
-		let topic = wikicode.match(/(?:\{\{Article history|\{\{GA).*?\|\s*(?:sub)?topic\s*=\s*([^\|\}\n]+)/is)[1];
+		let topic = wikicode.match(/(?:\{\{Article ?history|\{\{GA\s*(?=\|)).*?\|\s*(?:sub)?topic\s*=\s*([^\|\}\n]+)/is)[1];
 		topic = topic.toLowerCase();
 		let gaListTitle = dictionary[topic];
 		if ( ! gaListTitle ) {

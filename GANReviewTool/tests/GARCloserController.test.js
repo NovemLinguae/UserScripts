@@ -154,6 +154,52 @@ describe('getGAListTitleFromTalkPageWikicode(wikicode)', () => {
 		expect(controller.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
 	});
 
+	it(`Should ignore {{Vital article}} 2`, () => {
+		let wikicode =
+`{{GAR/link|17:25, 24 December 2022 (UTC)|page=1|GARpage=1|status= }}
+{{Talk header}}
+{{Vital article|topic=Society|level=5|class=GA}}
+{{Article history
+|action1=GAN
+|action1date=21:19, 17 December 2006
+|action1result=listed
+|action1oldid=94955852
+
+|action2=GAR
+|action2date=18:59, 2 April 2008 (UTC)
+|action2result=kept
+|action2oldid=202860759
+
+|currentstatus=GA
+|topic=television
+}}`;
+		let output = 'Wikipedia:Good articles/Media and drama';
+		expect(controller.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should ignore {{Vital article}} and not ignore {{ArticleHistory}}`, () => {
+		let wikicode =
+`{{GAR/link|17:25, 24 December 2022 (UTC)|page=1|GARpage=1|status= }}
+{{Talk header}}
+{{Vital article|topic=Society|level=5|class=GA}}
+{{ArticleHistory
+|action1=GAN
+|action1date=21:19, 17 December 2006
+|action1result=listed
+|action1oldid=94955852
+
+|action2=GAR
+|action2date=18:59, 2 April 2008 (UTC)
+|action2result=kept
+|action2oldid=202860759
+
+|currentstatus=GA
+|topic=television
+}}`;
+		let output = 'Wikipedia:Good articles/Media and drama';
+		expect(controller.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
 	it(`Should throw an error if no |topic= found`, () => {
 		let wikicode = `Test :)`;
 		expect(() => {controller.getGAListTitleFromTalkPageWikicode(wikicode)}).toThrow();
