@@ -123,7 +123,7 @@ export class VoteCounterController {
 
 	_getListOfHeadingLocations(wikicode) {
 		let matches = wikicode.matchAll(/(?<=\n)(?===)/g);
-		let listOfHeadingLocations = [0];
+		let listOfHeadingLocations = [0]; // start with 0. count the lead as a heading
 		for ( let match of matches ) {
 			listOfHeadingLocations.push(match.index);
 		}

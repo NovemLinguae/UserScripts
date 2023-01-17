@@ -20,7 +20,7 @@ TEST CASES:
 - count sections and adjust !votes (RFD): https://en.wikipedia.org/wiki/Wikipedia:Redirects_for_discussion/Log/2022_January_1
 
 BUGS:
-- 
+- There's an extra delete vote in closed RFDs
 */
 
 // TODO: write a parser that keeps track of pairs of ''', to fix issue with '''vote''' text '''vote''' sometimes counting the text between them
