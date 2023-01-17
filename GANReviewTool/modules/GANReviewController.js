@@ -253,7 +253,14 @@ export class GANReviewController {
 		this.pushStatus('Adding to appropriate subpage of [[WP:GA]]');
 		let gaSubpageLongTitle = `Wikipedia:Good articles/` + this.gaSubpageShortTitle;
 		let gaDisplayTitle = this.$(`[name="GANReviewTool-DisplayWikicode"]`).val();
-		let gaSubpageWikicode = await this.getWikicode(gaSubpageLongTitle);
+
+		let gaSubpageWikicode;
+		try {
+			gaSubpageWikicode = await this.getWikicode(gaSubpageLongTitle);
+		} catch (err) {
+			throw new Error('Error getting GA subpage wikicode. Is this GA subpage created yet?');
+		}
+
 		gaSubpageWikicode = this.wg.getPassWikicodeForGAListPage(this.detailedTopic, gaSubpageWikicode, this.gaTitle, gaDisplayTitle);
 		let gaSubPageEditSummary = this.getGASubPageEditSummary(this.editSummary, this.detailedTopic);
 		this.gaRevisionID = await this.makeEdit(gaSubpageLongTitle, gaSubPageEditSummary, gaSubpageWikicode);
