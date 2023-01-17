@@ -469,7 +469,7 @@ export class GANReviewHTMLGenerator {
 							<option value="Natural sciences">=====Chemistry miscellanea=====</option>
 							<option value="Natural sciences">=====Materials science miscellanea=====</option>
 							<option value="Natural sciences" disabled>===Earth science===</option>
-							<option value="Natural sciences">====Geology====</option>
+							<option value="Natural sciences" disabled>====Geology====</option>
 							<option value="Natural sciences">=====Geology and geophysics=====</option>
 							<option value="Natural sciences">=====Geologists, geophysicists and mineralogists=====</option>
 							<option value="Natural sciences">=====Mineralogy=====</option>
