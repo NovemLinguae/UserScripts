@@ -26,6 +26,12 @@ describe('_convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)', () => {
 		expect(vcc._convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)).toEqual(output);
 	});
 
+	it(`Should delete spaces touching == externally`, () => {
+		let lineOfWikicode = `==Test== `;
+		let output = 'Test';
+		expect(vcc._convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)).toEqual(output);
+	});
+
 	it(`Should change spaces to underscores`, () => {
 		let lineOfWikicode = `==Test test==`;
 		let output = 'Test_test';
@@ -47,6 +53,12 @@ describe('_convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)', () => {
 	it(`Should delete italic`, () => {
 		let lineOfWikicode = `==''Test''==`;
 		let output = 'Test';
+		expect(vcc._convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)).toEqual(output);
+	});
+
+	it(`Should handle {{tlx}}`, () => {
+		let lineOfWikicode = `=== Proposal 22: Add short description and shorten {{tlx|GANentry}} ===`;
+		let output = 'Proposal_22:_Add_short_description_and_shorten_{{GANentry}}';
 		expect(vcc._convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)).toEqual(output);
 	});
 });

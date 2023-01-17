@@ -80,18 +80,20 @@ export class VoteCounterCounter {
 		}
 	}
 
-	_convertWikicodeHeadingToHTMLSectionID(wikicode) {
+	_convertWikicodeHeadingToHTMLSectionID(lineOfWikicode) {
 		// remove == == from headings
-		wikicode = wikicode.replace(/^=+\s*/, '');
-		wikicode = wikicode.replace(/\s*=+$/, '');
+		lineOfWikicode = lineOfWikicode.replace(/^=+\s*/, '');
+		lineOfWikicode = lineOfWikicode.replace(/\s*=+\s*$/, '');
 		// remove wikilinks
-		wikicode = wikicode.replace(/\[\[:?/g, '');
-		wikicode = wikicode.replace(/\]\]/g, '');
+		lineOfWikicode = lineOfWikicode.replace(/\[\[:?/g, '');
+		lineOfWikicode = lineOfWikicode.replace(/\]\]/g, '');
 		// remove bold and italic
-		wikicode = wikicode.replace(/'{2,5}/g, '');
+		lineOfWikicode = lineOfWikicode.replace(/'{2,5}/g, '');
 		// convert spaces to _
-		wikicode = wikicode.replace(/ /g, '_');
-		return wikicode;
+		lineOfWikicode = lineOfWikicode.replace(/ /g, '_');
+		// handle templates
+		lineOfWikicode = lineOfWikicode.replace(/\{\{[a-z]+\|/gi, '{{');
+		return lineOfWikicode;
 	}
 
 	_jQueryEscape(str) {
