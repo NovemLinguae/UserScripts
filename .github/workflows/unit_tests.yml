@@ -42,3 +42,9 @@ jobs:
     - working-directory: ./UserRightsDiff
       run: npm test
       name: UserRightsDiff unit tests
+    
+    - working-directory: ./VoteCounter
+      run: npm install
+    - working-directory: ./VoteCounter
+      run: npm test
+      name: VoteCounter unit tests
