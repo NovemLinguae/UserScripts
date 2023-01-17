@@ -92,6 +92,7 @@ export class VoteCounterCounter {
 		// convert spaces to _
 		lineOfWikicode = lineOfWikicode.replace(/ /g, '_');
 		// handle templates
+		// TODO: need more template test cases. this algorithm is probably too simple/buggy and probably only works for {{t}} and {{tlx}}
 		lineOfWikicode = lineOfWikicode.replace(/\{\{[a-z]+\|/gi, '{{');
 		return lineOfWikicode;
 	}
