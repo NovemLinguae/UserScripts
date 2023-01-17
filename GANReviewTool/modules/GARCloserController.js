@@ -242,7 +242,7 @@ export class GARCloserController {
 			archiveTitle = this.incrementArchiveTitle(archiveTitle);
 			newArchive = true;
 			wikicode = ``;
-			this.incrementGARArchiveTemplate(archiveTitle);
+			await this.incrementGARArchiveTemplate(archiveTitle);
 		}
 		let newWikicode = this.wg.makeCommunityAssessmentLogEntry(this.garPageTitle, wikicode, newArchive, archiveTitle);
 		this.garLogRevisionID = await this.makeEdit(archiveTitle, this.editSummary, newWikicode)
