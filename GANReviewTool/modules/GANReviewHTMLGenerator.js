@@ -736,6 +736,7 @@ export class GANReviewHTMLGenerator {
 							<option value="Warfare">====Military uniforms and clothing====</option>
 							<option value="Warfare">====Fortifications and military installations====</option>
 							<option value="Warfare">====Castles====</option>
+							<option value="Warfare">=====For testing purposes only. Will throw error.=====</option>
 						</select>
 					</p>
 
