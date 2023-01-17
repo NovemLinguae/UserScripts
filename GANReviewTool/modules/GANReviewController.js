@@ -214,7 +214,12 @@ export class GANReviewController {
 		this.pushStatus('Deleting {{GA nominee}} from article talk page.');
 		this.pushStatus('Adding {{FailedGA}} or {{Article history}} to article talk page.');
 		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
-		let oldid = await this.getRevisionIDOfNewestRevision(this.gaTitle);
+		let oldid;
+		try {
+			oldid = await this.getRevisionIDOfNewestRevision(this.gaTitle);
+		} catch (err) {
+			throw new Error(`Unable to get main article's newest revision ID for placement in the |oldid= parameter of the talk page template. Is the main article created yet?`);
+		}
 		talkWikicode = this.wg.getFailWikicodeForTalkPage(talkWikicode, this.reviewTitle, oldid);
 		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
 	}
@@ -229,7 +234,12 @@ export class GANReviewController {
 		this.pushStatus('Adding {{GA}} or {{Article history}} to article talk page.');
 		this.pushStatus('Changing WikiProject template class parameters to GA on article talk page.');
 		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
-		let oldid = await this.getRevisionIDOfNewestRevision(this.gaTitle);
+		let oldid;
+		try {
+			oldid = await this.getRevisionIDOfNewestRevision(this.gaTitle);
+		} catch (err) {
+			throw new Error(`Unable to get main article's newest revision ID for placement in the |oldid= parameter of the talk page template. Is the main article created yet?`);
+		}
 		talkWikicode = this.wg.getPassWikicodeForTalkPage(talkWikicode, this.reviewTitle, this.gaSubpageShortTitle, oldid);
 		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
 	}
