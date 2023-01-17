@@ -745,7 +745,7 @@ export class GANReviewWikicodeGenerator {
 
 		let resultNotFound = result === null;
 		if ( resultNotFound ) {
-			throw new Error('WP:GA subpage heading insert location not found. GANReviewHTMLGenerator.js may need updating. Please add this article to the correct WP:GA subpage manually.');
+			throw new Error(`WP:GA subpage heading insert location not found. GANReviewHTMLGenerator.js may need updating. Please add this article to the correct WP:GA subpage manually. Problematic heading: ${shortenedVersionInComboBox}`);
 		} else {
 			let headingPosition = result.index;
 			return headingPosition;
