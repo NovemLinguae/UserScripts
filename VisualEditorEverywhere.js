@@ -58,8 +58,8 @@ if( jQuery !== undefined && mediaWiki !== undefined ) {
 		$('#ca-ve-edit').show();
 	}
 
+	/** Insert [ vedit ] by each section */
 	function insertVESectionLink() {
-		// Insert [ edit ] by each section
 		// Foreach edit button
 		$('.mw-editsection').each(function() {
 			// Generate visual editor section link for this element
@@ -67,11 +67,36 @@ if( jQuery !== undefined && mediaWiki !== undefined ) {
 			let veEditHref = $(this).find('a').attr('href').replace('&action=edit', '&veaction=edit');
 
 			// Generate HTML to insert
-			let htmlToInsert = '<a href="" class="mw-editsection-visualeditor">vedit</a>    <span class="mw-editsection-divider"> | </span>';
+			let htmlToInsert;
 
-			// Insert the HTML right after the bracket (the first span contained in .mw-editsection is <span class="mw-editsection-bracket">s
-			// Inline tags such as <span> do not work with :nth-child, .before(), etc. Must use :first-of-type.
-			$(this).children('span:first-of-type').after(htmlToInsert);
+			let skin = mw.config.get('skin');
+			switch ( skin ) {
+				case 'minerva':
+					// Generate HTML to insert
+					htmlToInsert = `
+						<a href="" class="mw-editsection-visualeditor" style="padding-left:1em; font-size:0.6em; font-family:sans-serif;">
+							vedit
+						</a>
+					`;
+
+					$(this).prepend(htmlToInsert);
+					break;
+				default:
+					// Generate HTML to insert
+					htmlToInsert = `
+						<a href="" class="mw-editsection-visualeditor">
+							vedit
+						</a>
+						<span class="mw-editsection-divider">
+							|
+						</span>
+					`;
+
+					// Insert the HTML right after <span class="mw-editsection"><span class="mw-editsection-bracket">
+					// Inline tags such as <span> do not work with :nth-child, .before(), etc. Must use :first-of-type.
+					$(this).children('span:first-of-type').after(htmlToInsert);
+					break;
+			}
 
 			// Inject our generated URL for the edit button
 			$(this).find('.mw-editsection-visualeditor').attr('href', veEditHref);
