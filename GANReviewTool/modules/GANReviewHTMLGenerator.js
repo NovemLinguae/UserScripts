@@ -426,7 +426,7 @@ export class GANReviewHTMLGenerator {
 							<option value="Natural sciences">=====Biologists=====</option>
 							<option value="Natural sciences">=====Biology books=====</option>
 							<option value="Natural sciences">=====Ecology=====</option>
-							<option value="Natural sciences">=====Evolution and reproduction=====</option>
+							<option value="Natural sciences">=====Evolution=====</option>
 							<option value="Natural sciences">=====Molecular and cellular biology=====</option>
 							<option value="Natural sciences">=====Miscellaneous biology=====</option>
 							<option value="Natural sciences">====Medicine====</option>
