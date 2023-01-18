@@ -103,11 +103,14 @@ if( jQuery !== undefined && mediaWiki !== undefined ) {
 		});
 
 		showVEEditLink();
-
-		// Below is a possible, untested fix for the race condition. I need a test case though.
+		
+		// Doesn't work :(
+		// Good test case is https://en.wikipedia.org/wiki/User_talk:Onel5969?useskin=minerva. Ctrl-F5. 25-50% of the time it will not show the vedit section links.
 		/*
+		// Fixes a race condition. There's some code in core somewhere that hides visual editor links pretty late in the page load process. Sometimes this user script inserts its links before that code runs.
 		new MutationObserver(() => {
 			showVEEditLink();
+			console.log('VisualEditorEverywhere: Mutation observer fired. Race condition prevented.');
 		}).observe($('.mw-editsection-visualeditor, .mw-editsection-divider')[0], {childList: true});
 		*/
 	}
