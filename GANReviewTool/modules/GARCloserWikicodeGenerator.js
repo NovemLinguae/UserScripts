@@ -115,7 +115,7 @@ __TOC__`;
 
 	processDelistForGAList(wikicode, articleToRemove) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-		let regex = new RegExp(`'{0,3}"?\\[\\[${this.regExEscape(articleToRemove)}.*\\]\\]"?'{0,3}\\n`, 'g');
+		let regex = new RegExp(`'{0,3}"?\\[\\[${this.regExEscape(articleToRemove)}(?:\\|[^\\]]+)?\\]\\]"?'{0,3}\\n`, 'gi');
 		wikicode = wikicode.replace(regex, '');
 		return wikicode;
 	}

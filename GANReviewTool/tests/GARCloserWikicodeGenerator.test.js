@@ -1011,7 +1011,6 @@ describe('processDelistForGAList(wikicode, articleToRemove)', () => {
 		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
 	});
 
-
 	it(`Should handle rare case of the item being listed twice`, () => {
 		let articleToRemove = `Multilateral Investment Guarantee Agency`;
 		let wikicode =
@@ -1040,6 +1039,30 @@ describe('processDelistForGAList(wikicode, articleToRemove)', () => {
 {{#invoke:Good Articles|subsection|
 ''[[The Accounting Review]]''
 [[Mzoli's]]
+}}
+`;
+		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
+	});
+
+	it(`Should delete the exact article name only`, () => {
+		let articleToRemove = `Fish`;
+		let wikicode =
+`===== Globalization =====
+{{#invoke:Good Articles|subsection|
+[[Globalization and women in China]]
+[[Fish allergy]]
+[[Fish]]
+[[Fisher (animal)]]
+[[Spanish flu]]
+}}
+`;
+		let output =
+`===== Globalization =====
+{{#invoke:Good Articles|subsection|
+[[Globalization and women in China]]
+[[Fish allergy]]
+[[Fisher (animal)]]
+[[Spanish flu]]
 }}
 `;
 		expect(wg.processDelistForGAList(wikicode, articleToRemove)).toBe(output);
