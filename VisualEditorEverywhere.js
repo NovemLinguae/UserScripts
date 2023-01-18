@@ -4,10 +4,55 @@
 // TODO: add support for [edit] links in diffs
 
 if( jQuery !== undefined && mediaWiki !== undefined ) {
+	/** Insert Edit tab at top of page */
 	function insertVETab() {
-		// Insert Edit tab at top of page
-		let htmlClass = mw.config.get('skin') === 'vector-2022' ? 'mw-list-item' : 'collapsible';
-		let htmlToInsert = `<li id="ca-ve-edit" class="${htmlClass}"><a href="/w/index.php?title=${articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">VEdit</a></li>`;
+		let skin = mw.config.get('skin');
+		let htmlToInsert;
+		switch ( skin ) {
+			case 'timeless':
+				htmlToInsert =
+`<li id="ca-ve-edit" class="mw-list-item" style="display: inline-block">
+	<a href="/w/index.php?title=${articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
+		<span>
+			VEdit
+		</span>
+	</a>
+</li>`;
+				break;
+			case 'vector-2022':
+				htmlToInsert =
+`<li id="ca-ve-edit" class="vector-tab-noicon mw-list-item">
+	<a href="/w/index.php?title=${articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
+		VEdit
+	</a>
+</li>`;
+				break;
+			case 'modern':
+				htmlToInsert =
+`<li id="ca-ve-edit" class="collapsible" style="display: block;">
+	<a href="/w/index.php?title=${articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
+		VEdit
+	</a>
+</li>`;
+				break;
+			case 'minerva':
+				htmlToInsert =
+`<a id="ca-ve-edit" href="/w/index.php?title=${articleName}&amp;veaction=edit" class="edit-page menu__item--page-actions-edit mw-ui-icon mw-ui-icon-element mw-ui-icon-wikimedia-edit-base20 mw-ui-icon-with-label-desktop mw-ui-button mw-ui-quiet userlink" data-mw="interface" data-event-name="menu.edit" role="button" title="Edit this page [alt-shift-v]">
+	VEdit
+</a>`;
+				break;
+			case 'vector':
+			case 'monobook':
+			default:
+				htmlToInsert =
+`<li id="ca-ve-edit" class="collapsible">
+	<a href="/w/index.php?title=${articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
+		VEdit
+	</a>
+</li>`;
+				break;
+		}
+
 		$('#ca-edit').before(htmlToInsert);
 		$('#ca-ve-edit').show();
 	}
