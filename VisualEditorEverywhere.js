@@ -3,6 +3,7 @@
 // TODO: fix the race condition. still present as of 08/31/22. got it when clicking from WT:NPPC to WP:NPPC. not consistently reproducible.
 // TODO: add support for [edit] links in diffs
 
+// @ts-ignore
 if( jQuery !== undefined && mediaWiki !== undefined ) {
 	/** Insert Edit tab at top of page */
 	function insertVETab() {
@@ -66,7 +67,7 @@ if( jQuery !== undefined && mediaWiki !== undefined ) {
 			let veEditHref = $(this).find('a').attr('href').replace('&action=edit', '&veaction=edit');
 
 			// Generate HTML to insert
-			htmlToInsert = '<a href="" class="mw-editsection-visualeditor">vedit</a>    <span class="mw-editsection-divider"> | </span>';
+			let htmlToInsert = '<a href="" class="mw-editsection-visualeditor">vedit</a>    <span class="mw-editsection-divider"> | </span>';
 
 			// Insert the HTML right after the bracket (the first span contained in .mw-editsection is <span class="mw-editsection-bracket">s
 			// Inline tags such as <span> do not work with :nth-child, .before(), etc. Must use :first-of-type.

@@ -22,7 +22,7 @@ $(async function() {
 	}
 	
 	function eliminateDuplicates(array) {
-		return uniq = [...new Set(array)];
+		return [...new Set(array)];
 	}
 	
 	/** returns the pagename, including the namespace name, but with spaces replaced by underscores */
@@ -181,7 +181,7 @@ super famous
 	let wordArray = wordString.replace(/, /g, "\n")
 		.trim()
 		.split("\n")
-		.map(v => v.trim(v))
+		.map(v => v.trim())
 		.filter(v => v != '')
 		.filter(v => ! v.startsWith('//'));
 	wordArray = eliminateDuplicates(wordArray);

@@ -39,7 +39,7 @@ $(async function() {
 	}
 	
 	function eliminateDuplicates(array) {
-		return uniq = [...new Set(array)];
+		return [...new Set(array)];
 	}
 	
 	/** returns the pagename, including the namespace name, but with spaces replaced by underscores */
@@ -1666,7 +1666,7 @@ Mathematical Constants
 	let wordArray = wordString.replace(/, /g, "\n")
 		.trim()
 		.split("\n")
-		.map(v => v.trim(v))
+		.map(v => v.trim())
 		.map(v => v.replace(/championships/i, 'championship'))
 		.filter(v => v != '')
 		.filter(v => ! v.startsWith('//'));

@@ -32,7 +32,7 @@ $(async function() {
 	}
 
 	/**
-		@param array titles
+		@param {array} titles
 		@return array
 	*/
 	async function pagesExist(titles) {

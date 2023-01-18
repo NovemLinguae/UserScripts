@@ -680,7 +680,7 @@ $(async function() {
 			return this.sectionStartPositions[section] !== -1;
 		}
 
-		/** @return {int} sectionPosition: -1 if no section, integer if section */
+		/** @return {number} sectionPosition: -1 if no section, integer if section */
 		getSectionPosition(section) {
 			let position = this.sectionStartPositions[section];
 			if ( position === -1 ) {
