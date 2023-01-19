@@ -22,6 +22,8 @@ $(function() {
 			let skin = mw.config.get('skin');
 			switch ( skin ) {
 				case 'minerva':
+					// TODO: insert into the "More" menu, rather than the hamburger
+
 					html = `
 						<ul id="p-npp-links">
 							${this.links}
@@ -31,6 +33,7 @@ $(function() {
 					html = html.replace(/(<a[^>]*>)/g, '$1<span class="mw-ui-icon"></span><span>');
 					html = html.replace(/<\/a>/g, '<span></a>');
 
+					$('#p-navigation').after(html);
 					break;
 				case 'monobook':
 					html = `
@@ -43,7 +46,9 @@ $(function() {
 									${this.links}
 								</ul>
 							</div>
-						</div>`;
+						</div>
+					`;
+					$('#p-navigation').after(html);
 					break;
 				case 'modern':
 					html = `
@@ -56,7 +61,9 @@ $(function() {
 									${this.links}
 								</ul>
 							</div>
-						</div>`;
+						</div>
+					`;
+					$('#p-navigation').after(html);
 					break;
 				case 'timeless':
 					html = `
@@ -69,7 +76,9 @@ $(function() {
 									${this.links}
 								</ul>
 							</div>
-						</div>`;
+						</div>
+					`;
+					$('#p-navigation').after(html);
 					break;
 				case 'vector-2022':
 					html = `
@@ -84,7 +93,9 @@ $(function() {
 									${this.links}
 								</ul>
 							</div>
-						</nav>`;
+						</nav>
+					`;
+					$('#p-navigation').after(html);
 					break;
 				case 'vector':
 				default:
@@ -98,10 +109,11 @@ $(function() {
 									${this.links}
 								</ul>
 							</div>
-						</nav>`;
+						</nav>
+					`;
+					$('#p-navigation').after(html);
 					break;
 			}
-			$('#p-navigation').after(html);
 		}
 
 		_generateLinks() {
