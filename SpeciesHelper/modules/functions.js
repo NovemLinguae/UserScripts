@@ -1,7 +1,7 @@
 import { MOSOrderPositionFinder } from "./MOSOrderPositionFinder";
 import { Inflect } from "./Inflect";
 
-// TODO: convert to class. name it SHUtil or SpeciesHelperUtil or something
+// TODO: convert to class. name it SHUtil or SpeciesHelperUtil or something. or move all these to main and make a giant SpeciesHelperController class, then extract some classes out of that
 
 export async function getWikicodeOfDiff(diffID) {
 	if ( ! mw.config.get('wgCurRevisionId') ) return ''; // if page is deleted, return blank
