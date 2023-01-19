@@ -1,6 +1,8 @@
 import { MOSOrderPositionFinder } from "./MOSOrderPositionFinder";
 import { Inflect } from "./Inflect";
 
+// TODO: convert to class. name it SHUtil or SpeciesHelperUtil or something
+
 export async function getWikicodeOfDiff(diffID) {
 	if ( ! mw.config.get('wgCurRevisionId') ) return ''; // if page is deleted, return blank
 	var wikicode = '';
@@ -51,10 +53,10 @@ export async function doPagesExist(listOfPages) {
 		"prop": "revisions",
 		"titles": listOfPages.join('|'), // | is an illegal title character, so no need to escape it
 	} );
-	listOfLivePages = [];
+	let listOfLivePages = [];
 	let responsePages = response.query.pages;
 	for ( let [key, value] of Object.entries(responsePages) ) {
-		if ( key > 0 ) {
+		if ( parseInt(key) !== NaN && parseInt(key) > 0 ) {
 			listOfLivePages.push(value.title);
 		}
 	}

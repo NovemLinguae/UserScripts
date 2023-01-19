@@ -14,10 +14,10 @@ $(function() {
 			let dateTimeString = $(this).html().trim(); // example: 00:34, 5 March 2022
 			dateTimeString = convertNPPDateTimeToJSDateTime(dateTimeString); // example: 5 March 2002 00:34
 			let milliseconds = Date.parse(dateTimeString);
-			oldTimeStamp = millisecondsToSeconds(milliseconds);
+			let oldTimeStamp = millisecondsToSeconds(milliseconds);
 			let browserTimeZoneOffset = new Date().getTimezoneOffset();
 			let mediaWikiTimeZone = mw.user.options.get('timecorrection');
-			newTimeStamp = convertTimeZoneFromMediaWikiToBrowser(
+			let newTimeStamp = convertTimeZoneFromMediaWikiToBrowser(
 				oldTimeStamp,
 				mediaWikiTimeZone,
 				browserTimeZoneOffset

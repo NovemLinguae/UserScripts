@@ -130,6 +130,7 @@ let namespaceNumber = mw.config.get('wgNamespaceNumber');
 let sandbox = titleWithNamespaceAndUnderscores.match(/sandbox/i);
 //if ( ! [0, 118].includes(namespaceNumber) && ! sandbox ) return;
 
+// @ts-ignore
 let menuID = window.draftCleanerPutInToolsMenu ? 'p-tb' : 'p-navigation';
 
 // Add DraftCleaner to left sidebar

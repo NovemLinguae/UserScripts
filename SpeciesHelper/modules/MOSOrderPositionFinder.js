@@ -640,7 +640,7 @@ export class MOSOrderPositionFinder {
 		return this._getSectionStartPosition(section) !== -1;
 	}
 
-	/** @return {int} sectionPosition: -1 if no section, integer if section */
+	/** @return {number} sectionPosition: -1 if no section, integer if section */
 	getSectionPosition(wikicode, section) {
 		this.wikitext = wikicode;
 		this._calculate();

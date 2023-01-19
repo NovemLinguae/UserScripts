@@ -116,8 +116,8 @@ export class ConvertToSpeciesBox {
 	}
 
 	/**
-	 * @param needle A template name, case insensitive. So for example, to find {{Speciesbox}}, you'd input speciesbox with no braces.
-	 * @param haystack A bunch of wikicode.
+	 * @param templateName Needle. A template name, case insensitive. So for example, to find {{Speciesbox}}, you'd input speciesbox with no braces.
+	 * @param wikicode Haystack. A bunch of wikicode.
 	 */
 	_removeBlankParametersFromFirstTemplate(templateName, wikicode) {
 		let thirds = this._isolateFirstTemplate(templateName, wikicode);
