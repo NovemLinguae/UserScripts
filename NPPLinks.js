@@ -17,6 +17,7 @@ $(function() {
 		}
 
 		_insertHTML() {
+			let menuTitle = 'New page patrol';
 			let html = '';
 			let skin = mw.config.get('skin');
 			switch ( skin ) {
@@ -35,7 +36,7 @@ $(function() {
 					html = `
 						<div role="navigation" class="portlet mw-portlet mw-portlet-npp-links" id="p-npp-links" aria-labelledby="p-npp-links-label">
 							<h3 id="p-npp-links-label">
-								New page patrol
+								${menuTitle}
 							</h3>
 							<div class="pBody">
 								<ul>
@@ -48,7 +49,7 @@ $(function() {
 					html = `
 						<div class="portlet mw-portlet mw-portlet-npp-links" d="p-npp-links" role="navigation">
 							<h3 id="p-npp-links-label" lang="en" dir="ltr">
-								New page patrol
+								${menuTitle}
 							</h3>
 							<div class="mw-portlet-body">
 								<ul lang="en" dir="ltr">
@@ -61,7 +62,7 @@ $(function() {
 					html = `
 						<div role="navigation" class="mw-portlet" id="p-npp-links" aria-labelledby="p-npp-links-label">
 							<h3 id="p-npp-links-label" lang="en" dir="ltr">
-								New page patrol
+								${menuTitle}
 							</h3>
 							<div class="mw-portlet-body">
 								<ul lang="en" dir="ltr">
@@ -75,7 +76,7 @@ $(function() {
 						<nav id="p-npp-links" class="vector-main-menu-group vector-menu mw-portlet mw-portlet-interaction">
 							<div class="vector-menu-heading">
 								<span class="vector-menu-heading-label">
-									New page patrol
+									${menuTitle}
 								</span>
 							</div>
 							<div class="vector-menu-content">
@@ -90,7 +91,7 @@ $(function() {
 					html = `
 						<nav id="p-npp-links" class="mw-portlet mw-portlet-npp-links vector-menu vector-menu-portal portal" aria-labelledby="p-npp-links-label" role="npp-links">
 							<h3 id="p-npp-links-label" class="vector-menu-heading">
-								<span>New page patrol</span>
+								${menuTitle}
 							</h3>
 							<div class="vector-menu-content">
 								<ul class="vector-menu-content-list">
