@@ -13,7 +13,7 @@ $(function() {
 			.vector-feature-page-tools-disabled .mw-content-container, .vector-feature-page-tools-disabled .mw-table-of-contents-container {
 				max-width: unset;
 			}
-}		`);
+		`);
 	}
 });
 
