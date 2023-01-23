@@ -1,0 +1,58 @@
+module.exports = {
+	"parserOptions": {
+		"emcaVersion": 6
+	},
+	"extends": ["eslint:recommended"],
+	"root": true,
+	"env": {
+		"browser": true,
+		"jquery": true,
+		"es6": true
+	},
+	"globals": {
+		"mw": "readonly",
+		"Map": "readonly"
+	},
+	"ignorePatterns": ["scripts/", "tests/", "lib/"],
+	"rules": {
+		"no-console": "error",
+		"no-extra-parens": ["error", "all", { "nestedBinaryExpressions": false }],
+		"no-unreachable-loop": "error",
+		"block-scoped-var": "error",
+		"curly": "error",
+		"dot-notation": "error",
+		"eqeqeq": "error",
+		"guard-for-in": "error",
+		"no-caller": "error",
+		"no-else-return": "error",
+		"no-implicit-coercion": ["error", { "boolean": false }],
+		"no-lone-blocks": "error",
+		"no-multi-spaces": ["error", { "ignoreEOLComments": true }],
+		"no-useless-return": "error",
+		"yoda": "error",
+		"block-spacing": "error",
+		"brace-style": ["error", "1tbs"],
+		"comma-dangle": "error",
+		"comma-spacing": ["error", { "before": false, "after": true }],
+		"computed-property-spacing": ["error", "never"],
+		"func-call-spacing": ["error", "never"],
+		"indent": ["error", "tab", { "outerIIFEBody": 0, "SwitchCase": 1 }],
+		"key-spacing": ["error", {"singleLine": {"beforeColon": false, "afterColon": true}}],
+		"keyword-spacing": ["error", { "after": true, "before": true}],
+		"linebreak-style": ["error", "unix"],
+		"no-array-constructor": "error",
+		"no-bitwise": "error",
+		"no-mixed-operators": "error",
+		"no-new-object": "error",
+		"no-tabs": ["error", { "allowIndentationTabs": true }],
+		"no-unneeded-ternary": "error",
+		"no-whitespace-before-property": "error",
+		"semi": ["error", "always"],
+		"space-before-blocks": "error",
+		"space-infix-ops": "error",
+		"space-unary-ops": "error",
+		"spaced-comment": ["error", "always", { "line": { "exceptions": ["-"] }, "block": { "balanced": true } }],
+		"switch-colon-spacing": "error"
+	},
+	"reportUnusedDisableDirectives": true
+};
