@@ -130,6 +130,10 @@ reinvent
 rising star
 sensual
 several offers
+state-of-art
+state of art
+state-of-the-art
+state of the art
 striking
 transcend
 transform
