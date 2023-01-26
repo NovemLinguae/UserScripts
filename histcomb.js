@@ -3,6 +3,8 @@
 /*
 	Forked from [[User:Alex Smotrov/histcomb.js]]
 
+	Nardog took over this project. Should probably use [[User:Nardog/histcomb.js]] instead of this one.
+
 	histcomb = history combiner?
 
 	From the documentation page at [[User talk:Alex Smotrov/histcomb.js]]:

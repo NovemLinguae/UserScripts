@@ -1,5 +1,8 @@
 /*** FFU Helper ***/
 
+// Fork of [[User:BrandonXLF/FFUHelper]]
+// BrandonXLF got active again. Should probably just use the above script.
+
 // User script to close and respond to FFU request
 // Documentation at [[en:w:User:BrandonXLF/FFUHelper]]
 // By [[en:w:User:BrandonXLF]]
