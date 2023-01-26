@@ -11,6 +11,9 @@
 		"Map": "readonly"
 	},
 	"ignorePatterns": ["scripts/", "tests/", "lib/"],
+	"plugins": [
+		"lodash"
+	],
 	"rules": {
 		"no-console": "error",
 		"no-extra-parens": ["error", "all", { "nestedBinaryExpressions": false }],
@@ -19,6 +22,8 @@
 		"curly": "error",
 		"eqeqeq": "error",
 		"guard-for-in": "error",
+		"lodash/prefer-includes": "error",
+		"lodash/prefer-startswith": "error",
 		"no-caller": "error",
 		"no-else-return": "error",
 		"no-implicit-coercion": ["error", { "boolean": false }],
@@ -28,7 +33,6 @@
 		"yoda": "error",
 		"block-spacing": "error",
 		"brace-style": ["error", "1tbs"],
-		"comma-dangle": "error",
 		"comma-spacing": ["error", { "before": false, "after": true }],
 		"computed-property-spacing": ["error", "never"],
 		"func-call-spacing": ["error", "never"],
@@ -38,6 +42,7 @@
 		"no-array-constructor": "error",
 		"no-bitwise": "error",
 		"no-mixed-operators": "error",
+		"no-nested-ternary": "error",
 		"no-new-object": "error",
 		"no-tabs": ["error", { "allowIndentationTabs": true }],
 		"no-unneeded-ternary": "error",
@@ -46,7 +51,6 @@
 		"space-before-blocks": "error",
 		"spaced-comment": ["error", "always", { "line": { "exceptions": ["-"] }, "block": { "balanced": true } }],
 		"switch-colon-spacing": "error",
-		"no-nested-ternary": "error",
 		"no-restricted-syntax": [
 			"error",
 			{

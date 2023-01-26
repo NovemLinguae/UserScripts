@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/NovemLinguae/UserScripts#readme",
   "devDependencies": {
-    "eslint": "^8.32.0"
+    "eslint": "^8.32.0",
+    "eslint-plugin-lodash": "github:wix/eslint-plugin-lodash"
   }
 }
