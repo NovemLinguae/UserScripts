@@ -1,13 +1,10 @@
-module.exports = {
-	"parserOptions": {
-		"emcaVersion": 6
-	},
+{
 	"extends": ["eslint:recommended"],
 	"root": true,
 	"env": {
 		"browser": true,
 		"jquery": true,
-		"es6": true
+		"es2022": true
 	},
 	"globals": {
 		"mw": "readonly",
@@ -20,7 +17,6 @@ module.exports = {
 		"no-unreachable-loop": "error",
 		"block-scoped-var": "error",
 		"curly": "error",
-		"dot-notation": "error",
 		"eqeqeq": "error",
 		"guard-for-in": "error",
 		"no-caller": "error",
@@ -39,7 +35,6 @@ module.exports = {
 		"indent": ["error", "tab", { "outerIIFEBody": 0, "SwitchCase": 1 }],
 		"key-spacing": ["error", {"singleLine": {"beforeColon": false, "afterColon": true}}],
 		"keyword-spacing": ["error", { "after": true, "before": true}],
-		"linebreak-style": ["error", "unix"],
 		"no-array-constructor": "error",
 		"no-bitwise": "error",
 		"no-mixed-operators": "error",
@@ -49,10 +44,20 @@ module.exports = {
 		"no-whitespace-before-property": "error",
 		"semi": ["error", "always"],
 		"space-before-blocks": "error",
-		"space-infix-ops": "error",
-		"space-unary-ops": "error",
 		"spaced-comment": ["error", "always", { "line": { "exceptions": ["-"] }, "block": { "balanced": true } }],
-		"switch-colon-spacing": "error"
+		"switch-colon-spacing": "error",
+		"no-nested-ternary": "error",
+		"no-restricted-syntax": [
+			"error",
+			{
+				"message": "Using .done() is not allowed. See https://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript#Asynchronous_code",
+				"selector": "MemberExpression > Identifier[name=\"done\"]"
+			},
+			{
+				"message": "Using .fail() is not allowed. See https://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript#Asynchronous_code",
+				"selector": "MemberExpression > Identifier[name=\"fail\"]"
+			}
+		]
 	},
 	"reportUnusedDisableDirectives": true
-};
+}
