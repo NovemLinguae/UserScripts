@@ -61,7 +61,7 @@ $(async function() {
 	let isDiff = mw.config.get('wgDiffNewId');
 	if ( isDiff ) return;
 	
-	let isDeletedPage = ( ! mw.config.get('wgCurRevisionId') );
+	let isDeletedPage = ! mw.config.get('wgCurRevisionId') ;
 	if ( isDeletedPage ) return;
 	
 	// Only run in mainspace and draftspace
@@ -178,6 +178,7 @@ prominence
 eminent
 most notable
 super famous
+visionary
 
 	`;
 	
