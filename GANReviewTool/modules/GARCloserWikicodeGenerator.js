@@ -300,13 +300,18 @@ __TOC__`;
 				oldIDString = `\n|action1oldid = ${parameters['oldid']}`;
 			}
 
+			// if |1= was used for date instead of |date=
+			if ( parameters['date'] === undefined && parameters[1] !== undefined) {
+				parameters['date'] = parameters[1];
+			}
+
 			// insert {{article history}} template
 			let addToTalkPageAboveWikiProjects = 
 `{{Article history
 |currentstatus = GA${topicString}
 
 |action1 = GAN
-|action1date = ${parameters[1]}
+|action1date = ${parameters['date']}
 |action1link = ${talkPageTitle}/GA${parameters['page']}
 |action1result = listed${oldIDString}
 }}`;

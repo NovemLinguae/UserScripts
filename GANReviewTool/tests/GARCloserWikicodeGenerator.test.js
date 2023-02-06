@@ -1408,6 +1408,22 @@ describe('convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)', 
 }}`;
 		expect(wg.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)).toBe(output);
 	});
+
+	it(`should handle date= instead of the usual 1=`, () => {
+		let talkPageTitle =`Talk:Test`;
+		let wikicode = `{{GA|date=20:19, 29 June 2022 (UTC)|topic=Language and literature}}`;
+		let output =
+`{{Article history
+|currentstatus = GA
+|topic = Language and literature
+
+|action1 = GAN
+|action1date = 20:19, 29 June 2022 (UTC)
+|action1link = Talk:Test/GA1
+|action1result = listed
+}}`;
+		expect(wg.convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)).toBe(output);
+	});
 });
 
 describe('getStrPosOfEndOfFirstTemplateFound(wikicode, templateName)', () => {
