@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 class CiteHighlighter {
 	async execute() {
@@ -29,14 +29,14 @@ class CiteHighlighter {
 			'/about/',
 			'acquire',
 			'announce',
-			//'blockchain',
+			// 'blockchain',
 			'blog', // by far the most common hit
 			'blogspot',
 			'businesswire',
 			'caard',
 			'contact-us',
 			'contactus',
-			//'crypto',
+			// 'crypto',
 			'fandom',
 			'/forum/',
 			'google.com/search',
@@ -225,14 +225,16 @@ class CiteHighlighter {
 	 * Observe and highlight popups created by the gadget Reference Tooltips.
 	 */
 	observeAndAddClassesToTooltips() {
-		new MutationObserver(function (mutations) {
+		new MutationObserver(function () {
 			let el = document.getElementsByClassName('rt-tooltip')[0];
 			if (el) {
 				for (let color in this.colors) {
-					if (typeof sources[color] === 'undefined') continue;
+					if (typeof this.sources[color] === 'undefined') {
+						continue;
+					}
 
-					for (let source of sources[color]) {
-						if (wikicode.includes(source) || source === 'nih.gov' || source === 'twitter.com') {
+					for (let source of this.sources[color]) {
+						if (this.wikicode.includes(source) || source === 'nih.gov' || source === 'twitter.com') {
 							if (source.includes('.') && !source.includes(' ')) {
 								$(el).has(`a[href*="${source.toLowerCase()}"]`).addClass('cite-highlighter-' + color);
 								$(el).has(`a[href*="${source.toLowerCase()}"]`).children().first().addClass('cite-highlighter-' + color);
@@ -286,7 +288,9 @@ class CiteHighlighter {
 	
 	async getWikicode(title) {
 		let pageIsDeleted = ! mw.config.get('wgCurRevisionId');
-		if ( pageIsDeleted ) return '';
+		if ( pageIsDeleted ) {
+			return '';
+		}
 
 		let api = new mw.Api();
 		let response = await api.get( {
@@ -297,7 +301,7 @@ class CiteHighlighter {
 			format: 'json'
 		} );
 		let wikicode = response.parse.wikitext;
-		return wikicode;		
+		return wikicode;
 	}
 
 	async getWikicodeFromCache(title) {
@@ -328,4 +332,4 @@ $(async function() {
 	});
 });
 
-//</nowiki>
+// </nowiki>
