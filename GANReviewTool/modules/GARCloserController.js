@@ -348,8 +348,10 @@ export class GARCloserController {
 	 * @private
 	 */
 	getGAListTitleFromTalkPageWikicode(wikicode) {
+		/** Keys should all be lowercase */
 		let dictionary = {
 			'agriculture': 'Wikipedia:Good articles/Agriculture, food and drink',
+			'agriculture, food and drink': 'Wikipedia:Good articles/Agriculture, food and drink',
 			'agriculture, food, and drink': 'Wikipedia:Good articles/Agriculture, food and drink',
 			'cuisine': 'Wikipedia:Good articles/Agriculture, food and drink',
 			'cuisines': 'Wikipedia:Good articles/Agriculture, food and drink',
