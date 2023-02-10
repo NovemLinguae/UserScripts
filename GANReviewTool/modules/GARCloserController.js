@@ -69,17 +69,14 @@ export class GARCloserController {
 				await this.makeCommunityAssessmentLogEntry();
 				await this.makeSureCategoryPageHasWikitext();
 			}
+			await this.makeScriptLogEntry('keep');
+			this.pushStatus(`Done! Reloading...`);
+			location.reload();
 		} catch(err) {
 			this.error = err;
 			console.error(err);
-		}
-
-		await this.makeScriptLogEntry('keep');
-
-		if ( ! this.error ) {
-			this.pushStatus(`Done! Reloading...`);
-			location.reload();
-		} else {
+			this.editSummary += ' cc [[User:Novem Linguae]]';
+			await this.makeScriptLogEntry('keep');
 			this.pushStatus(`<span class="GARCloserTool-ErrorNotice">An error occurred :( Details: ${this.error}</span>`);
 		}
 	}
@@ -101,17 +98,14 @@ export class GARCloserController {
 				await this.makeCommunityAssessmentLogEntry();
 				await this.makeSureCategoryPageHasWikitext();
 			}
+			await this.makeScriptLogEntry('delist');
+			this.pushStatus(`Done! Reloading...`);
+			location.reload();
 		} catch(err) {
 			this.error = err;
 			console.error(err);
-		}
-
-		await this.makeScriptLogEntry('delist');
-
-		if ( ! this.error ) {
-			this.pushStatus(`Done! Reloading...`);
-			location.reload();
-		} else {
+			this.editSummary += ' cc [[User:Novem Linguae]]';
+			await this.makeScriptLogEntry('delist');
 			this.pushStatus(`<span class="GARCloserTool-ErrorNotice">An error occurred :( Details: ${this.error}</span>`);
 		}
 	}

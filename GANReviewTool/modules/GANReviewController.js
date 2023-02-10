@@ -64,18 +64,15 @@ export class GANReviewController {
 			} else if ( this.action === 'answerSecondOpinion' ) {
 				await this.answerSecondOpinion();
 			}
+			await this.writeToLog();
+			this.pushStatus('Script complete. Refreshing page.');
+			// TODO: 1 second delay?
+			location.reload();
 		} catch(err) {
 			this.pushStatus(`<span class="GANReviewTool-ErrorNotice">An error occurred :( Details: ${err}</span>`);
 			this.error = err;
-		}
-
-		await this.writeToLog();
-
-		if ( ! this.error ) {
-			this.pushStatus('Script complete. Refreshing page.');
-			// TODO: 1 second delay?
-
-			location.reload();
+			this.editSummary += ' cc [[User:Novem Linguae]]';
+			await this.writeToLog();
 		}
 	}
 
