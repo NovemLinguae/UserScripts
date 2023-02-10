@@ -174,15 +174,14 @@ export class GANReviewHTMLGenerator {
 							<option value="Geography and places">=====Urban and historical sites=====</option>
 							<option value="Geography and places">=====Geography miscellanea=====</option>
 							<option value="Geography and places" disabled>===Places===</option>
-							<option value="Geography and places">=====Countries=====</option>
+							<option value="Geography and places">=====Countries and Regions=====</option>
 							<option value="Geography and places">=====Africa=====</option>
 							<option value="Geography and places">=====Antarctica=====</option>
 							<option value="Geography and places">=====Asia=====</option>
 							<option value="Geography and places">=====Australia and the Pacific=====</option>
 							<option value="Geography and places">=====Europe=====</option>
-							<option value="Geography and places">=====Middle East=====</option>
 							<option value="Geography and places">=====North America=====</option>
-							<option>=====South America=====</option>
+							<option value="Geography and places">=====South America=====</option>
 
 							<option value="History" disabled>==History==</option>
 							<option value="History" disabled>===World history===</option>
