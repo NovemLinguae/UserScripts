@@ -322,7 +322,7 @@ describe('setGARArchiveTemplate(newArchiveTitle)', () => {
 });
 
 		let garArchiveTemplateRevisionID = 987;
-describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)', () => {
+describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error, categoryRevisionID)', () => {
 	it(`Should handle individual pass`, () => {
 		let username = `Novem Linguae`;
 		let keepOrDelist = `keep`;
@@ -334,8 +334,9 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 		let garLogRevisionID = undefined;
 		let garArchiveTemplateRevisionID = undefined;
 		let error = false;
+		let categoryRevisionID = undefined;
 		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Talk:Geothermal energy/GA2]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]]`;
-		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)).toBe(output);
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error, categoryRevisionID)).toBe(output);
 	});
 
 	it(`Should handle individual fail`, () => {
@@ -349,8 +350,9 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 		let garLogRevisionID = undefined;
 		let garArchiveTemplateRevisionID = undefined;
 		let error = false;
+		let categoryRevisionID = undefined;
 		let output = `\n* [[User:Novem Linguae|Novem Linguae]] delisted [[Talk:Geothermal energy/GA2]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]]`;
-		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)).toBe(output);
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error, categoryRevisionID)).toBe(output);
 	});
 
 	it(`Should handle community pass`, () => {
@@ -364,8 +366,9 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 		let garLogRevisionID = 456;
 		let garArchiveTemplateRevisionID = undefined;
 		let error = false;
+		let categoryRevisionID = undefined;
 		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Log]]]`;
-		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)).toBe(output);
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error, categoryRevisionID)).toBe(output);
 	});
 
 	it(`Should handle community fail`, () => {
@@ -379,8 +382,9 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 		let garLogRevisionID = 101112;
 		let garArchiveTemplateRevisionID = undefined;
 		let error = false;
+		let categoryRevisionID = undefined;
 		let output = `\n* [[User:Novem Linguae|Novem Linguae]] delisted [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]][[Special:Diff/101112|[Log]]]`;
-		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)).toBe(output);
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error, categoryRevisionID)).toBe(output);
 	});
 
 	it(`Should handle community pass when the archive is full, requiring a new archive page`, () => {
@@ -394,8 +398,9 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 		let garLogRevisionID = 456;
 		let garArchiveTemplateRevisionID = 987;
 		let error = false;
-		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Log]]][[Special:Diff/987|[Tmpl]]]`;
-		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)).toBe(output);
+		let categoryRevisionID = 555;
+		let output = `\n* [[User:Novem Linguae|Novem Linguae]] kept [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Log]]][[Special:Diff/987|[Tmpl]]][[Special:Diff/555|[Cat]]]`;
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error, categoryRevisionID)).toBe(output);
 	});
 
 	it(`Should handle error`, () => {
@@ -408,9 +413,10 @@ describe('makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkRe
 		let gaListRevisionID = 789;
 		let garLogRevisionID = 101112;
 		let garArchiveTemplateRevisionID = undefined;
+		let categoryRevisionID = undefined;
 		let error = `ReferenceError: getPassWikicodeForGANPage is not defined`;
 		let output = `\n* <span style="color: red; font-weight: bold;">ERROR:</span> ReferenceError: getPassWikicodeForGANPage is not defined. [[User:Novem Linguae|Novem Linguae]] delisted [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]][[Special:Diff/101112|[Log]]]`;
-		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error)).toBe(output);
+		expect(wg.makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error, categoryRevisionID)).toBe(output);
 	});
 });
 

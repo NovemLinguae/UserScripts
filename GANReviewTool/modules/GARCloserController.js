@@ -67,6 +67,7 @@ export class GARCloserController {
 			await this.processKeepForTalkPage();
 			if ( this.isCommunityAssessment() ) {
 				await this.makeCommunityAssessmentLogEntry();
+				await this.makeSureCategoryPageHasWikitext();
 			}
 		} catch(err) {
 			this.error = err;
@@ -98,6 +99,7 @@ export class GARCloserController {
 			await this.processDelistForGAList();
 			if ( this.isCommunityAssessment() ) {
 				await this.makeCommunityAssessmentLogEntry();
+				await this.makeSureCategoryPageHasWikitext();
 			}
 		} catch(err) {
 			this.error = err;
@@ -232,22 +234,56 @@ export class GARCloserController {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
 		this.pushStatus(`Add entry to community assessment log`);
-		let archiveTitle = await this.getHighestNumberedPage("Wikipedia:Good article reassessment/Archive ");
+
+		// figure out newest GAR community assessment log (the "archive")
+		this.archiveTitle = await this.getHighestNumberedPage("Wikipedia:Good article reassessment/Archive ");
 		// TODO: handle no existing log pages at all
-		let wikicode = await this.getWikicode(archiveTitle);
-		let garTemplateCount = this.countGARTemplates(wikicode);
+
+		// count # of entries in newest GAR community assessment log (the "archive")
+		let archiveOldWikicode = await this.getWikicode(this.archiveTitle);
+		let garTemplateCount = this.countGARTemplates(archiveOldWikicode);
+
+		// do we need to start a new archive page?
 		let maximumNumberOfHeadingsAllowedInArchive = 82;
-		let newArchive = false;
+		let isNewArchive = false;
 		if ( garTemplateCount >= maximumNumberOfHeadingsAllowedInArchive ) {
-			archiveTitle = this.incrementArchiveTitle(archiveTitle);
-			newArchive = true;
-			wikicode = ``;
-			await this.incrementGARArchiveTemplate(archiveTitle);
+			this.archiveTitle = this.incrementArchiveTitle(this.archiveTitle);
+			isNewArchive = true;
+			archiveOldWikicode = ``;
+			await this.incrementGARArchiveTemplate(this.archiveTitle);
 		}
-		let newWikicode = this.wg.makeCommunityAssessmentLogEntry(this.garPageTitle, wikicode, newArchive, archiveTitle);
-		this.garLogRevisionID = await this.makeEdit(archiveTitle, this.editSummary, newWikicode)
+
+		// add log entry
+		let archiveNewWikicode = this.wg.makeCommunityAssessmentLogEntry(
+			this.garPageTitle,
+			archiveOldWikicode,
+			isNewArchive,
+			this.archiveTitle
+		);
+		this.garLogRevisionID = await this.makeEdit(this.archiveTitle, this.editSummary, archiveNewWikicode)
 		if ( this.garLogRevisionID === undefined ) {
 			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
+		}
+	}
+
+	async makeSureCategoryPageHasWikitext() {
+		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
+
+		// use this.archiveTitle to figure out our current GAR archive #
+		let archiveNumber = this.archiveTitle.match(/\d+$/);
+
+		// read the wikicode for Category:GAR/#
+		let categoryTitle = `Category:GAR/${archiveNumber}`;
+		let categoryWikicode = await this.getWikicodeAndDoNotThrowError(categoryTitle);
+
+		// if the category has no wikitext, add some boilerplate wikitext, so the category isn't a red link
+		if ( ! categoryWikicode ) {
+			let newWikicode =
+`{{Wikipedia category}}
+
+[[Category:Wikipedia good article reassessment]]
+`;
+			this.categoryRevisionID = await this.makeEdit(categoryTitle, this.editSummary, newWikicode);
 		}
 	}
 
@@ -319,7 +355,8 @@ export class GARCloserController {
 			this.gaListRevisionID,
 			this.garLogRevisionID,
 			this.garArchiveTemplateRevisionID,
-			this.error
+			this.error,
+			this.categoryRevisionID
 		);
 		await this.appendToPage(this.scriptLogTitle, this.editSummary, wikicode);
 	}
@@ -616,9 +653,18 @@ export class GARCloserController {
 			"format": "json",
 		};
 		let result = await api.post(params);
-		if ( result['error'] ) return '';
 		let wikicode = result['parse']['wikitext']['*'];
 		return wikicode;
+	}
+
+	async getWikicodeAndDoNotThrowError(title) {
+		try {
+			return await this.getWikicode(title);
+		} catch (err) {
+
+		}
+
+		return '';
 	}
 
 	/**

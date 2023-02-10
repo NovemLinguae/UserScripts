@@ -48,9 +48,10 @@ __TOC__`;
 
 	/**
 	 * @param {'keep'|'delist'} keepOrDelist
+	 * @todo too many params. factor the RevisionIDs into their own class
 	 */
-	makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error) {
-		if ( arguments.length !== 10 ) throw new Error('Incorrect # of arguments');
+	makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error, categoryRevisionID) {
+		if ( arguments.length !== 11 ) throw new Error('Incorrect # of arguments');
 
 		let textToAppend = `\n* `;
 
@@ -78,6 +79,9 @@ __TOC__`;
 		}
 		if ( garArchiveTemplateRevisionID ) {
 			textToAppend += `[[Special:Diff/${garArchiveTemplateRevisionID}|[Tmpl]]]`;
+		}
+		if ( categoryRevisionID ) {
+			textToAppend += `[[Special:Diff/${categoryRevisionID}|[Cat]]]`;
 		}
 
 		return textToAppend;
