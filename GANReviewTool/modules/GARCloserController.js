@@ -405,6 +405,7 @@ export class GARCloserController {
 			'computing': 'Wikipedia:Good articles/Engineering and technology',
 			'eng': 'Wikipedia:Good articles/Engineering and technology',
 			'engineering': 'Wikipedia:Good articles/Engineering and technology',
+			'engineering and technology': 'Wikipedia:Good articles/Engineering and technology',
 			'technology': 'Wikipedia:Good articles/Engineering and technology',
 			'transport': 'Wikipedia:Good articles/Engineering and technology',
 
