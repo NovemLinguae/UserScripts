@@ -3,32 +3,27 @@
 - Adds "Run DraftCleaner" link to the left sidebar
 
 - Top uses:
-	- remove extra line breaks
+	- remove extra line breaks (for example, 3 enters in a row)
 	- in the first sentence, bold the title
 	- convert curly quotes to regular quotes
 	- put <ref>s after periods
 	- clean external links out of the main article area (turn them into references)
 	- add ==References== section
+	- removes bold from headings
 
-- More detailed list of uses:
+- Other uses:
 	- converts [inline external links] to <ref>s
-	- reduces more than 2 enters in a row, to 2 enters
 	- removes spaces in front of <ref>s
 	- get rid of any level 2 heading that contains the article's title
-	- bolds the first occurrence of the article title
-	- removes bold from headings
 	- converts =TitleHeading= to ==H2Heading==
 	- replaces Covid-19 with COVID-19
 	- removes enter characters between <ref>s
 	- trims whitespace at beginning and end
 	- remove self wikilinks to the article title
 	- convert ==Reference== to ==References==
-	- swap ref period with period ref
 	- turn bare URLs into references
 	- fix errant spaces at beginning of lines, which makes a blockquote looking thing
-	- add references section if missing
 	- delete whitespace at the end of lines
-	- convert smart quotes to regular quotes
 	- convert double spaces to single spaces
 	- remove blank heading
 	- in refs, turn short links into long links, so you can see the domain
