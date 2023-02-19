@@ -93,18 +93,6 @@ function getArticleName() {
 	return mw.config.get('wgPageName');
 }
 
-function showMessage(messageText) {
-	$('#DraftCleaner').hide();
-	$('#DraftCleanerNoClick').empty();
-	$('#DraftCleanerNoClick').prepend(messageText);
-	$('#DraftCleanerNoClick').show();
-}
-
-function showClickableButton() {
-	$('#DraftCleanerNoClick').hide();
-	$('#DraftCleaner').show();
-}
-
 /** refresh AND clear cache */
 function hardRefresh() {
 	// window.location.reload(true) is deprecated. use this instead
@@ -119,51 +107,46 @@ if ( action != 'view' ) return;
 let isDiff = mw.config.get('wgDiffNewId');
 if ( isDiff ) return;
 
-// Only run in mainspace, draftspace, and sandboxes
-let titleWithNamespaceAndUnderscores = getArticleName();
-let namespaceNumber = mw.config.get('wgNamespaceNumber');
-let sandbox = titleWithNamespaceAndUnderscores.match(/sandbox/i);
-//if ( ! [0, 118].includes(namespaceNumber) && ! sandbox ) return;
+// Don't run in virtual namespaces
+if (mw.config.get('wgNamespaceNumber') < 0) return;
 
 // @ts-ignore
 let menuID = window.draftCleanerPutInToolsMenu ? 'p-tb' : 'p-navigation';
 
-// Add DraftCleaner to left sidebar
-// Using two <li>s. One of the two is kept hidden at all times. This avoids having to delete #DraftCleanerLink, which would also delete the event listener.
-$(`#${menuID} ul`).append(`
-	<li id="DraftCleaner">
-		<a id="DraftCleanerLink">Run DraftCleaner</a>
-	</li>
+let running = false;
+
+// Add DraftCleaner to the toolbar
+mw.loader.using(['mediawiki.util'], function () {
+	mw.util.addPortletLink('p-cactions', '#', 'Run DraftCleaner', 'DraftCleanerLink');
+	$('#DraftCleanerLink').on('click', async function() {
+		// prevent running the script while script is already in progress
+		if (running) return;
+		running = true;
+
+		// notify of script starting
+		mw.notify('Parsing page content...');
 	
-	<li id="DraftCleanerNoClick" style="display:none">
-		
-	</li>
-`);
+		// get page wikicode
+		let titleWithNamespaceAndSpaces = titleWithNamespaceAndUnderscores.replace(/_/g, ' ');
+		let originalWikicode = await getWikicode(titleWithNamespaceAndUnderscores);
+		let wikicode = originalWikicode;
 
-$('#DraftCleanerLink').on('click', async function() {
-	// prevent running the script while script is already in progress
-	showMessage('Editing. Please wait.');
-	
-	// get page wikicode
-	let titleWithNamespaceAndSpaces = titleWithNamespaceAndUnderscores.replace(/_/g, ' ');
-	let originalWikicode = await getWikicode(titleWithNamespaceAndUnderscores);
-	let wikicode = originalWikicode;
+		let dc = new DraftCleaner();
+		wikicode = dc.cleanDraft(wikicode, namespaceNumber, titleWithNamespaceAndSpaces);
 
-	let dc = new DraftCleaner();
-	wikicode = dc.cleanDraft(wikicode, namespaceNumber, titleWithNamespaceAndSpaces);
+		// if changes to be made
+		if ( wikicode != originalWikicode ) {
+			let summary = 'clean up ([[User:Novem Linguae/Scripts/DraftCleaner.js|DraftCleaner]])';
+			// editPage(titleWithNamespaceAndUnderscores, wikicode);
+			// hardRefresh();
+			await goToShowChangesScreen(titleWithNamespaceAndUnderscores, wikicode, summary);
+		// else display "no changes needed", then reset
+		} else {
+			mw.notify('No changes needed!');
 
-	// if changes to be made
-	if ( wikicode != originalWikicode ) {
-		let summary = 'clean up ([[User:Novem Linguae/Scripts/DraftCleaner.js|DraftCleaner]])';
-		// editPage(titleWithNamespaceAndUnderscores, wikicode);
-		// hardRefresh();
-		await goToShowChangesScreen(titleWithNamespaceAndUnderscores, wikicode, summary);
-	// else display "no changes needed", then reset
-	} else {
-		showMessage('No changes needed.');
-		
-		setTimeout(function (){
-			showClickableButton();
-		}, 2000);
-	}
+			setTimeout(function (){
+				showClickableButton();
+			}, 2000);
+		}
+});
 });
