@@ -153,5 +153,5 @@ mw.loader.using(['mediawiki.util'], function () {
 		} else {
 			mw.notify('No changes needed!');
 		}
-});
+	});
 });
