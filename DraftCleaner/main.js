@@ -110,8 +110,14 @@ if ( isDiff ) return;
 // Don't run in virtual namespaces
 if (mw.config.get('wgNamespaceNumber') < 0) return;
 
+let menuID = 'p-navigation';
 // @ts-ignore
-let menuID = window.draftCleanerPutInToolsMenu ? 'p-cactions' : 'p-navigation';
+if ( window.draftCleanerPutInToolsMenu ) {
+	menuID = 'p-tb';
+// @ts-ignore
+} else if ( window.draftCleanerPutInMoreMenu ) {
+	menuID = 'p-cactions';
+}
 
 let titleWithNamespaceAndUnderscores = getArticleName();
 let namespaceNumber = mw.config.get('wgNamespaceNumber');
