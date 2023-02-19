@@ -37,6 +37,10 @@
 	- if article has headings but no lead, remove first heading
 	- replace unicode bullets with asterisks
 
+Add one of the following to your User:yourName/common.js (at the top) to change the position where DraftCleaner puts its link:
+    window.draftCleanerPutInToolsMenu = true;
+	window.draftCleanerPutInMoreMenu = true;
+
 This page was assembled from 3 files using my publish.php script. I have an offline test suite with around 100 unit tests for the DraftCleaner and StringFilter classes.
 */
 
