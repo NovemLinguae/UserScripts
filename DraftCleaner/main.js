@@ -9,7 +9,7 @@
 	- put <ref>s after periods
 	- clean external links out of the main article area (turn them into references)
 	- add ==References== section
-	- removes bold from headings
+	- remove bold from headings
 
 - Other uses:
 	- converts [inline external links] to <ref>s
@@ -45,7 +45,11 @@ This page was assembled from 3 files using my publish.php script. I have an offl
 */
 
 async function getWikicode(title) {
-	if ( ! mw.config.get('wgCurRevisionId') ) return ''; // if page is deleted, return blank
+	let pageIsDeleted = ! mw.config.get('wgCurRevisionId');
+	if ( pageIsDeleted ) {
+		return '';
+	}
+
 	var wikicode = '';
 	title = encodeURIComponent(title);
 	await $.ajax({
@@ -56,24 +60,6 @@ async function getWikicode(title) {
 		dataType: "json",
 	});
 	return wikicode;
-}
-
-// borrowed from [[Wikipedia:User scripts/Guide#Edit a page and other common actions]]
-function editPage(articleName, wikicode, summary) {
-	let debugInfo = $.ajax({
-		url: mw.util.wikiScript('api'),
-		type: 'POST',
-		dataType: 'json',
-		data: {
-			format: 'json',
-			action: 'edit',
-			title: articleName,
-			text: wikicode, // will replace entire page content
-			summary: summary,
-			token: mw.user.tokens.get('csrfToken')
-		},
-		async: false
-	});
 }
 
 function goToShowChangesScreen(titleWithNamespaceAndUnderscores, wikicode, editSummary) {
@@ -89,7 +75,7 @@ function goToShowChangesScreen(titleWithNamespaceAndUnderscores, wikicode, editS
 		.append($('<input type="hidden" name="wpDiff">').val('Show changes'))
 		.append($('<input type="hidden" name="wpUltimateParam">').val('1'))
 		.appendTo($(document.body)) //it has to be added somewhere into the <body>
-		.submit();
+		.trigger('submit');
 }
 
 /** returns the pagename, including the namespace name, but with spaces replaced by underscores */
@@ -97,22 +83,24 @@ function getArticleName() {
 	return mw.config.get('wgPageName');
 }
 
-/** refresh AND clear cache */
-function hardRefresh() {
-	// window.location.reload(true) is deprecated. use this instead
-	window.location.href = window.location.href;
-}
-
 // don't run when not viewing articles
 let action = mw.config.get('wgAction');
-if ( action != 'view' ) return;
+let isNotViewing = action != 'view';
+if ( isNotViewing ) {
+	return;
+}
 
 // don't run when viewing diffs
 let isDiff = mw.config.get('wgDiffNewId');
-if ( isDiff ) return;
+if ( isDiff ) {
+	return;
+}
 
 // Don't run in virtual namespaces
-if (mw.config.get('wgNamespaceNumber') < 0) return;
+let isVirtualNamespace = mw.config.get('wgNamespaceNumber') < 0;
+if ( isVirtualNamespace ) {
+	return;
+}
 
 let menuID = 'p-navigation';
 // @ts-ignore
@@ -133,10 +121,11 @@ mw.loader.using(['mediawiki.util'], function () {
 	mw.util.addPortletLink(menuID, '#', 'Run DraftCleaner', 'DraftCleanerLink');
 	$('#DraftCleanerLink').on('click', async function() {
 		// prevent running the script while script is already in progress
-		if (running) return;
+		if ( running ) {
+			return;
+		}
 		running = true;
 
-		// notify of script starting
 		mw.notify('Parsing page content...');
 	
 		// get page wikicode
@@ -147,13 +136,10 @@ mw.loader.using(['mediawiki.util'], function () {
 		let dc = new DraftCleaner();
 		wikicode = dc.cleanDraft(wikicode, namespaceNumber, titleWithNamespaceAndSpaces);
 
-		// if changes to be made
-		if ( wikicode != originalWikicode ) {
+		let needsChanges = wikicode != originalWikicode;
+		if ( needsChanges ) {
 			let summary = 'clean up ([[User:Novem Linguae/Scripts/DraftCleaner.js|DraftCleaner]])';
-			// editPage(titleWithNamespaceAndUnderscores, wikicode);
-			// hardRefresh();
 			await goToShowChangesScreen(titleWithNamespaceAndUnderscores, wikicode, summary);
-		// else display "no changes needed", then reset
 		} else {
 			mw.notify('No changes needed!');
 		}
