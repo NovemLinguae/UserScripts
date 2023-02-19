@@ -111,13 +111,16 @@ if ( isDiff ) return;
 if (mw.config.get('wgNamespaceNumber') < 0) return;
 
 // @ts-ignore
-let menuID = window.draftCleanerPutInToolsMenu ? 'p-tb' : 'p-navigation';
+let menuID = window.draftCleanerPutInToolsMenu ? 'p-cactions' : 'p-navigation';
+
+let titleWithNamespaceAndUnderscores = getArticleName();
+let namespaceNumber = mw.config.get('wgNamespaceNumber');
 
 let running = false;
 
 // Add DraftCleaner to the toolbar
 mw.loader.using(['mediawiki.util'], function () {
-	mw.util.addPortletLink('p-cactions', '#', 'Run DraftCleaner', 'DraftCleanerLink');
+	mw.util.addPortletLink(menuID, '#', 'Run DraftCleaner', 'DraftCleanerLink');
 	$('#DraftCleanerLink').on('click', async function() {
 		// prevent running the script while script is already in progress
 		if (running) return;
@@ -143,10 +146,6 @@ mw.loader.using(['mediawiki.util'], function () {
 		// else display "no changes needed", then reset
 		} else {
 			mw.notify('No changes needed!');
-
-			setTimeout(function (){
-				showClickableButton();
-			}, 2000);
 		}
 });
 });
