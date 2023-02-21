@@ -46,7 +46,7 @@ $(function() {
 		}
 		let array = string.split(', ').map(function(str) {
 			str = str.trim();
-			str = str.replace(/[\s.,\/#!$%\^&\*;:{}=\-_`~()]{2,}/g, ''); // remove fragments of punctuation. can result when trying to delete nested parentheses. will delete fragments such as " .)"
+			str = str.replace(/[\s.,/#!$%^&*;:{}=\-_`~()]{2,}/g, ''); // remove fragments of punctuation. can result when trying to delete nested parentheses. will delete fragments such as " .)"
 			return str;
 		});
 		return array;
@@ -66,7 +66,7 @@ $(function() {
 			let matches = / from (.*?) to (.*?)(?: \(.*)?$/.exec(text);
 			from = permStringToArray(matches[1]);
 			to = permStringToArray(matches[2]);
-		} catch(err) {
+		} catch (err) {
 			throw new Error("UserRightsDiff.js error. Error was: " + err + ". Input text was: " + $(this).text());
 		}
 		let added = to.filter(x => !from.includes(x));
@@ -90,7 +90,7 @@ $(function() {
 			$('.mw-changeslist-log-rights .mw-changeslist-line-inner').each( checkLine ); // watchlist
 		}
 		$('body').on('DOMNodeInserted', '.mw-logevent-loglines', checkLog);
-	};
+	}
 
 	// User:BradV/Scripts/SuperLinks.js
 	$('body').on('DOMNodeInserted', '.mw-logevent-loglines', checkLog);
