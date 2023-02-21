@@ -78,9 +78,6 @@ export class GANReviewWikicodeGenerator {
 		return this.changeGANomineeTemplateStatus(talkWikicode, 'onreview');
 	}
 
-	/**
-	 * @private
-	 */
 	findSectionStartAndEnd(gaSubpageHeading, gaSubpageWikicode, gaDisplayTitle) {
 		// find heading
 		let headingStartPosition = this.getGASubpageHeadingPosition(gaSubpageHeading, gaSubpageWikicode);
@@ -93,9 +90,6 @@ export class GANReviewWikicodeGenerator {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	findAlphabeticalInsertPosition(gaSubpageWikicode, gaDisplayTitle) {
 		let insertPosition;
 		let startOfLine = this.subsectionStartPosition;
@@ -116,9 +110,6 @@ export class GANReviewWikicodeGenerator {
 		return insertPosition;
 	}
 
-	/**
-	 * @private
-	 */
 	changeGANomineeTemplateStatus(talkWikicode, newStatus) {
 		// already has correct status
 		let regex = new RegExp(`({{GA nominee[^\\}]*\\|\\s*status\\s*=\\s*${newStatus})`, 'i');
@@ -178,9 +169,6 @@ export class GANReviewWikicodeGenerator {
 		return textToAppend;
 	}
 
-	/**
-	 * @private
-	 */
 	getWikicodeToInsert(gaTitle, gaDisplayTitle) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 
@@ -195,9 +183,6 @@ export class GANReviewWikicodeGenerator {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	placeATOP(wikicode, result, color) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
@@ -232,9 +217,6 @@ export class GANReviewWikicodeGenerator {
 		return wikicode;
 	}
 
-	/**
-	 * @private
-	 */
 	getTopicFromGANomineeTemplate(talkWikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -245,9 +227,6 @@ export class GANReviewWikicodeGenerator {
 		return topic;
 	}
 
-	/**
-	 * @private
-	 */
 	getTemplateParameter(wikicode, templateName, parameterName) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
@@ -264,7 +243,6 @@ export class GANReviewWikicodeGenerator {
 
 	/**
 	 * CC BY-SA 4.0, coolaj86, https://stackoverflow.com/a/6969486/3480193
-	 * @private
 	 */
 	regExEscape(string) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
@@ -272,18 +250,12 @@ export class GANReviewWikicodeGenerator {
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	}
 
-	/**
-	 * @private
-	 */
 	deleteGANomineeTemplate(talkWikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
 		return talkWikicode.replace(/\{\{GA nominee[^\}]+\}\}\n?/i, '');
 	}
 
-	/**
-	 * @private
-	 */
 	addGATemplate(talkWikicode, topic, gaPageNumber, oldid) {
 		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
 
@@ -291,9 +263,6 @@ export class GANReviewWikicodeGenerator {
 		return this.addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd);
 	}
 
-	/**
-	 * @private
-	 */
 	addFailedGATemplate(talkWikicode, topic, gaPageNumber, oldid) {
 		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
 
@@ -301,9 +270,6 @@ export class GANReviewWikicodeGenerator {
 		return this.addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd);
 	}
 
-	/**
-	 * @private
-	 */
 	addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 
@@ -320,9 +286,6 @@ export class GANReviewWikicodeGenerator {
 		return this.addWikicodeAfterTemplates(talkWikicode, templatesThatGoBefore, codeToAdd);
 	}
 
-	/**
-	 * @private
-	 */
 	getFirstTemplateNameFromWikicode(wikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -336,7 +299,6 @@ export class GANReviewWikicodeGenerator {
 	/**
 	 * Search algorithm looks for \n after the searched templates. If not present, it will not match.
 	 * @param {string[]} templates
-	 * @private
 	 */
 	addWikicodeAfterTemplates(wikicode, templates, codeToAdd) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
@@ -373,7 +335,6 @@ export class GANReviewWikicodeGenerator {
 	/**
 	 * @param {RegExp} regex /g flag must be set
 	 * @returns {number} endOfStringPosition Returns zero if not found
-	 * @private
 	 */
 	getEndOfStringPositionOfLastMatch(haystack, regex) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
@@ -390,9 +351,6 @@ export class GANReviewWikicodeGenerator {
 		return 0;
 	}
 
-	/**
-	 * @private
-	 */
 	changeWikiProjectArticleClassToGA(talkWikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -409,7 +367,6 @@ export class GANReviewWikicodeGenerator {
 
 	/**
 	 * Determine next |action= number in {{Article history}} template. This is so we can insert an action.
-	 * @private
 	 */
 	determineNextActionNumber(talkWikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
@@ -425,9 +382,6 @@ export class GANReviewWikicodeGenerator {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed, oldid) {
 		if ( arguments.length !== 5 ) throw new Error('Incorrect # of arguments');
 
@@ -460,9 +414,6 @@ export class GANReviewWikicodeGenerator {
 		return talkWikicode;
 	}
 
-	/**
-	 * @private
-	 */
 	getArticleHistoryNewStatus(existingStatus, listedOrFailed) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 
@@ -489,9 +440,6 @@ export class GANReviewWikicodeGenerator {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
@@ -500,9 +448,6 @@ export class GANReviewWikicodeGenerator {
 		return wikicode.replace(regex, `$1\n${codeToInsert}\n$2`);
 	}
 
-	/**
-	 * @private
-	 */
 	firstTemplateGetParameterValue(wikicode, template, parameter) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
@@ -522,7 +467,6 @@ export class GANReviewWikicodeGenerator {
 
 	/**
 	 * @param {RegExp} regex
-	 * @private
 	 */
 	preg_position(regex, haystack) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
@@ -534,9 +478,6 @@ export class GANReviewWikicodeGenerator {
 		return false;
 	}
 
-	/**
-	 * @private
-	 */
 	findEndOfTemplate(wikicode, templateStartPosition) {
 		// TODO: handle triple braces, handle <nowiki> tags
 		let nesting = 0;
@@ -559,9 +500,6 @@ export class GANReviewWikicodeGenerator {
 		return templateEndPosition;
 	}
 
-	/**
-	 * @private
-	 */
 	firstTemplateDeleteParameter(wikicode, templateRegEx, parameter) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
@@ -587,9 +525,6 @@ export class GANReviewWikicodeGenerator {
 		return wikicode;
 	}
 
-	/**
-	 * @private
-	 */
 	removeFormattingThatInterferesWithSort(str) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -602,9 +537,6 @@ export class GANReviewWikicodeGenerator {
 			.replace(/^The /gi, '') // delete definite article "the"
 	}
 
-	/**
-	 * @private
-	 */
 	aSortsLowerThanB(a, b) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 
@@ -630,7 +562,6 @@ export class GANReviewWikicodeGenerator {
 
 	/**
 	 * Jeroen Ooms, CC BY-SA 3.0, https://stackoverflow.com/a/18123985/3480193
-	 * @private
 	 */
 	removeDiacritics(str) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
@@ -729,9 +660,6 @@ export class GANReviewWikicodeGenerator {
 		return str;
   	}
 
-	/**
-	 * @private
-	 */
 	getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 
@@ -752,9 +680,6 @@ export class GANReviewWikicodeGenerator {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	findFirstStringAfterPosition(needle, haystack, position) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
@@ -770,7 +695,6 @@ export class GANReviewWikicodeGenerator {
 
 	/**
 	 * CC BY-SA 4.0, jAndy, https://stackoverflow.com/a/4364902/3480193
-	 * @private
 	 */
 	insertStringIntoStringAtPosition(bigString, insertString, position) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
@@ -782,9 +706,6 @@ export class GANReviewWikicodeGenerator {
 		].join('');
 	}
 
-	/**
-	 * @private
-	 */
 	hasArticleHistoryTemplate(wikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 

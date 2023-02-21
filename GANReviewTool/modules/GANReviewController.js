@@ -33,9 +33,6 @@ export class GANReviewController {
 		});
 	}
 
-	/**
-	 * @private
-	 */
 	async clickSubmit() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -100,9 +97,6 @@ export class GANReviewController {
 		await this.processAnswerSecondOpinionForTalkPage();
 	}
 
-	/**
-	 * @private
-	 */
 	async processOnHoldForTalkPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -112,9 +106,6 @@ export class GANReviewController {
 		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
 	}
 
-	/**
-	 * @private
-	 */
 	async processAskSecondOpinionForTalkPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -124,9 +115,6 @@ export class GANReviewController {
 		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
 	}
 
-	/**
-	 * @private
-	 */
 	async processAnswerSecondOpinionForTalkPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -138,7 +126,6 @@ export class GANReviewController {
 
 	/**
 	 * @return {boolean} hasFormValidationErrors
-	 * @private
 	 */
 	validateForm() {
 		this.$(`.GANReviewTool-ValidationError`).hide();
@@ -160,9 +147,6 @@ export class GANReviewController {
 		return hasFormValidationErrors;
 	}
 
-	/**
-	 * @private
-	 */
 	async doPass() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -176,9 +160,6 @@ export class GANReviewController {
 		await this.processPassForGASubPage();
 	}
 
-	/**
-	 * @private
-	 */
 	async doFail() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -190,9 +171,6 @@ export class GANReviewController {
 		await this.processFailForTalkPage();
 	}
 
-	/**
-	 * @private
-	 */
 	async processFailForGANPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -202,9 +180,6 @@ export class GANReviewController {
 		this.reviewRevisionID = await this.makeEdit(this.reviewTitle, this.editSummary, reviewWikicode);
 	}
 
-	/**
-	 * @private
-	 */
 	async processFailForTalkPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -221,9 +196,6 @@ export class GANReviewController {
 		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
 	}
 
-	/**
-	 * @private
-	 */
 	async processPassForTalkPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -241,9 +213,6 @@ export class GANReviewController {
 		this.talkRevisionID = await this.makeEdit(this.gaTalkTitle, this.editSummary, talkWikicode);
 	}
 
-	/**
-	 * @private
-	 */
 	async processPassForGASubPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -263,9 +232,6 @@ export class GANReviewController {
 		this.gaRevisionID = await this.makeEdit(gaSubpageLongTitle, gaSubPageEditSummary, gaSubpageWikicode);
 	}
 
-	/**
-	 * @private
-	 */
 	async processPassForGANPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -275,9 +241,6 @@ export class GANReviewController {
 		this.reviewRevisionID = await this.makeEdit(this.reviewTitle, this.editSummary, reviewWikicode);
 	}
 
-	/**
-	 * @private
-	 */
 	async getRevisionIDOfNewestRevision(pageTitle) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -296,9 +259,6 @@ export class GANReviewController {
 		return revisionID;
 	}
 	
-	/**
-	 * @private
-	 */
 	readFormAndSetVariables() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -311,7 +271,6 @@ export class GANReviewController {
 
 	/**
 	 * Show or hide different parts of the form depending on whether the user clicks pass or fail.
-	 * @private
 	 */
 	handleUserChangingFormType() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
@@ -334,7 +293,6 @@ export class GANReviewController {
 
 	/**
 	 * Show a warning if viewer is not the creator of the GAN Review page. This is to help prevent accidentally closing the wrong GAN Review.
-	 * @private
 	 */
 	async warnUserIfNotReviewCreator() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
@@ -352,18 +310,12 @@ export class GANReviewController {
 		});
 	}
 
-	/**
-	 * @private
-	 */
 	displayForm() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
 		this.$('#mw-content-text').prepend(this.hg.getHTML(this.gaTitle));
 	}
 
-	/**
-	 * @private
-	 */
 	async shouldRunOnThisPageSlowChecks() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -384,9 +336,6 @@ export class GANReviewController {
 		return true;
 	}
 	
-	/**
-	 * @private
-	 */
 	async writeToLog() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -397,9 +346,6 @@ export class GANReviewController {
 		await this.appendToPage('User:Novem Linguae/Scripts/GANReviewTool/GANReviewLog', this.editSummary, textToAppend);
 	}
 
-	/**
-	 * @private
-	 */
 	async getWikicode(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -416,9 +362,6 @@ export class GANReviewController {
 		return wikicode;
 	}
 
-	/**
-	 * @private
-	 */
 	async makeEdit(title, editSummary, wikicode) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
@@ -435,9 +378,6 @@ export class GANReviewController {
 		return revisionID;
 	}
 
-	/**
-	 * @private
-	 */
 	async getPageCreator(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -460,7 +400,6 @@ export class GANReviewController {
 
 	/**
 	 * Lets you append without getting the Wikicode first. Saves an API query.
-	 * @private
 	 */
 	async appendToPage(title, editSummary, wikicodeToAppend) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
@@ -478,18 +417,12 @@ export class GANReviewController {
 		return revisionID;
 	}
 
-	/**
-	 * @private
-	 */
 	pushStatus(statusToAdd) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
 		this.$(`#GANReviewTool-ProcessingMessage > p`).append('<br />' + statusToAdd);
 	}
 
-	/**
-	 * @private
-	 */
 	shouldRunOnThisPageQuickChecks(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -518,18 +451,12 @@ export class GANReviewController {
 		return true;
 	}
 
-	/**
-	 * @private
-	 */
 	isGASubPage(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
 		return Boolean(title.match(/\/GA\d{1,2}$/));
 	}
 
-	/**
-	 * @private
-	 */
 	getGATitle(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -539,9 +466,6 @@ export class GANReviewController {
 		return title;
 	}
 
-	/**
-	 * @private
-	 */
 	getGATalkTitle(gaTitle) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -554,7 +478,6 @@ export class GANReviewController {
 
 	/**
 	 * @param {string} detailedTopic The heading name, with leading and trailing === to denote it as a heading
-	 * @private
 	 */
 	getGASubPageEditSummary(editSummary, detailedTopic) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');

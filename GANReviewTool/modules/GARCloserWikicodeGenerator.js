@@ -124,9 +124,6 @@ __TOC__`;
 		return wikicode;
 	}
 
-	/**
-	 * @private
-	 */
 	processGARPage(garPageWikicode, message, isCommunityAssessment, defaultText, atopColor) {
 		if ( arguments.length !== 5 ) throw new Error('Incorrect # of arguments');
 		message = this.setMessageIfEmpty(defaultText, message);
@@ -139,9 +136,6 @@ __TOC__`;
 		return result;
 	}
 
-	/**
-	 * @private
-	 */
 	addSignatureIfMissing(message) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		if ( ! message.includes('~~~~') ) {
@@ -150,9 +144,6 @@ __TOC__`;
 		return message;
 	}
 
-	/**
-	 * @private
-	 */
 	 setMessageIfEmpty(defaultText, message) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 		if ( message === '' ) {
@@ -161,9 +152,6 @@ __TOC__`;
 		return message;
 	}
 
-	/**
-	 * @private
-	 */
 	getMessageForAtop(isCommunityAssessment, message) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 		let messageForAtop = message;
@@ -175,7 +163,6 @@ __TOC__`;
 
 	/**
 	 * {{GAR/current}} and {{GAR/result}} are templates used in community reassessment GARs. The first needs to be swapped for the second when closing community reassessment GARs.
-	 * @private
 	 */
 	replaceGARCurrentWithGARResult(message, wikicode) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
@@ -183,9 +170,6 @@ __TOC__`;
 		return wikicode.replace(/\{\{GAR\/current\}\}/i, `{{subst:GAR/result|result=${this.escapeTemplateParameter(message)}}} ~~~~`);
 	}
 
-	/**
-	 * @private
-	 */
 	escapeTemplateParameter(parameter) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		// TODO: This needs repair. Should only escape the below if they are not inside of a template. Should not escape them at all times. Commenting out for now.
@@ -196,16 +180,12 @@ __TOC__`;
 
 	/**
 	 * Takes a Wikipedia page name with a number on the end, and returns that number.
-	 * @private
 	 */
 	getArchiveNumber(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		return parseInt(title.match(/\d{1,}$/));
 	}
 
-	/**
-	 * @private
-	 */
 	placeATOP(wikicode, result, color) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
@@ -240,25 +220,18 @@ __TOC__`;
 
 	/**
 	 * CC BY-SA 4.0, coolaj86, https://stackoverflow.com/a/6969486/3480193
-	 * @private
 	 */
 	regExEscape(string) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	}
 
-	/**
-	 * @private
-	 */
 	removeTemplate(templateName, wikicode) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 		let regex = new RegExp(`\\{\\{${this.regExEscape(templateName)}[^\\}]*\\}\\}\\n?`, 'i');
 		return wikicode.replace(regex, '');
 	}
 
-	/**
-	 * @private
-	 */
 	regexGetFirstMatchString(regex, haystack) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 		let matches = haystack.match(regex);
@@ -270,7 +243,6 @@ __TOC__`;
 
 	/**
 	 * There's a {{GA}} template that some people use instead of {{Article history}}. If this is present, replace it with {{Article history}}.
-	 * @private
 	 */
 	convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
@@ -326,7 +298,6 @@ __TOC__`;
 
 	/**
 	 * Adds wikicode right above {{WikiProject X}} or {{WikiProject Banner Shell}} if present, or first ==Header== if present, or at bottom of page. Treat {{Talk:abc/GA1}} as a header.
-	 * @private
 	 */
 	addToTalkPageAboveWikiProjects(talkPageWikicode, wikicodeToAdd) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
@@ -413,7 +384,6 @@ __TOC__`;
 
 	/**
 	 * @param {RegExp} regex
-	 * @private
 	 */
 	preg_position(regex, haystack) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
@@ -425,9 +395,6 @@ __TOC__`;
 		return false;
 	}
 
-	/**
-	 * @private
-	 */
 	deleteMiddleOfString(string, deleteStartPosition, deleteEndPosition) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 		let part1 = string.substr(0, deleteStartPosition);
@@ -438,7 +405,6 @@ __TOC__`;
 
 	/**
 	 * @returns {Object} Parameters, with keys being equivalent to the template parameter names. Unnamed parameters will be 1, 2, 3, etc.
-	 * @private
 	 */
 	getParametersFromTemplateWikicode(wikicodeOfSingleTemplate) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
@@ -470,7 +436,6 @@ __TOC__`;
 
 	/**
 	 * @param {'keep'|'delist'} keepOrDelist
-	 * @private
 	 */
 	updateArticleHistory(keepOrDelist, wikicode, garPageTitle, oldid) {
 		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
@@ -508,9 +473,6 @@ __TOC__`;
 		return wikicode;
 	}
 
-	/**
-	 * @private
-	 */
 	getKeepOrDelistPastTense(keepOrDelist) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		switch ( keepOrDelist ) {
@@ -523,7 +485,6 @@ __TOC__`;
 
 	/**
 	 * Determine next |action= number in {{Article history}} template. This is so we can insert an action.
-	 * @private
 	 */
 	determineNextActionNumber(wikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
@@ -538,9 +499,6 @@ __TOC__`;
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	firstTemplateGetParameterValue(wikicode, template, parameter) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
@@ -558,9 +516,6 @@ __TOC__`;
 		return result[1];
 	}
 
-	/**
-	 * @private
-	 */
 	getArticleHistoryNewStatus(existingStatus, keepOrDelist) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 		if ( keepOrDelist === 'keep' ) {
@@ -571,7 +526,6 @@ __TOC__`;
 	}
 
 	/**
-	 * @private
 	 * @param {Array} templateNameArrayCaseInsensitive
 	 */
 	firstTemplateInsertCode(wikicode, templateNameArrayCaseInsensitive, codeToInsert) {
@@ -588,7 +542,6 @@ __TOC__`;
 
 	/**
 	 * CC BY-SA 4.0, jAndy, https://stackoverflow.com/a/4364902/3480193
-	 * @private
 	 */
 	insertStringIntoStringAtPosition(bigString, insertString, position) {
 		return [
@@ -600,7 +553,6 @@ __TOC__`;
 
 	/**
 	 * Grabs string position of the END of first {{template}} contained in wikicode. Case insensitive. Returns null if no template found. Handles nested templates.
-	 * @private
 	 * @returns {number|null}
 	 */
 	getStrPosOfEndOfFirstTemplateFound(wikicode, templateName) {
@@ -626,17 +578,11 @@ __TOC__`;
 		return null;
 	}
 
-	/**
-	 * @private
-	 */
 	removeGAStatusFromWikiprojectBanners(wikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		return wikicode.replace(/(\|\s*class\s*=\s*)([^\}\|\s]*)/gi, '$1');
 	}
 
-	/**
-	 * @private
-	 */
 	firstTemplateDeleteParameter(wikicode, template, parameter) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure

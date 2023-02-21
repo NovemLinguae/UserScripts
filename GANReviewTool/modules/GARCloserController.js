@@ -52,9 +52,6 @@ export class GARCloserController {
 		});
 	}
 
-	/**
-	 * @private
-	 */
 	async clickKeep() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -81,9 +78,6 @@ export class GARCloserController {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	async clickDelist() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -110,9 +104,6 @@ export class GARCloserController {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	async getRevisionIDOfNewestRevision(pageTitle) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -134,26 +125,17 @@ export class GARCloserController {
 		return revisionID;
 	}
 
-	/**
-	 * @private
-	 */
 	async hasGARLinkTemplate(title) {
 		let wikicode = await this.getWikicode(title);
 		return Boolean(wikicode.match(/\{\{GAR\/link/i));
 	}
 
-	/**
-	 * @private
-	 */
 	async hasATOP(title) {
 		let wikicode = await this.getWikicode(title);
 		return Boolean(wikicode.match(/\{\{Atop/i));
 		// TODO: don't match a small ATOP, must be ATOP of entire talk page
 	}
 
-	/**
-	 * @private
-	 */
 	deactivateBothButtons() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -161,9 +143,6 @@ export class GARCloserController {
 		this.$(`#GARCloser-Delist`).prop('disabled', true);
 	}
 
-	/**
-	 * @private
-	 */
 	async processKeepForGARPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -177,9 +156,6 @@ export class GARCloserController {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	async processDelistForGARPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -193,9 +169,6 @@ export class GARCloserController {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	async processKeepForTalkPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -209,9 +182,6 @@ export class GARCloserController {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	isCommunityAssessment() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -221,9 +191,6 @@ export class GARCloserController {
 		return false;
 	}
 
-	/**
-	 * @private
-	 */
 	async makeCommunityAssessmentLogEntry() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -281,9 +248,6 @@ export class GARCloserController {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	async incrementGARArchiveTemplate(archiveTitle) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -298,7 +262,6 @@ export class GARCloserController {
 
 	/**
 	 * Takes a Wikipedia page name with a number on the end, and returns that page name with the number on the end incremented by one. Example: "Wikipedia:Good article reassessment/Archive 67" -> "Wikipedia:Good article reassessment/Archive 68"
-	 * @private
 	 */
 	incrementArchiveTitle(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
@@ -311,7 +274,6 @@ export class GARCloserController {
 
 	/**
 	 * Counts number of times "{{Wikipedia:Good article reassessment/" occurs in wikicode.
-	 * @private
 	 */
 	countGARTemplates(wikicode) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
@@ -322,7 +284,6 @@ export class GARCloserController {
 	/**
 	 * CC BY-SA 4.0, Lorenz Lo Sauer, https://stackoverflow.com/a/10671743/3480193
 	 * @param {RegExp} needleRegEx Make sure to set the /g parameter.
-	 * @private
 	 */
 	countOccurrencesInString(needleRegEx, haystack) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
@@ -332,7 +293,6 @@ export class GARCloserController {
 
 	/**
 	 * @param {'keep'|'delist'} keepOrDelist
-	 * @private
 	 */
 	async makeScriptLogEntry(keepOrDelist) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
@@ -355,9 +315,6 @@ export class GARCloserController {
 		await this.appendToPage(this.scriptLogTitle, this.editSummary, wikicode);
 	}
 
-	/**
-	 * @private
-	 */
 	async processDelistForTalkPage() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -375,9 +332,6 @@ export class GARCloserController {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	getGAListTitleFromTalkPageWikicode(wikicode) {
 		/** Keys should all be lowercase */
 		let dictionary = {
@@ -546,9 +500,6 @@ export class GARCloserController {
 		return gaListTitle;
 	}
 
-	/**
-	 * @private
-	 */
 	async processDelistForArticle() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -559,9 +510,6 @@ export class GARCloserController {
 		// If we can't remove {{Good article}}, don't throw an error like in the other code paths, just continue. There are cases where this is desirable. For example, maybe the GA got merged and redirected, so the {{Good article}} template itself is no longer present.
 	}
 
-	/**
-	 * @private
-	 */
 	async processDelistForGAList() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -574,7 +522,6 @@ export class GARCloserController {
 
 	/**
 	 * This also checks if GARCloser should run at all. A falsey result means that the supplied title is not a GAR page.
-	 * @private
 	 */
 	async confirmGARAndGetArticleName() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
@@ -616,27 +563,18 @@ export class GARCloserController {
 		}
 	}
 
-	/**
-	 * @private
-	 */
 	getIndividualReassessmentParentArticle(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
 		return title.match(/Talk:(.*)\/GA/)[1];
 	}
 
-	/**
-	 * @private
-	 */
 	getCommunityReassessmentParentArticle(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
 		return title.match(/Wikipedia:Good article reassessment\/(.*)\/\d/)[1];
 	}
 
-	/**
-	 * @private
-	 */
 	async getWikicode(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
@@ -662,9 +600,6 @@ export class GARCloserController {
 		return '';
 	}
 
-	/**
-	 * @private
-	 */
 	async makeEdit(title, editSummary, wikicode) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
@@ -736,9 +671,6 @@ export class GARCloserController {
 		this.$(`#GARCloserTool-Status > p`).append('<br />' + statusToAdd);
 	}
 
-	/**
-	 * @private
-	 */
 	shouldRunOnThisPageQuickChecks() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
@@ -759,9 +691,6 @@ export class GARCloserController {
 		return true;
 	}
 
-	/**
-	 * @private
-	 */
 	isGASubPage(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
