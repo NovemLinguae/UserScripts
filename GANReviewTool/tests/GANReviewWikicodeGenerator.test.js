@@ -1626,6 +1626,32 @@ describe('addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd)', ()
 		let codeToAdd = `{{NonExistentTemplate0967}}`;
 		expect(() => wg.addTemplateInCorrectMOSTalkOrderPosition(talkWikicode,codeToAdd)).toThrow('addTemplateInCorrectMOSTalkOrderPosition: Supplied template is not in dictionary. Unsure where to place it.');
 	});
+
+	test(`Don't place in WikiProject banner shell`, () => {
+		let talkWikicode =
+`{{Skip to talk}}
+{{Talk header|search=yes|archive_age=90|archive_bot=Lowercase sigmabot III}}
+{{WikiProject banner shell|collapsed=yes|1=
+{{Vital article|class=B|level=4|topic=Geography}}
+{{WikiProject East Timor|class=B|importance=Top}}
+{{WP1.0|class=B|importance=Low|WPCD=y|b1=yes|b2=yes|b3=yes|b4=yes|b5=yes|b6=yes}}
+}}
+`;
+		let codeToAdd =
+`{{GA|17:09, 10 February 2023 (UTC)|topic=Geography and places|page=1|oldid=1138599480}}\n`;
+		let output =
+`{{Skip to talk}}
+{{Talk header|search=yes|archive_age=90|archive_bot=Lowercase sigmabot III}}
+{{GA|17:09, 10 February 2023 (UTC)|topic=Geography and places|page=1|oldid=1138599480}}
+{{WikiProject banner shell|collapsed=yes|1=
+{{Vital article|class=B|level=4|topic=Geography}}
+{{WikiProject East Timor|class=B|importance=Top}}
+{{WP1.0|class=B|importance=Low|WPCD=y|b1=yes|b2=yes|b3=yes|b4=yes|b5=yes|b6=yes}}
+}}
+`;
+		expect(wg.addTemplateInCorrectMOSTalkOrderPosition(talkWikicode,codeToAdd)).toBe(output);
+	});
+
 });
 
 describe('addFailedGATemplate(talkWikicode, topic, gaPageNumber)', () => {
@@ -2381,7 +2407,7 @@ describe('addWikicodeAfterTemplates(wikicode, templates, codeToAdd)', () => {
 {{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
 {{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
 }}`;
-		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
+		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Talkheader', 'Talk page header', 'Talkpage', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
 		let codeToAdd = `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}\n`;
 		let output =
 `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}
@@ -2401,7 +2427,7 @@ describe('addWikicodeAfterTemplates(wikicode, templates, codeToAdd)', () => {
 {{WikiProject banner shell|blp=no|collapsed=yes|blpo=yes|1=
 {{WikiProject Biography |class=GA |living=No |listas=Labinjo-Hughes, Arthur |needs-photo=yes}}
 }}`;
-		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
+		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Talkheader', 'Talk page header', 'Talkpage', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
 		let codeToAdd = `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}\n`;
 		let output =
 `{{Talk header}}
@@ -2418,7 +2444,7 @@ describe('addWikicodeAfterTemplates(wikicode, templates, codeToAdd)', () => {
 		let wikicode =
 `{{Talk Header}}
 `;
-		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Vital article', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
+		let templates = ['GA nominee', 'Featured article candidates', 'Peer review', 'Skip to talk', 'Talk header', 'Talkheader', 'Talk page header', 'Talkpage', 'Ds/talk notice', 'Gs/talk notice', 'BLP others', 'Calm', 'Censor', 'Controversial', 'Not a forum', 'FAQ', 'Round in circles', 'American English', 'British English'];
 		let codeToAdd = `{{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}\n`;
 		let output =
 `{{Talk Header}}
