@@ -7,7 +7,9 @@
 
 $(async function() {
 	async function getWikicode(title) {
-		if ( ! mw.config.get('wgCurRevisionId') ) return ''; // if page is deleted, return blank
+		if ( ! mw.config.get('wgCurRevisionId') ) {
+			return ''; // if page is deleted, return blank
+		}
 		var wikicode = '';
 		title = encodeURIComponent(title);
 		await $.ajax({
@@ -29,23 +31,11 @@ $(async function() {
 	function getArticleName() {
 		return mw.config.get('wgPageName');
 	}
-	
-	function hasDiacritics(str) {
-		let str2 = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-		return str != str2;
-	}
-	
-	function normalizeDiacritics(str) {
-		return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-	}
-	
-	function cloneArray(arr) {
-		return JSON.parse(JSON.stringify(arr));
-	}
-	
+
 	function empty(arr) {
-		if ( arr === undefined ) return true;
-		if ( arr.length == 0 ) return true;
+		if ( arr === undefined || arr.length == 0 ) {
+			return true;
+		}
 		return false;
 	}
 
@@ -55,19 +45,27 @@ $(async function() {
 	
 	// don't run when not viewing articles
 	let action = mw.config.get('wgAction');
-	if ( action != 'view' ) return;
+	if ( action != 'view' ) {
+		return;
+	}
 	
 	// don't run when viewing diffs
 	let isDiff = mw.config.get('wgDiffNewId');
-	if ( isDiff ) return;
+	if ( isDiff ) {
+		return;
+	}
 	
 	let isDeletedPage = ! mw.config.get('wgCurRevisionId') ;
-	if ( isDeletedPage ) return;
+	if ( isDeletedPage ) {
+		return;
+	}
 	
 	// Only run in mainspace and draftspace
 	let namespace = mw.config.get('wgNamespaceNumber');
 	let title = getArticleName();
-	if ( ! [0, 118].includes(namespace) && title != 'User:Novem_Linguae/sandbox' ) return;
+	if ( ! [0, 118].includes(namespace) && title != 'User:Novem_Linguae/sandbox' ) {
+		return;
+	}
 	
 	let wordString = `
 
@@ -179,6 +177,7 @@ eminent
 most notable
 super famous
 visionary
+100%
 
 	`;
 	
