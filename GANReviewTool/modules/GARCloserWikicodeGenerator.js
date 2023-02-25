@@ -301,9 +301,7 @@ __TOC__`;
 		let topic = wikicode.match(/(?:\{\{Article ?history|\{\{GA\s*(?=\|)).*?\|\s*(?:sub)?topic\s*=\s*([^\|\}\n]+)/is)[1];
 		topic = topic.toLowerCase().trim();
 		let gaListTitle = dictionary[topic];
-		if ( ! gaListTitle ) {
-			throw new Error(`Unable to determine WP:GA subpage. Is the |topic= on the article's talk page correct?`);
-		}
+		// throw the error a little later rather than now. that way it doesn't interrupt modifying the article talk page.
 		return gaListTitle;
 	}
 

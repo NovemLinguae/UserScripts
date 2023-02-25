@@ -348,7 +348,8 @@ export class GARCloserController {
 		this.pushStatus(`Remove {{GAR/link}} from talk page, update {{Article history}}, remove |class=GA`);
 		let wikicode = await this.getWikicode(this.talkPageTitle);
 
-		// while we have the talk page wikicode, go ahead and figure out the gaListTitle. saves an API query later
+		// while we have the talk page wikicode, go ahead and figure out the gaListTitle. saves an API query later.
+		// this will come back blank if the topic isn't in the dictionary. throw an error later, so that writing the talk page doesn't get interrupted
 		this.gaListTitle = this.wg.getGAListTitleFromTalkPageWikicode(wikicode);
 
 		let oldid = await this.getRevisionIDOfNewestRevision(this.parentArticle);
@@ -373,6 +374,11 @@ export class GARCloserController {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
 		this.pushStatus(`Remove article from list of good articles`);
+
+		if ( ! this.gaListTitle ) {
+			throw new Error(`Unable to determine WP:GA subpage. Is the |topic= on the article's talk page correct?`);
+		}
+
 		let wikicode = await this.getWikicode(this.gaListTitle);
 		wikicode = this.wg.processDelistForGAList(wikicode, this.parentArticle);
 		this.gaListRevisionID = await this.makeEdit(this.gaListTitle, this.editSummary, wikicode);

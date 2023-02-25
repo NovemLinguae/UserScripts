@@ -754,6 +754,11 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 });
 
 describe('getGAListTitleFromTalkPageWikicode(wikicode)', () => {
+	it(`Should return a falsy value (and not throw error) if topic is not in dictionary`, () => {
+		let wikicode = `{{Article history|topic=InvalidTopic}}`;
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBeFalsy();
+		// it returns undefined
+	});
 	it(`Should handle {{Article history}}`, () => {
 		let wikicode = `{{Article history|topic=sports}}`;
 		let output = 'Wikipedia:Good articles/Sports and recreation';
