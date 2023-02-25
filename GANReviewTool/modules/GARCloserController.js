@@ -83,7 +83,10 @@ export class GARCloserController {
 
 		try {
 			this.editSummary = `close GAR [[${this.garPageTitle}]] as delist` + this.editSummarySuffix;
-			this.deactivateBothButtons();
+			if ( ! this.apiMode ) {
+				this.deactivateBothButtons();
+				this.message = this.$(`#GARCloser-Message`).val();
+			}
 			await this.processDelistForGARPage();
 			await this.processDelistForTalkPage();
 			await this.processDelistForArticle();
@@ -93,8 +96,10 @@ export class GARCloserController {
 				await this.makeSureCategoryPageHasWikitext();
 			}
 			await this.makeScriptLogEntry('delist');
-			this.pushStatus(`Done! Reloading...`);
-			location.reload();
+			if ( ! this.apiMode ) {
+				this.pushStatus(`Done! Reloading...`);
+				location.reload();
+			}
 		} catch(err) {
 			this.error = err;
 			console.error(err);
@@ -102,6 +107,30 @@ export class GARCloserController {
 			await this.makeScriptLogEntry('delist');
 			this.pushStatus(`<span class="GARCloserTool-ErrorNotice">An error occurred :( Details: ${this.error}</span>`);
 		}
+
+		if ( this.apiMode && this.error ) {
+			throw new Error(this.error);
+		}
+	}
+
+	/**
+	  * Used by MassGARController. Does the same thing as this.clickDelist(), but with JQuery calls fixed to target MassGARController, no refresh of the page at the end of the task, 10 second edit delay for API etiquette reasons, and re-throwing any caught errors.
+	  */
+	async delistAPI(reassessmentPageTitle, editSummarySuffix, editThrottleInSeconds, message, $, mw, wg) {
+		this.apiMode = true;
+		this.editThrottleInSeconds = editThrottleInSeconds;
+		this.editSummarySuffix = ` - ${editSummarySuffix}`;
+		this.garPageTitle = reassessmentPageTitle;
+		this.message = message;
+		this.$ = $;
+		this.mw = mw;
+		this.wg = wg
+
+		this.parentArticle = this.getIndividualReassessmentParentArticle(this.garPageTitle);
+		this.talkPageTitle = `Talk:${this.parentArticle}`;
+		this.scriptLogTitle = `User:Novem Linguae/Scripts/GANReviewTool/GARLog`;
+
+		await this.clickDelist();
 	}
 
 	async getRevisionIDOfNewestRevision(pageTitle) {
@@ -148,8 +177,7 @@ export class GARCloserController {
 
 		this.pushStatus(`Place {{atop}} on GAR page. Replace {{GAR/current}} if present.`);
 		let wikicode = await this.getWikicode(this.garPageTitle);
-		let message = this.$(`#GARCloser-Message`).val();
-		wikicode = this.wg.processKeepForGARPage(wikicode, message, this.isCommunityAssessment());
+		wikicode = this.wg.processKeepForGARPage(wikicode, this.message, this.isCommunityAssessment());
 		this.garPageRevisionID = await this.makeEdit(this.garPageTitle, this.editSummary, wikicode);
 		if ( this.garPageRevisionID === undefined ) {
 			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
@@ -161,8 +189,7 @@ export class GARCloserController {
 
 		this.pushStatus(`Place {{atop}} on GAR page`);
 		let wikicode = await this.getWikicode(this.garPageTitle);
-		let message = this.$(`#GARCloser-Message`).val();
-		wikicode = this.wg.processDelistForGARPage(wikicode, message, this.isCommunityAssessment());
+		wikicode = this.wg.processDelistForGARPage(wikicode, this.message, this.isCommunityAssessment());
 		this.garPageRevisionID = await this.makeEdit(this.garPageTitle, this.editSummary, wikicode);
 		if ( this.garPageRevisionID === undefined ) {
 			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
@@ -603,6 +630,11 @@ export class GARCloserController {
 	async makeEdit(title, editSummary, wikicode) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
 
+		if ( this.apiMode ) {
+			// API etiquette. 10 second delay between edits.
+			await this.delay(this.editThrottleInSeconds);
+		}
+
 		let api = new this.mw.Api();
 		let params = {
 			"action": "edit",
@@ -622,6 +654,11 @@ export class GARCloserController {
 	  */
 	async appendToPage(title, editSummary, wikicodeToAppend) {
 		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
+
+		if ( this.apiMode ) {
+			// API etiquette. 10 second delay between edits.
+			await this.delay(this.editThrottleInSeconds);
+		}
 
 		let api = new this.mw.Api();
 		let params = {
@@ -661,14 +698,16 @@ export class GARCloserController {
 		return title;
 	}
 
-	/**
-	  * @private
-	  */
 	pushStatus(statusToAdd) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
-		this.$(`#GARCloserTool-Status`).show();
-		this.$(`#GARCloserTool-Status > p`).append('<br />' + statusToAdd);
+		if ( this.apiMode ) {
+			this.$(`#MassGARTool-Status`).show();
+			this.$(`#MassGARTool-Status > p`).append(`<br>${this.parentArticle}: ${statusToAdd}`);
+		} else {
+			this.$(`#GARCloserTool-Status`).show();
+			this.$(`#GARCloserTool-Status > p`).append(`<br>${statusToAdd}`);
+		}
 	}
 
 	shouldRunOnThisPageQuickChecks() {
@@ -695,5 +734,12 @@ export class GARCloserController {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 
 		return Boolean(title.match(/\/GA\d{1,2}$/));
+	}
+
+	async delay(seconds) {
+		let milliseconds = seconds * 1000;
+		return new Promise(function (res) {
+			setTimeout(res, milliseconds);
+		});
 	}
 }
