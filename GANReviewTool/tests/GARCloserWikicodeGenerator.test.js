@@ -883,6 +883,17 @@ describe('getGAListTitleFromTalkPageWikicode(wikicode)', () => {
 		let output = 'Wikipedia:Good articles/Media and drama';
 		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
 	});
+
+	it(`Should handle extra whitespace around the topic`, () => {
+		let wikicode =
+`{{ArticleHistory
+|action1=GAN
+|topic=film 
+|currentstatus=GA
+}}`;
+		let output = 'Wikipedia:Good articles/Media and drama';
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
 });
 
 describe('processDelistForArticle(wikicode)', () => {

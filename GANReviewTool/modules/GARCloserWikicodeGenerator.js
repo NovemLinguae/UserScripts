@@ -299,7 +299,7 @@ __TOC__`;
 			'weapons': 'Wikipedia:Good articles/Warfare',
 		}
 		let topic = wikicode.match(/(?:\{\{Article ?history|\{\{GA\s*(?=\|)).*?\|\s*(?:sub)?topic\s*=\s*([^\|\}\n]+)/is)[1];
-		topic = topic.toLowerCase();
+		topic = topic.toLowerCase().trim();
 		let gaListTitle = dictionary[topic];
 		if ( ! gaListTitle ) {
 			throw new Error(`Unable to determine WP:GA subpage. Is the |topic= on the article's talk page correct?`);
