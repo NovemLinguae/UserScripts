@@ -524,6 +524,7 @@ __TOC__`;
 			let char = talkPageWikicode.substr(pos, 1);
 			if ( char == "\n" ) {
 				if ( i != 1 && i != 2 ) { // skip first two \n, those are OK to keep
+					// @ts-ignore
 					deleteTopPosition = pos;
 					if ( i == 3 ) {
 						deleteBottomPosition = insertPosition;
