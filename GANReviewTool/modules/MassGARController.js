@@ -309,7 +309,7 @@ Trussed Concrete Steel Company`;
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
 		let username = this.mw.config.get('wgUserName');
-		if ( username === 'Novem Linguae' ) {
+		if ( username === 'Novem Linguae' || username === 'NovemBot' ) {
 			return true;
 		}
 		return false;
