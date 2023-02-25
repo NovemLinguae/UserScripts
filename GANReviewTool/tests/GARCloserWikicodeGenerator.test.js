@@ -753,6 +753,138 @@ describe('processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =
 	});
 });
 
+describe('getGAListTitleFromTalkPageWikicode(wikicode)', () => {
+	it(`Should handle {{Article history}}`, () => {
+		let wikicode = `{{Article history|topic=sports}}`;
+		let output = 'Wikipedia:Good articles/Sports and recreation';
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should handle {{GA}}`, () => {
+		let wikicode = `{{GA|topic=sports}}`;
+		let output = 'Wikipedia:Good articles/Sports and recreation';
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should be case insensitive`, () => {
+		let wikicode = `{{aRTiClE HiStOrY|ToPiC=SpOrTs}}`;
+		let output = 'Wikipedia:Good articles/Sports and recreation';
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should ignore {{Vital article}}`, () => {
+		let wikicode =
+`{{Vital article|level=5|topic=People|subpage=Entertainers|class=}}
+{{Article history|action1=GAN
+|action1date=22:40, 2 June 2008
+|action1link=/GA1
+|action1result=listed
+|action1oldid=216607709
+|topic=sports
+|currentstatus = DGA
+}}`;
+		let output = 'Wikipedia:Good articles/Sports and recreation';
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should ignore {{Vital article}} 2`, () => {
+		let wikicode =
+`{{GAR/link|17:25, 24 December 2022 (UTC)|page=1|GARpage=1|status= }}
+{{Talk header}}
+{{Vital article|topic=Society|level=5|class=GA}}
+{{Article history
+|action1=GAN
+|action1date=21:19, 17 December 2006
+|action1result=listed
+|action1oldid=94955852
+
+|action2=GAR
+|action2date=18:59, 2 April 2008 (UTC)
+|action2result=kept
+|action2oldid=202860759
+
+|currentstatus=GA
+|topic=television
+}}`;
+		let output = 'Wikipedia:Good articles/Media and drama';
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should ignore {{Vital article}} and not ignore {{ArticleHistory}}`, () => {
+		let wikicode =
+`{{GAR/link|17:25, 24 December 2022 (UTC)|page=1|GARpage=1|status= }}
+{{Talk header}}
+{{Vital article|topic=Society|level=5|class=GA}}
+{{ArticleHistory
+|action1=GAN
+|action1date=21:19, 17 December 2006
+|action1result=listed
+|action1oldid=94955852
+
+|action2=GAR
+|action2date=18:59, 2 April 2008 (UTC)
+|action2result=kept
+|action2oldid=202860759
+
+|currentstatus=GA
+|topic=television
+}}`;
+		let output = 'Wikipedia:Good articles/Media and drama';
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should throw an error if no |topic= found`, () => {
+		let wikicode = `Test :)`;
+		expect(() => {wg.getGAListTitleFromTalkPageWikicode(wikicode)}).toThrow();
+	});
+
+	it(`Should handle topic`, () => {
+		let wikicode = '{{Article history|topic=television}}';
+		let output = 'Wikipedia:Good articles/Media and drama';
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should handle subtopic`, () => {
+		let wikicode = '{{Article history|subtopic=television}}';
+		let output = 'Wikipedia:Good articles/Media and drama';
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should handle uppercase`, () => {
+		let wikicode = '{{Article history|topic=Television}}';
+		let output = 'Wikipedia:Good articles/Media and drama';
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should handle spaces`, () => {
+		let wikicode = '{{Article history|topic=agriculture, food, and drink}}';
+		let output = 'Wikipedia:Good articles/Agriculture, food and drink';
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+
+	it(`Should handle multiline`, () => {
+		let wikicode =
+`{{GAR/link|04:19, 11 January 2022 (UTC)|page=1|GARpage=1|status= }}
+{{Article history|action1=GAN
+|action1date=19 August 2007
+|action1result=listed
+|action1link=
+|action1oldid=152335196
+
+|action2=GAR
+|action2date=12:58, 10 June 2009 (UTC)
+|action2link=Talk:WIN Television#GA Sweeps
+|action2result=kept
+|action2oldid=293945032
+
+|currentstatus=GA
+|topic=Television
+}}`;
+		let output = 'Wikipedia:Good articles/Media and drama';
+		expect(wg.getGAListTitleFromTalkPageWikicode(wikicode)).toBe(output);
+	});
+});
+
 describe('processDelistForArticle(wikicode)', () => {
 	it(`Should remove {{Good article}} 1`, () => {
 		let wikicode =
