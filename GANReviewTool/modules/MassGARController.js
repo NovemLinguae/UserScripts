@@ -123,8 +123,8 @@ export class MassGARController {
 		this.pushStatus(`${this.mainArticleTitle}: Creating an individual assessment page.`);
 
 		let searchPrefixNoNamespace = this.mainArticleTitle + '/GA';
-		this.reassessmentPageTitle = await this.getNextUnusedGASubpageTitle(searchPrefixNoNamespace);
-
+		let listOfPages = await this.getAllSubpagesStartingWith(searchPrefixNoNamespace);
+		this.reassessmentPageTitle = await this.getNextUnusedGASubpageTitle(listOfPages, this.mainArticleTitle);
 		this.pushStatus(`${this.mainArticleTitle}: Decided to name the subpage ${this.reassessmentPageTitle}.`);
 
 		await this.makeEdit(this.reassessmentPageTitle, this.editSummary, this.reassessmentPageWikicode);
@@ -135,20 +135,20 @@ export class MassGARController {
 	  *
 	  * @todo Could probably get rid of the complicated API call and math, and just read what the wikicode result of {{subst:GAR}} was in a previous step. Its |page= parameter either has the highest existing subpage # or the first empty subpage #. In other words, that template does the same calculation, so no reason to do it twice.
 	  */
-	async getNextUnusedGASubpageTitle(searchPrefixNoNamespace) {
-		let listOfPages = await this.getAllSubpagesStartingWith(searchPrefixNoNamespace);
-
+	getNextUnusedGASubpageTitle(listOfPages, mainArticleTitle) {
 		// delete all non-numeric characters. will make sorting easier
-		listOfPages = listOfPages.map(
-			v => parseInt(v.replace(/[^0-9]/g, ''))
-		);
+		listOfPages = listOfPages.map(v => {
+			let number = v.match(/(\d+)$/)[1];
+			number = parseInt(number);
+			return number;
+		});
 
 		// sort the array numerically, not lexographically
 		listOfPages = this.sortNumerically(listOfPages);
 
 		let highestSubpageNumber = listOfPages.length ? listOfPages[listOfPages.length - 1] : 0;
 		let newSubpageNumber = highestSubpageNumber + 1;
-		return `Talk:${this.mainArticleTitle}/GA${newSubpageNumber}`;
+		return `Talk:${mainArticleTitle}/GA${newSubpageNumber}`;
 	}
 
 	/**
@@ -175,7 +175,6 @@ export class MassGARController {
 			"formatversion": "2",
 			"apprefix": searchPrefixNoNamespace,
 			"apnamespace": "1", // article talk
-			"apfilterredir": "nonredirects",
 			"aplimit": "max"
 		};
 		let result = await api.post(params);
