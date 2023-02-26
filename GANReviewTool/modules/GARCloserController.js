@@ -60,6 +60,7 @@ export class GARCloserController {
 		try {
 			this.editSummary = `close GAR [[${this.garPageTitle}]] as keep` + this.editSummarySuffix;
 			this.deactivateBothButtons();
+			this.message = this.$(`#GARCloser-Message`).val();
 			await this.processKeepForGARPage();
 			await this.processKeepForTalkPage();
 			if ( this.isCommunityAssessment() ) {

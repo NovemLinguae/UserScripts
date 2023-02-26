@@ -313,7 +313,7 @@ __TOC__`;
 		return message;
 	}
 
-	 setMessageIfEmpty(defaultText, message) {
+	setMessageIfEmpty(defaultText, message) {
 		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 		if ( message === '' ) {
 			message = defaultText;
