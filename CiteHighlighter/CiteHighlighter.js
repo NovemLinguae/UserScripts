@@ -37,6 +37,7 @@ class CiteHighlighter {
 			'contact-us',
 			'contactus',
 			// 'crypto',
+			'essay',
 			'fandom',
 			'/forum/',
 			'google.com/search',
