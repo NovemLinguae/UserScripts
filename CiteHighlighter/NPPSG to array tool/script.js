@@ -32,18 +32,9 @@ class NPPSG {
 	getOutput(input) {
 		let lines = input.split("\n");
 		let color = '';
-		let lineNumber = 0;
 		let matches = null;
 		
 		for ( let line of lines ) {
-			/*
-			// for setting debug breakpoints
-			lineNumber++;
-			if ( lineNumber == 98 ) {
-				console.log('line 24');
-			}
-			*/
-			
 			// look for ==== X ==== or ===== X =====, if contains "Reliable" "Unreliable" "No consensus", set the color variable
 			matches = line.match(/^; ?(reliable and \[\[wp:medrs\]\]|(generally )?reliable|(generally )?unreliable|not reliable|no consensus|reliability unclear|preprint)/i);
 			if ( matches !== null ) {
@@ -87,53 +78,7 @@ class NPPSG {
 			
 			// skip lines with no bullet
 			if ( ! line.startsWith('*') ) continue;
-			
-			/*
-			// look for regular wikilink, grab that. continue;
-			matches = line.match(/^\* ?(?:'')?\[\[([^|\n]*?)\]\]/);
-			if ( matches !== null ) {
-				// strip out #anchors (such as HuffPost#Contributors)
-				matches[1] = matches[1].replace(/#.*$/, '');
-				
-				// strip out "The "
-				matches[1] = matches[1].replace(/^The /, '');
-				
-				this.add(matches[1], color);
-			}
-			
-			// look for piped wikilink at beginning, grab the article name. continue;
-			matches = line.match(/^\* ?(?:'')?\[\[([^\]]*?)\|([^\]]*?)\]\]/);
-			if ( matches !== null ) {
-				// strip out #anchors (such as HuffPost#Contributors)
-				matches[1] = matches[1].replace(/#.*$/, '');
-				
-				// strip out "The "
-				matches[1] = matches[1].replace(/^The /, '');
-				
-				this.add(matches[1], color);
-				
-				// add 2nd part of the link too? leaning no. want to avoid false positives for things like The Guardian vs The Guardian (Nigeria)
-				// this.add(matches[2], color);
-			}
-			*/
-			
-			/*
-			// NOTE: the NPPSG doesn't use these, for their few external links they use bare URL's, which are automatically converted to external URL's by MediaWiki
-			// look for external url's, *''[, * ''[, *[, * [
-			// handle both [url] and [url text text text]
-			matches = line.match(/^\* ?(?:'')?\[([^ ,\[\]]*?)[ ,\[\]]/);
-			if ( matches !== null ) {
-				// strip out http:// https:// and www.
-				matches[1] = matches[1].replace(/^https?:\/\//, '');
-				matches[1] = matches[1].replace(/www\./, '');
 
-				// delete right side (everything from / to the end of the string)
-				matches[1] = matches[1].replace(/\/.*$/, '');
-				
-				this.add(matches[1], color);
-			}
-			*/
-			
 			// look for external URL's. add all of them
 			// handle both [url] and [url text text text]
 			// strip out <ref></ref>, which may contain an external link that we don't want to grab
@@ -165,7 +110,7 @@ class NPPSG {
 		this.alphabetizeAndEliminateDuplicates();
 
 		return this.prettyJSON(this.sources);
-		//return JSON.stringify(this.sources);
+		// return JSON.stringify(this.sources);
 	}
 	
 	/** case insensitive */
@@ -225,10 +170,6 @@ class NPPSG {
 		this.sources.red.push('breitbart.com', 'infowars.com', 'filmreference.com', 'verywellfamily.com', 'verywellhealth.com', 'verywellmind.com', 'nairaland.com', 'globalresearch.ca', 'rocketrobinsoccerintoronto.com', 'lulu.com', 'examiner.com', 'famousbirthdays.com', 'almanachdegotha.org', 'swarajyamag.com', 'opindia.com', 'rightlog.in', 'tfipost.com', 'southfront.org', 'thereligionofpeace.com', 'asianwiki.com', 'metal-observer.com', 'metalwani.com');
 		this.sources.preprint.push('vixra.org');
 		
-		// make Wikipedia purple. if Wikipedia link present, need to replace with sources from the corresponding article
-		//this.deleteAll('Wikipedia', 'wikipedia.org');
-		//this.sources.aggregator.push('Wikipedia', 'wikipedia.org');
-		
 		// give preprints at NPPSG their own category. that way they don't turn PubMed and DOI red
 		this.deleteAll('bioRxiv', 'biorxiv.org', 'medRxiv', 'medrxiv.org', 'Preprints.org', 'preprints.org', 'Social Science Research Network', 'ssrn.com', 'ResearchGate', 'researchgate.net', 'arXiv', 'arxiv.org');
 		this.sources.preprint.push('bioRxiv', 'biorxiv.org', 'medRxiv', 'medrxiv.org', 'Preprints.org', 'preprints.org', 'Social Science Research Network', 'ssrn.com', 'ResearchGate', 'researchgate.net', 'arXiv', 'arxiv.org');
@@ -279,11 +220,7 @@ class NPPSG {
 	prettyJSON(input) {
 		let output = JSON.stringify(input);
 		
-		// after every colon, put an enter
-		//output = output.replace(/":/g, "\":\n");
-		
 		// after every comma, put an enter
-		//output = output.replace(/",/g, "\",\n");
 		output = output.replace(/\],/g, "],\n\n");
 		
 		return output;
