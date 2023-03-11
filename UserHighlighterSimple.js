@@ -1,6 +1,9 @@
 // <nowiki>
 
 class UserHighlighterSimple {
+	$link;
+	user;
+
 	async execute() {
 		await this.getUsernames();
 		this.setHighlightColors();
@@ -53,7 +56,7 @@ class UserHighlighterSimple {
 			uselang: 'content', // needed for caching
 			smaxage: '86400', // cache for 1 day
 			maxage: '86400' // cache for 1 day
-		} ).done( function ( data ) {
+		} ).then( function ( data ) {
 			wikitext = data.query.pages[0].revisions[0].slots.main.content;
 		} );
 		return wikitext;
@@ -140,7 +143,7 @@ class UserHighlighterSimple {
 
 	notInSpecialUserOrUserTalkNamespace() {
 		let namespace = this.mwtitle.getNamespaceId();
-		let notInSpecialUserOrUserTalkNamespace = $.inArray(namespace, [-1,2,3]) === -1;
+		let notInSpecialUserOrUserTalkNamespace = $.inArray(namespace, [-1, 2, 3]) === -1;
 		return notInSpecialUserOrUserTalkNamespace;
 	}
 
@@ -173,7 +176,7 @@ class UserHighlighterSimple {
 		// if wgServer is not in the format //meta.wikimedia.org
 		// if en.wikipedia.org != en.wikipedia.org
 		// TODO: when I figure it out, need to document what edge case this fixes
-		if ( uri.host != mw.config.get('wgServer').slice(2) ) {
+		if ( uri.host !== mw.config.get('wgServer').slice(2) ) {
 			return false;
 		}
 
@@ -215,16 +218,16 @@ class UserHighlighterSimple {
 	}
 
 	getUserName() {
-		var user = this.mwtitle.getMain().replace(/_/g," ");
+		var user = this.mwtitle.getMain().replace(/_/g, ' ');
 		if (this.mwtitle.getNamespaceId() === -1) {
-			user = user.replace('Contributions/',''); // For special page "Contributions/<username>"
-			user = user.replace('Contribs/',''); // The Contribs abbreviation too
+			user = user.replace('Contributions/', ''); // For special page "Contributions/<username>"
+			user = user.replace('Contribs/', ''); // The Contribs abbreviation too
 		}
 		return user;
 	}
 
 	checkForPermission(listOfUsernames, className, descriptionForHover) {
-		if ( listOfUsernames[this.user] == 1 ) {
+		if ( listOfUsernames[this.user] === 1 ) {
 			this.addClassAndHoverText(className, descriptionForHover);
 		}
 	}
@@ -232,7 +235,7 @@ class UserHighlighterSimple {
 	addClassAndHoverText(className, descriptionForHover) {
 		this.$link.addClass(this.$link.attr('class') + ` ${className}`);
 
-		if ( this.$link.attr("title") == null || this.$link.attr("title").startsWith("User:") ) {
+		if ( this.$link.attr("title") === null || this.$link.attr("title").startsWith("User:") ) {
 			this.$link.attr("title", descriptionForHover);
 		}
 
@@ -241,7 +244,7 @@ class UserHighlighterSimple {
 
 	addClassesAndHoverTextToLinkIfNeeded() {
 		// highlight anybody with "WMF" in their name, case insensitive. this should not generate false positives because "WMF" is on the username blacklist. see https://meta.wikimedia.org/wiki/Title_blacklist
-		if ( this.user.match(/^[^\/]*WMF/i) ) {
+		if ( this.user.match(/^[^/]*WMF/i) ) {
 			this.addClassAndHoverText('UHS-wmf', 'Wikimedia Foundation (WMF)');
 		}
 
@@ -258,7 +261,7 @@ class UserHighlighterSimple {
 		// If they have no perms, just draw a box around their username, to make it more visible.
 		if ( ! this.hasAdvancedPermissions && this.$link.hasClass('userlink') ) {
 			this.$link.addClass( this.$link.attr('class') + " UHS-no-permissions" );
-			if (this.$link.attr("title") == null || this.$link.attr("title").startsWith("User:")) {
+			if (this.$link.attr("title") === null || this.$link.attr("title").startsWith("User:")) {
 				this.$link.attr("title", "Less than 500 edits");
 			}
 		}
@@ -266,7 +269,7 @@ class UserHighlighterSimple {
 }
 
 mw.hook('wikipage.content').add(async function() {
-	await mw.loader.using(['mediawiki.util','mediawiki.Uri', 'mediawiki.Title'], async function() {
+	await mw.loader.using(['mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title'], async function() {
 		let uhs = new UserHighlighterSimple();
 		await uhs.execute();
 	});
