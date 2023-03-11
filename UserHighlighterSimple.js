@@ -74,16 +74,16 @@ class UserHighlighterSimple {
 		this.addCSS('UHS-administrator', `background-color: #9ff !important;`);
 		this.addCSS('UHS-bureaucrat', `background-color: orange !important; color: #0645ad !important;`);
 		this.addCSS('UHS-arbitration-committee', `background-color: #FF3F3F !important; color: white !important;`);
-		this.addCSS('UHS-steward-wmf-founder', `background-color: hotpink !important; color: #0645ad !important;`);
+		this.addCSS('UHS-steward', `background-color: #00FF00 !important;`);
+		this.addCSS('UHS-wmf', `background-color: hotpink !important; color: #0645ad !important;`);
 	}
 
 	async getUsernames() {
 		let dataString = await this.getWikitextFromCache('User:NovemBot/userlist.js');
 		let dataJSON = JSON.parse(dataString);
 
-		this.global = {
+		this.wmf = {
 			...dataJSON['founder'],
-			...dataJSON['steward'],
 			...dataJSON['boardOfTrustees'],
 			...dataJSON['staff'],
 			// WMF is hard-coded a bit further down. The script detects those strings in the username. This is safe to do because the WMF string is blacklisted from names, so has to be specially created.
@@ -93,6 +93,7 @@ class UserHighlighterSimple {
 			// ...dataJSON['mediawikiPlusTwo'],
 			// ...dataJSON['global-sysop'],
 		};
+		this.stewards = dataJSON['steward'];
 		this.arbcom = dataJSON['arbcom'];
 		this.bureaucrats = dataJSON['bureaucrat'];
 		this.admins = dataJSON['sysop'];
@@ -239,12 +240,13 @@ class UserHighlighterSimple {
 	}
 
 	addClassesAndHoverTextToLinkIfNeeded() {
-		// in addition to folks in the global group, highlight anybody with "WMF" in their name, case insensitive. this should not generate false positives because WMF is on the username blacklist.
+		// highlight anybody with "WMF" in their name, case insensitive. this should not generate false positives because "WMF" is on the username blacklist. see https://meta.wikimedia.org/wiki/Title_blacklist
 		if ( this.user.match(/^[^\/]*WMF/i) ) {
-			this.addClassAndHoverText('UHS-steward-wmf-founder', 'WMF, Steward, Founder, or Board of Trustees');
+			this.addClassAndHoverText('UHS-wmf', 'Wikimedia Foundation (WMF)');
 		}
 
-		this.checkForPermission(this.global, 'UHS-steward-wmf-founder', 'WMF, Steward, Founder, or Board of Trustees');
+		this.checkForPermission(this.stewards, 'UHS-steward', 'Steward');
+		this.checkForPermission(this.wmf, 'UHS-wmf', 'Wikimedia Foundation (WMF)');
 		this.checkForPermission(this.bureaucrats, 'UHS-bureaucrat', 'Bureaucrat');
 		this.checkForPermission(this.arbcom, 'UHS-arbitration-committee', 'Arbitration Committee member');
 		this.checkForPermission(this.admins, 'UHS-administrator', 'Admin');
