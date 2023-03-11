@@ -1,11 +1,11 @@
-//<nowiki>
+// <nowiki>
 
 class UserHighlighterSimple {
 	async execute() {
 		await this.getUsernames();
 		this.setHighlightColors();
 		let that = this;
-		$('#article a, #bodyContent a, #mw_contentholder a').each(function(index, element){
+		$('#article a, #bodyContent a, #mw_contentholder a').each(function(index, element) {
 			// TODO: maybe remove this try catch. it displays that.$link.prop('href') to the console which is nice, but it hides the stack trace so I can't see what line the error occurred on
 			try {
 				that.$link = $(element);
@@ -19,7 +19,7 @@ class UserHighlighterSimple {
 				if ( that.hasAdvancedPermissions ) {
 					that.$link.addClass(that.$link.attr('class') + ' UHS-override-signature-colors');
 				}
-			} catch(e) {
+			} catch (e) {
 				console.error('UserHighlighterSimple link parsing error:', e.message, that.$link.prop('href'));
 			}
 		});
@@ -87,11 +87,11 @@ class UserHighlighterSimple {
 			...dataJSON['boardOfTrustees'],
 			...dataJSON['staff'],
 			// WMF is hard-coded a bit further down. The script detects those strings in the username. This is safe to do because the WMF string is blacklisted from names, so has to be specially created.
-			//...dataJSON['sysadmin'],
-			//...dataJSON['global-interface-editor'],
-			//...dataJSON['wmf-supportsafety'],
-			//...dataJSON['mediawikiPlusTwo'],
-			//...dataJSON['global-sysop'],
+			// ...dataJSON['sysadmin'],
+			// ...dataJSON['global-interface-editor'],
+			// ...dataJSON['wmf-supportsafety'],
+			// ...dataJSON['mediawikiPlusTwo'],
+			// ...dataJSON['global-sysop'],
 		};
 		this.arbcom = dataJSON['arbcom'];
 		this.bureaucrats = dataJSON['bureaucrat'];
@@ -263,11 +263,11 @@ class UserHighlighterSimple {
 	}
 }
 
-mw.hook('wikipage.content').add(async function(){
+mw.hook('wikipage.content').add(async function() {
 	await mw.loader.using(['mediawiki.util','mediawiki.Uri', 'mediawiki.Title'], async function() {
 		let uhs = new UserHighlighterSimple();
 		await uhs.execute();
 	});
 });
 
-//</nowiki>
+// </nowiki>

@@ -15,7 +15,7 @@
 		"lodash"
 	],
 	"rules": {
-		"no-console": "error",
+		"no-console": "warn",
 		"no-extra-parens": ["error", "all", { "nestedBinaryExpressions": false }],
 		"no-unreachable-loop": "error",
 		"block-scoped-var": "error",
@@ -25,7 +25,6 @@
 		"lodash/prefer-includes": "error",
 		"lodash/prefer-startswith": "error",
 		"no-caller": "error",
-		"no-else-return": "error",
 		"no-implicit-coercion": ["error", { "boolean": false }],
 		"no-lone-blocks": "error",
 		"no-multi-spaces": ["error", { "ignoreEOLComments": true }],
