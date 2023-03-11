@@ -25,7 +25,7 @@ export class GANReviewController {
 		if ( ! await this.shouldRunOnThisPageSlowChecks() ) return;
 
 		this.displayForm();
-		await this.warnUserIfNotReviewCreator();
+		await this.listenForUncollapse();
 		this.handleUserChangingFormType();
 
 		this.$(`#GANReviewTool-Submit`).on('click', async () => {
@@ -291,21 +291,11 @@ export class GANReviewController {
 		});
 	}
 
-	/**
-	 * Show a warning if viewer is not the creator of the GAN Review page. This is to help prevent accidentally closing the wrong GAN Review.
-	 */
-	async warnUserIfNotReviewCreator() {
+	async listenForUncollapse() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
-		let pageCreator = await this.getPageCreator(this.ganReviewPageTitle);
-		if ( pageCreator !== this.mw.config.get('wgUserName') ) {
-			this.$('.GANReviewTool-NotCreatorNotice').show();
-		} else {
-			this.$('#GANReviewTool-MainForm').show();
-		}
-
-		this.$('#GANReviewTool-ReviewAnywayLink').on('click', () => {
-			this.$('.GANReviewTool-NotCreatorNotice').hide();
+		this.$('#GANReviewTool-Uncollapse').on('click', () => {
+			this.$('.GANReviewTool-Collapsed').hide();
 			this.$('#GANReviewTool-MainForm').show();
 		});
 	}
@@ -376,26 +366,6 @@ export class GANReviewController {
 		let result = await api.postWithToken('csrf', params);
 		let revisionID = result['edit']['newrevid'];
 		return revisionID;
-	}
-
-	async getPageCreator(title) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
-		let api = new this.mw.Api();
-		let params = {
-			action: 'query',
-			prop: 'revisions',
-			titles: title,
-			rvlimit: 1,
-			rvprop: 'user',
-			rvdir: 'newer',
-			format: 'json',
-		};
-		let result = await api.post(params);
-		let wikicode = result['query']['pages']
-		let key = Object.keys(wikicode)[0];
-		wikicode = wikicode[key]['revisions'][0]['user'];
-		return wikicode;
 	}
 
 	/**

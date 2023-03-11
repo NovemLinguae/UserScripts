@@ -48,12 +48,6 @@ export class GANReviewHTMLGenerator {
 		font-weight: bold;
 	}
 
-	.GANReviewTool-NotCreatorNotice {
-		display: none;
-		color: red;
-		font-weight: bold;
-	}
-
 	.GANReviewTool-ErrorNotice {
 		color: red;
 		font-weight: bold;
@@ -70,8 +64,8 @@ export class GANReviewHTMLGenerator {
 			GAN Review Tool
 		</h2>
 
-		<p class="GANReviewTool-NotCreatorNotice">
-			You are not the creator of this GAN page. <a id="GANReviewTool-ReviewAnywayLink">Click here</a> to review anyway.
+		<p class="GANReviewTool-Collapsed">
+			<a id="GANReviewTool-Uncollapse">Click here</a> to open GANReviewTool.
 		</p>
 
 		<div id="GANReviewTool-MainForm">
