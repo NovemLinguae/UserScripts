@@ -1657,6 +1657,8 @@ Mathematical Constants
 
 // no useful content at SNG page
 
+Paralympics
+
 	`;
 	
 	// TODO: get rid of the replace(/championships/) line. because of the use of \b, that is not a good way to do it. maybe copy the entry and add both singular and plural to the dictionary
@@ -1699,10 +1701,13 @@ Mathematical Constants
 	
 	let wikicode = await getWikicode(title);
 	
-	// eliminate [[ ]], so that phrases with wikilink syntax in the middle don't mess up our search
+	// delete [[ ]], so that phrases with wikilink syntax in the middle don't mess up our search
 	wikicode = wikicode.replace(/\[\[/g, '')
 		.replace(/\]\]/g, '');
-	
+
+	// delete template parameter names, so that things like "| paralympics =" don't generate a false positive
+	wikicode = wikicode.replace(/\|\s*[^=|}<]+\s*=/g, '');
+
 	let searchResults = [];
 	for ( let word of wordObject ) {
 		// can't use \b here because \)\b doesn't work correctly. using lookarounds instead
