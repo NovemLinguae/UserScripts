@@ -356,8 +356,6 @@ Tour of Thailand
 UCI Women's team
 UCI World Championships, UCI World Cup
 
-Olympic Equestrian Event
-Paralympics
 Pan American Games
 FEI World Equestrian Games
 Eventing World Championship, Show Jumping World Championships, or Dressage World Championship, Combined Driving World Championships, Endurance World Championships, World Vaulting Championships
