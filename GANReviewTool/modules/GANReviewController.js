@@ -319,7 +319,7 @@ export class GANReviewController {
 		this.gaTitle = this.getGATitle(this.ganReviewPageTitle);
 		this.gaTalkTitle = this.getGATalkTitle(this.gaTitle);
 		let talkWikicode = await this.getWikicode(this.gaTalkTitle);
-		if ( this.ganReviewPageTitle !== 'User:Novem_Linguae/sandbox' && ! talkWikicode.match(/\{\{GA nominee/i) ) {
+		if ( ! talkWikicode.match(/\{\{GA nominee/i) ) {
 			return false;
 		}
 
@@ -399,17 +399,14 @@ export class GANReviewController {
 		// don't run when not viewing articles
 		let action = this.mw.config.get('wgAction');
 		if ( action != 'view' ) return false;
-		
+
 		// don't run when viewing diffs
 		let isDiff = this.mw.config.get('wgDiffNewId');
 		if ( isDiff ) return false;
-		
+
 		let isDeletedPage = ( ! this.mw.config.get('wgCurRevisionId') );
 		if ( isDeletedPage ) return false;
 
-		// always run in Novem's sandbox
-		if ( title === 'User:Novem_Linguae/sandbox' ) return true;
-		
 		// only run in talk namespace
 		let namespace = this.mw.config.get('wgNamespaceNumber');
 		let isTalkNamespace = ( namespace === 1 );
@@ -423,13 +420,11 @@ export class GANReviewController {
 
 	isGASubPage(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return Boolean(title.match(/\/GA\d{1,2}$/));
 	}
 
 	getGATitle(title) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		title = title.replace('Talk:', '');
 		title = title.replace(/_/g, ' ');
 		title = title.replace(/\/[^\/]+$/, ''); // chop off /GA1 from the end of title
@@ -438,12 +433,7 @@ export class GANReviewController {
 
 	getGATalkTitle(gaTitle) {
 		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
-		if ( gaTitle.includes(':') ) {
-			return gaTitle.replace(/^([^:]*)(:.*)$/gm, '$1 talk$2');
-		} else {
-			return 'Talk:' + gaTitle;
-		}
+		return 'Talk:' + gaTitle;
 	}
 
 	/**

@@ -97,15 +97,9 @@ describe('getGATalkTitle(gaTitle)', () => {
 		expect(controller.getGATalkTitle(gaTitle)).toBe(output);
 	});
 
-	test('userspace', () => {
-		let gaTitle = `User:Novem Linguae`;
-		let output = 'User talk:Novem Linguae';
-		expect(controller.getGATalkTitle(gaTitle)).toBe(output);
-	});
-
 	test('two colons', () => {
-		let gaTitle = `User:Novem Linguae:test`;
-		let output = 'User talk:Novem Linguae:test';
+		let gaTitle = `Magic: The Gathering rules`;
+		let output = 'Talk:Magic: The Gathering rules';
 		expect(controller.getGATalkTitle(gaTitle)).toBe(output);
 	});
 
