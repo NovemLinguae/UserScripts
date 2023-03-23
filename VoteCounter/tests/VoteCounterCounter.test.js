@@ -61,4 +61,10 @@ describe('_convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)', () => {
 		let output = 'Proposal_22:_Add_short_description_and_shorten_{{GANentry}}';
 		expect(vcc._convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)).toEqual(output);
 	});
+
+	it(`Should handle {{u}}`, () => {
+		let lineOfWikicode = `== {{U|Pvmoutside}} autopatrolled rights ==`;
+		let output = 'Pvmoutside_autopatrolled_rights';
+		expect(vcc._convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)).toEqual(output);
+	});
 });
