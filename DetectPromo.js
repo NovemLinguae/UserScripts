@@ -72,12 +72,17 @@ $(async function() {
 // An impressive amount of promo in this draft: https://en.wikipedia.org/w/index.php?title=Draft:Imre_Van_opstal&oldid=1060259849
 
 % growth
+100%
 6-figure
 7-figure
 8-figure
 9-figure
 a record
+are a necessity
 around the world
+award-winning
+B2B
+B2C
 best available
 bestselling
 comprehensive
@@ -86,19 +91,31 @@ create a revolution
 critical acclaim
 disrupt
 drastically
+dynamic
 elevate
+eminent
+engaging
+entrepreneur
+evangelist
 excelled
+exemplified
+exemplify
 expert
 expertise
 extensive
 famous
 fast growing
 fast-growing
-fastest-growing
 fastest growing
+fastest-growing
+fully integrated
+fully-integrated
+globally
 growing popularity
 highlights
+highly accomplished
 highly praised
+highly specialized
 historic
 honored with
 hypnotic
@@ -107,6 +124,12 @@ inexhaustible
 influential
 innovation
 innovative
+inspired by
+integrate
+leader in
+leading
+leading
+legendary
 leverag
 massive
 mastermind
@@ -114,70 +137,48 @@ more than
 most highly
 most important
 most impressive
+most notable
 mystical
+noteworthy
+numerous
 organically
 outstanding
 perfect
+philanthropist
 pioneer
+pioneering
 prestigious
+prominence
 prominent
+promising
 promulgator
 ranked
-renowned
 reinvent
+renowned
+respected
 rising star
+save millions
 sensual
 several offers
-state-of-art
+signature
 state of art
-state-of-the-art
 state of the art
+state-of-art
+state-of-the-art
 striking
+super famous
 transcend
 transform
+underpin
+ventured into
 very first
+visionary
 wide selection
 widely used
-worldwide
-B2B
-B2C
-inspired by
-ventured into
-globally
-integrate
-evangelist
-legendary
-zero to hero
-are a necessity
-philanthropist
-entrepreneur
-dynamic
-engaging
-save millions
-pioneering
-world-class
 world class
-respected
-numerous
-noteworthy
-promising
-signature
-leading
-underpin
-exemplify
-exemplified
-fully integrated
-fully-integrated
-highly specialized
-award-winning
-leader in
-leading
-prominence
-eminent
-most notable
-super famous
-visionary
-100%
+world-class
+worldwide
+zero to hero
 
 	`;
 	
