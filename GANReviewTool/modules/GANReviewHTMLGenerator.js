@@ -106,19 +106,24 @@ export class GANReviewHTMLGenerator {
 
 							<option value="Art and architecture" disabled>==Art and architecture==</option>
 							<option value="Art and architecture" disabled>===Art===</option>
-							<option value="Art and architecture">=====Art=====</option>
+							<option value="Art and architecture">====Art====</option>
+							<option value="Art and architecture">=====Painting=====</option>
 							<option value="Art and architecture">=====Artists and art organizations=====</option>
 							<option value="Art and architecture" disabled>===Architecture===</option>
-							<option value="Art and architecture">=====Architecture=====</option>
-							<option value="Art and architecture">=====Architecture – Bridges and tunnels=====</option>
-							<option value="Art and architecture">=====Architecture – Buildings=====</option>
-							<option value="Art and architecture">=====Architecture – Hotels and inns=====</option>
-							<option value="Art and architecture">=====Architecture – Houses and residences=====</option>
-							<option value="Art and architecture">=====Architecture – Lighthouses=====</option>
-							<option value="Art and architecture">=====Architecture – Memorials and monuments=====</option>
-							<option value="Art and architecture">=====Architecture – Museums and galleries=====</option>
-							<option value="Art and architecture">=====Architecture – Religious=====</option>
-							<option value="Art and architecture">=====Architects=====</option>
+							<option value="Art and architecture">====Architecture====</option>
+							<option value="Art and architecture">====Architecture – Bridges and tunnels====</option>
+							<option value="Art and architecture">====Architecture – Buildings====</option>
+							<option value="Art and architecture">=====Architecture – Buildings of the United States=====</option>
+							<option value="Art and architecture">======Architecture – Buildings of Manhattan======</option>
+							<option value="Art and architecture">====Architecture – Forts and fortifications====</option>
+							<option value="Art and architecture">====Architecture – Hotels and inns====</option>
+							<option value="Art and architecture">====Architecture – Houses and residences====</option>
+							<option value="Art and architecture">====Architecture – Lighthouses====</option>
+							<option value="Art and architecture">====Architecture – Memorials and monuments====</option>
+							<option value="Art and architecture">====Architecture – Museums and galleries====</option>
+							<option value="Art and architecture">====Architecture – Religious====</option>
+							<option value="Art and architecture">====Architecture – Theatres====</option>
+							<option value="Art and architecture">====Architects====</option>
 
 							<option value="Engineering and technology" disabled>==Engineering and technology==</option>
 							<option value="Engineering and technology" disabled>===Computing and engineering===</option>
