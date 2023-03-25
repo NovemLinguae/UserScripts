@@ -133,6 +133,68 @@ describe('getGASubPageEditSummary(editSummary, detailedTopic)', () => {
 	});
 });
 
+
+describe('simplifyQueryRevisionsObject(queryRevisionsObject)', () => {
+	test('Normal', () => {
+		let queryRevisionsObject = {
+			"batchcomplete": true,
+			"warnings": {
+				"main": {
+					"warnings": "Subscribe to the mediawiki-api-announce mailing list at <https://lists.wikimedia.org/postorius/lists/mediawiki-api-announce.lists.wikimedia.org/> for notice of API deprecations and breaking changes. Use [[Special:ApiFeatureUsage]] to see usage of deprecated features by your application."
+				},
+				"revisions": {
+					"warnings": "Because \"rvslots\" was not specified, a legacy format has been used for the output. This format is deprecated, and in the future the new format will always be used."
+				}
+			},
+			"query": {
+				"normalized": [
+					{
+						"fromencoded": false,
+						"from": "Main_page",
+						"to": "Main page"
+					},
+					{
+						"fromencoded": false,
+						"from": "User:Novem_Linguae",
+						"to": "User:Novem Linguae"
+					}
+				],
+				"pages": [
+					{
+						"pageid": 217225,
+						"ns": 0,
+						"title": "Main page",
+						"revisions": [
+							{
+								"contentformat": "text/x-wiki",
+								"contentmodel": "wikitext",
+								"content": "#REDIRECT [[Main Page]]\n\n\n{{Redirect shell |\n  {{R from other capitalisation}}\n}}\n[[Category:Main Page| ]]\n[[Category:Protected pages associated with Main Page articles]]"
+							}
+						]
+					},
+					{
+						"pageid": 67192006,
+						"ns": 2,
+						"title": "User:Novem Linguae",
+						"revisions": [
+							{
+								"contentformat": "text/x-wiki",
+								"contentmodel": "wikitext",
+								"content": "__NOTOC__"
+							}
+						]
+					}
+				]
+			}
+		};
+		let output = {
+			"Main page": "#REDIRECT [[Main Page]]\n\n\n{{Redirect shell |\n  {{R from other capitalisation}}\n}}\n[[Category:Main Page| ]]\n[[Category:Protected pages associated with Main Page articles]]",
+			"User:Novem Linguae": "__NOTOC__"
+		};
+		expect(controller.simplifyQueryRevisionsObject(queryRevisionsObject)).toStrictEqual(output);
+	});
+});
+
 /*
 
 // Not working yet

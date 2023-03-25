@@ -24,7 +24,7 @@ export class GANReviewController {
 		if ( ! this.shouldRunOnThisPageQuickChecks(this.ganReviewPageTitle) ) return;
 		if ( ! await this.shouldRunOnThisPageSlowChecks() ) return;
 
-		this.displayForm();
+		await this.displayForm();
 		await this.listenForUncollapse();
 		this.handleUserChangingFormType();
 
@@ -300,10 +300,35 @@ export class GANReviewController {
 		});
 	}
 
-	displayForm() {
+	async displayForm() {
 		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
 
-		this.$('#mw-content-text').prepend(this.hg.getHTML(this.gaTitle));
+		// split this query in two, to avoid the 12MB limit
+		let obj1 = await this.getWikicodeForMultiplePages([
+			'Wikipedia:Good articles/Agriculture, food and drink',
+			'Wikipedia:Good articles/Art and architecture',
+			'Wikipedia:Good articles/Engineering and technology',
+			'Wikipedia:Good articles/Geography and places',
+			'Wikipedia:Good articles/History',
+			'Wikipedia:Good articles/Language and literature',
+			'Wikipedia:Good articles/Mathematics',
+		]);
+
+		let obj2 = await this.getWikicodeForMultiplePages([
+			'Wikipedia:Good articles/Media and drama',
+			'Wikipedia:Good articles/Music',
+			'Wikipedia:Good articles/Natural sciences',
+			'Wikipedia:Good articles/Philosophy and religion',
+			'Wikipedia:Good articles/Social sciences and society',
+			'Wikipedia:Good articles/Sports and recreation',
+			'Wikipedia:Good articles/Video games',
+			'Wikipedia:Good articles/Warfare',
+		]);
+
+		let wikicodeOfGASubPages = {...obj1, ...obj2};
+
+		let html = this.hg.getHTML(this.gaTitle, wikicodeOfGASubPages);
+		this.$('#mw-content-text').prepend(html);
 	}
 
 	async shouldRunOnThisPageSlowChecks() {
@@ -350,6 +375,59 @@ export class GANReviewController {
 		if ( result['error'] ) return '';
 		let wikicode = result['parse']['wikitext']['*'];
 		return wikicode;
+	}
+
+	/**
+	  * @param {Array} listOfTitles
+	  * @return {Promise<Object>} {'Page title': 'Page wikicode', 'Page title2': 'Page wikicode2'} Maximum 12MB of result wikicode. Will cut off after that.
+	  */
+	async getWikicodeForMultiplePages(listOfTitles) {
+		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
+
+		let api = new this.mw.Api();
+		let params = {
+			"action": "query",
+			"format": "json",
+			"prop": "revisions",
+			"titles": listOfTitles.join('|'),
+			"formatversion": "2",
+			"rvprop": "content"
+		};
+		let result = await api.post(params);
+		if ( result['error'] ) return '';
+		let simplified = this.simplifyQueryRevisionsObject(result);
+
+		return simplified
+	}
+
+	/**
+	  * convert from the complex format returned by API action=query&prop=revisions, to
+	  * {'Page title': 'Page wikicode', 'Page title2': 'Page wikicode2'}
+	  */
+	simplifyQueryRevisionsObject(queryRevisionsObject) {
+		let pages = queryRevisionsObject['query']['pages'];
+		let newFormat = {};
+		for ( let page of pages ) {
+			if ( page['missing'] ) continue; // on testwiki, these pages may not be created yet. just skip em
+			let key = page['title'];
+			let value = page['revisions'][0]['content'];
+			newFormat[key] = value;
+		}
+		newFormat = this.alphabetizeObjectByKeys(newFormat);
+		return newFormat;
+	}
+
+	/**
+	  * Mathias Bynens, CC BY-SA 4.0, https://stackoverflow.com/a/31102605/3480193
+	  */
+	alphabetizeObjectByKeys(unordered) {
+		return Object.keys(unordered).sort().reduce(
+			(obj, key) => { 
+				obj[key] = unordered[key]; 
+				return obj;
+			}, 
+			{}
+		);
 	}
 
 	async makeEdit(title, editSummary, wikicode) {
