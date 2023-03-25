@@ -36,7 +36,7 @@ __TOC__`;
 		} else {
 			output += wikicode;
 		}
-		output += `\n{{${garTitle}}}`
+		output += `\n{{${garTitle}}}`;
 		return output;
 	}
 
@@ -56,7 +56,7 @@ __TOC__`;
 		let textToAppend = `\n* `;
 
 		if ( error ) {
-			textToAppend += `<span style="color: red; font-weight: bold;">ERROR:</span> ${error}. `
+			textToAppend += `<span style="color: red; font-weight: bold;">ERROR:</span> ${error}. `;
 		}
 
 		let keepOrDelistPastTense = this.getKeepOrDelistPastTense(keepOrDelist);
@@ -297,7 +297,7 @@ __TOC__`;
 			'warships': 'Wikipedia:Good articles/Warfare',
 			'weapons and buildings': 'Wikipedia:Good articles/Warfare',
 			'weapons': 'Wikipedia:Good articles/Warfare',
-		}
+		};
 		let topic = wikicode.match(/(?:\{\{Article ?history|\{\{GA\s*(?=\|)).*?\|\s*(?:sub)?topic\s*=\s*([^\|\}\n]+)/is)[1];
 		topic = topic.toLowerCase().trim();
 		let gaListTitle = dictionary[topic];
@@ -623,7 +623,7 @@ __TOC__`;
 		}
 
 		// https://en.wikipedia.org/wiki/Template:Article_history#How_to_use_in_practice
-		let existingStatus = this.firstTemplateGetParameterValue(wikicode, 'Artricle history', 'currentstatus')
+		let existingStatus = this.firstTemplateGetParameterValue(wikicode, 'Artricle history', 'currentstatus');
 		wikicode = this.firstTemplateDeleteParameter(wikicode, 'Article history', 'currentstatus');
 		let currentStatusString = this.getArticleHistoryNewStatus(existingStatus, keepOrDelist);
 

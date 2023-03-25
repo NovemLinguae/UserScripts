@@ -65,7 +65,7 @@ export class GANReviewController {
 			this.pushStatus('Script complete. Refreshing page.');
 			// TODO: 1 second delay?
 			location.reload();
-		} catch(err) {
+		} catch (err) {
 			this.pushStatus(`<span class="GANReviewTool-ErrorNotice">An error occurred :( Details: ${err}</span>`);
 			this.error = err;
 			this.editSummary += ' cc [[User:Novem Linguae]]';
@@ -397,7 +397,7 @@ export class GANReviewController {
 		if ( result['error'] ) return '';
 		let simplified = this.simplifyQueryRevisionsObject(result);
 
-		return simplified
+		return simplified;
 	}
 
 	/**
@@ -476,7 +476,7 @@ export class GANReviewController {
 
 		// don't run when not viewing articles
 		let action = this.mw.config.get('wgAction');
-		if ( action != 'view' ) return false;
+		if ( action !== 'view' ) return false;
 
 		// don't run when viewing diffs
 		let isDiff = this.mw.config.get('wgDiffNewId');

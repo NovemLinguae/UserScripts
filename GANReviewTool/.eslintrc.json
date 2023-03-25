@@ -1,3 +1,5 @@
 {
-	"sourceType": "module"
+    "parserOptions": {
+        "sourceType": "module"
+    }
 }

@@ -41,7 +41,7 @@ export class GARCloserController {
 		}
 
 		// place HTML on page
-		this.$('#mw-content-text').prepend(hg.getHTML())
+		this.$('#mw-content-text').prepend(hg.getHTML());
 
 		this.$(`#GARCloser-Keep`).on('click', async () => {
 			await this.clickKeep();
@@ -70,7 +70,7 @@ export class GARCloserController {
 			await this.makeScriptLogEntry('keep');
 			this.pushStatus(`Done! Reloading...`);
 			location.reload();
-		} catch(err) {
+		} catch (err) {
 			this.error = err;
 			console.error(err);
 			this.editSummary += ' cc [[User:Novem Linguae]]';
@@ -101,7 +101,7 @@ export class GARCloserController {
 				this.pushStatus(`Done! Reloading...`);
 				location.reload();
 			}
-		} catch(err) {
+		} catch (err) {
 			this.error = err;
 			console.error(err);
 			this.editSummary += ' cc [[User:Novem Linguae]]';
@@ -125,7 +125,7 @@ export class GARCloserController {
 		this.message = message;
 		this.$ = $;
 		this.mw = mw;
-		this.wg = wg
+		this.wg = wg;
 
 		this.parentArticle = this.getIndividualReassessmentParentArticle(this.garPageTitle);
 		this.talkPageTitle = `Talk:${this.parentArticle}`;
@@ -249,7 +249,7 @@ export class GARCloserController {
 			isNewArchive,
 			this.archiveTitle
 		);
-		this.garLogRevisionID = await this.makeEdit(this.archiveTitle, this.editSummary, archiveNewWikicode)
+		this.garLogRevisionID = await this.makeEdit(this.archiveTitle, this.editSummary, archiveNewWikicode);
 		if ( this.garLogRevisionID === undefined ) {
 			throw new Error('Generated wikicode and page wikicode were identical, resulting in a null edit.');
 		}
@@ -460,7 +460,7 @@ export class GARCloserController {
 		try {
 			return await this.getWikicode(title);
 		} catch (err) {
-
+			// Catch error and do nothing
 		}
 
 		return '';
@@ -554,7 +554,7 @@ export class GARCloserController {
 
 		// don't run when not viewing articles
 		let action = this.mw.config.get('wgAction');
-		if ( action != 'view' ) return false;
+		if ( action !== 'view' ) return false;
 		
 		// don't run when viewing diffs
 		let isDiff = this.mw.config.get('wgDiffNewId');

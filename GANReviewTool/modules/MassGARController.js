@@ -40,7 +40,7 @@ export class MassGARController {
 		this.$(`#MassGARTool-Run`).on('click', async () => {
 			try {
 				await this.clickRun();
-			} catch(err) {
+			} catch (err) {
 				this.error = err;
 				console.error(err);
 				this.pushStatus(`<span class="MassGARTool-ErrorNotice">An error occurred :( Details: ${this.error}</span>`);
@@ -335,7 +335,7 @@ Trussed Concrete Steel Company`;
 		try {
 			result = await api.post(params);
 		} catch (e) {
-			if ( e == 'missingtitle' ) {
+			if ( e === 'missingtitle' ) {
 				throw new Error(`${title}: does not appear to be created yet.`);
 			} else {
 				throw e;
