@@ -125,6 +125,7 @@ $(function() {
 				this.links += `
 					<li><a href="`+this.copyvioURL+`" `+this.sameTab+`>Copyvio check</a></li>
 					<li><a href="`+this.wikipediaDuplicateCheckURL+`" `+this.sameTab+`>Duplicate article check</a></li>
+					<li><a href="https://gptzero.me/" `+this.sameTab+`>AI/LLM check</a></li>
 					<li><a href="`+this.webSearchURL+`" `+this.sameTab+`>WP:BEFORE web</a></li>
 					<li><a href="`+this.newsSearchURL+`" `+this.sameTab+`>WP:BEFORE news</a></li>
 					<li><a href="`+this.oldNewsSearchURL+`" `+this.sameTab+`>WP:BEFORE news archive</a></li>
