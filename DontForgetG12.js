@@ -26,14 +26,6 @@ $(async function() {
 		return wikicode;
 	}
 	
-	function pageIsCuratedFunction(title) {
-		let pageIsCurated = '';
-		mw.hook( 'ext.pageTriage.toolbar.ready' ).add( function ( queue ) {
-			pageIsCurated = queue.reviewed();
-		});
-		return pageIsCurated;
-	}
-	
 	function insertButton() {
 		$('#contentSub').before(`
 			<a style="display: inline-block; color: black; margin-top: 0.5em; border: 2px solid black; padding: 0.25em 3em; background-color: #FFDC00; font-size: 1.5em;" href="https://tools.wmflabs.org/copyvios/?lang=en&project=wikipedia&title=` + encodeURIComponent(title) + `" target="_blank">
@@ -44,7 +36,7 @@ $(async function() {
 	
 	// don't run when not viewing articles
 	let action = mw.config.get('wgAction');
-	if ( action != 'view' ) return;
+	if ( action !== 'view' ) return;
 	
 	// don't run when viewing diffs
 	let isDiff = mw.config.get('wgDiffNewId');
@@ -62,19 +54,15 @@ $(async function() {
 	
 	// Only run if 1) article is uncurated or 2) draft is submitted
 	let draftIsSubmitted = wikicode.match(/(?:{{AfC submission}}|{{AfC submission\|}}|{{AfC submission\|\|)/i) && namespace === 118;
-	// let pageIsNotCurated = $('.mwe-pt-mark-as-unreviewed-button').length;
-	// let pageIsCurated = pageIsCuratedFunction();
-	// console.log(pageIsCurated);
 	if ( draftIsSubmitted ) {
 		insertButton();
 	}
 	
-	mw.hook( 'ext.pageTriage.toolbar.ready' ).add( function ( queue ) {
+	mw.hook( 'ext.pageTriage.toolbar.ready' ).add( function () {
 		let pageIsNotCurated = $('[title="Mark this page as reviewed"]').length;
 		if ( pageIsNotCurated ) {
-			console.log('Unreviewed article detected 2');
 			insertButton();
-		};
+		}
 	});
 });
 
