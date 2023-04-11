@@ -7,11 +7,11 @@ $(function() {
 			this._setVariables();
 			this._decideIfWeShouldUseLessLinks();
 			this._setURIVariables(this.pageName, this.namespace);
-			//this._debugURIVariables();
+			// this._debugURIVariables();
 			this._setURLVariables();
 			this._checkForArticlesInOtherLanguages();
 			this._checkForForeignCharacters();
-			//this._debugForeignCharacterDetection();
+			// this._debugForeignCharacterDetection();
 			this._generateLinks();
 			this._insertHTML();
 		}
@@ -123,19 +123,20 @@ $(function() {
 			// if on a page where NPPLinks should run (mainspace), display all the links, so the person can do WP:BEFORE
 			if ( ! this.lessLinks ) {
 				this.links += `
-					<li><a href="`+this.copyvioURL+`" `+this.sameTab+`>Copyvio check</a></li>
-					<li><a href="`+this.wikipediaDuplicateCheckURL+`" `+this.sameTab+`>Duplicate article check</a></li>
-					<li><a href="https://gptzero.me/" `+this.sameTab+`>AI/LLM check</a></li>
-					<li><a href="`+this.webSearchURL+`" `+this.sameTab+`>WP:BEFORE web</a></li>
-					<li><a href="`+this.newsSearchURL+`" `+this.sameTab+`>WP:BEFORE news</a></li>
-					<li><a href="`+this.oldNewsSearchURL+`" `+this.sameTab+`>WP:BEFORE news archive</a></li>
-					<li><a href="`+this.bookSearchURL+`" `+this.sameTab+`>WP:BEFORE books</a></li>
-					<li><a href="`+this.journalSearchURL+`" `+this.sameTab+`>WP:BEFORE scholar</a></li>
-					`+this.messages+`
-					<li><a href="`+this.profileSearchURL+`" `+this.sameTab+`>h-index</a></li>
-					<li><a href="`+this.cseSearchURL+`" `+this.sameTab+`>Google CSE</a></li>
-					<li><a href="`+this.newsInTitleSearchURL+`" `+this.sameTab+`>News (name in title)</a></li>
-					<li><a href="`+this.wikidataSearchURL+`" `+this.sameTab+`>Wikidata</a></li>
+					<li><a href="${this.copyvioURL}" ${this.sameTab}>Copyvio check</a></li>
+					<li><a href="${this.wikipediaDuplicateCheckURL}" ${this.sameTab}>Duplicate article check</a></li>
+					<li><a href="https://gptzero.me/" ${this.sameTab}>AI/LLM check</a></li>
+					<li><a href="${this.webSearchURL}" ${this.sameTab}>WP:BEFORE web</a></li>
+					<li><a href="${this.newsSearchURL}" ${this.sameTab}>WP:BEFORE news</a></li>
+					<li><a href="${this.oldNewsSearchURL}" ${this.sameTab}>WP:BEFORE news archive</a></li>
+					<li><a href="${this.bookSearchURL}" ${this.sameTab}>WP:BEFORE books</a></li>
+					<li><a href="${this.journalSearchURL}" ${this.sameTab}>WP:BEFORE scholar</a></li>
+					${this.messages}
+					<li><a href="${this.profileSearchURL}" ${this.sameTab}>h-index</a></li>
+					<li><a href="${this.cseSearchURL}" ${this.sameTab}>Reliable sources search</a></li>
+					<li><a href="${this.newsInTitleSearchURL}" ${this.sameTab}>News (name in title)</a></li>
+					<li><a href="${this.wikidataSearchURL}" ${this.sameTab}>Wikidata</a></li>
+					<li><a href="${this.catalogueOfLifeSearchURL}" ${this.sameTab}>Species search</a></li>
 				`;
 
 				// TODO: purge page, so orphan count is correct
@@ -166,17 +167,18 @@ $(function() {
 		}
 
 		_setURLVariables() {
-			this.copyvioURL = 'https://tools.wmflabs.org/copyvios/?lang=en&project=wikipedia&title='+this.underscores;
-			this.webSearchURL = 'https://www.google.com/search?q='+this.quotedNoUnderscores+'+-wikipedia.org';
-			this.bookSearchURL = 'https://www.google.com/search?q='+this.quotedNoUnderscores+'&tbm=bks';
-			this.newsSearchURL = 'https://www.google.com/search?q='+this.quotedNoUnderscores+'&tbm=nws';
-			this.newsInTitleSearchURL = 'https://www.google.com/search?q=intitle:'+this.quotedNoUnderscores+'&tbm=nws';
-			this.oldNewsSearchURL = 'https://www.google.com/search?q='+this.quotedNoUnderscores+'%20site:news.google.com/newspapers';
-			this.journalSearchURL = 'https://scholar.google.com/scholar?q='+this.quotedNoUnderscores+'';
-			this.profileSearchURL = 'https://www.google.com/search?q='+this.noUnderscoresNoParentheses+'%20%22h-index%22';
-			this.cseSearchURL = 'https://cse.google.com/cse?cx=007734830908295939403:galkqgoksq0&q='+this.quotedNoUnderscores+'';
-			this.wikipediaDuplicateCheckURL = 'https://en.wikipedia.org/w/index.php?search='+this.noUnderscores+'&title=Special:Search&profile=advanced&fulltext=1&advancedSearch-current=%7B%7D&ns0=1';
+			this.copyvioURL = `https://tools.wmflabs.org/copyvios/?lang=en&project=wikipedia&title=${this.underscores}`;
+			this.webSearchURL = `https://www.google.com/search?q=${this.quotedNoUnderscores}+-wikipedia.org`;
+			this.bookSearchURL = `https://www.google.com/search?q=${this.quotedNoUnderscores}&tbm=bks`;
+			this.newsSearchURL = `https://www.google.com/search?q=${this.quotedNoUnderscores}&tbm=nws`;
+			this.newsInTitleSearchURL = `https://www.google.com/search?q=intitle:${this.quotedNoUnderscores}&tbm=nws`;
+			this.oldNewsSearchURL = `https://www.google.com/search?q=${this.quotedNoUnderscores}%20site:news.google.com/newspapers`;
+			this.journalSearchURL = `https://scholar.google.com/scholar?q=${this.quotedNoUnderscores}`;
+			this.profileSearchURL = `https://www.google.com/search?q=${this.noUnderscoresNoParentheses}%20%22h-index%22`;
+			this.cseSearchURL = `https://cse.google.com/cse?cx=007734830908295939403:galkqgoksq0&q=${this.quotedNoUnderscores}`;
+			this.wikipediaDuplicateCheckURL = `https://en.wikipedia.org/w/index.php?search=${this.noUnderscores}&title=Special:Search&profile=advanced&fulltext=1&advancedSearch-current=%7B%7D&ns0=1`;
 			this.wikidataSearchURL = `https://www.wikidata.org/w/index.php?search=${this.quotedNoParentheses}&title=Special%3ASearch&go=Go&ns0=1&ns120=1`;
+			this.catalogueOfLifeSearchURL = `https://www.catalogueoflife.org/data/search?facet=rank&facet=issue&facet=status&facet=nomStatus&facet=nameType&facet=field&facet=authorship&facet=extinct&facet=environment&limit=50&offset=0&q=${this.noUnderscores}&sortBy=taxonomic`;
 		}
 
 		_setVariables() {
