@@ -8,8 +8,33 @@
 
 // TODO: Code review. Is there a way to reduce the # of API queries?
 
-$(async function() {
-	async function getWikicode(title) {
+class DetectG4G5 {
+	async execute() {
+		if ( ! this.shouldRunOnThisPage() ) return;
+		
+		let title = mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
+		let pageID = mw.config.get('wgArticleId');
+
+		if ( await this.isReviewed(pageID) ) {
+			return;
+		}
+
+		if ( await this.afdExists(title) && ! await this.hasAFDTemplate(title) ) {
+			let href = mw.config.get('wgArticlePath').replace('$1', 'Wikipedia:Articles_for_deletion/' + title);
+			this.displayWarning(`<span style="font-weight:bold">CSD G4:</span> There is an <a href="${href}">AFD page</a> for this article. It may qualify for CSD G4.`);
+		}
+
+		let pageCreator = await this.getPageCreator(title);
+		if ( await this.isBlocked(pageCreator) ) {
+			this.displayWarning('<span style="font-weight:bold">CSD G5:</span> The creator of this page is blocked. This article may qualify for CSD G5.');
+		}
+
+		if ( await this.isGloballyLocked(pageCreator) ) {
+			this.displayWarning('<span style="font-weight:bold">CSD G5:</span> The creator of this page is globally locked. This article may qualify for CSD G5.');
+		}
+	}
+
+	async getWikicode(title) {
 		if ( ! mw.config.get('wgCurRevisionId') ) return ''; // if page is deleted, return blank
 		var wikicode = '';
 		title = encodeURIComponent(title);
@@ -24,16 +49,16 @@ $(async function() {
 		return wikicode;
 	}
 
-	async function hasAFDTemplate(title) {
-		let wikicode = await getWikicode(title);
+	async hasAFDTemplate(title) {
+		let wikicode = await this.getWikicode(title);
 		return wikicode.indexOf('{{Article for deletion') !== -1;
 	}
 
-	function displayWarning(html) {
+	displayWarning(html) {
 		$('#contentSub').before(`<div class="DetectG4G5" style="background-color: red">${html}</div>`);
 	}
 
-	async function isReviewed(pageID) {
+	async isReviewed(pageID) {
 		let api = new mw.Api();
 		let response = await api.get( {
 			action: 'pagetriagelist',
@@ -53,12 +78,12 @@ $(async function() {
 		}
 	}
 
-	async function afdExists(title) {
+	async afdExists(title) {
 		title = 'Wikipedia:Articles_for_deletion/' + title;
-		return await pageExists(title);
+		return await this.pageExists(title);
 	}
 
-	async function pageExists(title) {
+	async pageExists(title) {
 		let api = new mw.Api();
 		let response = await api.get( {
 			action: 'query',
@@ -70,7 +95,7 @@ $(async function() {
 		return exists;
 	}
 
-	async function isBlocked(username) {
+	async isBlocked(username) {
 		let api = new mw.Api();
 		let response = await api.get( {
 			action: "query",
@@ -83,7 +108,7 @@ $(async function() {
 		return isBlocked;
 	}
 
-	async function isGloballyLocked(username) {
+	async isGloballyLocked(username) {
 		let api = new mw.Api();
 		let response = await api.get( {
 			action: 'query',
@@ -97,11 +122,11 @@ $(async function() {
 		return isLocked;
 	}
 
-	function getFirstValueInObject(obj) {
+	getFirstValueInObject(obj) {
 		return obj[Object.keys(obj)[0]];
 	}
 
-	async function getPageCreator(title) {
+	async getPageCreator(title) {
 		let api = new mw.Api();
 		let response = await api.get( {
 			"action": "query",
@@ -111,12 +136,12 @@ $(async function() {
 			"rvlimit": "1",
 			"rvdir": "newer"
 		} );
-		let page = getFirstValueInObject(response.query.pages);
+		let page = this.getFirstValueInObject(response.query.pages);
 		let pageCreator = page.revisions[0].user;
 		return pageCreator;
 	}
 
-	function shouldRunOnThisPage() {
+	shouldRunOnThisPage() {
 		// don't run when not viewing articles
 		let action = mw.config.get('wgAction');
 		if ( action != 'view' ) return false;
@@ -135,29 +160,13 @@ $(async function() {
 
 		return true;
 	}
+}
 
-	if ( ! shouldRunOnThisPage() ) return;
-	
-	let title = mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
-	let pageID = mw.config.get('wgArticleId');
-
-	if ( await isReviewed(pageID) ) {
-		return;
-	}
-
-	if ( await afdExists(title) && ! await hasAFDTemplate(title) ) {
-		let href = mw.config.get('wgArticlePath').replace('$1', 'Wikipedia:Articles_for_deletion/' + title);
-		displayWarning(`<span style="font-weight:bold">CSD G4:</span> There is an <a href="${href}">AFD page</a> for this article. It may qualify for CSD G4.`);
-	}
-
-	let pageCreator = await getPageCreator(title);
-	if ( await isBlocked(pageCreator) ) {
-		displayWarning('<span style="font-weight:bold">CSD G5:</span> The creator of this page is blocked. This article may qualify for CSD G5.');
-	}
-
-	if ( await isGloballyLocked(pageCreator) ) {
-		displayWarning('<span style="font-weight:bold">CSD G5:</span> The creator of this page is globally locked. This article may qualify for CSD G5.');
-	}
+$(async function() {
+	await mw.loader.using(['mediawiki.api'], async () => {
+		let dg4g5 = new DetectG4G5();
+		await dg4g5.execute();
+	});
 });
 
 // </nowiki>

@@ -327,7 +327,7 @@ class CiteHighlighter {
 // TODO: Idea from chlod: use mw.hook("wikipage.content").add( () => { rehiglight(); } ); instead. will listen for VE finishes saving or the page gets reloaded in any way. Gets called multiple times by accident sometimes though, so need to be careful not to apply duplicate classes to HTML elements.
 $(async function() {
 	// TODO: I don't think I use mediawiki.Title. Remove that, and replace with mediawiki.Api?
-	await mw.loader.using(['mediawiki.util','mediawiki.Uri', 'mediawiki.Title'], async () => {
+	await mw.loader.using(['mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title', 'mediawiki.api'], async () => {
 		let ch = new CiteHighlighter();
 		await ch.execute();
 	});

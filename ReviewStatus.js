@@ -9,8 +9,30 @@
 // TODO: display in all namespaces
 // TODO: do I need to use different code to check if marked as patrolled? I think that uses recentchanges table... maybe?
 
-$(async function() {
-	async function isReviewed(pageID) {
+class ReviewStatus {
+	async execute() {
+		if ( ! this.shouldRunOnThisPage() ) {
+			return;
+		}
+
+		let pageID = mw.config.get('wgArticleId');
+		let boolIsReviewed = await this.isReviewed(pageID);
+		let htmlToInsert = '';
+
+		if ( boolIsReviewed ) {
+			htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.views.list/images/icon_reviewed.png" title="Reviewed" />`;
+		} else {
+			htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.views.list/images/icon_not_reviewed.png" title="Not reviewed" />`;
+		}
+
+		if ( this.pageHasSections() ) {
+			$(`#firstHeading .mw-editsection`).before(htmlToInsert);
+		} else {
+			$(`#firstHeading`).append(htmlToInsert);
+		}
+	}
+
+	async isReviewed(pageID) {
 		let api = new mw.Api();
 		let response = await api.get( {
 			action: 'pagetriagelist',
@@ -30,7 +52,7 @@ $(async function() {
 		}
 	}
 
-	function shouldRunOnThisPage(title) {
+	shouldRunOnThisPage() {
 		// don't run when not viewing articles
 		let action = mw.config.get('wgAction');
 		if ( action != 'view' ) {
@@ -58,30 +80,16 @@ $(async function() {
 		return true;
 	}
 
-	function pageHasSections() {
+	pageHasSections() {
 		return $(`#firstHeading .mw-editsection`).length;
 	}
+}
 
-	let title = mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
-	if ( ! shouldRunOnThisPage(title) ) {
-		return;
-	}
-
-	let pageID = mw.config.get('wgArticleId');
-	let boolIsReviewed = await isReviewed(pageID);
-	let htmlToInsert = '';
-
-	if ( boolIsReviewed ) {
-		htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.views.list/images/icon_reviewed.png" title="Reviewed" />`;
-	} else {
-		htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.views.list/images/icon_not_reviewed.png" title="Not reviewed" />`;
-	}
-
-	if ( pageHasSections() ) {
-		$(`#firstHeading .mw-editsection`).before(htmlToInsert);
-	} else {
-		$(`#firstHeading`).append(htmlToInsert);
-	}
+$(async function() {
+	await mw.loader.using(['mediawiki.api'], async () => {
+		let rs = new ReviewStatus();
+		await rs.execute();
+	});
 });
 
 // </nowiki>
