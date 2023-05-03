@@ -31,8 +31,8 @@ async function getWikitextFromCache(title) {
 	return wikitext;
 }
 
-mw.hook('wikipage.content').add(async function(){
-	await mw.loader.using(['mediawiki.util','mediawiki.Uri', 'mediawiki.Title'], async function() {
+mw.hook('wikipage.content').add(async function() {
+	await mw.loader.using(['mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title'], async function() {
 		let dataString = await this.getWikitextFromCache('User:NovemBot/userlist.js');
 		let dataJSON = JSON.parse(dataString);
 
