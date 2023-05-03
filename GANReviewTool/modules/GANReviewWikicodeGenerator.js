@@ -8,12 +8,11 @@ export class GANReviewWikicodeGenerator {
 	getPassWikicodeForTalkPage(talkWikicode, reviewTitle, topic, oldid) {
 		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
 
-		// Deleting {{GA nominee}} from article talk page.
+		// Delete {{GA nominee}} from article talk page.
 		let gaPageNumber = this.getTemplateParameter(talkWikicode, 'GA nominee', 'page');
 		talkWikicode = this.deleteGANomineeTemplate(talkWikicode);
 
-		// Adding {{GA}} or {{Article history}} to article talk page.
-		// TODO: get top revision ID of main article, pass it into below functions, have it add the revision ID
+		// Add {{GA}} or {{Article history}} to article talk page.
 		let boolHasArticleHistoryTemplate = this.hasArticleHistoryTemplate(talkWikicode);
 		if ( boolHasArticleHistoryTemplate ) {
 			talkWikicode = this.updateArticleHistory(talkWikicode, topic, reviewTitle, 'listed', oldid);
@@ -21,7 +20,7 @@ export class GANReviewWikicodeGenerator {
 			talkWikicode = this.addGATemplate(talkWikicode, topic, gaPageNumber, oldid);
 		}
 
-		// Changing WikiProject template class parameters to GA on article talk page.
+		// Change WikiProject template class parameters to GA on article talk page.
 		talkWikicode = this.changeWikiProjectArticleClassToGA(talkWikicode);
 
 		return talkWikicode;
