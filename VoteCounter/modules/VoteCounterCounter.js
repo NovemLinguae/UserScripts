@@ -84,6 +84,8 @@ export class VoteCounterCounter {
 		// remove == == from headings
 		lineOfWikicode = lineOfWikicode.replace(/^=+\s*/, '');
 		lineOfWikicode = lineOfWikicode.replace(/\s*=+\s*$/, '');
+		// handle piped wikilinks, e.g. [[User:abc|abc]]
+		lineOfWikicode = lineOfWikicode.replace(/\[\[[^\[\|]+\|([^\[\|]+)\]\]/gi, '$1');
 		// remove wikilinks
 		lineOfWikicode = lineOfWikicode.replace(/\[\[:?/g, '');
 		lineOfWikicode = lineOfWikicode.replace(/\]\]/g, '');

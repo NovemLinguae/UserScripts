@@ -67,4 +67,10 @@ describe('_convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)', () => {
 		let output = 'Pvmoutside_autopatrolled_rights';
 		expect(vcc._convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)).toEqual(output);
 	});
+
+	it(`Should handle piped wikilinks, e.g. [[User:abc|abc]]`, () => {
+		let lineOfWikicode = `== Requesting lift of Topic Ban on Sports Articles from [[User:NicholasHui|NicholasHui]] ==`;
+		let output = 'Requesting_lift_of_Topic_Ban_on_Sports_Articles_from_NicholasHui';
+		expect(vcc._convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)).toEqual(output);
+	});
 });
