@@ -52,6 +52,8 @@ class CiteHighlighter {
 			'railfan',
 			'sponsored',
 			'thread',
+			'user-review',
+			'viewtopic',
 			'weebly',
 			'wix',
 			'wordpress',
