@@ -152,11 +152,18 @@ export class VoteCounterController {
 	}
 
 	async _getWikicode(title) {
-		if ( ! mw.config.get('wgCurRevisionId') ) return ''; // if page is deleted, return blank
+		let isDeletedPage = ! mw.config.get('wgCurRevisionId');
+		if ( isDeletedPage ) {
+			return '';
+		}
+
+		// grab title by revision ID, not by page title. this lets it work correctly if you're viewing an old revision of the page
+		let revisionID = mw.config.get('wgRevisionId');
+
 		let api = new mw.Api();
 		let response = await api.get( {
 			"action": "parse",
-			"page": title,
+			"oldid": revisionID,
 			"prop": "wikitext",
 			"formatversion": "2",
 			"format": "json"
