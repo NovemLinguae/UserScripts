@@ -173,10 +173,11 @@ class UserHighlighterSimple {
 			return false;
 		}
 		
-		// if wgServer is not in the format //meta.wikimedia.org
-		// if en.wikipedia.org != en.wikipedia.org
 		// TODO: when I figure it out, need to document what edge case this fixes
-		if ( uri.host !== mw.config.get('wgServer').slice(2) ) {
+		let server = mw.config.get('wgServer'); // e.g. //en.wikipedia.org
+		server = server.slice(2); // e.g. en.wikipedia.org (removes // at the beginning of it)
+		let host = uri.host; // e.g. en.wikipedia.org
+		if ( host !== server ) {
 			return false;
 		}
 
@@ -233,9 +234,10 @@ class UserHighlighterSimple {
 	}
 
 	addClassAndHoverText(className, descriptionForHover) {
-		this.$link.addClass(this.$link.attr('class') + ` ${className}`);
+		this.$link.addClass(className);
 
-		if ( this.$link.attr("title") === null || this.$link.attr("title").startsWith("User:") ) {
+		let title = this.$link.attr("title");
+		if ( ! title || title.startsWith("User:") ) {
 			this.$link.attr("title", descriptionForHover);
 		}
 
@@ -260,8 +262,9 @@ class UserHighlighterSimple {
 
 		// If they have no perms, just draw a box around their username, to make it more visible.
 		if ( ! this.hasAdvancedPermissions && this.$link.hasClass('userlink') ) {
-			this.$link.addClass( this.$link.attr('class') + " UHS-no-permissions" );
-			if (this.$link.attr("title") === null || this.$link.attr("title").startsWith("User:")) {
+			this.$link.addClass( "UHS-no-permissions" );
+			let title = this.$link.attr("title");
+			if ( ! title || title.startsWith("User:")) {
 				this.$link.attr("title", "Less than 500 edits");
 			}
 		}
