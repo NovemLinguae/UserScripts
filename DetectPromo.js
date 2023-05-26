@@ -78,9 +78,11 @@ $(async function() {
 8-figure
 9-figure
 a record
+accomplished
 are a necessity
 around the world
 award-winning
+award winning
 B2B
 B2C
 best available
@@ -98,6 +100,7 @@ engaging
 entrepreneur
 evangelist
 excelled
+exceptional
 exemplified
 exemplify
 expert
@@ -124,6 +127,7 @@ inexhaustible
 influential
 innovation
 innovative
+insights
 inspired by
 integrate
 leader in
@@ -147,6 +151,8 @@ perfect
 philanthropist
 pioneer
 pioneering
+popular destination
+premiere
 prestigious
 prominence
 prominent
@@ -154,10 +160,14 @@ promising
 promulgator
 ranked
 reinvent
+remarkable
 renowned
 respected
+revolutionary
 rising star
 save millions
+savvy
+seamless
 sensual
 several offers
 signature
@@ -167,6 +177,7 @@ state-of-art
 state-of-the-art
 striking
 super famous
+tailored
 transcend
 transform
 underpin
