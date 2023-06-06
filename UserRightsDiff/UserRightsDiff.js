@@ -14,6 +14,8 @@ This script works in Special:UserRights, in watchlists, and when clicking "right
 
 */
 
+// Don't bother converting this user script to a class. There's a nasty bug involving calling this.functionName2 inside of $().each( this.functionName ). "this" is an HTML element, not the class. Not sure how to fix.
+
 $(function() {
 	/** Don't delete "(none)". Delete all other parentheses and tags. */
 	function deleteParenthesesAndTags(text) {
@@ -87,7 +89,7 @@ $(function() {
 		$('body').off('DOMNodeInserted'); // prevent infinite loop
 		if ( $('.user-rights-diff').length === 0 ) { // don't run twice on the same page
 			$('.mw-logevent-loglines .mw-logline-rights').each( checkLine ); // Special:UserRights, BradV SuperLinks
-			$('.mw-changeslist-log-rights .mw-changeslist-line-inner').each( checkLine ); // watchlist
+			$('.mw-changeslist-log-rights .mw-changeslist-log-entry').each( checkLine ); // watchlist
 		}
 		$('body').on('DOMNodeInserted', '.mw-logevent-loglines', checkLog);
 	}
