@@ -283,7 +283,7 @@ $(function() {
 			// Andrew Hill
 			this.noUnderscoresNoParentheses = 		this._buildURIComponent(pageName, namespace, false, false, false, false);
 		}
-	};
+	}
 
 	$(function() {
 		let nppl = new NPPLinks();
