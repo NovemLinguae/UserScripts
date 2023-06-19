@@ -108,6 +108,7 @@ if( jQuery !== undefined && mediaWiki !== undefined ) {
 		// Good test case is https://en.wikipedia.org/wiki/User_talk:Onel5969?useskin=minerva. Ctrl-F5. 25-50% of the time it will not show the vedit section links.
 		/*
 		// Fixes a race condition. There's some code in core somewhere that hides visual editor links pretty late in the page load process. Sometimes this user script inserts its links before that code runs.
+		// TODO: switch from MutationObserver to mw.hook().add(). https://github.com/NovemLinguae/UserScripts/issues/167
 		new MutationObserver(() => {
 			showVEEditLink();
 			console.log('VisualEditorEverywhere: Mutation observer fired. Race condition prevented.');

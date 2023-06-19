@@ -228,6 +228,7 @@ class CiteHighlighter {
 	 * Observe and highlight popups created by the gadget Reference Tooltips.
 	 */
 	observeAndAddClassesToTooltips() {
+		// TODO: switch from MutationObserver to mw.hook().add(). https://github.com/NovemLinguae/UserScripts/issues/167
 		new MutationObserver(function () {
 			let el = document.getElementsByClassName('rt-tooltip')[0];
 			if (el) {

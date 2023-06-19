@@ -71,6 +71,7 @@ $(function() {
 	if ( title != 'Special:NewPagesFeed' ) return;
 	
 	// then run it again whenever a DOM node is inserted (the list refreshes as you scroll down, so this can be anytime you scroll down). could also be because this script loads BEFORE the the NPP applet (race condition)
+	// TODO: switch from MutationObserver to mw.hook().add(). https://github.com/NovemLinguae/UserScripts/issues/167
 	new MutationObserver(() => {
 		if ( ! inAFCMode() ) {
 			checkAndHighlight(this);

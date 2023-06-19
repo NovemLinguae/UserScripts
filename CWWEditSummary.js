@@ -4,6 +4,8 @@
 
 // Particularly useful on testwiki. Mildly useful on enwiki.
 
+// See also User:Chlod/Scripts/Deputy/AttributionNoticeTemplateEditor
+
 $(async function() {
 	let action = mw.config.get('wgAction');
 	let title = mw.config.get('wgPageName').replace(/_/g, ' ');
