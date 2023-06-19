@@ -143,24 +143,24 @@ class CiteHighlighter {
 	getColors() {
 		if ( window.citeHighlighterLighterColors ) {
 			return {
-				'unreliableWord':	'#ffb347',
 				'preprint':			'#ffcfd5',
 				'doi':				'transparent',
 				'medrs': 			'#63ff70',
 				'green': 			'#a6ffb9',
 				'yellow': 			'#ffffcc',
+				'unreliableWord':	'#ffb347',
 				'red': 				'#ffcfd5',
 			};
 		} else {
 			return {
 				// order of these first 3 fixes an issue where published academic papers were being colored preprint red
 				// lowest priority
-				'unreliableWord':	'#ffb347', // orange for now, for easier testing. later will be red.
 				'preprint':			'lightcoral',
 				'doi':				'transparent',
 				'medrs': 			'limegreen',
 				'green': 			'lightgreen',
 				'yellow': 			'khaki',
+				'unreliableWord':	'#ffb347', // orange for now, for easier testing. later will be red.
 				'red': 				'lightcoral',
 				//'aggregator':	'plum',	// turning off aggregator for now, red/yellow/green is nice and simple, purple makes the color scheme more complicated
 				// highest priority
