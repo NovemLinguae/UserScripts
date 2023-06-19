@@ -130,6 +130,7 @@ innovative
 insights
 inspired by
 integrate
+invaluable
 leader in
 leading
 leading
@@ -190,6 +191,12 @@ world class
 world-class
 worldwide
 zero to hero
+renowed
+invaluable
+significant
+remarkable
+globally recognized
+critical acclaim
 
 	`;
 	
