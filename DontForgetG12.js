@@ -33,6 +33,26 @@ $(async function() {
 			</a>
 		`);
 	}
+
+	async function isReviewed(pageID) {
+		let api = new mw.Api();
+		let response = await api.get( {
+			action: 'pagetriagelist',
+			format: 'json',
+			page_id: pageID,
+		} );
+
+		// no result
+		if ( response.pagetriagelist.result !== 'success' || response.pagetriagelist.pages.length === 0 ) {
+			return true;
+		// 1, 2, or 3
+		} else if ( parseInt(response.pagetriagelist.pages[0].patrol_status) > 0 ) {
+			return true;
+		// 0
+		} else {
+			return false;
+		}
+	}
 	
 	// don't run when not viewing articles
 	let action = mw.config.get('wgAction');
@@ -58,9 +78,9 @@ $(async function() {
 		insertButton();
 	}
 	
-	mw.hook( 'ext.pageTriage.toolbar.ready' ).add( function () {
-		let pageIsNotCurated = $('[title="Mark this page as reviewed"]').length;
-		if ( pageIsNotCurated ) {
+	mw.hook( 'ext.pageTriage.toolbar.ready' ).add( async function () {
+		let pageID = mw.config.get( 'wgArticleId' );
+		if ( ! (await isReviewed( pageID )) ) {
 			insertButton();
 		}
 	});
