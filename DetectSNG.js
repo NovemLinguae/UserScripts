@@ -1080,11 +1080,11 @@ Swedish Academy of Sciences
 Nobel Prize, MacArthur Fellowship, Fields Medal, Bancroft Prize, Pulitzer Prize for History
 Guggenheim Fellowship, Linguapax Prize
 
-Institute of Electrical and Electronics Engineers, Geological Society of America, American Society for Neurochemistry
+Institute of Electrical and Electronics Engineers, Geological Society of America, American Society for Neurochemistry, National Academy of Sciences, Royal Society
 
 Fellow
 President, Chancellor, Provost
-Named Chair
+Named Chair, distinguished professor, president's professor, university professor, distinguished research professor, distinguished teaching professor, distinguished university professor, regents professor, Institute Professor, Sterling Professor
 
 chief editor, head editor, editor-in-chief
 
