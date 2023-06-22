@@ -41,14 +41,14 @@ class DetectSNG {
 		// Only run in mainspace and draftspace
 		let namespace = mw.config.get('wgNamespaceNumber');
 		let title = this.getArticleName();
-		if ( ! [0, 118].includes(namespace) && title !== 'User:Novem_Linguae/sandbox' ) {
+		if ( ! [0, 118].includes(namespace) && title !== 'User:Novem_Linguae/Scripts/DetectSNG/testcases' ) {
 			return;
 		}
 
 		// Only run on unpatrolled pages
 		let pageID = mw.config.get('wgArticleId');
 		let isReviewed = await this.isReviewed(pageID);
-		if ( isReviewed && title !== 'User:Novem_Linguae/sandbox' ) {
+		if ( isReviewed && title !== 'User:Novem_Linguae/Scripts/DetectSNG/testcases' ) {
 			return;
 		}
 		
