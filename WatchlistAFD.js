@@ -45,7 +45,7 @@ $(function() {
 	let isUserPage = ( [2, 3].includes(namespace) );
 	let isArticleOrDraft = ( [0, 1, 118, 119].includes(namespace) );
 	if ( isArticleOrDraft ) {
-		mw.util.addPortletLink (
+		mw.util.addPortletLink(
 			'p-cactions',
 			'#',
 			'Watchlist AFD',
@@ -53,13 +53,13 @@ $(function() {
 		);
 	}
 	if ( isUserPage ) {
-		mw.util.addPortletLink (
+		mw.util.addPortletLink(
 			'p-cactions',
 			'#',
 			'Watchlist RFA',
 			'WatchlistRFA'
 		);
-		mw.util.addPortletLink (
+		mw.util.addPortletLink(
 			'p-cactions',
 			'#',
 			'Watchlist SPI',
