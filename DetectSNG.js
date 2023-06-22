@@ -10,9 +10,6 @@
 	- Indian legislatures
 	- National supreme courts
 	- Literary awards (awards given to books)
-	- Professional soccer leagues
-	- Boxing titles
-	- Highest level cricket matches
 	- College football awards
 	- Highest gallantry awards (WP:ANYBIO stuff... Medal Of Honor, etc.)
 */
@@ -198,154 +195,42 @@ class DetectSNG {
 	
 // WP:NSPORT ***********************************
 
-Canadian Football League, National Football League, American Football League, All-America Football Conference, United States Football League
-Tier 1
-
-//https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Football/Fully_professional_leagues
-Albanian Superliga, Albanian First Division
-Algerian Ligue Professionnelle 1, Algerian Ligue Professionnelle 2
-Argentine Primera División, Primera B Nacional, Primera B Metropolitana
-A-League
-Austrian Football Bundesliga, Austrian Football Second League
-Azerbaijan Premier League
-Belarusian Premier League,
-Belgian First Division A, Belgian First Division B
-Bolivian Primera División
-Premier League of Bosnia and Herzegovina
-Campeonato Brasileiro Série A, Campeonato Brasileiro Série B, Campeonato Brasileiro Série C, Campeonato Paulista, Campeonato Mineiro, Campeonato Carioca, Campeonato Gaúcho, Campeonato Paraibano, Campeonato Pernambucano, Campeonato Paranaense
-First Professional Football League
-Canadian Premier League, Major League Soccer, USL Championship, USL League One, North American Soccer League
-Chilean Primera División
-Chinese Super League, China League One, China League Two
-Categoría Primera A
-Liga FPD
-Croatian First Football League
-Cypriot First Division
-Czech First League, Czech National Football League
-Danish Superliga
-Liga Dominicana de Fútbol
-Ecuadorian Serie A
-Egyptian Premier League
-Premier League, English Football League
-Veikkausliiga
-Ligue 1, Ligue 2
-Bundesliga, 2. Bundesliga, 3. Liga
-Ghana Premier League
-Super League Greece, Super League Greece 2, Gamma Ethniki
-Liga Nacional de Fútbol Profesional de Honduras
-Hong Kong Premier League, Hong Kong First Division League
-Nemzeti Bajnokság I
-Indian Super League, I-League
-Liga 1
-Persian Gulf Pro League
-Iraqi Premier League
-Israeli Premier League, Liga Leumit
-Serie A, Serie B, Serie C
-J1 League, J2 League, J3 League
-Jordanian Pro League
-Kazakhstan Premier League
-Malaysia Super League
-Liga MX, Ascenso MX 
-Moldovan National Division
-Botola
-Myanmar National League
-Eredivisie, Eerste Divisie
-A-League
-Nigerian Professional Football League
-Eliteserien
-Paraguayan Primera División, Paraguayan División Intermedia
-Peruvian Primera División, Peruvian Segunda División
-Philippine Premier League, Philippines Football League 
-Ekstraklasa, I liga
-Primeira Liga, LigaPro
-Qatar Stars League
-Liga I
-Russian Premier League, Russian Football National League
-Saudi Professional League
-Scottish Premiership, Scottish Championship
-Serbian SuperLiga, Serbian First League
-Singapore Premier League
-Slovak Super Liga
-Slovenian PrvaLiga
-South African Premier Division, National First Division
-K League 1, K League 2
-La Liga, Segunda División
-Allsvenskan
-Swiss Super League
-Syrian Premier League
-Thai League 1
-Tunisian Ligue Professionnelle 1
-Süper Lig
-Ukrainian Premier League, Ukrainian First League, Ukrainian Second League
-UAE Pro-League
-Major League Soccer, USL Championship, USL League One
-USSF Division 2 Professional League, USL First Division, North American Soccer League, North American Soccer League, American Soccer League, American Soccer League, Eastern Professional Soccer League, United Soccer League, National Professional Soccer League, United Soccer Association, American Professional Soccer League, A-League, 1995 USISL Professional League, 1996 USISL Professional League, 1996 USISL Select League
-Uruguayan Primera División, Uruguayan Segunda División
-Venezuelan Primera División, Venezuelan Segunda División
-V.League 1
-First League of Serbia and Montenegro
-Yugoslav First League
-
-Campeonato Brasileiro de Futebol Feminino Série A1
-FA Women's Super League
-Serie A
-WE League
-Primera División
-National Women's Soccer League
-Women's Professional Soccer, Women's United Soccer Association
-
-Olympics, IAAF World Championships in Athletics, IAAF World Indoor Championships in Athletics, IAAF World Cross Country Championships, IAAF World Half Marathon Championships
+// Athletics/track & field and long-distance running
 European Athletics Championships, Commonwealth Games, World Major Marathons
 Tokyo Marathon, Boston Marathon, London Marathon, Berlin Marathon, Chicago Marathon, New York Marathon
 IAAF Diamond League, IAAF Golden League, Asian Games, IAAF Gold Label Road Race
 IAAF World Junior Championships, Youth World Championships
 IAAF World Championships
 National Track and Field Hall of Fame, Road Runners Club of America Hall of Fame
+Olympic medalist, World Athletics Championships
+Irish American Athletic Club
+Universal Sports
 
-Australian Football League, AFL Women's
-Victorian Football League
+// Badminton
+BWF Grand Prix Gold and Grand Prix, BWF World Tour
 
-BWF World Championships
-Continental Championships, BWF Super Series, BWF World Tour, Commonwealth Games
-Canadian Open, German Open, Slovak International
-BWF Grand Prix Gold and Grand Prix
-
-National Baseball Hall of Fame and Museum, Japanese Baseball Hall of Fame
-Major League Baseball, Nippon Professional Baseball, KBO League
-World Baseball Classic, Baseball World Cup, Olympics
-All-American Girls Professional Baseball League, American Association (19th century), Cuban League, Federal League, Japanese Baseball League, National Association of Professional Base Ball Players, Negro Major Leagues, Players' League, Union Association
-
-American Basketball Association, Liga ACB, EuroLeague, National Basketball Association, National Basketball League (Australia), National Basketball League (United States), Lega Basket Serie A, Women's National Basketball Association, Greek Basket League, Israeli Basketball Premier League
+// Basketball
 NBA draft
 Continental Basketball Association, NBA G League
 
-International Boxing Federation, World Boxing Association, World Boxing Council, World Boxing Organization, NYSAC
-International Female Boxers Association, International Women's Boxing Federation, Women's International Boxing Association, Women's International Boxing Federation
+// Boxing
+International Boxing Federation, World Boxing Association, World Boxing Council, World Boxing Organization
 
-// https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Boxing/Title_Assessment
-African Boxing Union
-Asian Boxing Council
-Australian National Boxing Federation
-Boxing Union of Ireland
-British Boxing Board of Control
-Central American Boxing Federation
-Commonwealth Boxing Council
-European Boxing Union
-International Boxing Federation Pan Pacific
-National Sporting Club
-North American Boxing Association
-North American Boxing Federation
-North American Boxing Organization
-Oriental and Pacific Boxing Federation
-United States Boxing Association
-World Boxing Association EUROPE
-World Boxing Association FEDELATIN
-World Boxing Association Oceania
-World Boxing Council Silver
-World Boxing Organization European
-World Boxing Organization Inter-Continental
-World Boxing Organization Asia Pacific
-World Boxing Organization Oriental
+// Cricket
+
+// https://en.wikipedia.org/wiki/Test_cricket#Teams_with_Test_status
+Australia national cricket team
+England national cricket team
+South Africa national cricket team
+West Indies national cricket team
+New Zealand national cricket team
+India national cricket team
+Pakistan national cricket team
+Sri Lanka national cricket team
+Zimbabwe national cricket team
+Bangladesh national cricket team
+Ireland national cricket team
+Afghanistan national cricket team
 
 // https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Cricket/Official_cricket
 Sheffield Shield
@@ -395,6 +280,9 @@ World T20, Global Qualifier
 ICC Trophy, ICC World Cup Qualifier, Women's Cricket World Cup Qualifier, ICC World Twenty20 Qualifier, ICC Women's World Twenty20 Qualifier
 The Hundred (cricket)
 
+Elite Panel of ICC Umpires
+
+// Curling
 World Curling Tour, Grand Slam of Curling
 World Curling Championships, World Mixed Doubles Curling Championship
 World Junior Curling Championships, World Senior Curling Championships, European Curling Championships, World Mixed Curling Championship, Pacific-Asia Curling Championships
@@ -404,7 +292,26 @@ Canadian Mixed Curling Championship, Canadian Senior Curling Championship, Canad
 Continental Cup of Curling, Canadian Olympic Curling Trials, TSN Skins Game, Canada Cup of Curling
 Canadian Curling Hall of Fame, WCF Hall of Fame
 
+// Cycling
 UCI World Tour
+Grand Tour (cycling), Cycling monument
+UCI World Championships, UCI World Cup, UCI World Cups
+World University Cycling Championship
+UCI category, National road cycling championships
+UCI Women's Team
+UCI race classifications
+Parel van de Veluwe, People's Choice Classic
+
+// https://en.wikipedia.org/wiki/UCI_World_Cups
+UCI Road World Cup
+UCI Women's Road World Cup
+UCI Mountain Bike World Cup
+UCI Track Cycling World Cup
+UCI Cyclo-cross World Cup
+UCI BMX Supercross World Cup
+UCI Trials World Cup
+UCI Cycle-ball World Cup
+UCI Para-cycling Road World Cup
 
 // https://en.wikipedia.org/wiki/Grand_Tour_(cycling)
 Giro d'Italia, Tour de France, Vuelta a España
@@ -440,18 +347,90 @@ Tour of Thailand
 UCI Women's team
 UCI World Championships, UCI World Cup
 
+// Equestrian sport
 Pan American Games
 FEI World Equestrian Games
 Eventing World Championship, Show Jumping World Championships, or Dressage World Championship, Combined Driving World Championships, Endurance World Championships, World Vaulting Championships
 FEI World Cup
+United States Show Jumping Hall of Fame
+United States Equestrian Federation, Fédération Equestre Internationale
 
-World Figure Skating Championships
-World Junior Figure Skating Championships, European Figure Skating Championships, Four Continents Figure Skating Championships
-ISU Grand Prix of Figure Skating, Skate America, Skate Canada International, Internationaux de France, Cup of China, Rostelecom Cup, NHK Trophy, Bofrost Cup on Ice, Grand Prix of Helsinki
-Nebelhorn Trophy, the Karl Schäfer Memorial, Golden Spin of Zagreb
-World Figure Skating Hall of Fame
-U.S. Figure Skating Hall of Fame
+// Figure skating
+World Junior Figure Skating Championships
+World Figure Skating Hall of Fame, U.S. Figure Skating Hall of Fame
 
+// https://en.wikipedia.org/wiki/List_of_national_championships_in_figure_skating
+Australian Figure Skating Championships
+Austrian Figure Skating Championships
+Belarusian Figure Skating Championships
+Belgian Figure Skating Championships
+Bulgarian Figure Skating Championships
+Brazilian Figure Skating Championships
+British Figure Skating Championships
+Canadian Figure Skating Championships
+Canadian Synchronized Skating Championships
+Chinese Figure Skating Championships
+Chinese Taipei Figure Skating Championships
+Croatian Figure Skating Championships
+Czech Figure Skating Championships
+Czechoslovak Figure Skating Championships
+Danish Figure Skating Championships
+Dutch Figure Skating Championships
+East German Figure Skating Championships
+Estonian Figure Skating Championships
+Finnish Figure Skating Championships
+Finnish Synchronized Skating Championships
+French Figure Skating Championships
+German Figure Skating Championships
+Greek Figure Skating Championships
+Hong Kong Figure Skating Championships
+Hungarian Figure Skating Championships
+Icelandic Figure Skating Championships
+Indian Figure Skating Championships
+Indonesian Figure Skating Championships
+Irish Figure Skating Championships
+Israeli Figure Skating Championships
+Italian Figure Skating Championships
+Japan Figure Skating Championships
+Japan Junior Figure Skating Championships
+Kazakhstani Figure Skating Championships
+Latvian Figure Skating Championships
+Lithuanian Figure Skating Championships
+Macedonian Figure Skating Championships
+Malaysian Figure Skating Championships
+Mexican Figure Skating Championships
+Dutch Figure Skating Championships
+New Zealand Figure Skating Championships
+North Korean Figure Skating Championships
+Norwegian Figure Skating Championships
+Philippine Figure Skating Championships
+Polish Figure Skating Championships
+Puerto Rican Figure Skating Championships
+Romanian Figure Skating Championships
+Russian Figure Skating Championships
+Russian Junior Figure Skating Championships
+Serbian Figure Skating Championships
+Singaporean Figure Skating Championships
+Slovak Figure Skating Championships
+Slovenian Figure Skating Championships
+South African Figure Skating Championships
+South Korean Figure Skating Championships
+Soviet Figure Skating Championships
+Spanish Figure Skating Championships
+Swedish Figure Skating Championships
+Swiss Figure Skating Championships
+Chinese Taipei Figure Skating Championships
+Turkish Figure Skating Championships
+Thai Figure Skating Championships
+Ukrainian Figure Skating Championships
+United States Figure Skating Championships
+United States Junior Figure Skating Championships
+U.S. Synchronized Skating Championships
+United States Collegiate Figure Skating Championships
+United States Intercollegiate Figure Skating Championships
+Uzbekistani Figure Skating Championships
+
+// Golf
 Ryder Cup,  Presidents Cup, Solheim Cup
 World Golf Hall of Fame
 PGA Tour, LPGA Tour, European Tour, PGA Tour Champions
@@ -459,101 +438,89 @@ U.S. Amateur, British Amateur
 Men's major golf championships, Women's major golf championships, Senior major golf championships
 PGA Tour, LPGA Tour, European Tour, Champions Tour
 
-World Artistic Gymnastics Championships
+// Gymnastics
+Gymnastics World Championships
 International Gymnastics Hall of Fame
-Youth Olympic Games
+Youth Olympic Games, Junior World Gymnastics Championships
 Pan American Games, Asian Games, Commonwealth Games, European Championships, Pacific Rim Championships
 
+// https://en.wikipedia.org/wiki/Gymnastics_World_Championships#List_of_championships
+Artistic Gymnastics World Championships
+Rhythmic Gymnastics World Championships
+Trampoline Gymnastics World Championships
+Acrobatic Gymnastics World Championships
+Aerobic Gymnastics World Championships
+Parkour World Championships
+World Aesthetic Group Gymnastics Championships
+
+// Horse racing
+Graded stakes race
 Eclipse Award
-National Hockey League, Czech Extraliga, Liiga, Kontinental Hockey League, Swedish Hockey League, Soviet Championship League, Czechoslovak First Ice Hockey League, World Hockey Association
+
+// Ice hockey
 Mestis, Deutsche Eishockey Liga, Slovak Extraliga, HockeyAllsvenskan, National League (ice hockey), American Hockey League
-Eishockey Liga, Belarusian Extraleague, DEL2, GET-ligaen, ECHL, Elite Ice Hockey League, Ontario Hockey League, Quebec Major Junior Hockey League, Western Hockey League, Elite.A, Beneliga
-Atlantic Hockey, Big Ten Conference, ECAC Hockey, Hockey East, National Collegiate Hockey Conference, Western Collegiate Hockey Association
+Eishockey Liga, Belarusian Extraleague, DEL2, GET-ligaen, ECHL, Elite Ice Hockey League, Ontario Hockey League, Quebec Major Junior Hockey League, Western Hockey League, Elite.A, BeNe League (ice hockey)
+List of Division I AHCA All-American Teams, Atlantic Hockey, Big Ten Conference, Central Collegiate Hockey Association, ECAC Hockey, Hockey East, National Collegiate Hockey Conference, NCAA Division I independent schools (ice hockey)
 NHL Entry Draft
 
-K-1, WMC, ISKA, WAKO-Pro, Glory (kickboxing), It's Showtime, WKN, WBC Muaythai, PKA, WKA
-World Muaythai Council, International Sport Karate Association, World Association of Kickboxing Organizations, World Kickboxing Network, World Boxing Council Muaythai, Professional Karate Association, World Kickboxing Association
+// Kickboxing
 Lumpinee, Rajadamnern
 
-// https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Mixed_martial_arts/MMA_notability#Current_list_of_notable_MMA_organizations_and_promotions
-Bellator Fighting Championships
-Invicta Fighting Championships
-Shooto
-Ultimate Fighting Championship
-UFC
-Affliction Entertainment
-Dream (mixed martial arts)
-Fighting Network Rings
-Jewels (mixed martial arts)
-Pride Fighting Championships
-Strikeforce	X
-World Extreme Cagefighting
-World Victory Road
-
+// MMA
 Sherdog, Fight Matrix
 
-Trans-Am Series
-American Championship Car Racing, 24 Hours of Le Mans
-NASCAR Cup, Formula One, IndyCar, World Rally Championship, A1GP, IMSA
-World Rally Car, A1 Grand Prix, Championship Auto Racing Teams, International Motor Sports Association
+// Motorsports
+Formula One, MotoGP
+Indianapolis 500
+Superbike World Championship, Formula E, World Touring Car Championship
+LMP1, LM GTE, FIA World Endurance Championship, World Rally Championship
+GP2 Series, Moto2
+NASCAR Cup Series
+Le Mans 24 Hours, Bathurst 1000, Grande Épreuve
+British Touring Car Championship, Stock Car Brasil, Super GT
+Dakar Rally, Coupe des Alpes, Monte Carlo Rally, RAC Rally, World Rally Championship
+Macau Grand Prix, Gordon Bennett Cup
+Isle of Man TT, Targa Florio, Mille Miglia
+European Le Mans Series, Intercontinental GT Challenge, European Rally Championship
+FIA Platinum Categorisation, FIA Gold Categorisation
+IndyCar Series, German Touring Car Championship, Deutsche Tourenwagen Meisterschaft, V8 Supercars, Supercars Championship, Championship Auto Racing Teams, International Motor Sports Association
+land speed record
 
-World Orienteering Championships, European Orienteering Championship
-H21E, D21E, O-Ringen
-Junior World Orienteering Championships
-World Orienteering Championships
+// Orienteering
+World Orienteering Championships, European Orienteering Championship, Orienteering World Cup, World Games
 Tiomila, Jukola relay
+O-Ringen, Tiomila, Jukola relay, Junior World Orienteering Championships, World University Orienteering Championships, European Youth Orienteering Championships
 
-Calgary Stampede, Canadian Finals Rodeo, National Finals Rodeo, National Finals Rodeo (Australia)
-ProRodeo Hall of Fame, Canadian Pro Rodeo Hall of Fame, National Cowboy & Western Heritage Museum Rodeo Hall of Fame, National Cowgirl Museum and Hall of Fame, Bull Riding Hall of Fame
+// Rodeo
+ProRodeo Hall of Fame, Canadian Pro Rodeo Hall of Fame, National Cowboy & Western Heritage Museum, National Cowgirl Museum and Hall of Fame, Bull Riding Hall of Fame
 
-Rugby League World Cup, Rugby League Four Nations, Pacific Cup, Rugby League European Cup
-National Rugby League
-Super League
-Challenge Cup
-
-// https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Rugby_union/Notability_criteria
-Anglo-Welsh Cup
-European Rugby Champions Cup
-European Rugby Challenge Cup
-Super Rugby
-United Rugby Championship
-Australian Rugby Championship, National Rugby Championship
-English Premiership, RFU Championship
-Top 14, Pro D2
-Japan Rugby League One, Top League
-Bunnings NPC
-National Provincial Championship, Air New Zealand Cup, ITM Cup, Mitre 10 Cup
-Currie Cup
-national rugby union team
-
-Rugby World Cup Sevens, World Rugby Sevens Series, Commonwealth Games, Women's Rugby World Cup
-
+// Sumo
 Makuuchi, Juryo
 
+// Tennis
 International Tennis Hall of Fame
-Fed Cup
-Davis Cup
-Hopman Cup
-World Team Cup
-Grand slam (tennis)
-Australian Open
-French Open
-Wimbledon
-US Open
-ATP World Tour
-WTA Tour, WTA Premier, WTA International, WTA Tour Championship
-ATP Challenger
-ITF Women's Circuit, WTA 125K
+Grand Slam (tennis), Australian Open, French Open, Wimbledon, US Open
+ATP Tour, ATP Finals, ATP Tour Masters 1000, ATP Tour 500, ATP Tour 250
+WTA Tour, WTA 1000, WTA 500, WTA 250, WTA Finals
+ATP Challenger Tour
+ITF Women's World Tennis Tour, WTA 125 tournaments
 International Tennis Federation, Association of Tennis Professionals, Women's Tennis Association
-Grand Slam
-ITF Junior Circuit, Junior ITF
+Grand Slam (tennis)
 
+// https://en.wikipedia.org/wiki/ATP_Challenger_Tour#List_of_events
+// TODO: import the data from the above URL
+
+// Triathlon
 Commonwealth Games
-ITU World Triathlon Series, ITU Triathlon World Cup
-International Triathlon Union
-ITU Continental Championship
-Ironman World Championship, Ironman 70.3 World Championship
-XTERRA Triathlon championship
+World Triathlon Championship Series, World Triathlon Cup
+World Triathlon
+World Triathlon Continental Championship
+Ironman World Champiopnship, Ironman 70.3
+XTERRA Triathlon
+
+// College athletes
+NCAA Division I
+College Football Hall of Fame
 
 // https://en.wikipedia.org/wiki/Template:College_football_award_navbox
 AFCA Coach of the Year Award
@@ -653,12 +620,12 @@ Washington D.C. Touchdown Club
 William V. Campbell Trophy
 Wuerffel Trophy
 
-NCAA Division I
-College Football Hall of Fame
-
+// Gaelic games
 National Football League (Ireland)
+National Hurling League
 
-Olympics, Paralympic
+// Olympics
+Olympic, Olympics, Paralympic, Olympic Games, Summer Olympic Games, Winter Olympic Games, Paralympic Games
 
 // WP:POLITICIAN ===========================================================
 
