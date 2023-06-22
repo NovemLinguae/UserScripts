@@ -26,23 +26,34 @@ class DetectSNG {
 	async execute() {
 		// don't run when not viewing articles
 		let action = mw.config.get('wgAction');
-		if ( action != 'view' ) return;
+		if ( action !== 'view' ) {
+			return;
+		}
 		
 		// don't run when viewing diffs
 		let isDiff = mw.config.get('wgDiffNewId');
-		if ( isDiff ) return;
+		if ( isDiff ) {
+			return;
+		}
 		
 		let isDeletedPage = ( ! mw.config.get('wgCurRevisionId') );
-		if ( isDeletedPage ) return;
+		if ( isDeletedPage ) {
+			return;
+		}
 		
 		// Only run in mainspace and draftspace
 		let namespace = mw.config.get('wgNamespaceNumber');
 		let title = this.getArticleName();
-		if ( ! [0, 118].includes(namespace) && title != 'User:Novem_Linguae/sandbox' ) return;
+		if ( ! [0, 118].includes(namespace) && title !== 'User:Novem_Linguae/sandbox' ) {
+			return;
+		}
 
 		// Only run on unpatrolled pages
 		let pageID = mw.config.get('wgArticleId');
-		if ( await this.isReviewed(pageID) ) return;
+		let isReviewed = await this.isReviewed(pageID);
+		if ( isReviewed && title !== 'User:Novem_Linguae/sandbox' ) {
+			return;
+		}
 		
 		let wordString = this.getWordString();
 		
@@ -53,7 +64,7 @@ class DetectSNG {
 			.split("\n")
 			.map(v => v.trim())
 			.map(v => v.replace(/championships/i, 'championship'))
-			.filter(v => v != '')
+			.filter(v => v !== '')
 			.filter(v => ! v.startsWith('//'));
 		wordArray = this.eliminateDuplicates(wordArray);
 		
@@ -141,7 +152,7 @@ class DetectSNG {
 	
 	hasDiacritics(str) {
 		let str2 = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-		return str != str2;
+		return str !== str2;
 	}
 	
 	normalizeDiacritics(str) {
@@ -154,7 +165,7 @@ class DetectSNG {
 	
 	empty(arr) {
 		if ( arr === undefined ) return true;
-		if ( arr.length == 0 ) return true;
+		if ( arr.length === 0 ) return true;
 		return false;
 	}
 
