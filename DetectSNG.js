@@ -47,8 +47,10 @@ class DetectSNG {
 
 		// Only run on unpatrolled pages
 		let pageID = mw.config.get('wgArticleId');
+		let wikicode = await this.getWikicode(title);
 		let isReviewed = await this.isReviewed(pageID);
-		if ( isReviewed && title !== 'User:Novem_Linguae/Scripts/DetectSNG/testcases' ) {
+		let isAtAfd = wikicode.match(/\{\{Article for deletion\/dated/i);
+		if ( isReviewed && !isAtAfd && title !== 'User:Novem_Linguae/Scripts/DetectSNG/testcases' ) {
 			return;
 		}
 		
@@ -91,8 +93,6 @@ class DetectSNG {
 			'text': 'National Academy of Sciences',
 			'regex': '(?<!Proceedings of the )National Academy of Sciences'
 		});
-		
-		let wikicode = await this.getWikicode(title);
 		
 		// delete [[ ]], so that phrases with wikilink syntax in the middle don't mess up our search
 		wikicode = wikicode.replace(/\[\[/g, '')
