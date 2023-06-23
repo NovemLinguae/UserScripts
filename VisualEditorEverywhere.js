@@ -1,19 +1,32 @@
 // <nowiki>
 
-// TODO: fix the race condition. still present as of 08/31/22. got it when clicking from WT:NPPC to WP:NPPC. not consistently reproducible.
+// TODO: fix the race condition. still present as of 08/31/22. got it when clicking from WT:NPPC to WP:NPPC. not consistently reproducible. use mw.hook( 've.activationComplete' )? list of VE hooks: https://codesearch.wmcloud.org/deployed/?q=mw%5C.hook.*%5C.fire&files=&excludeFiles=&repos=mediawiki%2Fextensions%2FVisualEditor
 // TODO: add support for [edit] links in diffs
+// TODO: space after vedit is accidentally part of the hyperlink, causing an undesired underline
+// TODO: extra space before vedit. can delete the space and just rely on the bracket's padding-right
 
-// @ts-ignore
-if ( jQuery !== undefined && mediaWiki !== undefined ) {
+class VisualEditorEverywhere {
+	execute() {
+		this.articleName = mw.config.get('wgPageName');
+		this.articleName = encodeURIComponent(this.articleName); // fix bug involving & not getting converted to &amp;
+		let buttonIsPresent = $('#ca-ve-edit').length;
+		let pageIsUserScript = this.articleName.match(/(?:\.js|\.css)$/);
+		
+		if ( ! buttonIsPresent && ! pageIsUserScript ) {
+			this.insertVETab();
+			this.insertVESectionLink();
+		}
+	}
+
 	/** Insert Edit tab at top of page */
-	function insertVETab() {
+	insertVETab() {
 		let skin = mw.config.get('skin');
 		let htmlToInsert;
 		switch ( skin ) {
 			case 'timeless':
 				htmlToInsert =
 `<li id="ca-ve-edit" class="mw-list-item" style="display: inline-block">
-	<a href="/w/index.php?title=${articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
+	<a href="/w/index.php?title=${this.articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
 		<span>
 			VEdit
 		</span>
@@ -23,7 +36,7 @@ if ( jQuery !== undefined && mediaWiki !== undefined ) {
 			case 'vector-2022':
 				htmlToInsert =
 `<li id="ca-ve-edit" class="vector-tab-noicon mw-list-item">
-	<a href="/w/index.php?title=${articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
+	<a href="/w/index.php?title=${this.articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
 		VEdit
 	</a>
 </li>`;
@@ -31,14 +44,14 @@ if ( jQuery !== undefined && mediaWiki !== undefined ) {
 			case 'modern':
 				htmlToInsert =
 `<li id="ca-ve-edit" class="collapsible" style="display: block;">
-	<a href="/w/index.php?title=${articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
+	<a href="/w/index.php?title=${this.articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
 		VEdit
 	</a>
 </li>`;
 				break;
 			case 'minerva':
 				htmlToInsert =
-`<a id="ca-ve-edit" href="/w/index.php?title=${articleName}&amp;veaction=edit" class="edit-page menu__item--page-actions-edit mw-ui-icon mw-ui-icon-element mw-ui-icon-wikimedia-edit-base20 mw-ui-icon-with-label-desktop mw-ui-button mw-ui-quiet userlink" data-mw="interface" data-event-name="menu.edit" role="button" title="Edit this page [alt-shift-v]">
+`<a id="ca-ve-edit" href="/w/index.php?title=${this.articleName}&amp;veaction=edit" class="edit-page menu__item--page-actions-edit mw-ui-icon mw-ui-icon-element mw-ui-icon-wikimedia-edit-base20 mw-ui-icon-with-label-desktop mw-ui-button mw-ui-quiet userlink" data-mw="interface" data-event-name="menu.edit" role="button" title="Edit this page [alt-shift-v]">
 	VEdit
 </a>`;
 				break;
@@ -47,7 +60,7 @@ if ( jQuery !== undefined && mediaWiki !== undefined ) {
 			default:
 				htmlToInsert =
 `<li id="ca-ve-edit" class="collapsible">
-	<a href="/w/index.php?title=${articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
+	<a href="/w/index.php?title=${this.articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
 		VEdit
 	</a>
 </li>`;
@@ -59,7 +72,7 @@ if ( jQuery !== undefined && mediaWiki !== undefined ) {
 	}
 
 	/** Insert [ vedit ] by each section */
-	function insertVESectionLink() {
+	insertVESectionLink() {
 		// Foreach edit button
 		$('.mw-editsection').each(function() {
 			// Generate visual editor section link for this element
@@ -102,7 +115,7 @@ if ( jQuery !== undefined && mediaWiki !== undefined ) {
 			$(this).find('.mw-editsection-visualeditor').attr('href', veEditHref);
 		});
 
-		showVEEditLink();
+		this.showVEEditLink();
 		
 		// Doesn't work :(
 		// Good test case is https://en.wikipedia.org/wiki/User_talk:Onel5969?useskin=minerva. Ctrl-F5. 25-50% of the time it will not show the vedit section links.
@@ -116,19 +129,14 @@ if ( jQuery !== undefined && mediaWiki !== undefined ) {
 		*/
 	}
 
-	function showVEEditLink() {
+	showVEEditLink() {
 		$('.mw-editsection-visualeditor, .mw-editsection-divider').show();
-	}
-
-	let articleName = mw.config.get('wgPageName');
-	articleName = encodeURIComponent(articleName); // fix bug involving & not getting converted to &amp;
-	let buttonIsPresent = $('#ca-ve-edit').length;
-	let pageIsUserScript = articleName.match(/(?:\.js|\.css)$/);
-	
-	if ( ! buttonIsPresent && ! pageIsUserScript ) {
-		insertVETab();
-		insertVESectionLink();
 	}
 }
 
-//</nowiki>
+$(function() {
+	let vee = new VisualEditorEverywhere();
+	vee.execute();
+});
+
+// </nowiki>
