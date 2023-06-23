@@ -1,10 +1,10 @@
-//<nowiki>
+// <nowiki>
 
 // TODO: fix the race condition. still present as of 08/31/22. got it when clicking from WT:NPPC to WP:NPPC. not consistently reproducible.
 // TODO: add support for [edit] links in diffs
 
 // @ts-ignore
-if( jQuery !== undefined && mediaWiki !== undefined ) {
+if ( jQuery !== undefined && mediaWiki !== undefined ) {
 	/** Insert Edit tab at top of page */
 	function insertVETab() {
 		let skin = mw.config.get('skin');
