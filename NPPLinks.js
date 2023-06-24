@@ -167,7 +167,7 @@ $(function() {
 		}
 
 		_setURLVariables() {
-			this.copyvioURL = `https://tools.wmflabs.org/copyvios/?lang=en&project=wikipedia&title=${this.underscores}`;
+			this.copyvioURL = `https://copyvios.toolforge.org/?lang=en&project=wikipedia&title=${this.underscores}`;
 			this.webSearchURL = `https://www.google.com/search?q=${this.quotedNoUnderscores}+-wikipedia.org`;
 			this.bookSearchURL = `https://www.google.com/search?q=${this.quotedNoUnderscores}&tbm=bks`;
 			this.newsSearchURL = `https://www.google.com/search?q=${this.quotedNoUnderscores}&tbm=nws`;

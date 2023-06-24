@@ -28,7 +28,7 @@ $(async function() {
 	
 	function insertButton() {
 		$('#contentSub').before(`
-			<a style="display: inline-block; color: black; margin-top: 0.5em; border: 2px solid black; padding: 0.25em 3em; background-color: #FFDC00; font-size: 1.5em;" href="https://tools.wmflabs.org/copyvios/?lang=en&project=wikipedia&title=` + encodeURIComponent(title) + `" target="_blank">
+			<a style="display: inline-block; color: black; margin-top: 0.5em; border: 2px solid black; padding: 0.25em 3em; background-color: #FFDC00; font-size: 1.5em;" href="https://copyvios.toolforge.org/?lang=en&project=wikipedia&title=` + encodeURIComponent(title) + `" target="_blank">
 				Copyvio check
 			</a>
 		`);
