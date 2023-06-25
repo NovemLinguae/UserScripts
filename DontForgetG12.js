@@ -71,6 +71,12 @@ $(async function() {
 	
 	let title = getArticleName();
 	let wikicode = await getWikicode(title);
+
+	// Don't run on redirect pages
+	let isRedirect = wikicode.match(/^#REDIRECT \[\[/i);
+	if ( isRedirect ) {
+		return;
+	}
 	
 	// Only run if 1) article is uncurated or 2) draft is submitted
 	let draftIsSubmitted = wikicode.match(/(?:{{AfC submission}}|{{AfC submission\|}}|{{AfC submission\|\|)/i) && namespace === 118;
