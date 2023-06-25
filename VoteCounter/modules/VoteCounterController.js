@@ -239,6 +239,9 @@ export class VoteCounterController {
 			'historical', // mark historical
 			// TFD
 			'rename',
+			// ITN
+			'pull',
+			'wait',
 		];
 	}
 
