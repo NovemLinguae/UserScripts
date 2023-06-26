@@ -232,54 +232,6 @@ Bangladesh national cricket team
 Ireland national cricket team
 Afghanistan national cricket team
 
-// https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Cricket/Official_cricket
-Sheffield Shield
-County Championship
-Bob Willis Trophy
-Irani Cup
-Plunket Shield
-Pentangular Trophy
-Quaid-e-Azam Trophy
-Sunfoil Series
-Regional Four Day Competition
-Marsh One-Day Cup
-Friends Provident Trophy
-Pro40
-Benson & Hedges Cup
-ECB 40
-Royal London One-Day Cup
-Deodhar Trophy
-Ford Trophy
-Quaid-e-Azam One Day Cup
-Pakistan Cup
-Momentum One Day Cup
-Regional Super50
-Afghanistan Premier League
-KFC Twenty20 Big Bash
-Big Bash League
-Bangladesh Premier League
-T20 Blast
-Indian Cricket League
-Indian Premier League
-Super Smash
-Super 8 Twenty20 Cup
-Pakistan Super League
-National T20 Cup
-CSA T20 Challenge
-Mzansi Super League
-Sri Lanka Premier League
-Lanka Premier League
-Masters Champions League
-Abu Dhabi T20 Trophy
-Stanford 20/20
-Caribbean Twenty20
-Caribbean Premier League
-Champions League Twenty20
-Twenty20 International
-World T20, Global Qualifier
-ICC Trophy, ICC World Cup Qualifier, Women's Cricket World Cup Qualifier, ICC World Twenty20 Qualifier, ICC Women's World Twenty20 Qualifier
-The Hundred (cricket)
-
 Elite Panel of ICC Umpires
 
 // Curling
