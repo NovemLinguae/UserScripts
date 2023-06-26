@@ -172,7 +172,7 @@ $(function() {
 			this.bookSearchURL = `https://www.google.com/search?q=${this.quotedNoUnderscores}&tbm=bks`;
 			this.newsSearchURL = `https://www.google.com/search?q=${this.quotedNoUnderscores}&tbm=nws`;
 			this.newsInTitleSearchURL = `https://www.google.com/search?q=intitle:${this.quotedNoUnderscores}&tbm=nws`;
-			this.oldNewsSearchURL = `https://www.google.com/search?q=${this.quotedNoUnderscores}%20site:news.google.com/newspapers`;
+			this.oldNewsSearchURL = `https://www.google.com/search?tbm=bks&tbs=bkt:s&source=newspapers&q=${this.quotedNoUnderscores}`;
 			this.journalSearchURL = `https://scholar.google.com/scholar?q=${this.quotedNoUnderscores}`;
 			this.profileSearchURL = `https://www.google.com/search?q=${this.noUnderscoresNoParentheses}%20%22h-index%22`;
 			this.cseSearchURL = `https://cse.google.com/cse?cx=007734830908295939403:galkqgoksq0&q=${this.quotedNoUnderscores}`;
