@@ -132,7 +132,7 @@ $(function() {
 					<li><a href="${this.bookSearchURL}" ${this.sameTab}>WP:BEFORE books</a></li>
 					<li><a href="${this.journalSearchURL}" ${this.sameTab}>WP:BEFORE scholar</a></li>
 					${this.messages}
-					<li><a href="${this.profileSearchURL}" ${this.sameTab}>h-index</a></li>
+					<li><a href="${this.profileSearchURL}" ${this.sameTab}>Professor h-index</a></li>
 					<li><a href="${this.cseSearchURL}" ${this.sameTab}>Reliable sources search</a></li>
 					<li><a href="${this.newsInTitleSearchURL}" ${this.sameTab}>News (name in title)</a></li>
 					<li><a href="${this.wikidataSearchURL}" ${this.sameTab}>Wikidata</a></li>
