@@ -215,7 +215,7 @@ $(function() {
 			let action = mw.config.get('wgAction');
 			let desiredNamespace = [0, 118].includes(this.namespace);
 			this.lessLinks = false;
-			if ( action != 'view' || ! desiredNamespace ) {
+			if ( action !== 'view' || ! desiredNamespace ) {
 				this.lessLinks = true;
 			}
 			let isAFD = this.pageName.startsWith('Wikipedia:Articles_for_deletion/');
@@ -249,7 +249,7 @@ $(function() {
 			
 			// The order of all of these is important, because of RegEx patterns.
 			
-			if ( ! keepNamespace && wgNamespaceNumber != 0 ) output = output.replace(/^.+?:/, '');
+			if ( ! keepNamespace && wgNamespaceNumber !== 0 ) output = output.replace(/^.+?:/, '');
 			
 			if ( ! keepDisambiguator ) {
 				let matches = output.match(/^(.*)_\((.+?)\)$/);
