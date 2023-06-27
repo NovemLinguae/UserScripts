@@ -16,6 +16,7 @@ $(function() {
 			this._insertHTML();
 		}
 
+		// TODO: convert to mw.util.addPortlet() once https://phabricator.wikimedia.org/T303488 is completed
 		_insertHTML() {
 			let menuTitle = 'New page patrol';
 			let html = '';
@@ -132,7 +133,8 @@ $(function() {
 					<li><a href="${this.bookSearchURL}" ${this.sameTab}>WP:BEFORE books</a></li>
 					<li><a href="${this.journalSearchURL}" ${this.sameTab}>WP:BEFORE scholar</a></li>
 					${this.messages}
-					<li><a href="${this.profileSearchURL}" ${this.sameTab}>Professor h-index</a></li>
+					<li><a href="${this.profileSearchURL}" ${this.sameTab}>Professor (Google)</a></li>
+					<li><a href="${this.profileSearchURL2}" ${this.sameTab}>Professor (Scopus)</a></li>
 					<li><a href="${this.cseSearchURL}" ${this.sameTab}>Reliable sources search</a></li>
 					<li><a href="${this.newsInTitleSearchURL}" ${this.sameTab}>News (name in title)</a></li>
 					<li><a href="${this.wikidataSearchURL}" ${this.sameTab}>Wikidata</a></li>
@@ -175,6 +177,7 @@ $(function() {
 			this.oldNewsSearchURL = `https://www.google.com/search?tbm=bks&tbs=bkt:s&source=newspapers&q=${this.quotedNoUnderscores}`;
 			this.journalSearchURL = `https://scholar.google.com/scholar?q=${this.quotedNoUnderscores}`;
 			this.profileSearchURL = `https://www.google.com/search?q=${this.noUnderscoresNoParentheses}%20%22h-index%22`;
+			this.profileSearchURL2 = `https://www.scopus.com/results/authorNamesList.uri?st1=${this.lastName}&st2=${this.firstName}`;
 			this.cseSearchURL = `https://cse.google.com/cse?cx=007734830908295939403:galkqgoksq0&q=${this.quotedNoUnderscores}`;
 			this.wikipediaDuplicateCheckURL = `https://en.wikipedia.org/w/index.php?search=${this.noUnderscores}&title=Special:Search&profile=advanced&fulltext=1&advancedSearch-current=%7B%7D&ns0=1`;
 			this.wikidataSearchURL = `https://www.wikidata.org/w/index.php?search=${this.quotedNoParentheses}&title=Special%3ASearch&go=Go&ns0=1&ns120=1`;
@@ -234,21 +237,28 @@ $(function() {
 		}
 	
 		/** pageName has namespace, undescores, no quotes, parentheses */
-		_buildURIComponent(wgPageName, wgNamespaceNumber, namespace, underscores, quotes, parentheses) {
+		_buildURIComponent(
+			wgPageName,
+			wgNamespaceNumber,
+			keepNamespace,
+			keepUnderscores,
+			wrapInDoubleQuotes,
+			keepDisambiguator
+		) {
 			let output = wgPageName;
 			
 			// The order of all of these is important, because of RegEx patterns.
 			
-			if ( ! namespace && wgNamespaceNumber != 0 ) output = output.replace(/^.+?:/, '');
+			if ( ! keepNamespace && wgNamespaceNumber != 0 ) output = output.replace(/^.+?:/, '');
 			
-			if ( ! parentheses ) {
+			if ( ! keepDisambiguator ) {
 				let matches = output.match(/^(.*)_\((.+?)\)$/);
 				if ( typeof matches !== 'undefined' && matches && matches[1] ) {
 					output = matches[1];
 				}
 			}
 			
-			if ( quotes ) {
+			if ( wrapInDoubleQuotes ) {
 				// If there's parentheses on the right, put the parentheses on the outside of the quotes, and remove the ( ) characters, but not their inner text
 				let matches = output.match(/^(.*)_\((.+?)\)$/);
 				// if parentheses on the right
@@ -259,7 +269,9 @@ $(function() {
 				}
 			}
 			
-			if ( ! underscores ) output = output.replace(/_/g, ' ');
+			if ( ! keepUnderscores ) {
+				output = output.replace(/_/g, ' ');
+			}
 			
 			output = encodeURIComponent(output);
 			return output;
@@ -267,21 +279,61 @@ $(function() {
 
 		_setURIVariables(pageName, namespace) {
 			// Draft:Andrew_Hill_(pharmacologist)
-			this.underscores = 						this._buildURIComponent(pageName, namespace, true, true, false, true);
+			this.underscores = this._buildURIComponent(pageName, namespace, true, true, false, true);
 			// Andrew_Hill_(pharmacologist)
-			this.pageNameNoNamespace = 				this._buildURIComponent(pageName, namespace, false, true, false, true);
+			this.pageNameNoNamespace = this._buildURIComponent(pageName, namespace, false, true, false, true);
 			// "Andrew_Hill"_pharmacologist
-			this.quotedName = 						this._buildURIComponent(pageName, namespace, false, true, true, true);
+			this.quotedName = this._buildURIComponent(pageName, namespace, false, true, true, true);
 			// "Andrew_Hill"
-			this.quotedNoParentheses = 				this._buildURIComponent(pageName, namespace, false, true, true, false);
+			this.quotedNoParentheses = this._buildURIComponent(pageName, namespace, false, true, true, false);
 			// "Andrew Hill" pharmacologist
-			this.quotedNoUnderscores = 				this._buildURIComponent(pageName, namespace, false, false, true, true);
+			this.quotedNoUnderscores = this._buildURIComponent(pageName, namespace, false, false, true, true);
 			// Andrew Hill (pharmacologist)
-			this.noUnderscores = 					this._buildURIComponent(pageName, namespace, false, false, false, true);
+			this.noUnderscores = this._buildURIComponent(pageName, namespace, false, false, false, true);
 			// "Andrew Hill"
 			this.quotedNoUnderscoresNoParentheses = this._buildURIComponent(pageName, namespace, false, false, true, false);
 			// Andrew Hill
-			this.noUnderscoresNoParentheses = 		this._buildURIComponent(pageName, namespace, false, false, false, false);
+			this.noUnderscoresNoParentheses = this._buildURIComponent(pageName, namespace, false, false, false, false);
+			// Andrew
+			this.firstName = this._getFirstName(pageName);
+			// Hill
+			this.lastName = this._getLastName(pageName);
+		}
+
+		_getLastName(pageName) {
+			// TODO: this can probably be refactored to use this._buildURIComponent() to delete the underscores and disambiguators, then do the regex
+
+			// underscores to spaces
+			pageName = pageName.replace('_', ' ');
+
+			// delete disambiguators, e.g. Andrew Hill (pharmacologist) -> Andrew Hill
+			pageName = pageName.replace(/ \([^\)]+\)$/, '');
+
+			// RegEx test cases: https://regex101.com/r/PcmHrN/1
+			let match = pageName.match(/\s?(\S+)$/);
+			if ( match && match[1] ) {
+				// spaces, not underscores
+				return encodeURIComponent(match[1]);
+			}
+			return '';
+		}
+
+		_getFirstName(pageName) {
+			// TODO: this can probably be refactored to use this._buildURIComponent() to delete the underscores and disambiguators, then do the regex
+
+			// underscores to spaces
+			pageName = pageName.replace('_', ' ');
+
+			// delete disambiguators, e.g. Andrew Hill (pharmacologist) -> Andrew Hill
+			pageName = pageName.replace(/ \([^\)]+\)$/, '');
+
+			// RegEx test cases: https://regex101.com/r/imLZ0j/1
+			let match = pageName.match(/^(.*)\s\S+$/);
+			if ( match && match[1] ) {
+				// spaces, not underscores
+				return encodeURIComponent(match[1]);
+			}
+			return '';
 		}
 	}
 
