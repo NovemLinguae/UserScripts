@@ -114,8 +114,11 @@ class VisualEditorEverywhere {
 }
 
 $(function() {
+	// TODO: this should in theory fix the race condition bug. instead, it breaks the whole script (displays nothing). why? debug.
+	// mw.hook( 've.activationComplete' ).add( function() {
 	let vee = new VisualEditorEverywhere();
 	vee.execute();
+	// } );
 });
 
 // </nowiki>
