@@ -119,26 +119,30 @@ class UserHighlighterSimple {
 	}
 
 	isHTTPorHTTPS(url) {
-		return url.lastIndexOf("http://", 0) === 0 ||
-			url.lastIndexOf("https://", 0) === 0 ||
-			url.lastIndexOf("/", 0) === 0;
+		return url.startsWith("http://", 0) ||
+			url.startsWith("https://", 0) ||
+			url.startsWith("/", 0);
 	}
 
 	/**
 	  * Figure out the wikipedia article title of the link
+	  * @param {string} url
+	  * @param {mw.Uri} uri
+	  * @return {String}
 	  */
 	getTitle(url, uri) {
 		// for links in the format /w/index.php?title=Blah
 		let titleParameterOfURL = mw.util.getParamValue('title', url);
-
-		// for links in the format /wiki/PageName. Slice off the /wiki/ (first 6 characters)
-		let URI = decodeURIComponent(uri.path.slice(6));
-
 		if ( titleParameterOfURL ) {
 			return titleParameterOfURL;
-		} else {
-			return URI;
 		}
+
+		// for links in the format /wiki/PageName. Slice off the /wiki/ (first 6 characters)
+		if ( uri.path.startsWith('/wiki/') ) {
+			return decodeURIComponent(uri.path.slice(6));
+		}
+
+		return '';
 	}
 
 	notInSpecialUserOrUserTalkNamespace() {
@@ -157,10 +161,10 @@ class UserHighlighterSimple {
 		url = this.addDomainIfMissing(url);
 
 		// mw.Uri(url) throws an error if it can't find a URI. So need to detect it ourselves before that code is reached.
+		// TODO: grok and review this code. what's a URI exactly? Google suggests it has multiple definitions... is that the correct term here? what are examples of URLs that cause mw.Uri to freak out? can we fix these instead of returning false?
 		if ( this.hasNoURI(url) ) {
 			return false;
 		}
-
 		var uri = new mw.Uri(url);
 		
 		// Skip links with query strings
@@ -168,18 +172,22 @@ class UserHighlighterSimple {
 		// Those all have "query strings" such as "&oldid=1003511328"
 		// Exception: Users without a user page (red link) need to be highlighted
 		// Exception: The uncommon case of a missing user talk page should also be highlighted (renamed users)
-		let isRedLinkUserPage = url.includes('/w/index.php?title=User') && url.endsWith('&action=edit&redlink=1');
+		let isRedLinkUserPage = url.includes('/w/index.php?title=User') && url.includes('&action=edit');
 		if ( ! $.isEmptyObject(uri.query) && ! isRedLinkUserPage ) {
 			return false;
 		}
 		
+		/*
+		Going to try commenting this out. This should allow usernames from other wikis to be highlighted.
+		Possible collateral damage: may try to highlight links from outside of Wikimedia.
 		// TODO: when I figure it out, need to document what edge case this fixes
-		let server = mw.config.get('wgServer'); // e.g. //en.wikipedia.org
-		server = server.slice(2); // e.g. en.wikipedia.org (removes // at the beginning of it)
-		let host = uri.host; // e.g. en.wikipedia.org
+		let server = mw.config.get('wgServer'); // //en.wikipedia.org
+		server = server.slice(2); // en.wikipedia.org
+		let host = uri.host; // en.wikipedia.org
 		if ( host !== server ) {
 			return false;
 		}
+		*/
 
 		let title = this.getTitle(url, uri);
 		this.mwtitle = new mw.Title(title);
@@ -271,6 +279,8 @@ class UserHighlighterSimple {
 	}
 }
 
+// TODO: race condition with xtools gadget. sometimes it fails to highlight the xtools gadget's username link
+// TODO: hook for after visual editor edit is saved?
 mw.hook('wikipage.content').add(async function() {
 	await mw.loader.using(['mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title'], async function() {
 		let uhs = new UserHighlighterSimple();
