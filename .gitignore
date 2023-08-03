@@ -1,9 +1,7 @@
 /*.docx
 /=*.*
+/=*/
 .vscode
-= drafts
-= other people's examples
-= template
 AddInfobox.js
 cookie.txt
 coverage
