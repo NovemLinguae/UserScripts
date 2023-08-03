@@ -181,6 +181,10 @@ class NPPSG {
 		// GameSpot is red at WP film, green at WP video games. average it out to yellow
 		this.deleteAll('GameSpot', 'gamespot.com');
 		this.sources.yellow.push('GameSpot', 'gamespot.com');
+
+		// Kirkus is green at RSP, Kirkus Indie is red at NPPSG. Average it out to yellow.
+		this.deleteAll('kirkusreviews.com');
+		this.sources.yellow.push('kirkusreviews.com');
 	}
 	
 	/** CAREFUL. String is case sensitive. */
