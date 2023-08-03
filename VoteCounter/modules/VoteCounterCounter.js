@@ -84,6 +84,7 @@ export class VoteCounterCounter {
 		// remove == == from headings
 		lineOfWikicode = lineOfWikicode.replace(/^=+\s*/, '');
 		lineOfWikicode = lineOfWikicode.replace(/\s*=+\s*$/, '');
+
 		// handle piped wikilinks, e.g. [[User:abc|abc]]
 		lineOfWikicode = lineOfWikicode.replace(/\[\[[^\[\|]+\|([^\[\|]+)\]\]/gi, '$1');
 		// remove wikilinks
@@ -91,13 +92,17 @@ export class VoteCounterCounter {
 		lineOfWikicode = lineOfWikicode.replace(/\]\]/g, '');
 		// remove bold and italic
 		lineOfWikicode = lineOfWikicode.replace(/'{2,5}/g, '');
-		// convert spaces to _
-		lineOfWikicode = lineOfWikicode.replace(/ /g, '_');
 		// handle {{t}} and {{tlx}}
 		lineOfWikicode = lineOfWikicode.replace(/\{\{t\|/gi, '{{');
 		lineOfWikicode = lineOfWikicode.replace(/\{\{tlx\|/gi, '{{');
 		// handle {{u}}
 		lineOfWikicode = lineOfWikicode.replace(/\{\{u\|([^\}]+)\}\}/gi, '$1');
+		// convert multiple spaces to one space
+		lineOfWikicode = lineOfWikicode.replace(/ {2,}/gi, ' ');
+
+		// convert spaces to _
+		lineOfWikicode = lineOfWikicode.replace(/ /g, '_');
+
 		return lineOfWikicode;
 	}
 

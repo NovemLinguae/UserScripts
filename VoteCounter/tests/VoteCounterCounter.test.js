@@ -73,4 +73,10 @@ describe('_convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)', () => {
 		let output = 'Requesting_lift_of_Topic_Ban_on_Sports_Articles_from_NicholasHui';
 		expect(vcc._convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)).toEqual(output);
 	});
+
+	it(`Should convert multiple spaces to one space`, () => {
+		let lineOfWikicode = `====Proposal A:  IBAN Between [[User:BrownHairedGirl]] and [[User:Laurel Lodged]]==== `;
+		let output = 'Proposal_A:_IBAN_Between_User:BrownHairedGirl_and_User:Laurel_Lodged';
+		expect(vcc._convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)).toEqual(output);
+	});
 });
