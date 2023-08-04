@@ -1,29 +1,60 @@
 // <nowiki>
 
 class UserHighlighterSimple {
+	// data
+	/** @type {Object} */
+	wmf;
+	/** @type {Object} */
+	stewards;
+	/** @type {Object} */
+	arbcom;
+	/** @type {Object} */
+	bureaucrats;
+	/** @type {Object} */
+	admins;
+	/** @type {Object} */
+	formeradmins;
+	/** @type {Object} */
+	newPageReviewers;
+	/** @type {Object} */
+	tenThousandEdits;
+	/** @type {Object} */
+	extendedConfirmed;
+
+	// other variables
+	/** @type {JQuery} */
 	$link;
+	/** @type {string} */
 	user;
+	/** @type {mw.Title} */
+	titleHelper;
+	/** @type {boolean} */
+	hasAdvancedPermissions;
+	/** @type {Object} */
+	$;
+
+	/**
+	 * @param {Object} $ jquery
+	 */
+	constructor($) {
+		this.$ = $;
+	}
 
 	async execute() {
 		await this.getUsernames();
 		this.setHighlightColors();
 		let that = this;
-		$('#article a, #bodyContent a, #mw_contentholder a').each(function(index, element) {
-			// TODO: maybe remove this try catch. it displays that.$link.prop('href') to the console which is nice, but it hides the stack trace so I can't see what line the error occurred on
-			try {
-				that.$link = $(element);
-				if ( ! that.linksToAUser() ) {
-					return;
-				}
-				that.user = that.getUserName();
-				that.hasAdvancedPermissions = false;
-				that.addClassesAndHoverTextToLinkIfNeeded();
-				// If the user has any advanced perms, they are likely to have a signature, so be aggressive about overriding the background and foreground color. That way there's no risk their signature is unreadable due to background color and foreground color being too similar. Don't do this for users without advanced perms... being able to see a redlinked username is useful.
-				if ( that.hasAdvancedPermissions ) {
-					that.$link.addClass(that.$link.attr('class') + ' UHS-override-signature-colors');
-				}
-			} catch (e) {
-				console.error('UserHighlighterSimple link parsing error:', e.message, that.$link.prop('href'));
+		this.$('#article a, #bodyContent a, #mw_contentholder a').each(function(index, element) {
+			that.$link = that.$(element);
+			if ( ! that.linksToAUser() ) {
+				return;
+			}
+			that.user = that.getUserName();
+			that.hasAdvancedPermissions = false;
+			that.addClassesAndHoverTextToLinkIfNeeded();
+			// If the user has any advanced perms, they are likely to have a signature, so be aggressive about overriding the background and foreground color. That way there's no risk their signature is unreadable due to background color and foreground color being too similar. Don't do this for users without advanced perms... being able to see a redlinked username is useful.
+			if ( that.hasAdvancedPermissions ) {
+				that.$link.addClass(that.$link.attr('class') + ' UHS-override-signature-colors');
 			}
 		});
 	}
@@ -127,10 +158,10 @@ class UserHighlighterSimple {
 	/**
 	  * Figure out the wikipedia article title of the link
 	  * @param {string} url
-	  * @param {mw.Uri} uri
+	  * @param {mw.Uri} urlHelper
 	  * @return {String}
 	  */
-	getTitle(url, uri) {
+	getTitle(url, urlHelper) {
 		// for links in the format /w/index.php?title=Blah
 		let titleParameterOfURL = mw.util.getParamValue('title', url);
 		if ( titleParameterOfURL ) {
@@ -138,16 +169,16 @@ class UserHighlighterSimple {
 		}
 
 		// for links in the format /wiki/PageName. Slice off the /wiki/ (first 6 characters)
-		if ( uri.path.startsWith('/wiki/') ) {
-			return decodeURIComponent(uri.path.slice(6));
+		if ( urlHelper.path.startsWith('/wiki/') ) {
+			return decodeURIComponent(urlHelper.path.slice(6));
 		}
 
 		return '';
 	}
 
 	notInSpecialUserOrUserTalkNamespace() {
-		let namespace = this.mwtitle.getNamespaceId();
-		let notInSpecialUserOrUserTalkNamespace = $.inArray(namespace, [-1, 2, 3]) === -1;
+		let namespace = this.titleHelper.getNamespaceId();
+		let notInSpecialUserOrUserTalkNamespace = this.$.inArray(namespace, [-1, 2, 3]) === -1;
 		return notInSpecialUserOrUserTalkNamespace;
 	}
 
@@ -160,55 +191,38 @@ class UserHighlighterSimple {
 
 		url = this.addDomainIfMissing(url);
 
-		// mw.Uri(url) throws an error if it can't find a URI. So need to detect it ourselves before that code is reached.
-		// TODO: grok and review this code. what's a URI exactly? Google suggests it has multiple definitions... is that the correct term here? what are examples of URLs that cause mw.Uri to freak out? can we fix these instead of returning false?
-		if ( this.hasNoURI(url) ) {
-			return false;
-		}
-		var uri = new mw.Uri(url);
-		
-		// Skip links with query strings
-		// Example: The pagination links, diff links, and revision links on the Special:Contributions page
-		// Those all have "query strings" such as "&oldid=1003511328"
-		// Exception: Users without a user page (red link) need to be highlighted
-		// Exception: The uncommon case of a missing user talk page should also be highlighted (renamed users)
-		let isRedLinkUserPage = url.includes('/w/index.php?title=User') && url.includes('&action=edit');
-		if ( ! $.isEmptyObject(uri.query) && ! isRedLinkUserPage ) {
+		// mw.Uri(url) throws an error if it doesn't like the URL. An example of a URL it doesn't like is https://meta.wikimedia.org/wiki/Community_Wishlist_Survey_2022/Larger_suggestions#1%, which has a section link to a section titled 1% (one percent).
+		var urlHelper;
+		try {
+			urlHelper = new mw.Uri(url);
+		} catch {
 			return false;
 		}
 		
-		/*
-		Going to try commenting this out. This should allow usernames from other wikis to be highlighted.
-		Possible collateral damage: may try to highlight links from outside of Wikimedia.
-		// TODO: when I figure it out, need to document what edge case this fixes
-		let server = mw.config.get('wgServer'); // //en.wikipedia.org
-		server = server.slice(2); // en.wikipedia.org
-		let host = uri.host; // en.wikipedia.org
-		if ( host !== server ) {
+		// Skip links that aren't to user pages
+		let isUserPageLink = url.includes('/w/index.php?title=User') || url.includes('/wiki/User');
+		if ( ! isUserPageLink ) {
 			return false;
 		}
-		*/
 
-		let title = this.getTitle(url, uri);
-		this.mwtitle = new mw.Title(title);
+		// Even if it is a link to a userpage, skip URLs that have any parameters except title=User, action=edit, and redlink=. We don't want links to diff pages, section editing pages, etc. to be highlighted.
+		let urlParameters = urlHelper.query;
+		delete urlParameters['title'];
+		delete urlParameters['action'];
+		delete urlParameters['redlink'];
+		let hasNonUserpageParametersInUrl = ! this.$.isEmptyObject(urlParameters);
+		if ( hasNonUserpageParametersInUrl ) {
+			return false;
+		}
+
+		let title = this.getTitle(url, urlHelper);
+		this.titleHelper = new mw.Title(title);
 		
 		if ( this.notInSpecialUserOrUserTalkNamespace() ) {
 			return false;
 		}
 
 		return true;
-	}
-
-	hasNoURI(url) {
-		let endsInSlash = url.endsWith('/');
-		let numberOfSlashes = this.countInstances(url, '/');
-		if ( numberOfSlashes === 3 && endsInSlash ) {
-			return true;
-		} else if ( numberOfSlashes === 2 ) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	// Brandon Frohbieter, CC BY-SA 4.0, https://stackoverflow.com/a/4009771/3480193
@@ -226,9 +240,12 @@ class UserHighlighterSimple {
 		return url;
 	}
 
+	/**
+	 * @return {string}
+	 */
 	getUserName() {
-		var user = this.mwtitle.getMain().replace(/_/g, ' ');
-		if (this.mwtitle.getNamespaceId() === -1) {
+		var user = this.titleHelper.getMain().replace(/_/g, ' ');
+		if (this.titleHelper.getNamespaceId() === -1) {
 			user = user.replace('Contributions/', ''); // For special page "Contributions/<username>"
 			user = user.replace('Contribs/', ''); // The Contribs abbreviation too
 		}
@@ -269,7 +286,7 @@ class UserHighlighterSimple {
 		this.checkForPermission(this.extendedConfirmed, 'UHS-500edits-bot-trustedIP', 'Extended confirmed');
 
 		// If they have no perms, just draw a box around their username, to make it more visible.
-		if ( ! this.hasAdvancedPermissions && this.$link.hasClass('userlink') ) {
+		if ( ! this.hasAdvancedPermissions ) {
 			this.$link.addClass( "UHS-no-permissions" );
 			let title = this.$link.attr("title");
 			if ( ! title || title.startsWith("User:")) {
@@ -283,7 +300,7 @@ class UserHighlighterSimple {
 // TODO: hook for after visual editor edit is saved?
 mw.hook('wikipage.content').add(async function() {
 	await mw.loader.using(['mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title'], async function() {
-		let uhs = new UserHighlighterSimple();
+		let uhs = new UserHighlighterSimple($);
 		await uhs.execute();
 	});
 });
