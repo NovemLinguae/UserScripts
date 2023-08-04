@@ -50,6 +50,10 @@ class UserHighlighterSimple {
 				return;
 			}
 			that.user = that.getUserName();
+			let isUserSubpage = that.user.includes('/');
+			if ( isUserSubpage ) {
+				return;
+			}
 			that.hasAdvancedPermissions = false;
 			that.addClassesAndHoverTextToLinkIfNeeded();
 			// If the user has any advanced perms, they are likely to have a signature, so be aggressive about overriding the background and foreground color. That way there's no risk their signature is unreadable due to background color and foreground color being too similar. Don't do this for users without advanced perms... being able to see a redlinked username is useful.
@@ -176,9 +180,9 @@ class UserHighlighterSimple {
 		return '';
 	}
 
-	notInSpecialUserOrUserTalkNamespace() {
+	notInUserOrUserTalkNamespace() {
 		let namespace = this.titleHelper.getNamespaceId();
-		let notInSpecialUserOrUserTalkNamespace = this.$.inArray(namespace, [-1, 2, 3]) === -1;
+		let notInSpecialUserOrUserTalkNamespace = this.$.inArray(namespace, [2, 3]) === -1;
 		return notInSpecialUserOrUserTalkNamespace;
 	}
 
@@ -218,7 +222,7 @@ class UserHighlighterSimple {
 		let title = this.getTitle(url, urlHelper);
 		this.titleHelper = new mw.Title(title);
 		
-		if ( this.notInSpecialUserOrUserTalkNamespace() ) {
+		if ( this.notInUserOrUserTalkNamespace() ) {
 			return false;
 		}
 
@@ -245,10 +249,6 @@ class UserHighlighterSimple {
 	 */
 	getUserName() {
 		var user = this.titleHelper.getMain().replace(/_/g, ' ');
-		if (this.titleHelper.getNamespaceId() === -1) {
-			user = user.replace('Contributions/', ''); // For special page "Contributions/<username>"
-			user = user.replace('Contribs/', ''); // The Contribs abbreviation too
-		}
 		return user;
 	}
 
