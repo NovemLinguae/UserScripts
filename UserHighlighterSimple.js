@@ -32,12 +32,16 @@ class UserHighlighterSimple {
 	hasAdvancedPermissions;
 	/** @type {Object} */
 	$;
+	/** @type {Object} */
+	mw;
 
 	/**
 	 * @param {Object} $ jquery
+	 * @param {Object} mw mediawiki
 	 */
-	constructor($) {
+	constructor($, mw) {
 		this.$ = $;
+		this.mw = mw;
 	}
 
 	async execute() {
@@ -66,7 +70,7 @@ class UserHighlighterSimple {
 	addCSS(htmlClass, cssDeclaration) {
 		// .plainlinks is for Wikipedia Signpost articles
 		// To support additional custom signature edge cases, add to the selectors here.
-		mw.util.addCSS(`
+		this.mw.util.addCSS(`
 			.plainlinks .${htmlClass}.external,
 			.${htmlClass},
 			.${htmlClass} b,
@@ -79,7 +83,7 @@ class UserHighlighterSimple {
 	}
 
 	async getWikitextFromCache(title) {
-		var api = new mw.ForeignApi('https://en.wikipedia.org/w/api.php');
+		var api = new this.mw.ForeignApi('https://en.wikipedia.org/w/api.php');
 		var wikitext = '';
 		await api.get( {
 			action: 'query',
@@ -148,7 +152,7 @@ class UserHighlighterSimple {
 	  */
 	getTitle(url, urlHelper) {
 		// for links in the format /w/index.php?title=Blah
-		let titleParameterOfURL = mw.util.getParamValue('title', url);
+		let titleParameterOfURL = this.mw.util.getParamValue('title', url);
 		if ( titleParameterOfURL ) {
 			return titleParameterOfURL;
 		}
@@ -179,7 +183,7 @@ class UserHighlighterSimple {
 		// mw.Uri(url) throws an error if it doesn't like the URL. An example of a URL it doesn't like is https://meta.wikimedia.org/wiki/Community_Wishlist_Survey_2022/Larger_suggestions#1%, which has a section link to a section titled 1% (one percent).
 		var urlHelper;
 		try {
-			urlHelper = new mw.Uri(url);
+			urlHelper = new this.mw.Uri(url);
 		} catch {
 			return false;
 		}
@@ -201,7 +205,7 @@ class UserHighlighterSimple {
 		}
 
 		let title = this.getTitle(url, urlHelper);
-		this.titleHelper = new mw.Title(title);
+		this.titleHelper = new this.mw.Title(title);
 		
 		if ( this.notInUserOrUserTalkNamespace() ) {
 			return false;
@@ -304,7 +308,7 @@ class UserHighlighterSimple {
 // TODO: hook for after visual editor edit is saved?
 mw.hook('wikipage.content').add(async function() {
 	await mw.loader.using(['mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title'], async function() {
-		let uhs = new UserHighlighterSimple($);
+		let uhs = new UserHighlighterSimple($, mw);
 		await uhs.execute();
 	});
 });
