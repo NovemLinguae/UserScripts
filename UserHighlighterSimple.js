@@ -97,25 +97,6 @@ class UserHighlighterSimple {
 		return wikitext;
 	}
 
-	setHighlightColors() {
-		// Highest specificity goes on bottom. So if you want an admin+steward to be highlighted steward, place the steward CSS below the admin CSS in this section.
-		this.addCSS('UHS-override-signature-colors', `
-			color: #0645ad !important;
-			background-color: transparent !important;
-			background: unset !important;
-		`);
-		mw.util.addCSS(`.UHS-no-permissions { border: 1px solid black !important; }`);
-		this.addCSS('UHS-500edits-bot-trustedIP', `background-color: lightgray !important;`);
-		this.addCSS('UHS-10000edits', `background-color: #9c9 !important;`);
-		this.addCSS('UHS-new-page-reviewer', `background-color: #99f !important;`);
-		this.addCSS('UHS-former-administrator', `background-color: #D3AC8B !important;`);
-		this.addCSS('UHS-administrator', `background-color: #9ff !important;`);
-		this.addCSS('UHS-bureaucrat', `background-color: orange !important; color: #0645ad !important;`);
-		this.addCSS('UHS-arbitration-committee', `background-color: #FF3F3F !important; color: white !important;`);
-		this.addCSS('UHS-steward', `background-color: #00FF00 !important;`);
-		this.addCSS('UHS-wmf', `background-color: hotpink !important; color: #0645ad !important;`);
-	}
-
 	async getUsernames() {
 		let dataString = await this.getWikitextFromCache('User:NovemBot/userlist.js');
 		let dataJSON = JSON.parse(dataString);
@@ -275,10 +256,11 @@ class UserHighlighterSimple {
 			this.addClassAndHoverText('UHS-wmf', 'Wikimedia Foundation (WMF)');
 		}
 
-		this.checkForPermission(this.stewards, 'UHS-steward', 'Steward');
+		// TODO: grab the order from an array, so I can keep checkForPermission and addCSS in the same order easily, lowering the risk of the HTML title="" being one thing, and the color being another
 		this.checkForPermission(this.wmf, 'UHS-wmf', 'Wikimedia Foundation (WMF)');
-		this.checkForPermission(this.bureaucrats, 'UHS-bureaucrat', 'Bureaucrat');
+		this.checkForPermission(this.stewards, 'UHS-steward', 'Steward');
 		this.checkForPermission(this.arbcom, 'UHS-arbitration-committee', 'Arbitration Committee member');
+		this.checkForPermission(this.bureaucrats, 'UHS-bureaucrat', 'Bureaucrat');
 		this.checkForPermission(this.admins, 'UHS-administrator', 'Admin');
 		this.checkForPermission(this.formeradmins, 'UHS-former-administrator', 'Former Admin');
 		this.checkForPermission(this.newPageReviewers, 'UHS-new-page-reviewer', 'New page reviewer');
@@ -293,6 +275,28 @@ class UserHighlighterSimple {
 				this.$link.attr("title", "Less than 500 edits");
 			}
 		}
+	}
+
+	setHighlightColors() {
+		// Highest specificity goes on bottom. So if you want an admin+steward to be highlighted steward, place the steward CSS below the admin CSS in this section.
+		this.addCSS('UHS-override-signature-colors', `
+			color: #0645ad !important;
+			background-color: transparent !important;
+			background: unset !important;
+		`);
+		this.mw.util.addCSS(`.UHS-no-permissions { border: 1px solid black !important; }`);
+
+
+		// TODO: grab the order from an array, so I can keep checkForPermission and addCSS in the same order easily, lowering the risk of the HTML title="" being one thing, and the color being another
+		this.addCSS('UHS-500edits-bot-trustedIP', `background-color: lightgray !important;`);
+		this.addCSS('UHS-10000edits', `background-color: #9c9 !important;`);
+		this.addCSS('UHS-new-page-reviewer', `background-color: #99f !important;`);
+		this.addCSS('UHS-former-administrator', `background-color: #D3AC8B !important;`);
+		this.addCSS('UHS-administrator', `background-color: #9ff !important;`);
+		this.addCSS('UHS-bureaucrat', `background-color: orange !important; color: #0645ad !important;`);
+		this.addCSS('UHS-arbitration-committee', `background-color: #FF3F3F !important; color: white !important;`);
+		this.addCSS('UHS-steward', `background-color: #00FF00 !important;`);
+		this.addCSS('UHS-wmf', `background-color: hotpink !important; color: #0645ad !important;`);
 	}
 }
 
