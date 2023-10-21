@@ -192,14 +192,6 @@ export class VoteCounterController {
 			'support',
 			'oppose',
 			'neutral',
-			// move review
-			'endorse',
-			'overturn',
-			'relist',
-			'procedural close',
-			// GAR
-			'delist',
-			// RFC
 			'option 1',
 			'option 2',
 			'option 3',
@@ -222,6 +214,14 @@ export class VoteCounterController {
 			'remove',
 			'include',
 			'exclude',
+			'no change',
+			// move review
+			'endorse',
+			'overturn',
+			'relist',
+			'procedural close',
+			// GAR
+			'delist',
 			// RSN
 			'agree',
 			'disagree',
