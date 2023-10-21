@@ -19,8 +19,10 @@ class ReviewStatus {
 		let boolIsReviewed = await this.isReviewed(pageID);
 		let htmlToInsert = '';
 
+		// modules/ext.pageTriage.views.toolbar/images/icons/
+
 		if ( boolIsReviewed ) {
-			htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.views.list/images/icon_reviewed.png" title="Reviewed" />`;
+			htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.views.newPagesFeed/images/icon_reviewed.png" title="Reviewed" />`;
 		} else {
 			htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.views.list/images/icon_not_reviewed.png" title="Not reviewed" />`;
 		}
@@ -55,7 +57,7 @@ class ReviewStatus {
 	shouldRunOnThisPage() {
 		// don't run when not viewing articles
 		let action = mw.config.get('wgAction');
-		if ( action != 'view' ) {
+		if ( action !== 'view' ) {
 			return false;
 		}
 		
