@@ -505,12 +505,17 @@ async function speciesHelper(title) {
 		editSummaryItems.push('<h1> to <h2>');
 	}
 
+	/*
+	// Commenting out. Some articles do need both, I think.
+	// Example: https://en.wikipedia.org/w/index.php?title=Moringa_oleifera&oldid=1176702791
+
 	// remove {{Authority control}} if {{Taxonbar}} present
 	wikicodeBefore = wikicode2;
 	wikicode2 = removeAuthorityControlIfTaxonbarPresent(wikicode2);
 	if ( wikicode2 !== wikicodeBefore ) {
 		editSummaryItems.push('-{{Authority control}}');
 	}
+	*/
 
 	// remove empty {{Default sort}}
 	// remove {{Default sort}} identical to article title
