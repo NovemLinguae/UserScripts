@@ -3,7 +3,7 @@ import { GANReviewWikicodeGenerator } from "./GANReviewWikicodeGenerator";
 
 export class GANReviewController {
 	/**
-	 * @param {function} $ jQuery
+	 * @param {Function} $ jQuery
 	 * @param {mw} mw mediawiki, https://doc.wikimedia.org/mediawiki-core/master/js/#!/api/mw
 	 * @param {Location} location https://developer.mozilla.org/en-US/docs/Web/API/Window/location
 	 * @param {GANReviewWikicodeGenerator} wg

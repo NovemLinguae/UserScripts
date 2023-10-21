@@ -7,7 +7,7 @@ import { GARCloserWikicodeGenerator } from "./GARCloserWikicodeGenerator";
   */
 export class MassGARController {
 	/**
-	 * @param {function} $ jQuery
+	 * @param {Function} $ jQuery
 	 * @param {mw} mw mediawiki, https://doc.wikimedia.org/mediawiki-core/master/js/#!/api/mw
 	 * @param {MassGARWikicodeGenerator} wg
 	 * @param {GARCloserController} gcc

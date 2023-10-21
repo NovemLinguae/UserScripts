@@ -31,7 +31,7 @@ export class MassGARWikicodeGenerator {
 
 	/**
 	  * @param {string} wikicode
-	  * @param {array} listOfTemplates Case insensitive.
+	  * @param {Array} listOfTemplates Case insensitive.
 	  */
 	_wikicodeHasTemplate(wikicode, listOfTemplates) {
 		let stringForRegEx = listOfTemplates

@@ -227,7 +227,7 @@ $(async function() {
 		}
 
 		/**
-			@param {array} titles
+			@param {Array} titles
 		*/
 		async _pagesExist(titles) {
 			let api = new mw.Api();
