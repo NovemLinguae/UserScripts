@@ -37,21 +37,13 @@ class ReviewStatus {
 	async isReviewed(pageID) {
 		let api = new mw.Api();
 		let response = await api.get( {
-			action: 'pagetriagelist',
+			action: 'query',
 			format: 'json',
-			page_id: pageID,
+			formatversion: '2',
+			prop: 'isreviewed',
+			pageids: pageID,
 		} );
-
-		// no result
-		if ( response.pagetriagelist.result !== 'success' || response.pagetriagelist.pages.length === 0 ) {
-			return true;
-		// 1, 2, or 3
-		} else if ( parseInt(response.pagetriagelist.pages[0].patrol_status) > 0 ) {
-			return true;
-		// 0
-		} else {
-			return false;
-		}
+		return response.query.pages[0].isreviewed;
 	}
 
 	shouldRunOnThisPage() {
