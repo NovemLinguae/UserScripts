@@ -34,6 +34,9 @@ class ReviewStatus {
 		}
 	}
 
+	/**
+	* @param {number} pageID The page ID number. A positive number with no commas.
+	*/
 	async isReviewed(pageID) {
 		let api = new mw.Api();
 		let response = await api.get( {

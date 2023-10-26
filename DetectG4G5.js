@@ -58,24 +58,19 @@ class DetectG4G5 {
 		$('#contentSub').before(`<div class="DetectG4G5" style="background-color: red">${html}</div>`);
 	}
 
+	/**
+	* @param {number} pageID The page ID number. A positive number with no commas.
+	*/
 	async isReviewed(pageID) {
 		let api = new mw.Api();
 		let response = await api.get( {
-			action: 'pagetriagelist',
+			action: 'query',
 			format: 'json',
-			page_id: pageID,
+			formatversion: '2',
+			prop: 'isreviewed',
+			pageids: pageID,
 		} );
-
-		// no result
-		if ( response.pagetriagelist.result !== 'success' || response.pagetriagelist.pages.length === 0 ) {
-			return true;
-		// 1, 2, or 3
-		} else if ( parseInt(response.pagetriagelist.pages[0].patrol_status) > 0 ) {
-			return true;
-		// 0
-		} else {
-			return false;
-		}
+		return response.query.pages[0].isreviewed;
 	}
 
 	async afdExists(title) {
@@ -144,7 +139,7 @@ class DetectG4G5 {
 	shouldRunOnThisPage() {
 		// don't run when not viewing articles
 		let action = mw.config.get('wgAction');
-		if ( action != 'view' ) return false;
+		if ( action !== 'view' ) return false;
 		
 		// don't run when viewing diffs
 		let isDiff = mw.config.get('wgDiffNewId');
@@ -156,7 +151,7 @@ class DetectG4G5 {
 		// Only run in mainspace
 		let namespace = mw.config.get('wgNamespaceNumber');
 		let title = mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
-		if ( namespace !== 0 && title != 'User:Novem_Linguae/sandbox' ) return false;
+		if ( namespace !== 0 && title !== 'User:Novem_Linguae/sandbox' ) return false;
 
 		return true;
 	}
