@@ -70,7 +70,8 @@ export class DraftCleaner {
 		wikicode = this.deleteSpacesInFrontOfRefs(wikicode);
 		wikicode = this.deleteNewLinesBetweenRefs(wikicode);
 		wikicode = this.swapRefPeriodWithPeriodRef(wikicode);
-		
+		wikicode = this.swapRefCommaWithCommaRef(wikicode);
+
 		// stuff we want to run at the end
 		wikicode = this.fixDoublePeriod(wikicode); // need test cases. I've seen this one not work.
 		wikicode = this.boldArticleTitle(wikicode, titleWithNamespaceAndSpaces);
@@ -214,10 +215,16 @@ export class DraftCleaner {
 		return wikicode.replace(/^== ?Reference ?==$/gmi, '== References ==');
 	}
 	
-	// TOOL  - swap ref period with period ref
+	// TOOL - swap ref period with period ref
 	swapRefPeriodWithPeriodRef(wikicode) {
 		wikicode = wikicode.replace(/((?:<ref[^>]*?>[^>]*?<\/ref>){1,})\. /gm, '.$1 ');
 		wikicode = wikicode.replace(/((?:<ref[^>]*?>[^>]*?<\/ref>){1,})\.\n/gm, ".$1\n");
+		return wikicode;
+	}
+
+	swapRefCommaWithCommaRef(wikicode) {
+		wikicode = wikicode.replace(/((?:<ref[^>]*?>[^>]*?<\/ref>){1,})\, /gm, ',$1 ');
+		wikicode = wikicode.replace(/((?:<ref[^>]*?>[^>]*?<\/ref>){1,})\,\n/gm, ",$1\n");
 		return wikicode;
 	}
 	
