@@ -66,6 +66,7 @@ export class DraftCleaner {
 		wikicode = this.bareURLToRef(wikicode);
 		wikicode = this.refShortLinkToLongLink(wikicode);
 		wikicode = this.inlineExternalLinksToRefs(wikicode);
+		wikicode = this.moveRefsOutsideOfItalics(wikicode);
 		wikicode = this.deleteSpacesInFrontOfRefs(wikicode);
 		wikicode = this.deleteNewLinesBetweenRefs(wikicode);
 		wikicode = this.swapRefPeriodWithPeriodRef(wikicode);
@@ -110,11 +111,35 @@ export class DraftCleaner {
 			let regExToSplitArticle = new RegExp('((' + regExString + ').*$)', 'is');
 			let topHalf = wikicode.replace(regExToSplitArticle, '');
 			let bottomHalf = wikicode.match(regExToSplitArticle)[1];
-			let buffer = sf.surgicalReplaceOutsideTags(/(?<!>|> )\[(http[^ \]]+) ?(.*?)\](?!<\/ref>| <\/ref>)/gm, '$2<ref>$1</ref>', topHalf, ['<ref', '{{'], ['</ref>', '/>', '}}']);
+			let buffer = sf.surgicalReplaceOutsideTags(
+				/(?<!>|> )\[(http[^ \]]+) ?(.*?)\](?!<\/ref>| <\/ref>)/gm,
+				'$2<ref>$1</ref>',
+				topHalf,
+				['<ref',
+				'{{'],
+				['</ref>',
+				'/>',
+				'}}']
+			);
 			wikicode = buffer + bottomHalf;
 		} else {
-			wikicode = sf.surgicalReplaceOutsideTags(/(?<!>|> )\[(http[^ \]]+) ?(.*?)\](?!<\/ref>| <\/ref>)/gm, '$2<ref>$1</ref>', wikicode, ['<ref', '{{'], ['</ref>', '/>', '}}']);
+			wikicode = sf.surgicalReplaceOutsideTags(
+				/(?<!>|> )\[(http[^ \]]+) ?(.*?)\](?!<\/ref>| <\/ref>)/gm,
+				'$2<ref>$1</ref>',
+				wikicode,
+				['<ref', '{{'],
+				['</ref>', '/>', '}}']
+			);
 		}
+		
+		return wikicode;
+	}
+
+	/**
+	 * ''Test<ref></ref>'' => ''Test''<ref></ref>
+	 */
+	moveRefsOutsideOfItalics(wikicode) {
+		wikicode = wikicode.replace(/''([^']+)(<ref>[^<]+<\/ref>)''/gm, `''$1''$2`);
 		return wikicode;
 	}
 	

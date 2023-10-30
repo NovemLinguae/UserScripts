@@ -536,6 +536,16 @@ https://plastic-revolution.org`;
 	});
 });
 
+describe('moveRefsOutsideOfItalics(wikicode)', () => {
+	test('Ref goes outside italics, not inside', () => {
+		let wikicode =
+`The White House's [[Office of Science and Technology Policy]] released a draft ''Guidance for Regulation of Artificial Intelligence Applications<ref>https://www.whitehouse.gov/wp-content/uploads/2020/01/Draft-OMB-Memo-on-Regulation-of-AI-1-7-19.pdf</ref>''.`;
+		let output =
+`The White House's [[Office of Science and Technology Policy]] released a draft ''Guidance for Regulation of Artificial Intelligence Applications''<ref>https://www.whitehouse.gov/wp-content/uploads/2020/01/Draft-OMB-Memo-on-Regulation-of-AI-1-7-19.pdf</ref>.`;
+		expect(dc.moveRefsOutsideOfItalics(wikicode)).toBe(output);
+	});
+});
+
 describe('deleteHeadingsWithTitle(wikicode, titleWithNamespaceAndSpaces)', () => {
 	test('Exact matches only', () => {
 		let titleWithNamespaceAndSpaces = 'Albatross';
