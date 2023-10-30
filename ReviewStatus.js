@@ -24,7 +24,7 @@ class ReviewStatus {
 		if ( boolIsReviewed ) {
 			htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.views.newPagesFeed/images/icon_reviewed.png" title="Reviewed" />`;
 		} else {
-			htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.views.list/images/icon_not_reviewed.png" title="Not reviewed" />`;
+			htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.views.newPagesFeed/images/icon_not_reviewed.png" title="Not reviewed" />`;
 		}
 
 		if ( this.pageHasSections() ) {
