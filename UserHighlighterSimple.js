@@ -205,7 +205,13 @@ class UserHighlighterSimple {
 		}
 
 		let title = this.getTitle(url, urlHelper);
-		this.titleHelper = new this.mw.Title(title);
+
+		// Handle edge cases such as https://web.archive.org/web/20231105033559/https://en.wikipedia.org/wiki/User:SandyGeorgia/SampleIssue, which shows up as isUserPageLink = true but isn't really a user page.
+		try {
+			this.titleHelper = new this.mw.Title(title);
+		} catch {
+			return false;
+		}
 		
 		if ( this.notInUserOrUserTalkNamespace() ) {
 			return false;
