@@ -7,11 +7,16 @@ class VisualEditorEverywhere {
 	execute() {
 		this.articleName = mw.config.get('wgPageName');
 		this.articleName = encodeURIComponent(this.articleName); // fix bug involving & not getting converted to &amp;
-		let buttonIsPresent = $('#ca-ve-edit').length;
 		let pageIsUserScript = this.articleName.match(/(?:\.js|\.css)$/);
-		
-		if ( ! buttonIsPresent && ! pageIsUserScript ) {
+
+		let veTabIsPresent = $('#ca-ve-edit').length;
+		if ( ! veTabIsPresent && ! pageIsUserScript ) {
 			this.insertVETab();
+		}
+
+		// we also need to check if section links are present. if you save a VE edit, the VETab will already be present, but the VESectionLinks will not be present and need to be added back
+		let veSectionLinkIsPresent = $('.mw-editsection-visualeditor').length;
+		if ( ! veSectionLinkIsPresent && ! pageIsUserScript ) {
 			this.insertVESectionLink();
 		}
 	}
@@ -119,6 +124,12 @@ $(function() {
 	let vee = new VisualEditorEverywhere();
 	vee.execute();
 	// } );
+
+	// when VE saves, the veSectionLinks should be put back
+	mw.hook( 've.deactivationComplete' ).add( function() {
+		let vee = new VisualEditorEverywhere();
+		vee.execute();
+	});
 });
 
 // </nowiki>
