@@ -189,8 +189,9 @@ $(async function() {
 			// One older rename was put only into meta:Special:Log->User rename log.
 			// Another older rename was put only into en:Special:Log->User rename log, and was complicated by the fact that ~enwiki had been added to the end of it.
 			// Spaces vs underscores don't seem to matter. User: or no User: doesn't seem to matter.
-			this.userLinks += `<li><a href="https://meta.wikimedia.org/wiki/Special:Log?type=renameuser&user=&page=${this.usernameURI}">Rename log</a></li>`;
-			this.userLinks += `<li><a href="https://en.wikipedia.org/wiki/Special:Log?type=renameuser&user=&page=${this.usernameURI}%7Eenwiki">Rename log (~enwiki)</a></li>`;
+			this.userLinks += `<li><a href="https://meta.wikimedia.org/wiki/Special:GlobalRenameProgress?username=${this.usernameURI}">Rename log 1</a></li>`;
+			this.userLinks += `<li><a href="https://meta.wikimedia.org/wiki/Special:Log?type=renameuser&user=&page=${this.usernameURI}">Rename log 2</a></li>`;
+			this.userLinks += `<li><a href="https://en.wikipedia.org/wiki/Special:Log?type=renameuser&user=&page=${this.usernameURI}%7Eenwiki">Rename log 3</a></li>`;
 		}
 
 		_generateUserRightsLinks() {
