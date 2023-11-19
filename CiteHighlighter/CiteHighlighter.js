@@ -153,6 +153,8 @@ class CiteHighlighter {
 			};
 		} else {
 			return {
+				// in general, we give less reliable stuff more priority. so if one source list has it as yellow and another has it as red, we highlight it as red. that way we don't accidentally highlight something unreliable with a good color
+
 				// order of these first 3 fixes an issue where published academic papers were being colored preprint red
 				// lowest priority
 				'unreliableWord':	'#ffb347', // orange for now, for easier testing. later will be red.
@@ -162,7 +164,7 @@ class CiteHighlighter {
 				'green': 			'lightgreen',
 				'yellow': 			'khaki',
 				'red': 				'lightcoral',
-				//'aggregator':	'plum',	// turning off aggregator for now, red/yellow/green is nice and simple, purple makes the color scheme more complicated
+				// 'aggregator':	'plum',	// turning off aggregator for now, red/yellow/green is nice and simple, purple makes the color scheme more complicated
 				// highest priority
 			};
 		}
