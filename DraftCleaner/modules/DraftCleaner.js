@@ -5,6 +5,7 @@ export class DraftCleaner {
 		// run before other stuff
 		wikicode = this.deleteSomeHTMLTags(wikicode);
 		wikicode = this.deleteNonAFCDraftTags(wikicode);
+		wikicode = this.deleteAFCDraftTagsIfMainspace(wikicode, mw.config.get('wgNamespaceNumber'));
 
 		wikicode = this.fixWikilinksContainingURL(wikicode);
 		wikicode = this.fixExternalLinksToWikipediaArticles(wikicode);
@@ -501,6 +502,16 @@ export class DraftCleaner {
 		wikicode = wikicode.replace(/{{Preloaddraft submit}}\n{0,2}/gi, '');
 		wikicode = wikicode.replace(/<!-- When you move this draft into article space, please link it to the Wikidata entry and remove the QID in the infobox code\. -->\n{0,2}/gi, '');
 		wikicode = wikicode.replace(/{{Draft}}\n{0,2}/gi, '');
+		return wikicode;
+	}
+
+	deleteAFCDraftTagsIfMainspace(wikicode, namespaceNumber) {
+		let isMainspace = namespaceNumber == 0;
+		if ( isMainspace ) {
+			// {{AfC submission}}, {{AfC topic}}, {{AfC comment}}, etc.
+			wikicode = wikicode.replace(/{{AfC [^}]*}}\n?/g, '');
+			wikicode = wikicode.replace(/{{Draft topics[^}]*}}\n?/g, '');
+		}
 		return wikicode;
 	}
 
