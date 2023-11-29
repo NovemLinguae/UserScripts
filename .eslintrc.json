@@ -19,8 +19,7 @@
 		"no-console": "warn",
 		"no-unreachable-loop": "error",
 		"block-scoped-var": "error",
-		"curly": ["error", "multi-line"],
-		"eqeqeq": "error",
+		"curly": ["error"],
 		"lodash/prefer-includes": "error",
 		"lodash/prefer-startswith": "error",
 		"no-caller": "error",
@@ -62,7 +61,9 @@
 				"message": "Using .fail() is not allowed. See https://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript#Asynchronous_code",
 				"selector": "MemberExpression > Identifier[name=\"fail\"]"
 			}
-		]
+		],
+		"no-trailing-spaces": "error",
+		"space-infix-ops": "error"
 	},
 	"reportUnusedDisableDirectives": true
 }
