@@ -92,7 +92,7 @@ $(function () {
 	function defaultPopupsContainer() {
 		if (getValueOf('popupOnlyArticleLinks')) {
 			return (
-                document.querySelector('.skin-vector-2022 .vector-body') ||
+				document.querySelector('.skin-vector-2022 .vector-body') ||
 				document.getElementById('mw_content') ||
 				document.getElementById('content') ||
 				document.getElementById('article') ||
@@ -467,7 +467,9 @@ $(function () {
 			) {
 				loadAPIPreview('userinfo', article, a.navpopup);
 			}
-			if (shouldShowNonSimple(a)) startArticlePreview(article, oldid, a.navpopup);
+			if (shouldShowNonSimple(a)) {
+				startArticlePreview(article, oldid, a.navpopup);
+			}
 		}
 	}
 
@@ -1985,7 +1987,9 @@ $(function () {
 						if (dt_match) {
 							ps(parse_inline_nowiki(dt_match[1]));
 							ll.unshift(dt_match[2]);
-						} else ps(parse_inline_nowiki(l_match[2]));
+						} else {
+							ps(parse_inline_nowiki(l_match[2]));
+						}
 						break;
 
 					case ':':
@@ -2004,8 +2008,8 @@ $(function () {
 		function parse_table() {
 			endl(f('<table>', compareLineStringOrReg(/^\{\|( .*)$/) ? r[1] : ''));
 
-			for (; remain(); )
-				if (compareLineStringOrReg('|'))
+			for (; remain(); ) {
+				if (compareLineStringOrReg('|')) {
 					switch (charAtPoint(1)) {
 						case '}':
 							endl('</table>');
@@ -2016,11 +2020,12 @@ $(function () {
 						default:
 							parse_table_data();
 					}
-				else if (compareLineStringOrReg('!')) {
+				} else if (compareLineStringOrReg('!')) {
 					parse_table_data();
 				} else {
 					sh();
 				}
+			}
 		}
 
 		function parse_table_data() {
@@ -2032,13 +2037,18 @@ $(function () {
 			// TODO: finish commenting this regexp
 			var td_match = sh().match(/^(\|\+|\||!)((?:([^[|]*?)\|(?!\|))?(.*))$/);
 
-			if (td_match[1] == '|+') ps('<caption');
-			else ps('<t' + (td_match[1] == '|' ? 'd' : 'h'));
+			if (td_match[1] == '|+') {
+				ps('<caption');
+			} else {
+				ps('<t' + (td_match[1] == '|' ? 'd' : 'h'));
+			}
 
 			if (typeof td_match[3] != 'undefined') {
 				//ps(' ' + td_match[3])
 				match_i = 4;
-			} else match_i = 2;
+			} else {
+				match_i = 2;
+			}
 
 			ps('>');
 
@@ -2049,7 +2059,9 @@ $(function () {
 
 				ps(parse_inline_nowiki(td_line.shift()));
 
-				while (td_line.length) ll.unshift(td_match[1] + td_line.pop());
+				while (td_line.length) {
+					ll.unshift(td_match[1] + td_line.pop());
+				}
 			} else {
 				ps(parse_inline_nowiki(td_match[match_i]));
 			}
@@ -2060,14 +2072,23 @@ $(function () {
 			while (remain()) {
 				td.push(sh());
 				if (compareLineStringOrReg('|')) {
-					if (!tc) break;
+					if (!tc) {
+						break;
+					}
 					// we're at the outer-most level (no nested tables), skip to td parse
-					else if (charAtPoint(1) == '}') tc--;
-				} else if (!tc && compareLineStringOrReg('!')) break;
-				else if (compareLineStringOrReg('{|')) tc++;
+					else if (charAtPoint(1) == '}') {
+						tc--;
+					}
+				} else if (!tc && compareLineStringOrReg('!')) {
+					break;
+				} else if (compareLineStringOrReg('{|')) {
+					tc++;
+				}
 			}
 
-			if (td.length) ps(Insta.convert(td));
+			if (td.length) {
+				ps(Insta.convert(td));
+			}
 		}
 
 		function parse_pre() {
@@ -2106,7 +2127,7 @@ $(function () {
 						last_attr = tag.substr(i + 1);
 						tag = tag.substring(0, i);
 						break;
-					} else
+					} else {
 						switch (tag.substr(i - 1, 2)) {
 							case ']]':
 								nesting++;
@@ -2116,6 +2137,7 @@ $(function () {
 								nesting--;
 								i--;
 						}
+					}
 				}
 
 				attr = tag.split(/\s*\|\s*/);
@@ -2126,8 +2148,9 @@ $(function () {
 
 				for (; attr.length; attr.shift()) {
 					w_match = attr[0].match(/^(\d*)(?:[px]*\d*)?px$/);
-					if (w_match) width = w_match[1];
-					else
+					if (w_match) {
+						width = w_match[1];
+					} else {
 						switch (attr[0]) {
 							case 'thumb':
 							case 'thumbnail':
@@ -2148,10 +2171,15 @@ $(function () {
 								align = 'none';
 								break;
 							default:
-								if (attr.length == 1) caption = attr[0];
+								if (attr.length == 1) {
+									caption = attr[0];
+								}
 						}
+					}
 				}
-			} else filename = tag;
+			} else {
+				filename = tag;
+			}
 
 			return '';
 			//</NOLITE>
@@ -2215,7 +2243,9 @@ $(function () {
 						close = str.indexOf(']]', substart);
 						open = str.indexOf('[[', substart);
 						if (close <= open || open == -1) {
-							if (close == -1) return str;
+							if (close == -1) {
+								return str;
+							}
 							substart = close;
 							if (nestlev) {
 								nestlev--;
@@ -2231,7 +2261,9 @@ $(function () {
 							nestlev++;
 						}
 					} while (loop);
-				} else break;
+				} else {
+					break;
+				}
 			}
 
 			//</NOLITE>
@@ -2270,7 +2302,9 @@ $(function () {
 			// Build a Mediawiki-formatted date string
 			var date = new Date();
 			var minutes = date.getUTCMinutes();
-			if (minutes < 10) minutes = '0' + minutes;
+			if (minutes < 10) {
+				minutes = '0' + minutes;
+			}
 			date = f(
 				'?:?, ? ? ? (UTC)',
 				date.getUTCHours(),
@@ -2428,7 +2462,7 @@ $(function () {
 		}
 
 		// begin parsing
-		for (; remain(); )
+		for (; remain(); ) {
 			if (compareLineStringOrReg(/^(={1,6})(.*)\1(.*)$/)) {
 				p = 0;
 				endl(f('<h?>?</h?>?', r[1].length, parse_inline_nowiki(r[2]), r[1].length, r[3]));
@@ -2451,7 +2485,9 @@ $(function () {
 				// handle paragraphs
 				if (compareLineString('')) {
 					p = remain() > 1 && ll[1] === '';
-					if (p) endl('<p><br>');
+					if (p) {
+						endl('<p><br>');
+					}
 				} else {
 					if (!p) {
 						ps('<p>');
@@ -2462,6 +2498,7 @@ $(function () {
 
 				sh();
 			}
+		}
 
 		return o;
 	};
@@ -2991,7 +3028,9 @@ $(function () {
 			mw.config.get('wgNamespaceIds')[
 				this.value.substring(0, n).split(' ').join('_').toLowerCase()
 			];
-		if (typeof namespaceId == 'undefined') return 0; //mainspace
+		if (typeof namespaceId == 'undefined') {
+			return 0;
+		} //mainspace
 		return namespaceId;
 	};
 	//<NOLITE>
@@ -3058,7 +3097,9 @@ $(function () {
 			return this.value;
 		}
 		var namespaceId = this.namespaceId();
-		if (namespaceId === pg.nsMainspaceId) return this.value;
+		if (namespaceId === pg.nsMainspaceId) {
+			return this.value;
+		}
 		return this.value.substring(n + 1);
 	};
 	Title.prototype.setUtf = function (value) {
@@ -3108,8 +3149,11 @@ $(function () {
 		var specialDiff = pg.re.specialdiff.exec(url);
 		if (specialDiff) {
 			var split = specialDiff[1].split('/');
-			if (split.length == 1) return { oldid: split[0], diff: 'prev' };
-			else if (split.length == 2) return { oldid: split[0], diff: split[1] };
+			if (split.length == 1) {
+				return { oldid: split[0], diff: 'prev' };
+			} else if (split.length == 2) {
+				return { oldid: split[0], diff: split[1] };
+			}
 		}
 
 		var ret = {};
@@ -3259,7 +3303,9 @@ $(function () {
 	}
 
 	function markNopopupSpanLinks() {
-		if (!getValueOf('popupOnlyArticleLinks')) fixVectorMenuPopups();
+		if (!getValueOf('popupOnlyArticleLinks')) {
+			fixVectorMenuPopups();
+		}
 
 		var s = $('.nopopups').toArray();
 		for (var i = 0; i < s.length; ++i) {
@@ -3365,7 +3411,9 @@ $(function () {
 				// without the following loop, we have
 				// 'ab'.parenSplit(/a|(b)/) != 'ab'.split(/a|(b)/)
 				for (var i = 0; i < m.length; ++i) {
-					if (typeof m[i] == 'undefined') m[i] = '';
+					if (typeof m[i] == 'undefined') {
+						m[i] = '';
+					}
 				}
 				ret.push(s.substring(0, m.index));
 				ret = ret.concat(m.slice(1));
@@ -3451,7 +3499,9 @@ $(function () {
 	//</NOLITE>
 
 	function upcaseFirst(str) {
-		if (typeof str != typeof '' || str === '') return '';
+		if (typeof str != typeof '' || str === '') {
+			return '';
+		}
 		return str.charAt(0).toUpperCase() + str.substring(1);
 	}
 
@@ -3983,7 +4033,9 @@ $(function () {
 		var uls = parent.getElementsByTagName('ul');
 		for (var i = 0; i < uls.length; ++i) {
 			if (uls[i].className == 'popup_menu') {
-				if (uls[i].offsetWidth > 0) return false;
+				if (uls[i].offsetWidth > 0) {
+					return false;
+				}
 			} // else {document.title+='.';}
 		}
 		return true;
@@ -3992,8 +4044,9 @@ $(function () {
 	function checkPopupPosition() {
 		// stop the popup running off the right of the screen
 		// FIXME avoid pg.current.link
-		if (pg.current.link && pg.current.link.navpopup)
+		if (pg.current.link && pg.current.link.navpopup) {
 			pg.current.link.navpopup.limitHorizontalPosition();
+		}
 	}
 
 	function mouseOutWikiLink() {
@@ -4002,7 +4055,9 @@ $(function () {
 
 		removeModifierKeyHandler(a);
 
-		if (a.navpopup === null || typeof a.navpopup === 'undefined') return;
+		if (a.navpopup === null || typeof a.navpopup === 'undefined') {
+			return;
+		}
 		if (!a.navpopup.isVisible()) {
 			a.navpopup.banish();
 			return;
@@ -4261,7 +4316,9 @@ $(function () {
 	Previewmaker.prototype.killImages = function () {
 		var forbiddenNamespaceAliases = [];
 		jQuery.each(mw.config.get('wgNamespaceIds'), function (_localizedNamespaceLc, _namespaceId) {
-			if (_namespaceId != pg.nsImageId && _namespaceId != pg.nsCategoryId) return;
+			if (_namespaceId != pg.nsImageId && _namespaceId != pg.nsCategoryId) {
+				return;
+			}
 			forbiddenNamespaceAliases.push(_localizedNamespaceLc.split(' ').join('[ _]')); //todo: escape regexp fragments!
 		});
 
@@ -4391,9 +4448,15 @@ $(function () {
 			if (reg.test(strs[i])) {
 				var a = [];
 				for (var j = 0; j < strs.length; ++j) {
-					if (j < i) a[j] = strs[j];
-					if (j == i) a[i] = strs[i] + strs[i + 1] + strs[i + 2];
-					if (j > i + 2) a[j - 2] = strs[j];
+					if (j < i) {
+						a[j] = strs[j];
+					}
+					if (j == i) {
+						a[i] = strs[i] + strs[i + 1] + strs[i + 2];
+					}
+					if (j > i + 2) {
+						a[j - 2] = strs[j];
+					}
 				}
 				return this.fixSentenceEnds(a, reg);
 			}
@@ -4496,8 +4559,12 @@ $(function () {
 
 			var start = "<span class='autocomment'>";
 			var end = '</span>';
-			if (prefix.length > 0) start = this.esWiki2HtmlPart(prefix) + ' ' + start + '- ';
-			if (postfix.length > 0) end = ': ' + end + this.esWiki2HtmlPart(postfix);
+			if (prefix.length > 0) {
+				start = this.esWiki2HtmlPart(prefix) + ' ' + start + '- ';
+			}
+			if (postfix.length > 0) {
+				end = ': ' + end + this.esWiki2HtmlPart(postfix);
+			}
 
 			var t = new Title().fromURL(this.baseUrl);
 			t.anchorFromUtf(section);
@@ -4611,7 +4678,9 @@ $(function () {
 	 * @private
 	 */
 	Previewmaker.prototype.fixHTML = function () {
-		if (!this.html) return;
+		if (!this.html) {
+			return;
+		}
 
 		var ret = this.html;
 
@@ -4638,8 +4707,12 @@ $(function () {
 	 */
 	Previewmaker.prototype.showPreview = function () {
 		this.makePreview();
-		if (typeof this.html != typeof '') return;
-		if (RegExp('^\\s*$').test(this.html)) return;
+		if (typeof this.html != typeof '') {
+			return;
+		}
+		if (RegExp('^\\s*$').test(this.html)) {
+			return;
+		}
 		setPopupHTML('<hr />', 'popupPrePreviewSep', this.owner.idNumber);
 		setPopupTipsAndHTML(this.html, 'popupPreview', this.owner.idNumber, {
 			owner: this.owner,
@@ -5367,8 +5440,12 @@ $(function () {
 					}
 				}
 				if (lockedSulAccountIsAttachedToThis) {
-					if ('locked' in globaluserinfo) ret.push('<b><i>' + popupString('LOCKED') + '</i></b>');
-					if ('hidden' in globaluserinfo) ret.push('<b><i>' + popupString('HIDDEN') + '</i></b>');
+					if ('locked' in globaluserinfo) {
+						ret.push('<b><i>' + popupString('LOCKED') + '</i></b>');
+					}
+					if ('hidden' in globaluserinfo) {
+						ret.push('<b><i>' + popupString('HIDDEN') + '</i></b>');
+					}
 				}
 			}
 			if (getValueOf('popupShowGender') && user.gender) {
@@ -5401,7 +5478,7 @@ $(function () {
 					);
 				});
 			}
-			if (user.registration)
+			if (user.registration) {
 				ret.push(
 					pg.escapeQuotesHTML(
 						(user.editcount ? user.editcount : '0') +
@@ -5409,6 +5486,7 @@ $(function () {
 							(user.registration ? formattedDate(new Date(user.registration)) : '')
 					)
 				);
+			}
 		}
 
 		if (queryobj.usercontribs && queryobj.usercontribs.length) {
@@ -5503,8 +5581,12 @@ $(function () {
 		}
 		// API call to retrieve image info.
 
-		if (!getValueOf('popupImages')) return;
-		if (!isValidImageName(image)) return false;
+		if (!getValueOf('popupImages')) {
+			return;
+		}
+		if (!isValidImageName(image)) {
+			return false;
+		}
 
 		var art = image.urlString();
 
@@ -5533,7 +5615,9 @@ $(function () {
 		try {
 			var jsObj = getJsObj(download.data);
 			var imagepage = anyChild(jsObj.query.pages);
-			if (typeof imagepage.imageinfo === 'undefined') return;
+			if (typeof imagepage.imageinfo === 'undefined') {
+				return;
+			}
 			imageinfo = imagepage.imageinfo[0];
 		} catch (someError) {
 			log('popupsInsertImage failed :(');
@@ -5550,11 +5634,14 @@ $(function () {
 		popupImage.style.display = 'inline';
 
 		// Set the source for the image.
-		if (imageinfo.thumburl) popupImage.src = imageinfo.thumburl;
-		else if (imageinfo.mime.indexOf('image') === 0) {
+		if (imageinfo.thumburl) {
+			popupImage.src = imageinfo.thumburl;
+		} else if (imageinfo.mime.indexOf('image') === 0) {
 			popupImage.src = imageinfo.url;
 			log('a thumb could not be found, using original image');
-		} else log("fullsize imagethumb, but not sure if it's an image");
+		} else {
+			log("fullsize imagethumb, but not sure if it's an image");
+		}
 
 		var a = document.getElementById('popupImageLink' + id);
 		if (a === null) {
@@ -5729,7 +5816,9 @@ $(function () {
 	function nsRe(namespaceId) {
 		var imageNamespaceVariants = [];
 		jQuery.each(mw.config.get('wgNamespaceIds'), function (_localizedNamespaceLc, _namespaceId) {
-			if (_namespaceId != namespaceId) return;
+			if (_namespaceId != namespaceId) {
+				return;
+			}
 			_localizedNamespaceLc = upcaseFirst(_localizedNamespaceLc);
 			imageNamespaceVariants.push(
 				mw.util.escapeRegExp(_localizedNamespaceLc).split(' ').join('[ _]')
@@ -6439,8 +6528,12 @@ $(function () {
 			};
 		}
 		var dragHandle;
-		if (handleName) dragHandle = document.getElementById(handleName);
-		if (!dragHandle) dragHandle = this.mainDiv;
+		if (handleName) {
+			dragHandle = document.getElementById(handleName);
+		}
+		if (!dragHandle) {
+			dragHandle = this.mainDiv;
+		}
 		var np = this;
 		drag.endHook = function (x, y) {
 			Navpopup.tracker.dirty = true;
@@ -7343,7 +7436,9 @@ $(function () {
 			html = this.print(this);
 			if (typeof html != typeof '') {
 				html = '';
-			} else if (typeof this.shortcut != 'undefined') html = addPopupShortcut(html, this.shortcut);
+			} else if (typeof this.shortcut != 'undefined') {
+				html = addPopupShortcut(html, this.shortcut);
+			}
 		}
 		return opening + html + closing;
 	};
@@ -7703,7 +7798,9 @@ $(function () {
 		for (j = 0; j < links.length; ++j) {
 			i = (startLink + j + 1) % links.length;
 			if (links[i].getAttribute('popupkey') == letter) {
-				if (evt && evt.preventDefault) evt.preventDefault();
+				if (evt && evt.preventDefault) {
+					evt.preventDefault();
+				}
 				links[i].focus();
 				popupHandleKeypress.lastPopupLinkSelected = links[i];
 				return false; // swallow keypress
@@ -7839,9 +7936,13 @@ $(function () {
 	// Put a "mark patrolled" link to an element target
 	// TODO: Allow patrol a revision, as well as a diff
 	function addReviewLink(navpop, target) {
-		if (!pg.user.canReview) return;
+		if (!pg.user.canReview) {
+			return;
+		}
 		// If 'newRev' is older than 'oldRev' than it could be confusing, so we do not show the review link.
-		if (navpop.diffData.newRev.revid <= navpop.diffData.oldRev.revid) return;
+		if (navpop.diffData.newRev.revid <= navpop.diffData.oldRev.revid) {
+			return;
+		}
 		var params = {
 			action: 'query',
 			prop: 'info|flagged',
@@ -8118,8 +8219,9 @@ $(function () {
 		//{article:article, action:action, text:text, oldid, newid}) {
 		if (
 			!(typeof l.article == typeof {} && typeof l.action == typeof '' && typeof l.text == typeof '')
-		)
+		) {
 			return null;
+		}
 		if (typeof l.oldid == 'undefined') {
 			l.oldid = null;
 		}
@@ -8342,9 +8444,13 @@ $(function () {
 			if (!pg.current.links[i].navpopup) {
 				continue;
 			}
-			if (nullify || banish) pg.current.links[i].navpopup.banish();
+			if (nullify || banish) {
+				pg.current.links[i].navpopup.banish();
+			}
 			pg.current.links[i].simpleNoMore = false;
-			if (nullify) pg.current.links[i].navpopup = null;
+			if (nullify) {
+				pg.current.links[i].navpopup = null;
+			}
 		}
 	}
 
@@ -8375,7 +8481,9 @@ $(function () {
 			titles: title,
 			uselang: mw.config.get('wgUserLanguage'),
 		};
-		if (action === 'unwatch') reqData.unwatch = true;
+		if (action === 'unwatch') {
+			reqData.unwatch = true;
+		}
 
 		// Load the Addedwatchtext or Removedwatchtext message and show it
 		var mwTitle = mw.Title.newFromText(title);
@@ -8444,13 +8552,17 @@ $(function () {
 
 	function specialLink(l) {
 		// properties: article, specialpage, text, sep
-		if (typeof l.specialpage == 'undefined' || !l.specialpage) return null;
+		if (typeof l.specialpage == 'undefined' || !l.specialpage) {
+			return null;
+		}
 		var base =
 			pg.wiki.titlebase +
 			mw.config.get('wgFormattedNamespaces')[pg.nsSpecialId] +
 			':' +
 			l.specialpage;
-		if (typeof l.sep == 'undefined' || l.sep === null) l.sep = '&target=';
+		if (typeof l.sep == 'undefined' || l.sep === null) {
+			l.sep = '&target=';
+		}
 		var article = l.article.urlString({
 			keepSpaces: l.specialpage == 'Search',
 		});
@@ -8482,8 +8594,11 @@ $(function () {
 				article += '/';
 				break;
 		}
-		if (hint) hint = simplePrintf(hint, [safeDecodeURI(l.article)]);
-		else hint = safeDecodeURI(l.specialpage + ':' + l.article);
+		if (hint) {
+			hint = simplePrintf(hint, [safeDecodeURI(l.article)]);
+		} else {
+			hint = safeDecodeURI(l.specialpage + ':' + l.article);
+		}
 
 		var url = base + l.sep + article;
 		return generalNavLink({
@@ -8497,7 +8612,9 @@ $(function () {
 
 	function generalLink(l) {
 		// l.url, l.text, l.title, l.newWin, l.className, l.noPopup, l.onclick
-		if (typeof l.url == 'undefined') return null;
+		if (typeof l.url == 'undefined') {
+			return null;
+		}
 
 		// only quotation marks in the url can screw us up now... I think
 		var url = l.url.split('"').join('%22');
@@ -8539,7 +8656,9 @@ $(function () {
 
 	function appendParamsToLink(linkstr, params) {
 		var sp = linkstr.parenSplit(RegExp('(href="[^"]+?)"', 'i'));
-		if (sp.length < 2) return null;
+		if (sp.length < 2) {
+			return null;
+		}
 		var ret = sp.shift() + sp.shift();
 		ret += '&' + params + '"';
 		ret += sp.join('');
@@ -8661,7 +8780,9 @@ $(function () {
 					'R'
 				);
 				ret += popupString(')');
-			} else ret += popupString('Redirects') + popupString(' to ');
+			} else {
+				ret += popupString('Redirects') + popupString(' to ');
+			}
 
 			return ret;
 		} else {
@@ -8683,7 +8804,9 @@ $(function () {
 		if (!saneLinkCheck(l)) {
 			return null;
 		}
-		if (!l.article.isIpUser() || !pg.wiki.wikimedia) return null;
+		if (!l.article.isIpUser() || !pg.wiki.wikimedia) {
+			return null;
+		}
 
 		var uN = l.article.userName();
 
@@ -8711,8 +8834,12 @@ $(function () {
 		return true;
 	}
 	function editCounterLink(l) {
-		if (!saneLinkCheck(l)) return null;
-		if (!pg.wiki.wikimedia) return null;
+		if (!saneLinkCheck(l)) {
+			return null;
+		}
+		if (!pg.wiki.wikimedia) {
+			return null;
+		}
 		var uN = l.article.userName();
 		var tool = getValueOf('popupEditCounterTool');
 		var url;
@@ -8744,7 +8871,9 @@ $(function () {
 	}
 
 	function globalSearchLink(l) {
-		if (!saneLinkCheck(l)) return null;
+		if (!saneLinkCheck(l)) {
+			return null;
+		}
 
 		var base = 'https://global-search.toolforge.org/?uselang=' + mw.config.get('wgUserLanguage') + '&q=';
 		var article = l.article.urlString({ keepSpaces: true });
@@ -8759,7 +8888,9 @@ $(function () {
 	}
 
 	function googleLink(l) {
-		if (!saneLinkCheck(l)) return null;
+		if (!saneLinkCheck(l)) {
+			return null;
+		}
 
 		var base = 'https://www.google.com/search?q=';
 		var article = l.article.urlString({ keepSpaces: true });
@@ -8774,7 +8905,9 @@ $(function () {
 	}
 
 	function editorListLink(l) {
-		if (!saneLinkCheck(l)) return null;
+		if (!saneLinkCheck(l)) {
+			return null;
+		}
 		var article = l.article.articleFromTalkPage() || l.article;
 		var url =
 			'https://xtools.wmflabs.org/articleinfo/' +
@@ -8807,7 +8940,7 @@ $(function () {
 			wikipage,
 			whatNext
 				? function (d) {
-						whatNext(processHistory(d));
+					whatNext(processHistory(d));
 				  }
 				: processHistory
 		);
@@ -8878,8 +9011,11 @@ $(function () {
 	// check for existing value, else use default
 	function defaultize(x) {
 		if (pg.option[x] === null || typeof pg.option[x] == 'undefined') {
-			if (typeof window[x] != 'undefined') pg.option[x] = window[x];
-			else pg.option[x] = pg.optionDefault[x];
+			if (typeof window[x] != 'undefined') {
+				pg.option[x] = window[x];
+			} else {
+				pg.option[x] = pg.optionDefault[x];
+			}
 		}
 	}
 
@@ -8913,7 +9049,9 @@ $(function () {
 		var userIsSysop = false;
 		if (mw.config.get('wgUserGroups')) {
 			for (var g = 0; g < mw.config.get('wgUserGroups').length; ++g) {
-				if (mw.config.get('wgUserGroups')[g] == 'sysop') userIsSysop = true;
+				if (mw.config.get('wgUserGroups')[g] == 'sysop') {
+					userIsSysop = true;
+				}
 			}
 		}
 
@@ -9373,9 +9511,13 @@ $(function () {
 
 	// For some reason popups requires a fully loaded page jQuery.ready(...) causes problems for some.
 	// The old addOnloadHook did something similar to the below
-	if (document.readyState == 'complete') autoEdit();
+	if (document.readyState == 'complete') {
+		autoEdit();
+	}
 	//will setup popups
-	else $(window).on('load', autoEdit);
+	else {
+		$(window).on('load', autoEdit);
+	}
 
 	// Support for MediaWiki's live preview, VisualEditor's saves and Echo's flyout.
 	(function () {
