@@ -49,7 +49,6 @@
 		"no-whitespace-before-property": "error",
 		"semi": ["error", "always"],
 		"space-before-blocks": "error",
-		"spaced-comment": ["error", "always", { "line": { "exceptions": ["-"] }, "block": { "balanced": true } }],
 		"switch-colon-spacing": "error",
 		"no-restricted-syntax": [
 			"error",
@@ -65,5 +64,15 @@
 		"no-trailing-spaces": "error",
 		"space-infix-ops": "error"
 	},
-	"reportUnusedDisableDirectives": true
+	"reportUnusedDisableDirectives": true,
+	"overrides": [
+		{
+			"files": [
+				"popups.js"
+			],
+			"parserOptions": {
+				"ecmaVersion": 5
+			}
+		}
+	]
 }
