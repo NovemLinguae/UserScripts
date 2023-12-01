@@ -21,10 +21,10 @@ BUGS FIXED:
 - Fixed bug where the RFC would always get placed at the end of the page, not in its proper section
 - Fixed bug where section heading (the # part of the wikilink) was not getting added to WP:ANRFC
 - Fixed bug where More -> ANRFC Lister link was the wrong size and did not match the style of the skin
+- Added a "Cancel" button to the form
 
 PROGRAMMER TODO:
 - No signature causes it to hang forever.
-- Add a "Cancel"/"Close" button that nukes the current form. There is already code for this if you click "List on ANRFC" again.
 - It won't let you list two RFCs on the same page. Should be able to do so. Change the duplicate check to check the section title instead of the page title.
 - Sometimes closes the wrong section. (Old bug. Test and see if I can reproduce.)
 - seems to use a vector class to do its targeting. probably doesn't work on other skins. get working on other skins
@@ -71,10 +71,12 @@ var ANRFC = {
 		});
 	},
 	addForm: function(el) {
+		// If there's a form already created, delete it. (This makes the "List on ANRFC" link a toggle that opens the form or closes the form, based on current state.)
 		var keyId = el.getAttribute('indexKey') + "-anrfcBox";
 		if (document.getElementById(keyId) != null) {
 			return document.getElementById(keyId).remove();
 		}
+
 		$(el).parent().parent().after('<div id="' + keyId + '"></div>');
 		$('#' + keyId).css({
 			'margin': '16px 0',
@@ -117,9 +119,13 @@ var ANRFC = {
 		var submitButton = new OO.ui.ButtonWidget({
 			label: 'Submit',
 			flags: [
-				'primary',
-				'progressive'
+				'progressive',
+				'primary'
 			]
+		});
+
+		var cancelButton = new OO.ui.ButtonWidget({
+			label: 'Cancel',
 		});
 
 		$('#' + keyId).append('<h3 style="margin: 0 0 16px;">List this discussion on <a href="/wiki/Wikipedia:Closure_requests" target="_blank">Wikipedia:Closure requests</a></h3>');
@@ -134,10 +140,17 @@ var ANRFC = {
 		$(wrapper).append($(submitButton.$element).css({
 			'margin-top': '8px',
 		}));
+		$(wrapper).append($(cancelButton.$element).css({
+			'margin-top': '8px',
+		}));
 		$('#' + keyId).append(wrapper);
 
 		submitButton.on('click', function() {
 			ANRFC.onSubmit(dropDown, messageInput, keyId);
+		} );
+
+		cancelButton.on('click', function() {
+			document.getElementById(keyId).remove();
 		} );
 	},
 	dateToObj(dateString) {
@@ -308,7 +321,7 @@ var ANRFC = {
 	},
 };
 
-mw.loader.using(['oojs-ui-widgets', 'oojs-ui-windows', 'mediawiki-util'], function() {
+mw.loader.using(['oojs-ui-widgets', 'oojs-ui-windows', 'mediawiki.util'], function() {
 	ANRFC.init();
 });
 // </nowiki>
