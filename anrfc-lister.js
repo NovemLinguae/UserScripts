@@ -2,15 +2,29 @@
 
 Forked from https://en.wikipedia.org/wiki/User:Ajbura/anrfc-lister.js. A big thanks to the original author, Ajbura.
 
+HOW TO USE:
+- go to a talk page
+- click More -> ANRFC Lister
+- there will now be "List on ANRFC" links next to each section. click one
+- fill out the form
+- press "Submit"
+- the script will add a listing to WP:ANRFC for you :)
+
 TODO:
-- Verify that no signature (no date) won't break it.
-- An existing character is getting chopped off at the insert location. Example where } is chopped off: https://test.wikipedia.org/w/index.php?title=Wikipedia:Closure_requests&diff=prev&oldid=583740
+- No signature causes it to hang forever.
 - Change "init" to use mw.util.addPortletLink() (and make corresponding change to mw.loader.using at the bottom, and corresponding changes to toggle), so that the portlet link text isn't weird looking and gigantic.
 - Add a "Cancel"/"Close" button that nukes the current form. There is already code for this if you click "List on ANRFC" again.
 - It won't let you list two RFCs on the same page. Should be able to do so. Change the duplicate check to check the section title instead of the page title.
 - Change .done() to .then()
+- Sometimes closes the wrong section. (Old bug. Test and see if I can reproduce.)
+- seems to use a vector class to do its targeting. probably doesn't work on other skins. get working on other skins
+- verify that it inserts in the right spot based on date. so for example if WP:ANRFC has two listings in a section that are Jan 1 and Jan 31, and this RFC is Jan 15, it should insert in the middle
+- add unit tests for stuff like the above bullet
+
+- Notify original author
 - Send user talk messages to all users of the old script, letting them know about this updated one.
 - Update [[WP:US/L]]. Remove the old one completely, it is too buggy. Replace with this one.
+- Post on [[WT:ANRFC]] talk page.
 
 BUGS FIXED:
 - Linted code. Added comments. Refactored.
@@ -129,7 +143,7 @@ var ANRFC = {
 	onSubmit: function(dropDown, messageInput, keyId) {
 		// Dropdown is required.
 		if (dropDown.getMenu().findSelectedItem() == null) {
-			return OO.ui.alert( 'Please select discussion section from dropdown menu!' ).done(function() {
+			return OO.ui.alert( 'Please select discussion section from dropdown menu!' ).then(function() {
 				dropDown.focus();
 			} );
 		}
@@ -169,7 +183,7 @@ var ANRFC = {
 			action: 'parse',
 			page: "Wikipedia:Closure_requests",
 			prop: 'wikitext'
-		}).done(function(result) {
+		}).then(function(result) {
 			var wikitext = result.parse.wikitext['*'];
 			if (wikitext.replaceAll(' ', '_').match((pageName + "#" + sectionTitle).replaceAll(' ', '_')) != null) {
 				return OO.ui.alert('This discussion is already listed.');
@@ -177,22 +191,21 @@ var ANRFC = {
 
 			wikitext = ANRFC.makeWikitext(wikitext, wikitextToWrite, initiatedDate, targetSection);
 
-			new mw.Api().postWithEditToken( {
+			return new mw.Api().postWithEditToken( {
 				action: 'edit',
 				title: "Wikipedia:Closure_requests",
 				text: wikitext,
 				summary: 'Listing new discussion using [[User:Novem Linguae/Scripts/anrfc-lister.js|anrfc-lister]]',
 				nocreate: true
-			}).done(function(result) {
-				if ( result && result.edit && result.edit.result && result.edit.result === 'Success' ) {
-					OO.ui.confirm( 'This discussion has been listed on WP:ANRFC. Would you like to see it?' ).done( function ( confirmed ) {
-						if ( confirmed ) {
-							window.open("/wiki/Wikipedia:Closure_requests", "_blank");
-						}
-					} );
-
-				}
 			});
+		}).then(function(result) {
+			if ( result && result.edit && result.edit.result && result.edit.result === 'Success' ) {
+				OO.ui.confirm( 'This discussion has been listed on WP:ANRFC. Would you like to see it?' ).then( function ( confirmed ) {
+					if ( confirmed ) {
+						window.open("/wiki/Wikipedia:Closure_requests", "_blank");
+					}
+				} );
+			}
 		});
 	},
 	addForm: function(el) {
@@ -247,7 +260,7 @@ var ANRFC = {
 			]
 		});
 
-		$('#' + keyId).append('<h3 style="margin: 0 0 16px;">List this discussion on <a href="https://en.wikipedia.org/wiki/Wikipedia:Closure_requests" target="_blank">Wikipedia:Closure requests</a></h3>');
+		$('#' + keyId).append('<h3 style="margin: 0 0 16px;">List this discussion on <a href="/wiki/Wikipedia:Closure_requests" target="_blank">Wikipedia:Closure requests</a></h3>');
 		var wrapper = document.createElement('div');
 		$(wrapper).append('<p>Under section: </p>');
 		$(wrapper).append(dropDown.$element);
