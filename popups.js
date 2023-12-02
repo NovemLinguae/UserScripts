@@ -1098,7 +1098,7 @@ $(function () {
 		if (getValueOf('popupActionsMenu')) {
 			s.push('<<mainlink>>*' + menuTitle(dropclass, 'actions'));
 		} else {
-			s.push('<div class="'+dropclass+'">' + '<<mainlink>>');
+			s.push('<div class="' + dropclass + '">' + '<<mainlink>>');
 		}
 		s.push('<menu>');
 		s.push(editRow + markPatrolled + newTopic + hist + lastedit + thank);
@@ -1162,7 +1162,7 @@ $(function () {
 	function menuTitle(dropclass, s) {
 		var text = popupString(s); // i18n
 		var len = text.length;
-		return '<div class="'+dropclass+'" style="--navpop-m-len:'+len+'ch">' + '<a href="#" noPopup=1>' + text + '</a>';
+		return '<div class="' + dropclass + '" style="--navpop-m-len:' + len + 'ch">' + '<a href="#" noPopup=1>' + text + '</a>';
 	}
 
 	pg.structures.menus.popupRedirTitle = pg.structures.menus.popupTitle;
@@ -2107,7 +2107,6 @@ $(function () {
 			//<NOLITE>
 			// get what's in between "[[Image:" and "]]"
 			var tag = str.substring(str.indexOf(':') + 1, str.length - 2);
-			/* eslint-disable no-unused-vars */
 			var width;
 			var attr = [],
 				filename,
@@ -2116,7 +2115,6 @@ $(function () {
 				frame = 0,
 				center = 0;
 			var align = '';
-			/* eslint-enable no-unused-vars */
 
 			if (tag.match(/\|/)) {
 				// manage nested links
@@ -2195,7 +2193,7 @@ $(function () {
 				subloop;
 			var html = '';
 
-			while (-1 != (start = str.indexOf('<nowiki>', substart))) {
+			while ((start = str.indexOf('<nowiki>', substart)) != -1) {
 				html += parse_inline_wiki(str.substring(lastend, start));
 				start += 8;
 				substart = start;
@@ -2232,7 +2230,7 @@ $(function () {
 				nestlev = 0;
 			var loop, close, open, wiki, html;
 
-			while (-1 != (start = str.indexOf('[[', substart))) {
+			while ((start = str.indexOf('[[', substart)) != -1) {
 				if (
 					str.substr(start + 2).match(RegExp('^(Image|File|' + Insta.conf.locale.image + '):', 'i'))
 				) {
@@ -2315,7 +2313,7 @@ $(function () {
 			);
 
 			// text formatting
-			str = 
+			str =
 				str
 					// signatures
 					.replace(/~{5}(?!~)/g, date)
@@ -2603,7 +2601,7 @@ $(function () {
 	}
 
 	function addunit(num, str) {
-		return '' + num + ' ' + (num != 1 ? popupString(str + 's') : popupString(str));
+		return String(num) + ' ' + (num != 1 ? popupString(str + 's') : popupString(str));
 	}
 
 	function runPopupFilters(list, data, download) {
@@ -4096,7 +4094,7 @@ $(function () {
 				return false;
 			}
 			// we have a hide delay set
-			var d = +new Date();
+			var d = Number(new Date());
 			if (!navpop.mouseLeavingTime) {
 				navpop.mouseLeavingTime = d;
 				return false;
@@ -5107,7 +5105,7 @@ $(function () {
 	function adjustDate(d, offset) {
 		// offset is in minutes
 		var o = offset * 60 * 1000;
-		return new Date(+d + o);
+		return new Date(Number(d) + o);
 	}
 
 	/**
@@ -5803,7 +5801,7 @@ $(function () {
 		if (pg.wiki.wikimedia) {
 			// From https://meta.wikimedia.org/wiki/List_of_Wikipedias
 			//en.wikipedia.org/w/api.php?action=sitematrix&format=json&smtype=language&smlangprop=code&formatversion=2
-			https: pg.wiki.interwiki =
+			pg.wiki.interwiki =
 				'aa|ab|ace|af|ak|als|am|an|ang|ar|arc|arz|as|ast|av|ay|az|ba|bar|bat-smg|bcl|be|be-x-old|bg|bh|bi|bjn|bm|bn|bo|bpy|br|bs|bug|bxr|ca|cbk-zam|cdo|ce|ceb|ch|cho|chr|chy|ckb|co|cr|crh|cs|csb|cu|cv|cy|da|de|diq|dsb|dv|dz|ee|el|eml|en|eo|es|et|eu|ext|fa|ff|fi|fiu-vro|fj|fo|fr|frp|frr|fur|fy|ga|gag|gan|gd|gl|glk|gn|got|gu|gv|ha|hak|haw|he|hi|hif|ho|hr|hsb|ht|hu|hy|hz|ia|id|ie|ig|ii|ik|ilo|io|is|it|iu|ja|jbo|jv|ka|kaa|kab|kbd|kg|ki|kj|kk|kl|km|kn|ko|koi|kr|krc|ks|ksh|ku|kv|kw|ky|la|lad|lb|lbe|lg|li|lij|lmo|ln|lo|lt|ltg|lv|map-bms|mdf|mg|mh|mhr|mi|mk|ml|mn|mo|mr|mrj|ms|mt|mus|mwl|my|myv|mzn|na|nah|nap|nds|nds-nl|ne|new|ng|nl|nn|no|nov|nrm|nv|ny|oc|om|or|os|pa|pag|pam|pap|pcd|pdc|pfl|pi|pih|pl|pms|pnb|pnt|ps|pt|qu|rm|rmy|rn|ro|roa-rup|roa-tara|ru|rue|rw|sa|sah|sc|scn|sco|sd|se|sg|sh|si|simple|sk|sl|sm|sn|so|sq|sr|srn|ss|st|stq|su|sv|sw|szl|ta|te|tet|tg|th|ti|tk|tl|tn|to|tpi|tr|ts|tt|tum|tw|ty|udm|ug|uk|ur|uz|ve|vec|vi|vls|vo|wa|war|wo|wuu|xal|xh|yi|yo|za|zea|zh|zh-classical|zh-min-nan|zh-yue|zu';
 			pg.re.interwiki = RegExp('^' + pg.wiki.interwiki + ':');
 		} else {
@@ -7268,31 +7266,31 @@ $(function () {
 
 			switch (testString) {
 				case 'user':
-					testResult = article.userName() ? true : false;
+					testResult = !!article.userName();
 					break;
 				case 'talk':
-					testResult = article.talkPage() ? false : true; // talkPage converts _articles_ to talkPages
+					testResult = !article.talkPage(); // talkPage converts _articles_ to talkPages
 					break;
 				case 'admin':
-					testResult = getValueOf('popupAdminLinks') ? true : false;
+					testResult = !!getValueOf('popupAdminLinks');
 					break;
 				case 'oldid':
-					testResult = typeof oldid != 'undefined' && oldid ? true : false;
+					testResult = !!(typeof oldid != 'undefined' && oldid);
 					break;
 				case 'rcid':
-					testResult = typeof rcid != 'undefined' && rcid ? true : false;
+					testResult = !!(typeof rcid != 'undefined' && rcid);
 					break;
 				case 'ipuser':
-					testResult = article.isIpUser() ? true : false;
+					testResult = !!article.isIpUser();
 					break;
 				case 'mainspace_en':
 					testResult = isInMainNamespace(article) && pg.wiki.hostname == 'en.wikipedia.org';
 					break;
 				case 'wikimedia':
-					testResult = pg.wiki.wikimedia ? true : false;
+					testResult = !!pg.wiki.wikimedia;
 					break;
 				case 'diff':
-					testResult = typeof diff != 'undefined' && diff ? true : false;
+					testResult = !!(typeof diff != 'undefined' && diff);
 					break;
 			}
 
@@ -7760,7 +7758,7 @@ $(function () {
 				break;
 			default:
 				this.print = function () {
-					return 'Unknown navlink type: ' + this.id + '';
+					return 'Unknown navlink type: ' + String(this.id);
 				};
 		}
 	};
