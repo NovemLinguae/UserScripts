@@ -116,7 +116,10 @@ class UserHighlighterSimple {
 			// ...dataJSON['mediawikiPlusTwo'],
 			// ...dataJSON['global-sysop'],
 		};
-		this.stewards = dataJSON['steward'];
+		this.stewards = {
+			...dataJSON['steward'],
+			...dataJSON['ombuds'],
+		};
 		this.arbcom = dataJSON['arbcom'];
 		this.bureaucrats = dataJSON['bureaucrat'];
 		this.admins = dataJSON['sysop'];
@@ -173,7 +176,7 @@ class UserHighlighterSimple {
 
 	linksToAUser() {
 		let url = this.$link.attr('href');
-		
+
 		if ( ! this.hasHREF(url) || this.isAnchor(url) || ! this.isHTTPorHTTPS(url) ) {
 			return false;
 		}
@@ -187,7 +190,7 @@ class UserHighlighterSimple {
 		} catch {
 			return false;
 		}
-		
+
 		// Skip links that aren't to user pages
 		let isUserPageLink = url.includes('/w/index.php?title=User') || url.includes('/wiki/User');
 		if ( ! isUserPageLink ) {
@@ -212,7 +215,7 @@ class UserHighlighterSimple {
 		} catch {
 			return false;
 		}
-		
+
 		if ( this.notInUserOrUserTalkNamespace() ) {
 			return false;
 		}
@@ -268,7 +271,7 @@ class UserHighlighterSimple {
 
 		// TODO: grab the order from an array, so I can keep checkForPermission and addCSS in the same order easily, lowering the risk of the HTML title="" being one thing, and the color being another
 		this.checkForPermission(this.wmf, 'UHS-wmf', 'Wikimedia Foundation (WMF)');
-		this.checkForPermission(this.stewards, 'UHS-steward', 'Steward');
+		this.checkForPermission(this.stewards, 'UHS-steward', 'Steward or Ombud');
 		this.checkForPermission(this.arbcom, 'UHS-arbitration-committee', 'Arbitration Committee member');
 		this.checkForPermission(this.bureaucrats, 'UHS-bureaucrat', 'Bureaucrat');
 		this.checkForPermission(this.admins, 'UHS-administrator', 'Admin');
