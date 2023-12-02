@@ -64,7 +64,6 @@ $(function () {
 	function setupTooltips(container, remove, force, popData) {
 		log('setupTooltips, container=' + container + ', remove=' + remove);
 		if (!container) {
-			//<NOLITE>
 			// the main initial call
 			if (
 				getValueOf('popupOnEditSelection') &&
@@ -74,7 +73,6 @@ $(function () {
 			) {
 				document.editform.wpTextbox1.onmouseup = doSelectionPopup;
 			}
-			//</NOLITE>
 			// article/content is a structure-dependent thing
 			container = defaultPopupsContainer();
 		}
@@ -203,10 +201,8 @@ $(function () {
 			};
 			np.addHook(setMaxWidth, 'unhide', 'before');
 		}
-		//<NOLITE>
 		np.addHook(addPopupShortcuts, 'unhide', 'after');
 		np.addHook(rmPopupShortcuts, 'hide', 'before');
-		//</NOLITE>
 	}
 
 	function removeModifierKeyHandler(a) {
@@ -376,11 +372,9 @@ $(function () {
 			}, 150);
 		}
 
-		//<NOLITE>
 		if (getValueOf('popupRedlinkRemoval') && a.className == 'new') {
 			setPopupHTML('<br>' + popupRedlinkHTML(article), 'popupRedlink', a.navpopup.idNumber);
 		}
-		//</NOLITE>
 	}
 
 	function debugData(navpopup) {
@@ -429,19 +423,16 @@ $(function () {
 			history = null;
 		var params = parseParams(a.href);
 		var oldid = typeof params.oldid == 'undefined' ? null : params.oldid;
-		//<NOLITE>
 		if (shouldShow(a, 'popupPreviewDiffs')) {
 			diff = params.diff;
 		}
 		if (shouldShow(a, 'popupPreviewHistory')) {
 			history = params.action == 'history';
 		}
-		//</NOLITE>
 		a.navpopup.pending = 0;
 		var referenceElement = footnoteTarget(a);
 		if (referenceElement) {
 			footnotePreview(referenceElement, a.navpopup);
-			//<NOLITE>
 		} else if (diff || diff === 0) {
 			loadDiff(article, oldid, diff, a.navpopup);
 		} else if (history) {
@@ -457,7 +448,6 @@ $(function () {
 		) {
 			loadAPIPreview('imagepagepreview', article, a.navpopup);
 			loadImage(article, a.navpopup);
-			//</NOLITE>
 		} else {
 			if (article.namespaceId() == pg.nsCategoryId && shouldShow(a, 'popupCategoryMembers')) {
 				loadAPIPreview('category', article, a.navpopup);
@@ -511,10 +501,8 @@ $(function () {
 		}
 		navpop.redir++;
 		navpop.redirTarget = target;
-		//<NOLITE>
 		var warnRedir = redirLink(target, navpop.article);
 		setPopupHTML(warnRedir, 'popupWarnRedir', navpop.idNumber);
-		//</NOLITE>
 		navpop.article = target;
 		fillEmptySpans({ redir: true, redirTarget: target, navpopup: navpop });
 		return loadPreview(target, null, navpop);
@@ -555,7 +543,6 @@ $(function () {
 		var navpop = download.owner;
 		var art = navpop.redirTarget || navpop.originalArticle;
 
-		//<NOLITE>
 		makeFixDabs(wikiText, navpop);
 		if (getValueOf('popupSummaryData')) {
 			getPageInfo(wikiText, download);
@@ -571,7 +558,6 @@ $(function () {
 		if (imagePage) {
 			loadImage(Title.fromWikiText(imagePage), navpop);
 		}
-		//</NOLITE>
 
 		if (getValueOf('popupPreviews')) {
 			insertArticlePreview(download, art, navpop);
@@ -821,7 +807,6 @@ $(function () {
 	// ENDFILE: domdrag.js
 
 	// STARTFILE: structures.js
-	//<NOLITE>
 	pg.structures.original = {};
 	pg.structures.original.popupLayout = function () {
 		return [
@@ -1174,7 +1159,6 @@ $(function () {
 	};
 	pg.structures.shortmenus.popupRedirTopLinks = pg.structures.shortmenus.popupTopLinks;
 
-	//</NOLITE>
 	pg.structures.lite = {};
 	pg.structures.lite.popupLayout = function () {
 		return ['popupTitle', 'popupPreview'];
@@ -1187,7 +1171,6 @@ $(function () {
 	// ENDFILE: structures.js
 
 	// STARTFILE: autoedit.js
-	//<NOLITE>
 	function substitute(data, cmdBody) {
 		// alert('sub\nfrom: '+cmdBody.from+'\nto: '+cmdBody.to+'\nflags: '+cmdBody.flags);
 		var fromRe = RegExp(cmdBody.from, cmdBody.flags);
@@ -1468,7 +1451,6 @@ $(function () {
 		}
 	}
 
-	//</NOLITE>
 	// ENDFILE: autoedit.js
 
 	// STARTFILE: downloader.js
@@ -2104,7 +2086,6 @@ $(function () {
 		}
 
 		function parse_image(str) {
-			//<NOLITE>
 			// get what's in between "[[Image:" and "]]"
 			var tag = str.substring(str.indexOf(':') + 1, str.length - 2);
 			var width;
@@ -2180,7 +2161,6 @@ $(function () {
 			}
 
 			return '';
-			//</NOLITE>
 		}
 
 		function parse_inline_nowiki(str) {
@@ -2224,7 +2204,6 @@ $(function () {
 		}
 
 		function parse_inline_images(str) {
-			//<NOLITE>
 			var start,
 				substart = 0,
 				nestlev = 0;
@@ -2264,7 +2243,6 @@ $(function () {
 				}
 			}
 
-			//</NOLITE>
 			return str;
 		}
 
@@ -2508,7 +2486,6 @@ $(function () {
 	// ENDFILE: livepreview.js
 
 	// STARTFILE: pageinfo.js
-	//<NOLITE>
 	function popupFilterPageSize(data) {
 		return formatBytes(data.length);
 	}
@@ -2674,7 +2651,6 @@ $(function () {
 			? Math.round(num / 100) / 10 + popupString('kB')
 			: num + '&nbsp;' + popupString('bytes');
 	}
-	//</NOLITE>
 	// ENDFILE: pageinfo.js
 
 	// STARTFILE: titles.js
@@ -2965,7 +2941,6 @@ $(function () {
 		}
 		return safeDecodeURI(this.value);
 	};
-	//<NOLITE>
 	Title.prototype.toUserName = function (withNs) {
 		if (this.namespaceId() != pg.nsUserId && this.namespaceId() != pg.nsUsertalkId) {
 			this.value = null;
@@ -3012,7 +2987,6 @@ $(function () {
 		this.value = null;
 		return null;
 	};
-	//</NOLITE>
 	// Return canonical, localized namespace
 	Title.prototype.namespace = function () {
 		return mw.config.get('wgFormattedNamespaces')[this.namespaceId()];
@@ -3031,7 +3005,6 @@ $(function () {
 		} //mainspace
 		return namespaceId;
 	};
-	//<NOLITE>
 	Title.prototype.talkPage = function () {
 		var t = new Title(this.value);
 		t.toTalkPage();
@@ -3087,7 +3060,6 @@ $(function () {
 	Title.prototype.isIpUser = function () {
 		return pg.re.ipUser.test(this.userName());
 	};
-	//</NOLITE>
 	Title.prototype.stripNamespace = function () {
 		// returns a string, not a Title
 		var n = this.value.indexOf(':');
@@ -3209,7 +3181,6 @@ $(function () {
 	// TESTS //
 	///////////
 
-	//<NOLITE>
 	function isDisambig(data, article) {
 		if (!getValueOf('popupAllDabsStubs') && article.namespace()) {
 			return false;
@@ -3265,7 +3236,6 @@ $(function () {
 		}
 		return false;
 	}
-	//</NOLITE>
 	function isPopupLink(a) {
 		// NB for performance reasons, TOC links generally return true
 		// they should be stripped out later
@@ -3464,8 +3434,6 @@ $(function () {
 
 	// Source: http://aktuell.de.selfhtml.org/artikel/javascript/utf8b64/utf8.htm
 
-	//<NOLITE>
-
 	function getJsObj(json) {
 		try {
 			var json_ret = JSON.parse(json);
@@ -3493,8 +3461,6 @@ $(function () {
 		}
 		return null;
 	}
-
-	//</NOLITE>
 
 	function upcaseFirst(str) {
 		if (typeof str != typeof '' || str === '') {
@@ -3666,7 +3632,6 @@ $(function () {
 	// ENDFILE: tools.js
 
 	// STARTFILE: dab.js
-	//<NOLITE>
 	//////////////////////////////////////////////////
 	// Dab-fixing code
 	//
@@ -3787,7 +3752,6 @@ $(function () {
 			summary: simplePrintf(getValueOf('popupRedlinkSummary'), [article.toString()]),
 		});
 	}
-	//</NOLITE>
 	// ENDFILE: dab.js
 
 	// STARTFILE: htmloutput.js
@@ -3823,11 +3787,9 @@ $(function () {
 		return null;
 	}
 
-	//<NOLITE>
 	function setPopupTrailer(str, id) {
 		return setPopupHTML(str, 'popupData', id);
 	}
-	//</NOLITE>
 
 	// args.navpopup is mandatory
 	// optional: args.redir, args.redirTarget
@@ -4580,7 +4542,6 @@ $(function () {
 		return this.esWiki2HtmlPart(this.data);
 	};
 
-	//<NOLITE>
 	/** Test function for debugging preview problems one step at a time. */
 	/*eslint-disable */
 	function previewSteps(txt) {
@@ -4669,7 +4630,6 @@ $(function () {
 		alert('finished preview - end result follows.\n---\n' + p.html);
 	}
 	/*eslint-enable */
-	//</NOLITE>
 
 	/**
 	 * Works around livepreview bugs.
@@ -5540,7 +5500,6 @@ $(function () {
 		}
 	}
 
-	//</NOLITE>
 	// ENDFILE: querypreview.js
 
 	// STARTFILE: debug.js
@@ -5549,7 +5508,6 @@ $(function () {
 	////////////////////////////////////////////////////////////////////
 
 	function setupDebugging() {
-		//<NOLITE>
 		if (window.popupDebug) {
 			// popupDebug is set from .version
 			window.log = function (x) {
@@ -5561,12 +5519,9 @@ $(function () {
 			};
 			log('Initializing logger');
 		} else {
-			//</NOLITE>
 			window.log = function () {};
 			window.errlog = function () {};
-			//<NOLITE>
 		}
-		//</NOLITE>
 	}
 	// ENDFILE: debug.js
 
@@ -5730,7 +5685,6 @@ $(function () {
 		return split.join('');
 	}
 
-	//</NOLITE>
 	// ENDFILE: images.js
 
 	// STARTFILE: namespaces.js
@@ -5751,7 +5705,6 @@ $(function () {
 		var r = 'redirect';
 		var R = 'REDIRECT';
 		var redirLists = {
-			//<NOLITE>
 			ar: [R, 'تحويل'],
 			be: [r, 'перанакіраваньне'],
 			bg: [r, 'пренасочване', 'виж'],
@@ -5787,7 +5740,6 @@ $(function () {
 			vi: [r, 'đổi'],
 			yi: [R, 'ווייטערפירן'],
 			zh: [R, '重定向'], // no comma
-			//</NOLITE>
 		};
 		var redirList = redirLists[pg.wiki.lang] || [r, R];
 		// Mediawiki is very tolerant about what comes after the #redirect at the start
@@ -5833,7 +5785,6 @@ $(function () {
 	// ENDFILE: namespaces.js
 
 	// STARTFILE: selpop.js
-	//<NOLITE>
 	function getEditboxSelection() {
 		// see http://www.webgurusforum.com/8/12/0
 		var editbox;
@@ -5907,7 +5858,6 @@ $(function () {
 		div.ranSetupTooltipsAlready = false;
 		popTipsSoonFn('selectionPreview')();
 	}
-	//</NOLITE>
 	// ENDFILE: selpop.js
 
 	// STARTFILE: navpopup.js
@@ -6643,7 +6593,6 @@ $(function () {
 	// ENDFILE: navpopup.js
 
 	// STARTFILE: diff.js
-	//<NOLITE>
 	/*
 	 * Javascript Diff Algorithm
 	 *  By John Resig (http://ejohn.org/) and [[:en:User:Lupin]]
@@ -6863,7 +6812,6 @@ $(function () {
 
 		return { o: o, n: n };
 	}
-	//</NOLITE>
 	// ENDFILE: diff.js
 
 	// STARTFILE: init.js
@@ -7024,7 +6972,6 @@ $(function () {
 			}
 		});
 
-		//<NOLITE>
 		var im = nsReImage();
 		// note: tries to get images in infobox templates too, e.g. movie pages, album pages etc
 		//					  (^|\[\[)image: *([^|\]]*[^|\] ]) *
@@ -7061,7 +7008,6 @@ $(function () {
 		pg.re.stub = RegExp(getValueOf('popupStubRegexp'), 'im');
 		pg.re.disambig = RegExp(getValueOf('popupDabRegexp'), 'im');
 
-		//</NOLITE>
 		// FIXME replace with general parameter parsing function, this is daft
 		pg.re.oldid = RegExp('[?&]oldid=([^&]*)');
 		pg.re.diff = RegExp('[?&]diff=([^&]*)');
@@ -7166,7 +7112,6 @@ $(function () {
 	// ENDFILE: init.js
 
 	// STARTFILE: navlinks.js
-	//<NOLITE>
 	//////////////////////////////////////////////////
 	// navlinks... let the fun begin
 	//
@@ -7765,11 +7710,9 @@ $(function () {
 	//
 	//  end navlinks
 	//////////////////////////////////////////////////
-	//</NOLITE>
 	// ENDFILE: navlinks.js
 
 	// STARTFILE: shortcutkeys.js
-	//<NOLITE>
 	function popupHandleKeypress(evt) {
 		var keyCode = window.event ? window.event.keyCode : evt.keyCode ? evt.keyCode : evt.which;
 		if (!keyCode || !pg.current.link || !pg.current.link.navpopup) {
@@ -7853,11 +7796,9 @@ $(function () {
 		}
 		return ret.replace(RegExp('^(.*?)(title=")(.*?)(".*)$', 'i'), '$1$2$3 [' + key + ']$4');
 	}
-	//</NOLITE>
 	// ENDFILE: shortcutkeys.js
 
 	// STARTFILE: diffpreview.js
-	//<NOLITE>
 	//lets jump through hoops to find the rev ids we need to retrieve
 	function loadDiff(article, oldid, diff, navpop) {
 		navpop.diffData = { oldRev: {}, newRev: {} };
@@ -8184,11 +8125,9 @@ $(function () {
 		});
 		return simplePrintf('<tr><td>%s</td><td>%s</td></tr>', [revlink, txt]);
 	}
-	//</NOLITE>
 	// ENDFILE: diffpreview.js
 
 	// STARTFILE: links.js
-	//<NOLITE>
 	/////////////////////
 	// LINK GENERATION //
 	/////////////////////
@@ -8999,7 +8938,6 @@ $(function () {
 		//pg.misc.historyInfo=histInfo;
 		return histInfo;
 	}
-	//</NOLITE>
 	// ENDFILE: links.js
 
 	// STARTFILE: options.js
@@ -9102,7 +9040,6 @@ $(function () {
 			second: '2-digit',
 		});
 
-		//<NOLITE>
 		// images
 		newOption('popupImages', true);
 		newOption('imagePopupsForImages', true);
@@ -9131,7 +9068,6 @@ $(function () {
 		newOption('popupLastEditLink', true);
 		newOption('popupEditCounterTool', 'supercount');
 		newOption('popupEditCounterUrl', '');
-		//</NOLITE>
 
 		// previews etc
 		newOption('popupPreviews', true);
@@ -9146,7 +9082,6 @@ $(function () {
 		newOption('popupPreviewButton', false);
 		newOption('popupPreviewButtonEvent', 'click');
 
-		//<NOLITE>
 		// diffs
 		newOption('popupPreviewDiffs', true);
 		newOption('popupDiffMaxLines', 100);
@@ -9169,10 +9104,8 @@ $(function () {
 		newOption('popupFixRedirsSummary', popupString('defaultpopupFixRedirsSummary'));
 		newOption('popupRedlinkSummary', popupString('defaultpopupRedlinkSummary'));
 		newOption('popupRmDabLinkSummary', popupString('defaultpopupRmDabLinkSummary'));
-		//</NOLITE>
 		// misc
 		newOption('popupHistoryLimit', 50);
-		//<NOLITE>
 		newOption('popupFilters', [
 			popupFilterStubDetect,
 			popupFilterDisambigDetect,
@@ -9193,7 +9126,6 @@ $(function () {
 		newOption('popupContribsPreviewLimit', 25);
 		newOption('popupRevDelUrl', '//en.wikipedia.org/wiki/Wikipedia:Revision_deletion');
 		newOption('popupShowGender', true);
-		//</NOLITE>
 
 		// new windows
 		newOption('popupNewWindows', false);
@@ -9214,7 +9146,6 @@ $(function () {
 	// ENDFILE: options.js
 
 	// STARTFILE: strings.js
-	//<NOLITE>
 	//////////////////////////////////////////////////
 	// Translatable strings
 	//////////////////////////////////////////////////
@@ -9499,7 +9430,6 @@ $(function () {
 		return simplePrintf(popupString(str), subs);
 	}
 
-	//</NOLITE>
 	// ENDFILE: strings.js
 
 	// STARTFILE: run.js

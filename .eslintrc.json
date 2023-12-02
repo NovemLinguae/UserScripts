@@ -62,7 +62,8 @@
 			}
 		],
 		"no-trailing-spaces": "error",
-		"space-infix-ops": "error"
+		"space-infix-ops": "error",
+		"no-multiple-empty-lines": ["error", {"max": 1}]
 	},
 	"reportUnusedDisableDirectives": true,
 	"overrides": [
