@@ -14,21 +14,20 @@ SKINS IT WORKS IN:
 - vector
 - vector-2022
 
-BUGS FIXED:
+CHANGES BY NOVEM LINGUAE:
 - Linted code. Added comments. Refactored.
 - Works on testwiki now (gives a local WP:ANRFC link instead of an enwiki WP:ANRFC link).
 - Fixed bug where the script was always in an endless loop
-- Fixed bug where the RFC would always get placed at the end of the page, not in its proper section
+- Fixed bug where the RFC would always get placed at the bottom of the page, not in its proper section
 - Fixed bug where section heading (the # part of the wikilink) was not getting added to WP:ANRFC
 - Fixed bug where More -> ANRFC Lister link was the wrong size and did not match the style of the skin
 - Added a "Cancel" button to the form
 
-PROGRAMMER TODO:
+NOVEM LINGUAE TODO:
+- seems to use a vector class to do its targeting. probably doesn't work on other skins. get working on other skins
 - No signature causes it to hang forever.
 - It won't let you list two RFCs on the same page. Should be able to do so. Change the duplicate check to check the section title instead of the page title.
 - Sometimes closes the wrong section. (Old bug. Test and see if I can reproduce.)
-- seems to use a vector class to do its targeting. probably doesn't work on other skins. get working on other skins
-- verify that it inserts in the right spot based on date. so for example if WP:ANRFC has two listings in a section that are Jan 1 and Jan 31, and this RFC is Jan 15, it should insert in the middle
 - add unit tests for stuff like the above bullet
 
 - Notify original author
