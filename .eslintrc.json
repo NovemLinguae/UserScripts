@@ -30,7 +30,6 @@
 		"block-spacing": "error",
 		"brace-style": ["error", "1tbs"],
 		"comma-spacing": ["error", { "before": false, "after": true }],
-		"computed-property-spacing": ["error", "never"],
 		"func-call-spacing": ["error", "never"],
 		"indent": ["error", "tab", {
 			"outerIIFEBody": 0,
@@ -63,7 +62,8 @@
 		],
 		"no-trailing-spaces": "error",
 		"space-infix-ops": "error",
-		"no-multiple-empty-lines": ["error", {"max": 1}]
+		"no-multiple-empty-lines": ["error", {"max": 1}],
+		"no-script-url": "error"
 	},
 	"reportUnusedDisableDirectives": true,
 	"overrides": [
