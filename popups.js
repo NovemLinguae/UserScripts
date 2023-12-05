@@ -584,8 +584,7 @@ $(function () {
 		// deal with tricksy anchors
 		var d = anchorize(data, article.anchorString());
 		var urlBase = joinPath([pg.wiki.articlebase, article.urlString()]);
-		var p = new Previewmaker(d, urlBase, navpop);
-		return p;
+		return new Previewmaker(d, urlBase, navpop);
 	}
 
 	// Try to imitate the way mediawiki generates HTML anchors from section titles
@@ -1990,7 +1989,7 @@ $(function () {
 		function parse_table() {
 			endl(f('<table>', compareLineStringOrReg(/^\{\|( .*)$/) ? r[1] : ''));
 
-			for (; remain(); ) {
+			while (remain()) {
 				if (compareLineStringOrReg('|')) {
 					switch (charAtPoint(1)) {
 						case '}':
@@ -2438,7 +2437,7 @@ $(function () {
 		}
 
 		// begin parsing
-		for (; remain(); ) {
+		while (remain()) {
 			if (compareLineStringOrReg(/^(={1,6})(.*)\1(.*)$/)) {
 				p = 0;
 				endl(f('<h?>?</h?>?', r[1].length, parse_inline_nowiki(r[2]), r[1].length, r[3]));
@@ -5493,8 +5492,7 @@ $(function () {
 				edits = anyChild(jsobj.query.pages).revisions;
 			}
 
-			var ret = editPreviewTable(article, edits, reallyContribs);
-			return ret;
+			return editPreviewTable(article, edits, reallyContribs);
 		} catch (someError) {
 			return 'History preview failed :-(';
 		}
