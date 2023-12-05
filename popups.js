@@ -7808,9 +7808,7 @@ $(function () {
 				action: 'compare',
 				prop: 'ids|title',
 			};
-			if (article.title) {
-				params.fromtitle = article.title;
-			}
+			params.fromtitle = article.toString();
 
 			switch (diff) {
 				case 'cur':
@@ -7829,10 +7827,8 @@ $(function () {
 					}
 					break;
 				case 'prev':
-					if (oldid) {
+					if (oldid && oldid !== 'cur') {
 						params.fromrev = oldid;
-					} else {
-						params.fromtitle;
 					}
 					params.torelative = 'prev';
 					break;
