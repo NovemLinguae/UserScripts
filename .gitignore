@@ -11,4 +11,4 @@ node_modules
 publish_old.php
 publish.config.php
 RequestedArticleSifter
-sandbox.*
+sandbox*.*
