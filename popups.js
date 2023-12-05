@@ -7799,7 +7799,16 @@ $(function () {
 	// ENDFILE: shortcutkeys.js
 
 	// STARTFILE: diffpreview.js
-	//lets jump through hoops to find the rev ids we need to retrieve
+	/**
+	 * Load diff data.
+	 *
+	 * lets jump through hoops to find the rev ids we need to retrieve
+	 *
+	 * @param {Title} article
+	 * @param {String} oldid
+	 * @param {String} diff
+	 * @param {Navpopup} navpop
+	 */
 	function loadDiff(article, oldid, diff, navpop) {
 		navpop.diffData = { oldRev: {}, newRev: {} };
 		mw.loader.using('mediawiki.api').then(function () {
