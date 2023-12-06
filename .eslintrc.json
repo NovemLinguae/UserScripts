@@ -1,5 +1,8 @@
 {
-	"extends": ["eslint:recommended"],
+	"extends": [
+		"eslint:recommended",
+		"plugin:sonarjs/recommended"
+	],
 	"root": true,
 	"env": {
 		"browser": true,
@@ -12,7 +15,8 @@
 	},
 	"ignorePatterns": ["scripts/", "tests/", "lib/"],
 	"plugins": [
-		"lodash"
+		"lodash",
+		"sonarjs"
 	],
 	"rules": {
 		"no-constant-condition": "off",
