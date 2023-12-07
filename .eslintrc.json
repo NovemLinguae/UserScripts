@@ -1,7 +1,8 @@
 {
 	"extends": [
 		"eslint:recommended",
-		"plugin:sonarjs/recommended"
+		"plugin:sonarjs/recommended",
+		"plugin:jsdoc/recommended"
 	],
 	"root": true,
 	"env": {
@@ -17,11 +18,12 @@
 	"plugins": [
 		"lodash",
 		"sonarjs",
-		"unicorn"
+		"unicorn",
+		"jsdoc"
 	],
 	"rules": {
 		"unicorn/no-abusive-eslint-disable": "error",
-		"no-constant-condition": "off",
+		"no-constant-condition": 0,
 		"no-console": "warn",
 		"no-unreachable-loop": "error",
 		"block-scoped-var": "error",
@@ -50,7 +52,7 @@
 		"no-nested-ternary": "error",
 		"no-new-object": "error",
 		"no-unneeded-ternary": "error",
-		"no-useless-escape": "off",
+		"no-useless-escape": 0,
 		"no-whitespace-before-property": "error",
 		"semi": ["error", "always"],
 		"space-before-blocks": "error",
@@ -69,7 +71,12 @@
 		"no-trailing-spaces": "error",
 		"space-infix-ops": "error",
 		"no-multiple-empty-lines": ["error", {"max": 1}],
-		"no-script-url": "error"
+		"no-script-url": "error",
+		"jsdoc/require-jsdoc": 0,
+		"jsdoc/require-param-description": 0,
+		"jsdoc/require-returns": 0,
+		"jsdoc/require-param": 0,
+		"jsdoc/require-returns-description": 0
 	},
 	"reportUnusedDisableDirectives": true,
 	"overrides": [
