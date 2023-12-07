@@ -16,9 +16,11 @@
 	"ignorePatterns": ["scripts/", "tests/", "lib/"],
 	"plugins": [
 		"lodash",
-		"sonarjs"
+		"sonarjs",
+		"unicorn"
 	],
 	"rules": {
+		"unicorn/no-abusive-eslint-disable": "error",
 		"no-constant-condition": "off",
 		"no-console": "warn",
 		"no-unreachable-loop": "error",
