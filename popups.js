@@ -8552,48 +8552,50 @@ $(function () {
 		});
 	}
 
-	function generalLink(l) {
-		// l.url, l.text, l.title, l.newWin, l.className, l.noPopup, l.onclick
-		if (typeof l.url == 'undefined') {
+	/**
+	 * Builds a link from a object representing a link
+	 * @param {object} link
+	 * @param {string} link.url URL
+	 * @param {string} link.text The text to show for a link
+	 * @param {string} link.title Title of the link, this shows up 
+	 * when you hover over the link
+	 * @param {boolean} link.newWin Should open in a new Window
+	 * @param {number} link.noPopup Should nest new popups from link (0 or 1)
+	 * @param {string} link.onclick
+	 * @returns {string|null} null if no url is given
+	 */
+	function generalLink(link) {
+		if (typeof link.url == 'undefined') {
 			return null;
 		}
 
-		// only quotation marks in the url can screw us up now... I think
-		var url = l.url.split('"').join('%22');
+		var elem = document.createElement( 'a' );
 
-		var ret = '<a href="' + url + '"';
-		if (typeof l.title != 'undefined' && l.title) {
-			ret += ' title="' + pg.escapeQuotesHTML(l.title) + '"';
+		elem.href = link.url;
+		elem.title = link.title;
+		// The onclick event adds raw JS in textual form to the HTML.
+		// TODO: We should look into removing this, and/or auditing what gets sent.
+		elem.setAttribute( 'onclick', link.onclick );
+
+		if ( link.noPopup ) {
+			elem.setAttribute('noPopup', '1' );
 		}
-		if (typeof l.onclick != 'undefined' && l.onclick) {
-			ret += ' onclick="' + pg.escapeQuotesHTML(l.onclick) + '"';
-		}
-		if (l.noPopup) {
-			ret += ' noPopup=1';
-		}
+
 		var newWin;
-		if (typeof l.newWin == 'undefined' || l.newWin === null) {
+		if (typeof link.newWin == 'undefined' || link.newWin === null) {
 			newWin = getValueOf('popupNewWindows');
 		} else {
-			newWin = l.newWin;
+			newWin = link.newWin;
 		}
 		if (newWin) {
-			ret += ' target="_blank"';
+			elem.target = '_blank';
 		}
-		if (typeof l.className != 'undefined' && l.className) {
-			ret += ' class="' + l.className + '"';
+		if (link.className) {
+			elem.className = link.className;
 		}
-		ret += '>';
-		if (typeof l.text == typeof '') {
-			// We need to HTML-escape this to avoid XSS, but we also want to
-			// display any existing HTML entities correctly, so unescape it first.
-			// For example, the display text of the user page menu item is defined
-			// as "user&nbsp;page", so we need to unescape first to avoid it being
-			// escaped to "user&amp;nbsp;page".
-			ret += pg.escapeQuotesHTML(pg.unescapeQuotesHTML(l.text));
-		}
-		ret += '</a>';
-		return ret;
+		elem.innerText = pg.unescapeQuotesHTML(link.text);
+
+		return elem.outerHTML;
 	}
 
 	function appendParamsToLink(linkstr, params) {
