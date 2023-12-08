@@ -22,10 +22,9 @@ CHANGES BY NOVEM LINGUAE:
 - Fixed bug where section heading (the # part of the wikilink) was not getting added to WP:ANRFC
 - Fixed bug where More -> ANRFC Lister link was the wrong size and did not match the style of the skin
 - Added a "Cancel" button to the form
+- No longer displays on special pages, diffs, editing a page, etc.
 
 NOVEM LINGUAE TODO:
-- don't display on special pages like special:watchlist
-- don't display when editing a page
 - seems to use a vector class to do its targeting. probably doesn't work on other skins. get working on other skins
 - No signature causes it to hang forever.
 - It won't let you list two RFCs on the same page. Should be able to do so. Change the duplicate check to check the section title instead of the page title.
@@ -44,6 +43,25 @@ NOVEM LINGUAE TODO:
 // <nowiki>
 var ANRFC = {
 	init: function() {
+		// don't run when not viewing articles
+		let action = mw.config.get('wgAction');
+		let isNotViewing = action != 'view';
+		if ( isNotViewing ) {
+			return;
+		}
+
+		// don't run when viewing diffs
+		let isDiff = mw.config.get('wgDiffNewId');
+		if ( isDiff ) {
+			return;
+		}
+
+		// Don't run in virtual namespaces
+		let isVirtualNamespace = mw.config.get('wgNamespaceNumber') < 0;
+		if ( isVirtualNamespace ) {
+			return;
+		}
+
 		mw.util.addPortletLink('p-cactions', '#', 'ANRFC lister', 'ca-anrfc');
 		$('#ca-anrfc').attr('onClick', 'ANRFC.toggle();');
 	},
