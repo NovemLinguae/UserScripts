@@ -198,6 +198,30 @@ var ANRFC = {
 			year: parseInt(oDate[3])
 		};
 	},
+	getRFCDate: function(keyId) {
+		// Grab initiated date (the first signature in the section will have the initiated date)
+		var initDateRegx = /([\d]{1,2}:[\d]{1,2},\s[\d]{1,2}\s[\w]+\s[\d]{4}\s\([\w]+\))/;
+		var initDateMatches = null;
+
+		var $nextEl = $('#' + keyId); // #0-anrfcBox
+		// TODO: Only check elements between anrfcBox and the next H2 (or end of page). Right now it checks the entire page until it runs out of .next() elements.
+		do {
+			if ($nextEl.next().hasClass('boilerplate')) {
+				$nextEl = $nextEl.next().children('p');
+			} else {
+				$nextEl = $nextEl.next();
+			}
+
+			initDateMatches = $nextEl.text().match(initDateRegx);
+
+			if ( ! $nextEl.length ) {
+				// We're out of siblings to check at this level. Try the parent's siblings.
+				$nextEl = $nextEl.prevObject.parent().next();
+			}
+		} while ( ! initDateMatches && $nextEl.length );
+
+		return initDateMatches;
+	},
 	/**
 	 * @param {OO.ui.DropdownWidget} dropDown The discussion section the user selected.
 	 * @param {OO.ui.MultilineTextInputWidget} messageInput The message the user typed.
@@ -221,31 +245,11 @@ var ANRFC = {
 		// Grab section title
 		var sectionTitle = $('#' + keyId).prev().find('.mw-headline').text();
 
-		// Grab initiated date (the first signature in the section will have the initiated date)
-		var initDateRegx = /([\d]{1,2}:[\d]{1,2},\s[\d]{1,2}\s[\w]+\s[\d]{4}\s\([\w]+\))/;
-		var initDateMatches = null;
-
-		var $nextEl = $('#' + keyId); // #0-anrfcBox
-		// TODO: Only check elements between anrfcBox and the next H2 (or end of page). Right now it checks the entire page until it runs out of .next() elements.
-		do {
-			if ($nextEl.next().hasClass('boilerplate')) {
-				$nextEl = $nextEl.next().children('p');
-			} else {
-				$nextEl = $nextEl.next();
-			}
-
-			initDateMatches = $nextEl.text().match(initDateRegx);
-
-			if ( ! $nextEl.length ) {
-				// We're out of siblings to check at this level. Try the parent's siblings.
-				$nextEl = $nextEl.prevObject.parent().next();
-			}
-		} while ( ! initDateMatches && $nextEl.length );
-
+		// Grab RFC date by looking for user signature timestamps
+		var initDateMatches = ANRFC.getRFCDate(keyId);
 		if ( ! initDateMatches ) {
 			return OO.ui.alert( 'Unable to find a signature in this section. Unsure what date this RFC occurred. Aborting.' );
 		}
-
 		var initiatedDate = initDateMatches[0];
 
 		// Get ready to write some WP:ANRFC wikicode
