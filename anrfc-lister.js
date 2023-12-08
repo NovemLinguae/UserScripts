@@ -27,15 +27,16 @@ CHANGES BY NOVEM LINGUAE:
 - Fixed bug where the RFC would always get placed at the bottom of the page, not in its proper section
 - Fixed bug where section heading (the # part of the wikilink) was not getting added to WP:ANRFC
 - Fixed bug where More -> ANRFC Lister link was the wrong size and did not match the style of the skin
+- Fixed bug where no signature or a signature too far down caused it to hang forever
 - Added a "Cancel" button to the form
 - No longer displays on special pages, diffs, editing a page, etc.
 
 NOVEM LINGUAE TODO:
-- No signature causes it to hang forever.
 - It won't let you list two RFCs on the same page. Should be able to do so. Change the duplicate check to check the section title instead of the page title.
 - Sometimes closes the wrong section. (Old bug. Test and see if I can reproduce.)
 - add unit tests for stuff like the above bullet
 
+- Add to my userpage list of scripts
 - Notify original author
 - Send user talk messages to all users of the old script, letting them know about this updated one.
 - Update [[WP:US/L]]. Remove the old one completely, it is too buggy. Replace with this one.
@@ -71,12 +72,12 @@ var ANRFC = {
 		$('#ca-anrfc').attr('onClick', 'ANRFC.toggle();');
 	},
 	toggle: function () {
-		let anrfcListerLinkInMoreMenu = $("#ca-anrfc a");
-		if (anrfcListerLinkInMoreMenu.css('color') == 'rgb(255, 0, 0)') {
-			anrfcListerLinkInMoreMenu.css('color', '');
+		let $anrfcListerLinkInMoreMenu = $("#ca-anrfc a");
+		if ($anrfcListerLinkInMoreMenu.css('color') == 'rgb(255, 0, 0)') {
+			$anrfcListerLinkInMoreMenu.css('color', '');
 			ANRFC.removeLabels();
 		} else {
-			anrfcListerLinkInMoreMenu.css('color', 'red');
+			$anrfcListerLinkInMoreMenu.css('color', 'red');
 			ANRFC.addLabels();
 		}
 	},
@@ -217,26 +218,37 @@ var ANRFC = {
 		var pageName = mw.config.get('wgPageName');
 
 		// Grab section title
-		var sectionTitle = $('#' + keyId).prev().find('.mw-headline').text();
+		var $sectionTitle = $('#' + keyId).prev().find('.mw-headline').text();
 
 		// Grab initiated date (the first signature in the section will have the initiated date)
 		var initDateRegx = /([\d]{1,2}:[\d]{1,2},\s[\d]{1,2}\s[\w]+\s[\d]{4}\s\([\w]+\))/;
 		var initDateMatches = null;
-		var nextEl = $('#' + keyId); // #0-anrfcBox
-		// TODO: Only check elements between anrfcBox and the next section heading (or end of page). Right now it checks the entire page until it runs out of .next() elements.
+
+		var $nextEl = $('#' + keyId); // #0-anrfcBox
+		// TODO: Only check elements between anrfcBox and the next H2 (or end of page). Right now it checks the entire page until it runs out of .next() elements.
 		do {
-			if (nextEl.next().hasClass('boilerplate')) {
-				nextEl = nextEl.next().children('p');
+			if ($nextEl.next().hasClass('boilerplate')) {
+				$nextEl = $nextEl.next().children('p');
 			} else {
-				nextEl = nextEl.next();
+				$nextEl = $nextEl.next();
 			}
 
-			initDateMatches = nextEl.text().match(initDateRegx);
-		} while ( ! initDateMatches && nextEl );
+			initDateMatches = $nextEl.text().match(initDateRegx);
+
+			if ( ! $nextEl.length ) {
+				// We're out of siblings to check at this level. Try the parent's siblings.
+				$nextEl = $nextEl.prevObject.parent().next();
+			}
+		} while ( ! initDateMatches && $nextEl.length );
+
+		if ( ! initDateMatches ) {
+			return OO.ui.alert( 'Unable to find a signature in this section. Unsure what date this RFC occurred. Aborting.' );
+		}
+
 		var initiatedDate = initDateMatches[0];
 
 		// Get ready to write some WP:ANRFC wikicode
-		var heading = "=== [[" + pageName + "#" + sectionTitle + "]] ===";
+		var heading = "=== [[" + pageName + "#" + $sectionTitle + "]] ===";
 		var initiatedTemplate = "{{initiated|" + initiatedDate + "}}";
 		var wikitextToWrite = heading + "\n" + initiatedTemplate + " " + message + " ~~~~";
 
@@ -246,7 +258,7 @@ var ANRFC = {
 			prop: 'wikitext'
 		}).then(function(result) {
 			var wikitext = result.parse.wikitext['*'];
-			if (wikitext.replaceAll(' ', '_').match((pageName + "#" + sectionTitle).replaceAll(' ', '_')) != null) {
+			if (wikitext.replaceAll(' ', '_').match((pageName + "#" + $sectionTitle).replaceAll(' ', '_')) != null) {
 				return OO.ui.alert('This discussion is already listed.');
 			}
 
@@ -267,6 +279,7 @@ var ANRFC = {
 					}
 				} );
 			}
+			return OO.ui.alert( 'Error when trying to post to WP:ANRFC page.' );
 		});
 	},
 	isInitDateLatest(matchDate, initDate) {
