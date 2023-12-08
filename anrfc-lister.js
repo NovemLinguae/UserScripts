@@ -24,6 +24,8 @@ CHANGES BY NOVEM LINGUAE:
 - Added a "Cancel" button to the form
 
 NOVEM LINGUAE TODO:
+- don't display on special pages like special:watchlist
+- don't display when editing a page
 - seems to use a vector class to do its targeting. probably doesn't work on other skins. get working on other skins
 - No signature causes it to hang forever.
 - It won't let you list two RFCs on the same page. Should be able to do so. Change the duplicate check to check the section title instead of the page title.
@@ -46,11 +48,12 @@ var ANRFC = {
 		$('#ca-anrfc').attr('onClick', 'ANRFC.toggle();');
 	},
 	toggle: function () {
-		if ($("#ca-anrfc a").css('color') == 'rgb(255, 0, 0)') {
-			$("#ca-anrfc a").css('color', '');
+		let anrfcListerLinkInMoreMenu = $("#ca-anrfc a");
+		if (anrfcListerLinkInMoreMenu.css('color') == 'rgb(255, 0, 0)') {
+			anrfcListerLinkInMoreMenu.css('color', '');
 			ANRFC.removeLabels();
 		} else {
-			$("#ca-anrfc a").css('color', 'red');
+			anrfcListerLinkInMoreMenu.css('color', 'red');
 			ANRFC.addLabels();
 		}
 	},
@@ -160,13 +163,12 @@ var ANRFC = {
 			hh: oDate[0].match(/([\d]{1,2}):/)[1],
 			mm: oDate[0].match(/:([\d]{1,2})/)[1]
 		};
-		var date = {
+		return {
 			time: time,
 			day: parseInt(oDate[1]),
 			month: months.indexOf(oDate[2]),
 			year: parseInt(oDate[3])
 		};
-		return date;
 	},
 	/**
 	 * @param {OO.ui.DropdownWidget} dropDown The discussion section the user selected.
@@ -244,32 +246,23 @@ var ANRFC = {
 	isInitDateLatest(matchDate, initDate) {
 		if (initDate.year > matchDate.year) {
 			return true;
-		}
-		if (initDate.year < matchDate.year) {
+		} else if (initDate.year < matchDate.year) {
 			return false;
-		}
-		if (initDate.month > matchDate.month) {
+		} else if (initDate.month > matchDate.month) {
 			return true;
-		}
-		if (initDate.month < matchDate.month) {
+		} else if (initDate.month < matchDate.month) {
 			return false;
-		}
-		if (initDate.day > matchDate.day) {
+		} else if (initDate.day > matchDate.day) {
 			return true;
-		}
-		if (initDate.day < matchDate.day) {
+		} else if (initDate.day < matchDate.day) {
 			return false;
-		}
-		if (initDate.time.hh > matchDate.time.hh) {
+		} else if (initDate.time.hh > matchDate.time.hh) {
 			return true;
-		}
-		if (initDate.time.hh < matchDate.time.hh) {
+		} else if (initDate.time.hh < matchDate.time.hh) {
 			return false;
-		}
-		if (initDate.time.mm > matchDate.time.mm) {
+		} else if (initDate.time.mm > matchDate.time.mm) {
 			return true;
-		}
-		if (initDate.time.mm < matchDate.time.mm) {
+		} else if (initDate.time.mm < matchDate.time.mm) {
 			return false;
 		}
 		return true;
