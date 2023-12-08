@@ -31,9 +31,9 @@ CHANGES BY NOVEM LINGUAE:
 - Added a "Cancel" button to the form
 - No longer displays on special pages, diffs, editing a page, etc.
 - Clicking "Would you like to see it?" now takes you to exact section, instead of top of page.
+- Fixed duplicate RFC listing detection.
 
 NOVEM LINGUAE TODO:
-- It won't let you list two RFCs on the same page. Should be able to do so. Change the duplicate check to check the section title instead of the page title.
 - Sometimes closes the wrong section. (Old bug. Test and see if I can reproduce.)
 - add unit tests for stuff like the above bullet
 
@@ -280,7 +280,10 @@ var ANRFC = {
 			if ( result && result.edit && result.edit.result && result.edit.result === 'Success' ) {
 				OO.ui.confirm( 'This discussion has been listed on WP:ANRFC. Would you like to see it?' ).then( function ( confirmed ) {
 					if ( confirmed ) {
-						window.open("/wiki/Wikipedia:Closure_requests#" + encodeURI(pageName + "#" + sectionTitle), "_blank");
+						var sectionPartOfUri = pageName + "#" + sectionTitle;
+						sectionPartOfUri = sectionPartOfUri.replaceAll(' ', '_');
+						sectionPartOfUri = encodeURI(sectionPartOfUri);
+						window.open("/wiki/Wikipedia:Closure_requests#" + sectionPartOfUri, "_blank");
 					}
 				} );
 			}
