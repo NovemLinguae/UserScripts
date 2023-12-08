@@ -18,6 +18,7 @@
   "homepage": "https://github.com/NovemLinguae/UserScripts#readme",
   "devDependencies": {
     "eslint": "^8.32.0",
+    "eslint-config-wikimedia": "^0.26.0",
     "eslint-plugin-jsdoc": "^46.9.0",
     "eslint-plugin-lodash": "github:wix/eslint-plugin-lodash",
     "eslint-plugin-sonarjs": "^0.23.0",
