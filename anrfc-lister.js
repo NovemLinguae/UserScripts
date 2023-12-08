@@ -30,6 +30,7 @@ CHANGES BY NOVEM LINGUAE:
 - Fixed bug where no signature or a signature too far down caused it to hang forever
 - Added a "Cancel" button to the form
 - No longer displays on special pages, diffs, editing a page, etc.
+- Clicking "Would you like to see it?" now takes you to exact section, instead of top of page.
 
 NOVEM LINGUAE TODO:
 - It won't let you list two RFCs on the same page. Should be able to do so. Change the duplicate check to check the section title instead of the page title.
@@ -218,7 +219,7 @@ var ANRFC = {
 		var pageName = mw.config.get('wgPageName');
 
 		// Grab section title
-		var $sectionTitle = $('#' + keyId).prev().find('.mw-headline').text();
+		var sectionTitle = $('#' + keyId).prev().find('.mw-headline').text();
 
 		// Grab initiated date (the first signature in the section will have the initiated date)
 		var initDateRegx = /([\d]{1,2}:[\d]{1,2},\s[\d]{1,2}\s[\w]+\s[\d]{4}\s\([\w]+\))/;
@@ -248,7 +249,7 @@ var ANRFC = {
 		var initiatedDate = initDateMatches[0];
 
 		// Get ready to write some WP:ANRFC wikicode
-		var heading = "=== [[" + pageName + "#" + $sectionTitle + "]] ===";
+		var heading = "=== [[" + pageName + "#" + sectionTitle + "]] ===";
 		var initiatedTemplate = "{{initiated|" + initiatedDate + "}}";
 		var wikitextToWrite = heading + "\n" + initiatedTemplate + " " + message + " ~~~~";
 
@@ -258,7 +259,7 @@ var ANRFC = {
 			prop: 'wikitext'
 		}).then(function(result) {
 			var wikitext = result.parse.wikitext['*'];
-			if (wikitext.replaceAll(' ', '_').match((pageName + "#" + $sectionTitle).replaceAll(' ', '_')) != null) {
+			if (wikitext.replaceAll(' ', '_').match((pageName + "#" + sectionTitle).replaceAll(' ', '_')) != null) {
 				return OO.ui.alert('This discussion is already listed.');
 			}
 
@@ -275,7 +276,7 @@ var ANRFC = {
 			if ( result && result.edit && result.edit.result && result.edit.result === 'Success' ) {
 				OO.ui.confirm( 'This discussion has been listed on WP:ANRFC. Would you like to see it?' ).then( function ( confirmed ) {
 					if ( confirmed ) {
-						window.open("/wiki/Wikipedia:Closure_requests", "_blank");
+						window.open("/wiki/Wikipedia:Closure_requests#" + encodeURI(pageName + "#" + sectionTitle), "_blank");
 					}
 				} );
 			}
