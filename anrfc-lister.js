@@ -34,14 +34,7 @@ CHANGES BY NOVEM LINGUAE:
 - Fixed duplicate RFC listing detection.
 
 NOVEM LINGUAE TODO:
-- Sometimes closes the wrong section. (Old bug. Test and see if I can reproduce.)
-- add unit tests for stuff like the above bullet
-
-- Add to my userpage list of scripts
-- Notify original author
-- Send user talk messages to all users of the old script, letting them know about this updated one.
-- Update [[WP:US/L]]. Remove the old one completely, it is too buggy. Replace with this one.
-- Post on [[WT:ANRFC]] talk page.
+-
 
 */
 
