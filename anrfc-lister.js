@@ -13,6 +13,12 @@ HOW TO USE:
 SKINS IT WORKS IN:
 - vector
 - vector-2022
+- timeless
+- monobook
+- modern
+
+SKINS IT DOESNT WORK IN:
+- minerva
 
 CHANGES BY NOVEM LINGUAE:
 - Linted code. Added comments. Refactored.
@@ -25,7 +31,6 @@ CHANGES BY NOVEM LINGUAE:
 - No longer displays on special pages, diffs, editing a page, etc.
 
 NOVEM LINGUAE TODO:
-- seems to use a vector class to do its targeting. probably doesn't work on other skins. get working on other skins
 - No signature causes it to hang forever.
 - It won't let you list two RFCs on the same page. Should be able to do so. Change the duplicate check to check the section title instead of the page title.
 - Sometimes closes the wrong section. (Old bug. Test and see if I can reproduce.)
@@ -85,8 +90,11 @@ var ANRFC = {
 		});
 	},
 	addLabels: function () {
+		// Target the [ vedit | edit source ] buttons by each section heading
 		$('span.mw-editsection').each(function(index) {
+			// Add it
 			$(this.parentElement).append("<a indexKey=" + index + " class='mw-ANRFC' onclick='ANRFC.addForm(this)'>List on ANRFC</a>");
+			// Style it
 			$('a.mw-ANRFC').css({ "margin-left": "8px", "font-size": "small", "font-family": "sans-serif" });
 		});
 	},
@@ -97,7 +105,7 @@ var ANRFC = {
 			return document.getElementById(keyId).remove();
 		}
 
-		$(el).parent().parent().after('<div id="' + keyId + '"></div>');
+		$(el).parent().after('<div id="' + keyId + '"></div>');
 		$('#' + keyId).css({
 			'margin': '16px 0',
 			'padding': '16px',
