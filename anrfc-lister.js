@@ -32,6 +32,7 @@ CHANGES BY NOVEM LINGUAE:
 - No longer displays on special pages, diffs, editing a page, etc.
 - Clicking "Would you like to see it?" now takes you to exact section, instead of top of page.
 - Fixed duplicate RFC listing detection.
+- Titles shouldn't have underscores
 
 NOVEM LINGUAE TODO:
 -
@@ -233,7 +234,7 @@ var ANRFC = {
 		var message = messageInput.getValue();
 
 		// Grab page title
-		var pageName = mw.config.get('wgPageName');
+		var pageName = mw.config.get('wgPageName').replaceAll('_', ' ');
 
 		// Grab section title
 		var sectionTitle = $('#' + keyId).prev().find('.mw-headline').text();
@@ -280,7 +281,6 @@ var ANRFC = {
 					}
 				} );
 			}
-			return OO.ui.alert( 'Error when trying to post to WP:ANRFC page.' );
 		});
 	},
 	isInitDateLatest(matchDate, initDate) {
