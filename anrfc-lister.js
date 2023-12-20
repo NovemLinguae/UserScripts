@@ -35,7 +35,8 @@ CHANGES BY NOVEM LINGUAE:
 - Titles shouldn't have underscores
 
 NOVEM LINGUAE TODO:
--
+- test unicode titles
+- test titles with weird punctuation in section names, e.g. ending in ?
 
 */
 
