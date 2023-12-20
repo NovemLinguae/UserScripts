@@ -36,6 +36,7 @@ export class VoteCounterCounter {
 	getHeadingForJQuery() {
 		let firstLine = this.originalWikicode.split('\n')[0];
 		let htmlHeadingID = this._convertWikicodeHeadingToHTMLSectionID(firstLine);
+		// Must use [id=""] instead of # here, because the ID may have characters not allowed in a normal ID. A normal ID can only have [a-zA-Z0-9_-], and some other restrictions.
 		let jQuerySearchString = '[id="' + this._doubleQuoteEscape(htmlHeadingID) + '"]';
 		return jQuerySearchString;
 	}

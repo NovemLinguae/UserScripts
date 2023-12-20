@@ -104,7 +104,8 @@ export class VoteCounterController {
 			}
 
 			// insert HTML
-			$(headingForJQuery).parent().first().after(allHtml); // prepend is interior, before is exterior
+			// need to put the element outside of and after .mw-heading, which has font-size: 150% in vector
+			$(headingForJQuery).parent().parent().after(allHtml); // prepend is interior, before is exterior
 		}
 	}
 
