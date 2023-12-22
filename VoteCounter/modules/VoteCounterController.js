@@ -69,7 +69,7 @@ export class VoteCounterController {
 			}
 
 			let voteString = this.vcc.getVoteString();
-			let allHTML = `<div id="VoteCounter" style="color: darkgreen; border: 1px solid black;"><span style="font-weight: bold;">${voteString}</span> <small>(approximately)</small></div>`;
+			let allHTML = `<div id="VoteCounter" style="color: darkgreen; border: 1px solid black; font-size: 14px;"><span style="font-weight: bold;">${voteString}</span> <small>(approximately)</small></div>`;
 
 			this._insertHtmlAtEachHeading(startPosition, allHTML);
 		}
@@ -104,8 +104,7 @@ export class VoteCounterController {
 			}
 
 			// insert HTML
-			// need to put the element outside of and after .mw-heading, which has font-size: 150% in vector
-			$(headingForJQuery).parent().parent().after(allHtml); // prepend is interior, before is exterior
+			$(headingForJQuery).parent().first().after(allHtml);
 		}
 	}
 
