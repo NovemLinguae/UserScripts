@@ -154,32 +154,51 @@ indelible
 		if ( ! this.shouldRunOnThisPage() ) {
 			return;
 		}
-		let wordObject = this.getWordObject();
+		let wordArray = this.getWordArray();
 		let title = this.mw.config.get('wgPageName');
 		let wikicode = await this.getWikicode(title);
 		wikicode = this.cleanWikicode(wikicode);
+		let searchResultsArray = this.getSearchResultsArray(wordArray, wikicode);
+		let searchResultsString = this.getSearchResultsString(searchResultsArray);
+		this.displayHtml(searchResultsString);
+	}
 
-		let searchResults = [];
-		for ( let word of wordObject ) {
-			// can't use \b here because \)\b doesn't work correctly. using lookarounds instead
-			let regEx = new RegExp('(?<!\\w)' + word['regex'] + '(?!\\w)', "i");
-			if ( wikicode.match(regEx) ) {
-				searchResults.push(word['text']);
-			}
-		}
-
-		let MAX_DISPLAYED_RESULTS = 20;
-		if ( searchResults.length > MAX_DISPLAYED_RESULTS ) {
-			searchResults = searchResults.slice(0, MAX_DISPLAYED_RESULTS);
-			searchResults.push('...... and more.');
-		}
-
-		if ( ! this.empty(searchResults) ) {
-			let html = searchResults.join(', ');
-			html = '<div id="DetectPromo" style="background-color: orange"><span style="font-weight: bold;">Promotional words:</span> ' + html + '</div>';
-
+	displayHtml(searchResultsString) {
+		if ( searchResultsString ) {
+			let html = '<div id="DetectPromo" style="background-color: orange"><span style="font-weight: bold;">Promotional words:</span> ' + searchResultsString + '</div>';
 			this.$('#contentSub').before(html);
 		}
+	}
+
+	/**
+	 * @param {Array} searchResultsArray
+	 * @returns {string} searchResultsString - Example: `a record, comprehensive, drastically, entrepreneur, expert, leading, massive, more than, most important, numerous, outstanding, ranked, signature, worldwide, significant, ...... and more.`
+	 */
+	getSearchResultsString(searchResultsArray) {
+		let MAX_DISPLAYED_RESULTS = 20;
+		if ( searchResultsArray.length > MAX_DISPLAYED_RESULTS ) {
+			searchResultsArray = searchResultsArray.slice(0, MAX_DISPLAYED_RESULTS);
+			searchResultsArray.push('...... and more.');
+		}
+		let searchResultsString = searchResultsArray.join(', ');
+		return searchResultsString;
+	}
+
+	/**
+	 * @param {Array} wordArray
+	 * @param {string} wikicode
+	 * @returns {Array} searchResultsArray
+	 */
+	getSearchResultsArray(wordArray, wikicode) {
+		let searchResultsArray = [];
+		for ( let word of wordArray ) {
+			// can't use \b here because \)\b doesn't work correctly. using lookarounds instead
+			let regEx = new RegExp('(?<!\\w)' + this.escapeRegEx(word) + '(?!\\w)', "i");
+			if ( wikicode.match(regEx) ) {
+				searchResultsArray.push(word);
+			}
+		}
+		return searchResultsArray;
 	}
 
 	/**
@@ -190,13 +209,18 @@ indelible
 		// eliminate [[ ]], so that phrases with wikilink syntax in the middle don't mess up our search
 		wikicode = wikicode.replace(/\[\[/g, '')
 			.replace(/\]\]/g, '');
+
+		// Eliminate <ref></ref> and <ref />. It's OK if newspaper articles contain promo words, and they often do. We don't want to display these. We only want to display promo words in the article prose.
+		wikicode = wikicode.replace(/<ref[^<]*<\/ref>/gm, '');
+		wikicode = wikicode.replace(/<ref[^>]*\/>/gm, '');
+
 		return wikicode;
 	}
 
 	/**
-	 * @returns {Array} wordObject - An array of objects in the format `[ {text: 'state of the art', regex: 'state of the art'}, {text: 'world class', regex: 'world class'} ]`
+	 * @returns {Array} wordArray
 	 */
-	getWordObject() {
+	getWordArray() {
 		this.wordString = this.wordString.replace(/^\/\/.*$/gm, ''); // replace comment lines with blank lines. using this approach fixes a bug involving // and comma on the same line
 		let wordArray = this.wordString.replace(/, /g, "\n")
 			.trim()
@@ -205,17 +229,7 @@ indelible
 			.filter(v => v != '')
 			.filter(v => ! v.startsWith('//'));
 		wordArray = this.eliminateDuplicates(wordArray);
-
-		// convert from 1 level array with just text, to 2 level array with text and regex
-		let wordObject = [];
-		for ( let key in wordArray ) {
-			wordObject.push({
-				'text': wordArray[key],
-				'regex': this.escapeRegEx(wordArray[key])
-			});
-		}
-
-		return wordObject;
+		return wordArray;
 	}
 
 	/**
@@ -272,10 +286,6 @@ indelible
 
 	eliminateDuplicates(array) {
 		return [...new Set(array)];
-	}
-
-	empty(arr) {
-		return !!(arr === undefined || arr.length == 0);
 	}
 
 	escapeRegEx(string) {
