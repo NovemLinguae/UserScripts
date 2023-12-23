@@ -7,9 +7,7 @@
 
 class DetectPromo {
 	/** @member {string} */
-	wordString = `
-
-// An impressive amount of promo in this draft: https://en.wikipedia.org/w/index.php?title=Draft:Imre_Van_opstal&oldid=1060259849
+	wordsToSearchString = `
 
 % growth
 100%
@@ -154,11 +152,11 @@ indelible
 		if ( ! this.shouldRunOnThisPage() ) {
 			return;
 		}
-		let wordArray = this.getWordArray();
+		let wordsToSearchArray = this.getWordsToSearchArray();
 		let title = this.mw.config.get('wgPageName');
 		let wikicode = await this.getWikicode(title);
 		wikicode = this.cleanWikicode(wikicode);
-		let searchResultsArray = this.getSearchResultsArray(wordArray, wikicode);
+		let searchResultsArray = this.getSearchResultsArray(wordsToSearchArray, wikicode);
 		let searchResultsString = this.getSearchResultsString(searchResultsArray);
 		this.displayHtml(searchResultsString);
 	}
@@ -172,7 +170,7 @@ indelible
 
 	/**
 	 * @param {Array} searchResultsArray
-	 * @returns {string} searchResultsString - Example: `a record, comprehensive, drastically, entrepreneur, expert, leading, massive, more than, most important, numerous, outstanding, ranked, signature, worldwide, significant, ...... and more.`
+	 * @returns {string} searchResultsString - Example: `a record, comprehensive, drastically, entrepreneur, expert, leading, massive, more than, most important, numerous, outstanding, ranked, signature, worldwide, significant...... and more.`
 	 */
 	getSearchResultsString(searchResultsArray) {
 		let MAX_DISPLAYED_RESULTS = 20;
@@ -185,13 +183,13 @@ indelible
 	}
 
 	/**
-	 * @param {Array} wordArray
+	 * @param {Array} wordsToSearchArray
 	 * @param {string} wikicode
 	 * @returns {Array} searchResultsArray
 	 */
-	getSearchResultsArray(wordArray, wikicode) {
+	getSearchResultsArray(wordsToSearchArray, wikicode) {
 		let searchResultsArray = [];
-		for ( let word of wordArray ) {
+		for ( let word of wordsToSearchArray ) {
 			// can't use \b here because \)\b doesn't work correctly. using lookarounds instead
 			let regEx = new RegExp('(?<!\\w)' + this.escapeRegEx(word) + '(?!\\w)', "i");
 			if ( wikicode.match(regEx) ) {
@@ -218,18 +216,18 @@ indelible
 	}
 
 	/**
-	 * @returns {Array} wordArray
+	 * @returns {Array} wordsToSearchArray
 	 */
-	getWordArray() {
-		this.wordString = this.wordString.replace(/^\/\/.*$/gm, ''); // replace comment lines with blank lines. using this approach fixes a bug involving // and comma on the same line
-		let wordArray = this.wordString.replace(/, /g, "\n")
+	getWordsToSearchArray() {
+		let wordsToSearchString = this.wordsToSearchString.replace(/^\/\/.*$/gm, ''); // replace comment lines with blank lines. using this approach fixes a bug involving // and comma on the same line
+		let wordsToSearchArray = wordsToSearchString.replace(/, /g, "\n")
 			.trim()
 			.split("\n")
 			.map(v => v.trim())
 			.filter(v => v != '')
 			.filter(v => ! v.startsWith('//'));
-		wordArray = this.eliminateDuplicates(wordArray);
-		return wordArray;
+		wordsToSearchArray = this.eliminateDuplicates(wordsToSearchArray);
+		return wordsToSearchArray;
 	}
 
 	/**
