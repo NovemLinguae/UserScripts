@@ -13,7 +13,7 @@ $(async function() {
 		var wikicode = '';
 		title = encodeURIComponent(title);
 		await $.ajax({
-			url: 'https://en.wikipedia.org/w/api.php?action=parse&page='+title+'&prop=wikitext&formatversion=2&format=json',
+			url: 'https://en.wikipedia.org/w/api.php?action=parse&page=' + title + '&prop=wikitext&formatversion=2&format=json',
 			success: function (result) {
 				wikicode = result['parse']['wikitext'];
 			},
@@ -22,51 +22,48 @@ $(async function() {
 		});
 		return wikicode;
 	}
-	
+
 	function eliminateDuplicates(array) {
 		return [...new Set(array)];
 	}
-	
+
 	/** returns the pagename, including the namespace name, but with spaces replaced by underscores */
 	function getArticleName() {
 		return mw.config.get('wgPageName');
 	}
 
 	function empty(arr) {
-		if ( arr === undefined || arr.length == 0 ) {
-			return true;
-		}
-		return false;
+		return !!(arr === undefined || arr.length == 0);
 	}
 
 	function escapeRegEx(string) {
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	}
-	
+
 	// don't run when not viewing articles
 	let action = mw.config.get('wgAction');
 	if ( action != 'view' ) {
 		return;
 	}
-	
+
 	// don't run when viewing diffs
 	let isDiff = mw.config.get('wgDiffNewId');
 	if ( isDiff ) {
 		return;
 	}
-	
+
 	let isDeletedPage = ! mw.config.get('wgCurRevisionId') ;
 	if ( isDeletedPage ) {
 		return;
 	}
-	
+
 	// Only run in mainspace and draftspace
 	let namespace = mw.config.get('wgNamespaceNumber');
 	let title = getArticleName();
 	if ( ! [0, 118].includes(namespace) && title != 'User:Novem_Linguae/sandbox' ) {
 		return;
 	}
-	
+
 	let wordString = `
 
 // An impressive amount of promo in this draft: https://en.wikipedia.org/w/index.php?title=Draft:Imre_Van_opstal&oldid=1060259849
@@ -200,7 +197,7 @@ critical acclaim
 indelible
 
 	`;
-	
+
 	wordString = wordString.replace(/^\/\/.*$/gm, ''); // replace comment lines with blank lines. using this approach fixes a bug involving // and comma on the same line
 	let wordArray = wordString.replace(/, /g, "\n")
 		.trim()
@@ -209,7 +206,7 @@ indelible
 		.filter(v => v != '')
 		.filter(v => ! v.startsWith('//'));
 	wordArray = eliminateDuplicates(wordArray);
-	
+
 	// convert from 1 level array with just text, to 2 level array with text and regex
 	let wordObject = [];
 	for ( let key in wordArray ) {
@@ -218,13 +215,13 @@ indelible
 			'regex': escapeRegEx(wordArray[key])
 		});
 	}
-	
+
 	let wikicode = await getWikicode(title);
-	
+
 	// eliminate [[ ]], so that phrases with wikilink syntax in the middle don't mess up our search
 	wikicode = wikicode.replace(/\[\[/g, '')
 		.replace(/\]\]/g, '');
-	
+
 	let searchResults = [];
 	for ( let word of wordObject ) {
 		// can't use \b here because \)\b doesn't work correctly. using lookarounds instead
@@ -233,17 +230,17 @@ indelible
 			searchResults.push(word['text']);
 		}
 	}
-	
+
 	let MAX_DISPLAYED_RESULTS = 20;
 	if ( searchResults.length > MAX_DISPLAYED_RESULTS ) {
 		searchResults = searchResults.slice(0, MAX_DISPLAYED_RESULTS);
 		searchResults.push('...... and more.');
 	}
-	
+
 	if ( ! empty(searchResults) ) {
 		let html = searchResults.join(', ');
 		html = '<div id="DetectPromo" style="background-color: orange"><span style="font-weight: bold;">Promotional words:</span> ' + html + '</div>';
-		
+
 		$('#contentSub').before(html);
 	}
 });
