@@ -181,19 +181,19 @@ class CiteHighlighter {
 		for ( let color in this.colors ) {
 			let colorIsMissing = typeof this.sources[color] === 'undefined';
 			if ( colorIsMissing ) continue;
-			
+
 			for ( let source of this.sources[color] ) {
 				// Don't check the DOM for every domain. Too expensive. Instead, examine the wikitext and only check the DOM for domains found in the wikitext.
 
 				// alwaysIncludeDomains are domains that we should always write a CSS rule for, even if they are not found in the wikitext. This makes sure that domains in {{Cite}} templates are detected. For example, {{Cite journal}} uses nih.gov, and {{Cite tweet}} uses twitter.com
 				let isAlwaysIncludeDomain = source === 'nih.gov' || source === 'twitter.com';
-				
+
 				if ( this.wikicode.includes(source) || isAlwaysIncludeDomain ) {
 					let isExternalLinkContainingDomainName = source.includes('.') && ! source.includes(' ');
 					if ( isExternalLinkContainingDomainName ) {
 						this.highlightCitation(source, color);
 						this.highlightUnorderedListItem(source, color);
-						
+
 						if ( window.citeHighlighterHighlightEverything ) {
 							this.highlightExternalLinks(source, color);
 						}
@@ -254,7 +254,7 @@ class CiteHighlighter {
 			childList: true,
 		});
 	}
-	
+
 	/**
 	 * Be more aggressive with this list of words. Doesn't have to be the domain name. Can be
 	 * anywhere in the URL. Example unreliableWord: blog.
@@ -291,7 +291,7 @@ class CiteHighlighter {
 		}
 		return haystack;
 	}
-	
+
 	async getWikicode(title) {
 		let pageIsDeleted = ! mw.config.get('wgCurRevisionId');
 		if ( pageIsDeleted ) {
@@ -306,8 +306,7 @@ class CiteHighlighter {
 			formatversion: '2',
 			format: 'json'
 		} );
-		let wikicode = response.parse.wikitext;
-		return wikicode;
+		return response.parse.wikitext;
 	}
 
 	async getWikicodeFromCache(title) {
