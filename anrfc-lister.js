@@ -33,6 +33,7 @@ CHANGES BY NOVEM LINGUAE:
 - Clicking "Would you like to see it?" now takes you to exact section, instead of top of page.
 - Fixed duplicate RFC listing detection.
 - Titles shouldn't have underscores
+- Fixed bug where the script would always give "signature not found" error if you had MediaWiki:Gadget-CommentsInLocalTime.js gadget installed
 
 NOVEM LINGUAE TODO:
 - test unicode titles
@@ -95,6 +96,9 @@ var ANRFC = {
 			$('a.mw-ANRFC').css({ "margin-left": "8px", "font-size": "small", "font-family": "sans-serif" });
 		});
 	},
+	/**
+	 * @param el HTML element span.mw-editsection
+	 */
 	addForm: function(el) {
 		// If there's a form already created, delete it. (This makes the "List on ANRFC" link a toggle that opens the form or closes the form, based on current state.)
 		var keyId = el.getAttribute('indexKey') + "-anrfcBox";
@@ -102,12 +106,23 @@ var ANRFC = {
 			return document.getElementById(keyId).remove();
 		}
 
-		$(el).parent().after('<div id="' + keyId + '"></div>');
-		$('#' + keyId).css({
+		var $anrfcBox = ANRFC.getFormHtmlAndSetFormListeners(keyId);
+
+		// el (span.mw-editsection) -> parent (h2) -> after
+		$(el).parent().after($anrfcBox);
+	},
+	getFormHtmlAndSetFormListeners(keyId) {
+		var $anrfcBox = $('<div>', {
+			id: keyId
+		});
+
+		$anrfcBox.css({
 			'margin': '16px 0',
 			'padding': '16px',
 			'background-color': '#f3f3f3',
-			'border': '1px solid grey'
+			'border': '1px solid grey',
+			'font-size': '14px',
+			'font-family': 'sans-serif',
 		});
 
 		var dropDown = new OO.ui.DropdownWidget({
@@ -153,11 +168,11 @@ var ANRFC = {
 			label: 'Cancel',
 		});
 
-		$('#' + keyId).append('<h3 style="margin: 0 0 16px;">List this discussion on <a href="/wiki/Wikipedia:Closure_requests" target="_blank">Wikipedia:Closure requests</a></h3>');
+		$anrfcBox.append('<h3 style="margin: 0 0 16px;">List this discussion on <a href="/wiki/Wikipedia:Closure_requests" target="_blank">Wikipedia:Closure requests</a></h3>');
 		var wrapper = document.createElement('div');
 		$(wrapper).append('<p>Under section: </p>');
 		$(wrapper).append(dropDown.$element);
-		$('#' + keyId).append(wrapper);
+		$anrfcBox.append(wrapper);
 
 		wrapper = document.createElement('div');
 		$(wrapper).css({ 'margin-top': '8px' });
@@ -168,7 +183,7 @@ var ANRFC = {
 		$(wrapper).append($(cancelButton.$element).css({
 			'margin-top': '8px',
 		}));
-		$('#' + keyId).append(wrapper);
+		$anrfcBox.append(wrapper);
 
 		submitButton.on('click', function() {
 			ANRFC.onSubmit(dropDown, messageInput, keyId);
@@ -177,6 +192,8 @@ var ANRFC = {
 		cancelButton.on('click', function() {
 			document.getElementById(keyId).remove();
 		} );
+
+		return $anrfcBox;
 	},
 	dateToObj(dateString) {
 		var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -195,9 +212,13 @@ var ANRFC = {
 	},
 	getRFCDate: function(keyId) {
 		// Grab initiated date (the first signature in the section will have the initiated date)
-		var initDateRegx = /([\d]{1,2}:[\d]{1,2},\s[\d]{1,2}\s[\w]+\s[\d]{4}\s\([\w]+\))/;
-		var initDateMatches = null;
 
+		// Looks for a standard signature: 03:31, 11 January 2024 (UTC)
+		var dateRegex = /([\d]{1,2}:[\d]{1,2},\s[\d]{1,2}\s[\w]+\s[\d]{4}\s\([\w]+\))/;
+		// Looks for a MediaWiki:Gadget-CommentsInLocalTime.js signature: 10:55 am, 29 November 2016, Tuesday (7 years, 1 month, 13 days ago) (UTC−8)
+		var dateRegexForCommentsInLocalTimeGadget = /([\d]{1,2}:[\d]{1,2}(?: am| pm)?,\s[\d]{1,2}\s[\w]+\s[\d]{4}.*?\(UTC[^)]+\))/;
+		var initDateMatches = null;
+		var textToCheck = '';
 		var $nextEl = $('#' + keyId); // #0-anrfcBox
 		// TODO: Only check elements between anrfcBox and the next H2 (or end of page). Right now it checks the entire page until it runs out of .next() elements.
 		do {
@@ -207,7 +228,15 @@ var ANRFC = {
 				$nextEl = $nextEl.next();
 			}
 
-			initDateMatches = $nextEl.text().match(initDateRegx);
+			textToCheck = $nextEl.text();
+			initDateMatches = textToCheck.match(dateRegex);
+			if ( ! initDateMatches ) {
+				// Maybe the user has MediaWiki:Gadget-CommentsInLocalTime.js installed, which changes the format of signature dates. Try the other regex.
+				initDateMatches = textToCheck.match(dateRegexForCommentsInLocalTimeGadget);
+				if ( initDateMatches ) {
+					initDateMatches[0] = ANRFC.convertUtcWhateverToUtcZero(initDateMatches[0]);
+				}
+			}
 
 			if ( ! $nextEl.length ) {
 				// We're out of siblings to check at this level. Try the parent's siblings.
@@ -216,6 +245,26 @@ var ANRFC = {
 		} while ( ! initDateMatches && $nextEl.length );
 
 		return initDateMatches;
+	},
+	/**
+	 * Convert MediaWiki:Gadget-CommentsInLocalTime.js date strings to regular date strings
+	 * @param {string} dateString 10:55 am, 29 November 2016, Tuesday (7 years, 1 month, 13 days ago) (UTC−8)
+	 * @returns {string} 18:55, 29 November 2016
+	 */
+	convertUtcWhateverToUtcZero(dateString) {
+		const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+		// chop out unnecessary info in the middle of the string
+		var dateStringShort = dateString.replace(/(\d{4}),.+( \(UTC)/, '$1$2'); // 10:55 am, 29 November 2016 (UTC−8)
+
+		var unixTimestampWithMilliseconds = Date.parse(dateStringShort); // 1480445700000
+		var date = new Date(unixTimestampWithMilliseconds);
+		var dateStringConverted = date.getUTCHours() + ':'
+			+ date.getUTCMinutes() + ', '
+			+ date.getUTCDate() + ' '
+			+ months[date.getUTCMonth()] + ' '
+			+ date.getUTCFullYear();
+		return dateStringConverted; // 18:55, 29 November 2016
 	},
 	/**
 	 * @param {OO.ui.DropdownWidget} dropDown The discussion section the user selected.
