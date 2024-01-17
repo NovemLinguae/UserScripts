@@ -35,8 +35,8 @@ class ReviewStatus {
 	}
 
 	/**
-	* @param {number} pageID The page ID number. A positive number with no commas.
-	*/
+	 * @param {number} pageID The page ID number. A positive number with no commas.
+	 */
 	async isReviewed(pageID) {
 		let api = new mw.Api();
 		let response = await api.get( {
@@ -55,18 +55,18 @@ class ReviewStatus {
 		if ( action !== 'view' ) {
 			return false;
 		}
-		
+
 		// don't run when viewing diffs
 		let isDiff = mw.config.get('wgDiffNewId');
 		if ( isDiff ) {
 			return false;
 		}
-		
+
 		let isDeletedPage = ( ! mw.config.get('wgCurRevisionId') );
 		if ( isDeletedPage ) {
 			return false;
 		}
-		
+
 		// Only run in mainspace
 		let namespace = mw.config.get('wgNamespaceNumber');
 		let isMainspaceOrDraftspace = ( [0].includes(namespace) );
