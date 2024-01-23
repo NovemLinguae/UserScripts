@@ -48,7 +48,9 @@ class UserHighlighterSimple {
 
 	async execute() {
 		await this.getUsernames();
-		this.setHighlightColors();
+		if ( ! this.window.userHighlighterSimpleNoColors ) {
+			this.setHighlightColors();
+		}
 		let that = this;
 		this.$('#article a, #bodyContent a, #mw_contentholder a').each(function(index, element) {
 			that.$link = that.$(element);
@@ -299,11 +301,8 @@ class UserHighlighterSimple {
 			background-color: transparent !important;
 			background: unset !important;
 		`);
-		this.mw.util.addCSS(`.UHS-no-permissions { border: 1px solid black !important; }`);
 
-		if ( this.window.userHighlighterSimpleNoColors ) {
-			return;
-		}
+		this.mw.util.addCSS(`.UHS-no-permissions { border: 1px solid black !important; }`);
 
 		// TODO: grab the order from an array, so I can keep checkForPermission and addCSS in the same order easily, lowering the risk of the HTML title="" being one thing, and the color being another
 		this.addCSS('UHS-500edits-bot-trustedIP', `background-color: lightgray !important;`);
