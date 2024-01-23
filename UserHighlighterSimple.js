@@ -34,14 +34,16 @@ class UserHighlighterSimple {
 	$;
 	/** @type {Object} */
 	mw;
+	window;
 
 	/**
 	 * @param {Object} $ jquery
 	 * @param {Object} mw mediawiki
 	 */
-	constructor($, mw) {
+	constructor($, mw, window) {
 		this.$ = $;
 		this.mw = mw;
+		this.window = window;
 	}
 
 	async execute() {
@@ -299,6 +301,9 @@ class UserHighlighterSimple {
 		`);
 		this.mw.util.addCSS(`.UHS-no-permissions { border: 1px solid black !important; }`);
 
+		if ( this.window.userHighlighterSimpleNoColors ) {
+			return;
+		}
 
 		// TODO: grab the order from an array, so I can keep checkForPermission and addCSS in the same order easily, lowering the risk of the HTML title="" being one thing, and the color being another
 		this.addCSS('UHS-500edits-bot-trustedIP', `background-color: lightgray !important;`);
@@ -317,7 +322,7 @@ class UserHighlighterSimple {
 // TODO: hook for after visual editor edit is saved?
 mw.hook('wikipage.content').add(async function() {
 	await mw.loader.using(['mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title'], async function() {
-		let uhs = new UserHighlighterSimple($, mw);
+		let uhs = new UserHighlighterSimple($, mw, window);
 		await uhs.execute();
 	});
 });
