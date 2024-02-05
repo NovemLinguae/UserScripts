@@ -34,11 +34,13 @@ class UserHighlighterSimple {
 	$;
 	/** @type {Object} */
 	mw;
+	/** @type {Window} */
 	window;
 
 	/**
 	 * @param {Object} $ jquery
 	 * @param {Object} mw mediawiki
+	 * @param {Window} window
 	 */
 	constructor($, mw, window) {
 		this.$ = $;
@@ -51,24 +53,24 @@ class UserHighlighterSimple {
 		if ( ! this.window.userHighlighterSimpleNoColors ) {
 			this.setHighlightColors();
 		}
-		let that = this;
-		this.$('#article a, #bodyContent a, #mw_contentholder a').each(function(index, element) {
-			that.$link = that.$(element);
-			if ( ! that.linksToAUser() ) {
+		let $links = this.$('#article a, #bodyContent a, #mw_contentholder a');
+		$links.each(function(index, element) {
+			this.$link = this.$(element);
+			if ( ! this.linksToAUser() ) {
 				return;
 			}
-			that.user = that.getUserName();
-			let isUserSubpage = that.user.includes('/');
+			this.user = this.getUserName();
+			let isUserSubpage = this.user.includes('/');
 			if ( isUserSubpage ) {
 				return;
 			}
-			that.hasAdvancedPermissions = false;
-			that.addClassesAndHoverTextToLinkIfNeeded();
+			this.hasAdvancedPermissions = false;
+			this.addClassesAndHoverTextToLinkIfNeeded();
 			// If the user has any advanced perms, they are likely to have a signature, so be aggressive about overriding the background and foreground color. That way there's no risk their signature is unreadable due to background color and foreground color being too similar. Don't do this for users without advanced perms... being able to see a redlinked username is useful.
-			if ( that.hasAdvancedPermissions ) {
-				that.$link.addClass(that.$link.attr('class') + ' UHS-override-signature-colors');
+			if ( this.hasAdvancedPermissions ) {
+				this.$link.addClass(this.$link.attr('class') + ' UHS-override-signature-colors');
 			}
-		});
+		}.bind(this));
 	}
 
 	addCSS(htmlClass, cssDeclaration) {
@@ -137,7 +139,7 @@ class UserHighlighterSimple {
 		};
 	}
 
-	hasHREF(url) {
+	hasHref(url) {
 		return Boolean(url);
 	}
 
@@ -145,7 +147,7 @@ class UserHighlighterSimple {
 		return url.charAt(0) === '#';
 	}
 
-	isHTTPorHTTPS(url) {
+	isHttpOrHttps(url) {
 		return url.startsWith("http://", 0) ||
 			url.startsWith("https://", 0) ||
 			url.startsWith("/", 0);
@@ -159,9 +161,9 @@ class UserHighlighterSimple {
 	  */
 	getTitle(url, urlHelper) {
 		// for links in the format /w/index.php?title=Blah
-		let titleParameterOfURL = this.mw.util.getParamValue('title', url);
-		if ( titleParameterOfURL ) {
-			return titleParameterOfURL;
+		let titleParameterOfUrl = this.mw.util.getParamValue('title', url);
+		if ( titleParameterOfUrl ) {
+			return titleParameterOfUrl;
 		}
 
 		// for links in the format /wiki/PageName. Slice off the /wiki/ (first 6 characters)
@@ -181,7 +183,7 @@ class UserHighlighterSimple {
 	linksToAUser() {
 		let url = this.$link.attr('href');
 
-		if ( ! this.hasHREF(url) || this.isAnchor(url) || ! this.isHTTPorHTTPS(url) ) {
+		if ( ! this.hasHref(url) || this.isAnchor(url) || ! this.isHttpOrHttps(url) ) {
 			return false;
 		}
 
