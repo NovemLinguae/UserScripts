@@ -159,6 +159,9 @@ export class VoteCounterController {
 
 		// grab title by revision ID, not by page title. this lets it work correctly if you're viewing an old revision of the page
 		let revisionID = mw.config.get('wgRevisionId');
+		if ( ! revisionID ) {
+			return '';
+		}
 
 		let api = new mw.Api();
 		let response = await api.get( {
