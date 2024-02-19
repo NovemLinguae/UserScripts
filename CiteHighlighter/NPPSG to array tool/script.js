@@ -146,9 +146,9 @@ class NPPSG {
 		this.deleteAll('Forbes', 'forbes.com', 'Forbes.com');
 		this.sources.yellow.push('Forbes', 'forbes.com');
 		
-		// the guardian is green and yellow. override to yellow
+		// the guardian is green and yellow. override to green
 		this.deleteAll('Guardian', 'theguardian.com', 'theguardian.co.uk', 'guardian.co.uk');
-		this.sources.yellow.push('Guardian', 'theguardian.com', 'theguardian.co.uk', 'guardian.co.uk');
+		this.sources.green.push('Guardian', 'theguardian.com', 'theguardian.co.uk', 'guardian.co.uk');
 		
 		// huffpost is all 3 colors. override to yellow
 		this.deleteAll('HuffPost', 'huffpost.com', 'huffingtonpost.com');
