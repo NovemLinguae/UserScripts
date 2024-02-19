@@ -222,7 +222,7 @@ class NPPSG {
 	}
 	
 	prettyJSON(input) {
-		// the third parameter being '\t' results in output with line breaks, which is what I want
+		// the third parameter being '\t' results in output with line breaks and tabs, which is what I want, for easier-to-read diffs onwiki
 		let output = JSON.stringify(input, null, '\t');
 		return output;
 	}
