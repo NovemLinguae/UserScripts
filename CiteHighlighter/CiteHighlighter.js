@@ -33,7 +33,7 @@ class CiteHighlighter {
 			'blog', // by far the most common hit
 			'blogspot',
 			'businesswire',
-			'caard',
+			'caard', // caard.co - "Simple, free, fully responsive one-page sites for pretty much anything."
 			'contact-us',
 			'contactus',
 			// 'crypto',
@@ -57,6 +57,7 @@ class CiteHighlighter {
 			'weebly',
 			'wix',
 			'wordpress',
+			'/wp-', // WordPress, e.g. wp-content
 		];
 	}
 
