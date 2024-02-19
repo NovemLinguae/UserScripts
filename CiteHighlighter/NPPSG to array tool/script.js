@@ -222,11 +222,8 @@ class NPPSG {
 	}
 	
 	prettyJSON(input) {
-		let output = JSON.stringify(input);
-		
-		// after every comma, put an enter
-		output = output.replace(/\],/g, "],\n\n");
-		
+		// the third parameter being '\t' results in output with line breaks, which is what I want
+		let output = JSON.stringify(input, null, '\t');
 		return output;
 	}
 	
