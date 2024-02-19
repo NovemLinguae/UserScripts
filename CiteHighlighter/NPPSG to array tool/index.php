@@ -1,7 +1,8 @@
 <?php
 
-// Can't use JavaScript to grab content from third party websites. Have to use PHP instead.
-
+/**
+ * Can't use JavaScript to grab content from third party websites. Have to use PHP instead.
+ */
 function getWikitextFromEnWiki($article) {
 	$article = rawurlencode($article);
 	$url = "https://en.wikipedia.org/w/api.php?action=query&prop=revisions&titles=$article&rvslots=*&rvprop=content&formatversion=2&format=json";
