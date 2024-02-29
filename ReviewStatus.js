@@ -22,9 +22,9 @@ class ReviewStatus {
 		// modules/ext.pageTriage.views.toolbar/images/icons/
 
 		if ( boolIsReviewed ) {
-			htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.views.toolbar/images/pageInfo/icon_reviewed.png" title="Reviewed" />`;
+			htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.toolbar/images/pageInfo/icon_reviewed.png" title="Reviewed" />`;
 		} else {
-			htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.views.toolbar/images/pageInfo/icon_not_reviewed.png" title="Not reviewed" />`;
+			htmlToInsert = ` <img src="https://en.wikipedia.org/w/extensions/PageTriage/modules/ext.pageTriage.toolbar/images/pageInfo/icon_not_reviewed.png" title="Not reviewed" />`;
 		}
 
 		if ( this.pageHasSections() ) {
