@@ -73,7 +73,7 @@ export class GARCloserController {
 		} catch (err) {
 			this.error = err;
 			console.error(err);
-			this.editSummary += ' cc [[User:Novem Linguae]]';
+			// this.editSummary += ' cc [[User:Novem Linguae]]';
 			await this.makeScriptLogEntry('keep');
 			this.pushStatus(`<span class="GARCloserTool-ErrorNotice">An error occurred :( Details: ${this.error}</span>`);
 		}

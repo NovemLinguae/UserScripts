@@ -69,7 +69,7 @@ export class GANReviewController {
 			// Documentation for the http error is in the "response" section of https://doc.wikimedia.org/mediawiki-core/REL1_41/js/#!/api/mw.Api-method-ajax
 			this.pushStatus(`<span class="GANReviewTool-ErrorNotice">An error occurred :( Details: ${err}</span>`);
 			this.error = err;
-			this.editSummary += ' cc [[User:Novem Linguae]]';
+			// this.editSummary += ' cc [[User:Novem Linguae]]';
 			await this.writeToLog();
 		}
 	}
