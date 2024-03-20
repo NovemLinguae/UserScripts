@@ -319,9 +319,18 @@ class UserHighlighterSimple {
 	}
 }
 
-// TODO: race condition with xtools gadget. sometimes it fails to highlight the xtools gadget's username link
-// TODO: hook for after visual editor edit is saved?
+// List of hooks: https://doc.wikimedia.org/mediawiki-core/master/js/Hooks.html#
+
+// Fire after wiki content is added to the DOM, such as when first loading a page, or when a gadget such as the XTools gadget loads.
 mw.hook('wikipage.content').add(async function() {
+	await mw.loader.using(['mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title'], async function() {
+		let uhs = new UserHighlighterSimple($, mw, window);
+		await uhs.execute();
+	});
+});
+
+// Fire after an edit is successfully saved via JavaScript, such as edits by the Visual Editor and HotCat.
+mw.hook('postEdit').add(async function() {
 	await mw.loader.using(['mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title'], async function() {
 		let uhs = new UserHighlighterSimple($, mw, window);
 		await uhs.execute();
