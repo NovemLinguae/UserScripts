@@ -10,8 +10,10 @@
 
 class DetectG4G5 {
 	async execute() {
-		if ( ! this.shouldRunOnThisPage() ) return;
-		
+		if ( ! this.shouldRunOnThisPage() ) {
+			return;
+		}
+
 		let title = mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
 		let pageID = mw.config.get('wgArticleId');
 
@@ -59,8 +61,8 @@ class DetectG4G5 {
 	}
 
 	/**
-	* @param {number} pageID The page ID number. A positive number with no commas.
-	*/
+	 * @param {number} pageID The page ID number. A positive number with no commas.
+	 */
 	async isReviewed(pageID) {
 		let api = new mw.Api();
 		let response = await api.get( {
@@ -139,15 +141,21 @@ class DetectG4G5 {
 	shouldRunOnThisPage() {
 		// don't run when not viewing articles
 		let action = mw.config.get('wgAction');
-		if ( action !== 'view' ) return false;
-		
+		if ( action !== 'view' ) {
+			return false;
+		}
+
 		// don't run when viewing diffs
 		let isDiff = mw.config.get('wgDiffNewId');
-		if ( isDiff ) return false;
-		
+		if ( isDiff ) {
+			return false;
+		}
+
 		let isDeletedPage = ( ! mw.config.get('wgCurRevisionId') );
-		if ( isDeletedPage ) return false;
-		
+		if ( isDeletedPage ) {
+			return false;
+		}
+
 		// Only run in mainspace
 		let namespace = mw.config.get('wgNamespaceNumber');
 		let title = mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
