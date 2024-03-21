@@ -322,6 +322,7 @@ class UserHighlighterSimple {
 // List of hooks: https://doc.wikimedia.org/mediawiki-core/master/js/Hooks.html#
 
 // Fire after wiki content is added to the DOM, such as when first loading a page, or when a gadget such as the XTools gadget loads.
+// TODO: wikipage.content returns only the changed content in a $content parameter. Could process only that for better performance.
 mw.hook('wikipage.content').add(async function() {
 	await mw.loader.using(['mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title'], async function() {
 		let uhs = new UserHighlighterSimple($, mw, window);
