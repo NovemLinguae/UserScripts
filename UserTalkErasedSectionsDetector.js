@@ -39,7 +39,7 @@ class ErasedSectionsDetector {
 	}
 
 	/**
-	 * Add a space to blank edit summaries. This is so the hyperlink can be clicked.
+	 * Add a message to blank edit summaries. This is so the hyperlink can be clicked.
 	 */
 	addASpaceToBlankEditSummaries() {
 		this.revisions = this.revisions.map( function( revision ) {
@@ -91,8 +91,8 @@ class ErasedSectionsDetector {
 	}
 
 	filterForRevisionsByThisEditorOnly() {
-		let needle = this.mw.config.get( 'wgTitle' );
-		this.revisions = this.revisions.filter( ( revision ) => revision.user === needle );
+		let thisEditor = this.mw.config.get( 'wgTitle' );
+		this.revisions = this.revisions.filter( ( revision ) => revision.user === thisEditor );
 	}
 
 	filterOutArchiving() {
@@ -106,7 +106,7 @@ class ErasedSectionsDetector {
 	addDiffsToRevisions() {
 		let len = this.revisions.length;
 		let lastRevisionSize = this.revisions[len - 1].size;
-		// iterate backwards. need to store the older revision's size in a buffer to compute a diff.
+		// need to store the OLDER revision's size in a buffer to compute a diff, so iterate BACKWARDS
 		for ( let i = (len - 2); i >= 0; i-- ) {
 			let thisRevisionSize = this.revisions[i].size;
 			this.revisions[i].diff = thisRevisionSize - lastRevisionSize;
