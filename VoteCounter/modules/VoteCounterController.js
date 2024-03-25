@@ -245,6 +245,9 @@ export class VoteCounterController {
 			// ITN
 			'pull',
 			'wait',
+			// AARV
+			'bad block',
+			'do not endorse',
 		];
 	}
 
