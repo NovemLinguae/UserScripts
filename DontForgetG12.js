@@ -28,7 +28,8 @@ class DontForgetG12 {
 		}
 
 		// Only run if 1) draft is submitted
-		const draftIsSubmitted = this.wikicode.match( /(?:{{AfC submission}}|{{AfC submission\|}}|{{AfC submission\|\|)/i ) && this.namespace === 118;
+		const isDraftspaceOrUserspace = [ 118, 2 ].includes( this.namespace );
+		const draftIsSubmitted = this.wikicode.match( /(?:{{AfC submission}}|{{AfC submission\|}}|{{AfC submission\|\|)/i ) && isDraftspaceOrUserspace;
 		if ( draftIsSubmitted ) {
 			this.insertButton( this.title );
 		}
@@ -60,9 +61,9 @@ class DontForgetG12 {
 			return false;
 		}
 
-		// Only run in mainspace and draftspace
 		this.namespace = this.mw.config.get( 'wgNamespaceNumber' );
-		if ( ![ 0, 118 ].includes( this.namespace ) ) {
+		const isMainspaceDraftspaceOrUserspace = [ 0, 118, 2 ].includes( this.namespace );
+		if ( !isMainspaceDraftspaceOrUserspace ) {
 			return false;
 		}
 
