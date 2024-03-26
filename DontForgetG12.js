@@ -13,56 +13,69 @@ class DontForgetG12 {
 	/** @type {Object} */
 	$;
 
+	wikicode;
+
+	namespace;
+
 	constructor() {
 		this.mw = mw;
 		this.$ = $;
 	}
 
 	async execute() {
+		if ( !await this.shouldRunOnThisPage() ) {
+			return;
+		}
+
+		// Only run if 1) draft is submitted
+		const draftIsSubmitted = this.wikicode.match( /(?:{{AfC submission}}|{{AfC submission\|}}|{{AfC submission\|\|)/i ) && this.namespace === 118;
+		if ( draftIsSubmitted ) {
+			this.insertButton( this.title );
+		}
+
+		// or 2) article is not marked as reviewed by NPP
+		this.mw.hook( 'ext.pageTriage.toolbar.ready' ).add( async function () {
+			const pageID = this.mw.config.get( 'wgArticleId' );
+			if ( !( await this.isReviewed( pageID ) ) ) {
+				this.insertButton( this.title );
+			}
+		}.bind( this ) );
+	}
+
+	async shouldRunOnThisPage() {
 		// don't run when not viewing articles
 		const action = this.mw.config.get( 'wgAction' );
 		if ( action !== 'view' ) {
-			return;
+			return false;
 		}
 
 		// don't run when viewing diffs
 		const isDiff = this.mw.config.get( 'wgDiffNewId' );
 		if ( isDiff ) {
-			return;
+			return false;
 		}
 
 		const isDeletedPage = ( !this.mw.config.get( 'wgCurRevisionId' ) );
 		if ( isDeletedPage ) {
-			return;
+			return false;
 		}
 
 		// Only run in mainspace and draftspace
-		const namespace = this.mw.config.get( 'wgNamespaceNumber' );
-		if ( ![ 0, 118 ].includes( namespace ) ) {
-			return;
+		this.namespace = this.mw.config.get( 'wgNamespaceNumber' );
+		if ( ![ 0, 118 ].includes( this.namespace ) ) {
+			return false;
 		}
 
-		const title = this.getArticleName();
-		const wikicode = await this.getWikicode( title );
+		this.title = this.getArticleName();
+		this.wikicode = await this.getWikicode( this.title );
 
 		// Don't run on redirect pages
-		const isRedirect = wikicode.match( /^#REDIRECT \[\[/i );
+		const isRedirect = this.wikicode.match( /^#REDIRECT \[\[/i );
 		if ( isRedirect ) {
-			return;
+			return false;
 		}
 
-		// Only run if 1) article is uncurated or 2) draft is submitted
-		const draftIsSubmitted = wikicode.match( /(?:{{AfC submission}}|{{AfC submission\|}}|{{AfC submission\|\|)/i ) && namespace === 118;
-		if ( draftIsSubmitted ) {
-			this.insertButton( title );
-		}
-
-		this.mw.hook( 'ext.pageTriage.toolbar.ready' ).add( async function () {
-			const pageID = this.mw.config.get( 'wgArticleId' );
-			if ( !( await this.isReviewed( pageID ) ) ) {
-				this.insertButton( title );
-			}
-		}.bind( this, title ) );
+		return true;
 	}
 
 	/**
@@ -97,12 +110,12 @@ class DontForgetG12 {
 		` );
 	}
 
-	async isReviewed( pageID ) {
+	async isReviewed( pageId ) {
 		const api = new this.mw.Api();
 		const response = await api.get( {
 			action: 'pagetriagelist',
 			format: 'json',
-			page_id: pageID
+			page_id: pageId
 		} );
 
 		// no result
