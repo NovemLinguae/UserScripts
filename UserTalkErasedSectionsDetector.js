@@ -7,11 +7,13 @@ Useful for detecting if a WP:PERM applicant is whitewashing their User Talk page
 */
 
 class ErasedSectionsDetector {
-	/** @type {object} */
+	/** @type {Object} */
 	mw;
-	/** @type {object} */
+
+	/** @type {Object} */
 	$;
-	/** @type {object} */
+
+	/** @type {Object} */
 	revisions;
 
 	constructor( mw, $ ) {
@@ -20,18 +22,18 @@ class ErasedSectionsDetector {
 	}
 
 	async execute() {
-		if ( ! this.shouldRunOnThisPage() ) {
+		if ( !this.shouldRunOnThisPage() ) {
 			return;
 		}
-		let title = this.mw.config.get( 'wgPageName' ).replace(/_/g, ' ');
+		const title = this.mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
 		this.revisions = await this.getRevisions( title );
-		let totalRevisionCount = this.revisions.length;
+		const totalRevisionCount = this.revisions.length;
 		this.addDiffsToRevisions();
 		this.filterForRevisionsByThisEditorOnly();
 		this.filterForNegativeDiffs();
 		this.filterOutArchiving();
 		this.addASpaceToBlankEditSummaries();
-		let negativeDiffCount = this.revisions.length;
+		const negativeDiffCount = this.revisions.length;
 		if ( negativeDiffCount > 15 ) {
 			this.addHtml( negativeDiffCount, totalRevisionCount );
 		}
@@ -42,7 +44,7 @@ class ErasedSectionsDetector {
 	 * Add a message to blank edit summaries. This is so the hyperlink can be clicked.
 	 */
 	addASpaceToBlankEditSummaries() {
-		this.revisions = this.revisions.map( function( revision ) {
+		this.revisions = this.revisions.map( function ( revision ) {
 			if ( revision.comment === '' ) {
 				revision.comment = '[no edit summary]';
 			}
@@ -51,9 +53,9 @@ class ErasedSectionsDetector {
 	}
 
 	listenForShowDiffsClick() {
-		this.$( '#ErasedSectionsDetector-SeeDiffs' ).on( 'click', function() {
+		this.$( '#ErasedSectionsDetector-SeeDiffs' ).on( 'click', function () {
 			this.$( '#ErasedSectionsDetector-Diffs' ).toggle();
-		}.bind(this) );
+		}.bind( this ) );
 	}
 
 	addHtml( negativeDiffCount, totalRevisionCount ) {
@@ -67,7 +69,7 @@ class ErasedSectionsDetector {
 					<ul>
 		`;
 
-		for ( let revision of this.revisions ) {
+		for ( const revision of this.revisions ) {
 			html += `
 						<li>
 							<a href="w/index.php?title=${ encodeURIComponent( this.mw.config.get( 'wgPageName' ) ) }&diff=prev&oldid=${ revision.revid }">
@@ -91,68 +93,68 @@ class ErasedSectionsDetector {
 	}
 
 	filterForRevisionsByThisEditorOnly() {
-		let thisEditor = this.mw.config.get( 'wgTitle' );
+		const thisEditor = this.mw.config.get( 'wgTitle' );
 		this.revisions = this.revisions.filter( ( revision ) => revision.user === thisEditor );
 	}
 
 	filterOutArchiving() {
-		this.revisions = this.revisions.filter( ( revision ) => ! revision.comment.includes( 'OneClickArchiver' ) );
-		this.revisions = this.revisions.filter( ( revision ) => ! revision.comment.toLowerCase().includes( 'archiv' ) ); // archiving, archive
+		this.revisions = this.revisions.filter( ( revision ) => !revision.comment.includes( 'OneClickArchiver' ) );
+		this.revisions = this.revisions.filter( ( revision ) => !revision.comment.toLowerCase().includes( 'archiv' ) ); // archiving, archive
 	}
 
 	/**
 	 * Given the Action API output of query revisions as a JavaScript object, add to this object a field called "diff" that is the difference +/- in size of that diff compared to the next oldest diff.
 	 */
 	addDiffsToRevisions() {
-		let len = this.revisions.length;
-		let lastRevisionSize = this.revisions[len - 1].size;
+		const len = this.revisions.length;
+		let lastRevisionSize = this.revisions[ len - 1 ].size;
 		// need to store the OLDER revision's size in a buffer to compute a diff, so iterate BACKWARDS
-		for ( let i = (len - 2); i >= 0; i-- ) {
-			let thisRevisionSize = this.revisions[i].size;
-			this.revisions[i].diff = thisRevisionSize - lastRevisionSize;
+		for ( let i = ( len - 2 ); i >= 0; i-- ) {
+			const thisRevisionSize = this.revisions[ i ].size;
+			this.revisions[ i ].diff = thisRevisionSize - lastRevisionSize;
 			lastRevisionSize = thisRevisionSize;
 		}
 	}
 
 	async getRevisions( title ) {
-		let api = new mw.Api();
-		let response = await api.get( {
-			action: "query",
-			format: "json",
-			prop: "revisions",
+		const api = new this.mw.Api();
+		const response = await api.get( {
+			action: 'query',
+			format: 'json',
+			prop: 'revisions',
 			titles: title,
-			formatversion: "2",
-			rvprop: "comment|size|user|ids",
-			rvslots: "",
-			rvlimit: "500", // get 500 revisions
-			rvdir: "older" // get newest revisions (enumerate towards older entries)
+			formatversion: '2',
+			rvprop: 'comment|size|user|ids',
+			rvslots: '',
+			rvlimit: '500', // get 500 revisions
+			rvdir: 'older' // get newest revisions (enumerate towards older entries)
 		} );
-		return response.query.pages[0].revisions;
+		return response.query.pages[ 0 ].revisions;
 	}
 
 	shouldRunOnThisPage() {
-		let isViewing = this.mw.config.get('wgAction') === 'view';
-		if ( ! isViewing ) {
+		const isViewing = this.mw.config.get( 'wgAction' ) === 'view';
+		if ( !isViewing ) {
 			return false;
 		}
 
-		let isDiff = this.mw.config.get('wgDiffNewId');
+		const isDiff = this.mw.config.get( 'wgDiffNewId' );
 		if ( isDiff ) {
 			return false;
 		}
 
-		let isDeletedPage = ! this.mw.config.get('wgCurRevisionId') ;
+		const isDeletedPage = !this.mw.config.get( 'wgCurRevisionId' );
 		if ( isDeletedPage ) {
 			return false;
 		}
 
-		let namespace = this.mw.config.get('wgNamespaceNumber');
-		let isUserTalkNamespace = [3].includes( namespace );
-		if ( ! isUserTalkNamespace ) {
+		const namespace = this.mw.config.get( 'wgNamespaceNumber' );
+		const isUserTalkNamespace = [ 3 ].includes( namespace );
+		if ( !isUserTalkNamespace ) {
 			return false;
 		}
 
-		let isSubPage = this.mw.config.get( 'wgPageName' ).includes( '/' );
+		const isSubPage = this.mw.config.get( 'wgPageName' ).includes( '/' );
 		if ( isSubPage ) {
 			return;
 		}
@@ -161,8 +163,8 @@ class ErasedSectionsDetector {
 	}
 }
 
-$(async function() {
+$( async function () {
 	await ( new ErasedSectionsDetector( mw, $ ) ).execute();
-});
+} );
 
 // </nowiki>
