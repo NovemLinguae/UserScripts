@@ -6,22 +6,80 @@
 - Many submissions are copyright violations, and catching it before you perform a bunch of other steps in the NPP/AFC flowchart saves time.
 */
 
-$( async function () {
+class DontForgetG12 {
+	/** @type {Object} */
+	mw;
+
+	/** @type {Object} */
+	$;
+
+	constructor() {
+		this.mw = mw;
+		this.$ = $;
+	}
+
+	async execute() {
+		// don't run when not viewing articles
+		const action = this.mw.config.get( 'wgAction' );
+		if ( action !== 'view' ) {
+			return;
+		}
+
+		// don't run when viewing diffs
+		const isDiff = this.mw.config.get( 'wgDiffNewId' );
+		if ( isDiff ) {
+			return;
+		}
+
+		const isDeletedPage = ( !this.mw.config.get( 'wgCurRevisionId' ) );
+		if ( isDeletedPage ) {
+			return;
+		}
+
+		// Only run in mainspace and draftspace
+		const namespace = this.mw.config.get( 'wgNamespaceNumber' );
+		if ( ![ 0, 118 ].includes( namespace ) ) {
+			return;
+		}
+
+		const title = this.getArticleName();
+		const wikicode = await this.getWikicode( title );
+
+		// Don't run on redirect pages
+		const isRedirect = wikicode.match( /^#REDIRECT \[\[/i );
+		if ( isRedirect ) {
+			return;
+		}
+
+		// Only run if 1) article is uncurated or 2) draft is submitted
+		const draftIsSubmitted = wikicode.match( /(?:{{AfC submission}}|{{AfC submission\|}}|{{AfC submission\|\|)/i ) && namespace === 118;
+		if ( draftIsSubmitted ) {
+			this.insertButton( title );
+		}
+
+		this.mw.hook( 'ext.pageTriage.toolbar.ready' ).add( async function () {
+			const pageID = this.mw.config.get( 'wgArticleId' );
+			if ( !( await this.isReviewed( pageID ) ) ) {
+				this.insertButton( title );
+			}
+		}.bind( this, title ) );
+	}
+
 	/**
 	 * @return {string} pagename, including the namespace name, but with spaces replaced by underscores
 	 */
-	function getArticleName() {
-		return mw.config.get( 'wgPageName' );
+	getArticleName() {
+		return this.mw.config.get( 'wgPageName' );
 	}
 
-	async function getWikicode( title ) {
-		if ( !mw.config.get( 'wgCurRevisionId' ) ) {
+	async getWikicode( title ) {
+		if ( !this.mw.config.get( 'wgCurRevisionId' ) ) {
 			return '';
 		}
 		// if page is deleted, return blank
 		let wikicode = '';
 		title = encodeURIComponent( title );
-		await $.ajax( {
+		await this.$.ajax( {
 			url: `https://en.wikipedia.org/w/api.php?action=parse&page=${ title }&prop=wikitext&formatversion=2&format=json`,
 			success: function ( result ) {
 				wikicode = result.parse.wikitext;
@@ -31,16 +89,16 @@ $( async function () {
 		return wikicode;
 	}
 
-	function insertButton() {
-		$( '#contentSub' ).before( `
+	insertButton( title ) {
+		this.$( '#contentSub' ).before( `
 			<a style="display: inline-block; color: black; margin-top: 0.5em; border: 2px solid black; padding: 0.25em 3em; background-color: #FFDC00; font-size: 1.5em;" href="https://copyvios.toolforge.org/?lang=en&project=wikipedia&title=` + encodeURIComponent( title ) + `" target="_blank">
 				Copyvio check
 			</a>
 		` );
 	}
 
-	async function isReviewed( pageID ) {
-		const api = new mw.Api();
+	async isReviewed( pageID ) {
+		const api = new this.mw.Api();
 		const response = await api.get( {
 			action: 'pagetriagelist',
 			format: 'json',
@@ -58,51 +116,10 @@ $( async function () {
 			return false;
 		}
 	}
+}
 
-	// don't run when not viewing articles
-	const action = mw.config.get( 'wgAction' );
-	if ( action !== 'view' ) {
-		return;
-	}
-
-	// don't run when viewing diffs
-	const isDiff = mw.config.get( 'wgDiffNewId' );
-	if ( isDiff ) {
-		return;
-	}
-
-	const isDeletedPage = ( !mw.config.get( 'wgCurRevisionId' ) );
-	if ( isDeletedPage ) {
-		return;
-	}
-
-	// Only run in mainspace and draftspace
-	const namespace = mw.config.get( 'wgNamespaceNumber' );
-	if ( ![ 0, 118 ].includes( namespace ) ) {
-		return;
-	}
-
-	const title = getArticleName();
-	const wikicode = await getWikicode( title );
-
-	// Don't run on redirect pages
-	const isRedirect = wikicode.match( /^#REDIRECT \[\[/i );
-	if ( isRedirect ) {
-		return;
-	}
-
-	// Only run if 1) article is uncurated or 2) draft is submitted
-	const draftIsSubmitted = wikicode.match( /(?:{{AfC submission}}|{{AfC submission\|}}|{{AfC submission\|\|)/i ) && namespace === 118;
-	if ( draftIsSubmitted ) {
-		insertButton();
-	}
-
-	mw.hook( 'ext.pageTriage.toolbar.ready' ).add( async function () {
-		const pageID = mw.config.get( 'wgArticleId' );
-		if ( !( await isReviewed( pageID ) ) ) {
-			insertButton();
-		}
-	} );
+$( async function () {
+	await ( new DontForgetG12( mw, $ ) ).execute();
 } );
 
 // </nowiki>
