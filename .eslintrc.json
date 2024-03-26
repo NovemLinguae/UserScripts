@@ -15,6 +15,9 @@
 		"max-len": 0,
 		"es-x/no-async-functions": 0,
 		"es-x/no-array-prototype-includes": 0,
-		"no-jquery/variable-pattern": 0
+		"no-jquery/variable-pattern": 0,
+		"no-shadow": 0,
+		"no-jquery/no-global-selector": 0,
+		"camelcase": 0
 	}
 }
