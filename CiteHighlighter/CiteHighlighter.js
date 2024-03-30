@@ -361,23 +361,12 @@ class CiteHighlighter {
 	}
 }
 
-const citeHighlighter = new CiteHighlighter( window, $, mw );
-
-$( async function () {
-	await mw.loader.using(
-		[ 'mediawiki.util', 'mediawiki.api' ],
-		async function () {
-			await citeHighlighter.execute();
-		}
-	);
-} );
-
 // Fire after wiki content is added to the DOM, such as when first loading a page, or when a gadget such as the XTools gadget loads.
 mw.hook( 'wikipage.content' ).add( async function () {
 	await mw.loader.using(
 		[ 'mediawiki.util', 'mediawiki.api' ],
 		async function () {
-			await citeHighlighter.execute();
+			await ( new CiteHighlighter( window, $, mw ) ).execute();
 		}
 	);
 } );
@@ -387,7 +376,7 @@ mw.hook( 'postEdit' ).add( async function () {
 	await mw.loader.using(
 		[ 'mediawiki.util', 'mediawiki.api' ],
 		async function () {
-			await citeHighlighter.execute();
+			await ( new CiteHighlighter( window, $, mw ) ).execute();
 		}
 	);
 } );
