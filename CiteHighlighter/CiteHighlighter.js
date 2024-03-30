@@ -76,18 +76,34 @@ class CiteHighlighter {
 	setConfigVariableDefaultsIfNeeded() {
 		// Defaults
 		this.config = {
-			HighlightEverything: false,
-			HighlightLighterColors: false,
-			AlwaysHighlightSourceLists: false
+			highlightEverything: false,
+			highlightLighterColors: false,
+			alwaysHighlightSourceLists: false,
+			unreliableWord: '#ffb347',
+			preprint: 'lightcoral',
+			doi: 'transparent',
+			medrs: 'limegreen',
+			green: 'lightgreen',
+			yellow: 'khaki',
+			red: 'lightcoral'
 		};
 
 		// Override defaults if window.citeHighlighterXYZ is already set (typically at the top of the user's common.js file)
 		for ( const key in this.config ) {
-			const value = this.window[ 'citeHighlighter' + key ];
+			const value = this.window[ 'citeHighlighter' + this.capitalizeFirstLetter( key ) ];
 			if ( value !== undefined ) {
 				this.config[ key ] = value;
 			}
 		}
+	}
+
+	/**
+	 * Steve Harrison, CC BY-SA 4.0, https://stackoverflow.com/a/1026087/3480193
+	 * @param {string} string
+	 * @return {string}
+	 */
+	capitalizeFirstLetter( string ) {
+		return string.charAt( 0 ).toUpperCase() + string.slice( 1 );
 	}
 
 	/**
@@ -96,7 +112,7 @@ class CiteHighlighter {
 	 * On pages with a lot of links (watchlist, WP:FA), highlighting EVERYTHING will double the
 	 * load time. e.g. watchlist 5 seconds -> 10 seconds.
 	 *
-	 * @return {boolean} isSlowPage
+	 * @return {boolean}
 	 */
 	isSlowPage() {
 		if (
@@ -127,9 +143,9 @@ class CiteHighlighter {
 			'Wikipedia:WikiProject_Dungeons_%26_Dragons/References'
 		];
 
-		if ( this.config.AlwaysHighlightSourceLists ) {
+		if ( this.config.alwaysHighlightSourceLists ) {
 			if ( highlightEverythingList.includes( this.articleTitle ) ) {
-				this.config.HighlightEverything = true;
+				this.config.highlightEverything = true;
 			}
 		}
 	}
@@ -140,7 +156,7 @@ class CiteHighlighter {
 	 */
 	highlightDraftsMoreAggressively() {
 		if ( this.mw.config.get( 'wgNamespaceNumber' ) === 118 ) {
-			this.config.HighlightEverything = true;
+			this.config.highlightEverything = true;
 		}
 	}
 
@@ -148,14 +164,14 @@ class CiteHighlighter {
 	 * If highlightEverything = true, delete wikipedia.org and wiktionary. Too many false positives.
 	 */
 	preventWikipediaFalsePositives() {
-		if ( this.config.HighlightEverything ) {
+		if ( this.config.highlightEverything ) {
 			this.deleteAll( this.sources, 'en.wikipedia.org', 'wikipedia.org', 'wiktionary.org' );
 			this.deleteFromArray( this.unreliableWordsForOrangeHighlighting, 'wiki' );
 		}
 	}
 
 	getColors() {
-		if ( this.config.LighterColors ) {
+		if ( this.config.lighterColors ) {
 			return {
 				unreliableWord: '#ffb347',
 				preprint: '#ffcfd5',
@@ -171,13 +187,13 @@ class CiteHighlighter {
 
 				// order of these first 3 fixes an issue where published academic papers were being colored preprint red
 				// lowest priority
-				unreliableWord: '#ffb347', // orange for now, for easier testing. later will be red.
-				preprint: 'lightcoral',
-				doi: 'transparent',
-				medrs: 'limegreen',
-				green: 'lightgreen',
-				yellow: 'khaki',
-				red: 'lightcoral'
+				unreliableWord: this.config.unreliableWord,
+				preprint: this.config.preprint,
+				doi: this.config.doi,
+				medrs: this.config.medrs,
+				green: this.config.green,
+				yellow: this.config.yellow,
+				red: this.config.red
 				// 'aggregator': 'plum', // turning off aggregator for now, red/yellow/green is nice and simple, purple makes the color scheme more complicated
 				// highest priority
 			};
@@ -210,7 +226,7 @@ class CiteHighlighter {
 						this.highlightCitation( source, color );
 						this.highlightUnorderedListItem( source, color );
 
-						if ( this.config.HighlightEverything ) {
+						if ( this.config.highlightEverything ) {
 							this.highlightExternalLinks( source, color );
 						}
 					}
@@ -281,7 +297,7 @@ class CiteHighlighter {
 			if ( this.wikicode.includes( word ) ) {
 				this.$( 'li[id^="cite_note-"]' ).has( 'a[href*="' + word.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
 				/* Too many false positives. Turning off for now. See https://github.com/NovemLinguae/UserScripts/issues/146 and https://github.com/NovemLinguae/UserScripts/issues/148
-				if ( this.config.HighlightEverything ) {
+				if ( this.config.highlightEverything ) {
 					this.mw.util.addCSS('#bodyContent a[href*="'+word+'" i] {background-color: '+this.colors[color]+' !important;}');
 				}
 				*/
