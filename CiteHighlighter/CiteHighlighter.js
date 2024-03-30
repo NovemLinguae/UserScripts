@@ -361,12 +361,33 @@ class CiteHighlighter {
 	}
 }
 
-// TODO: Idea from chlod: use mw.hook("wikipage.content").add( () => { rehiglight(); } ); instead. will listen for VE finishes saving or the page gets reloaded in any way. Gets called multiple times by accident sometimes though, so need to be careful not to apply duplicate classes to HTML elements.
+const citeHighlighter = new CiteHighlighter( window, $, mw );
+
 $( async function () {
 	await mw.loader.using(
 		[ 'mediawiki.util', 'mediawiki.api' ],
 		async function () {
-			await ( new CiteHighlighter( window, $, mw ) ).execute();
+			await citeHighlighter.execute();
+		}
+	);
+} );
+
+// Fire after wiki content is added to the DOM, such as when first loading a page, or when a gadget such as the XTools gadget loads.
+mw.hook( 'wikipage.content' ).add( async function () {
+	await mw.loader.using(
+		[ 'mediawiki.util', 'mediawiki.api' ],
+		async function () {
+			await citeHighlighter.execute();
+		}
+	);
+} );
+
+// Fire after an edit is successfully saved via JavaScript, such as edits by the Visual Editor and HotCat.
+mw.hook( 'postEdit' ).add( async function () {
+	await mw.loader.using(
+		[ 'mediawiki.util', 'mediawiki.api' ],
+		async function () {
+			await citeHighlighter.execute();
 		}
 	);
 } );
