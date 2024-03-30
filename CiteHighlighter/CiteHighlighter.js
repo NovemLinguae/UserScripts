@@ -1,11 +1,17 @@
 // <nowiki>
 
 class CiteHighlighter {
+	constructor( window, $, mw ) {
+		this.window = window;
+		this.$ = $;
+		this.mw = mw;
+	}
+
 	async execute() {
 		this.sources = await this.getListOfSourcesAndRatings();
 		this.unreliableWordsForOrangeHighlighting = this.getUnreliableWords();
 		this.setConfigVariableDefaultsIfNeeded();
-		this.articleTitle = mw.config.get( 'wgPageName' );
+		this.articleTitle = this.mw.config.get( 'wgPageName' );
 		if ( this.isSlowPage() ) {
 			return;
 		}
@@ -68,14 +74,19 @@ class CiteHighlighter {
 	}
 
 	setConfigVariableDefaultsIfNeeded() {
-		if ( window.citeHighlighterHighlightEverything === undefined ) {
-			window.citeHighlighterHighlightEverything = false;
-		}
-		if ( window.citeHighlighterLighterColors === undefined ) {
-			window.citeHighlighterLighterColors = false;
-		}
-		if ( window.citeHighlighterAlwaysHighlightSourceLists === undefined ) {
-			window.citeHighlighterAlwaysHighlightSourceLists = false;
+		// Defaults
+		this.config = {
+			HighlightEverything: false,
+			HighlightLighterColors: false,
+			AlwaysHighlightSourceLists: false
+		};
+
+		// Override defaults if window.citeHighlighterXYZ is already set (typically at the top of the user's common.js file)
+		for ( const key in this.config ) {
+			const value = this.window[ 'citeHighlighter' + key ];
+			if ( value !== undefined ) {
+				this.config[ key ] = value;
+			}
 		}
 	}
 
@@ -89,7 +100,7 @@ class CiteHighlighter {
 	 */
 	isSlowPage() {
 		if (
-			mw.config.get( 'wgAction' ) === 'history' ||
+			this.mw.config.get( 'wgAction' ) === 'history' ||
 			this.articleTitle === 'Main_Page' ||
 			this.articleTitle === 'Wikipedia:Featured_articles' ||
 			this.articleTitle === 'Special:Watchlist' ||
@@ -116,9 +127,9 @@ class CiteHighlighter {
 			'Wikipedia:WikiProject_Dungeons_%26_Dragons/References'
 		];
 
-		if ( window.citeHighlighterAlwaysHighlightSourceLists ) {
+		if ( this.config.AlwaysHighlightSourceLists ) {
 			if ( highlightEverythingList.includes( this.articleTitle ) ) {
-				window.citeHighlighterHighlightEverything = true;
+				this.config.HighlightEverything = true;
 			}
 		}
 	}
@@ -128,8 +139,8 @@ class CiteHighlighter {
 	 * inline citations are malformed
 	 */
 	highlightDraftsMoreAggressively() {
-		if ( mw.config.get( 'wgNamespaceNumber' ) === 118 ) {
-			window.citeHighlighterHighlightEverything = true;
+		if ( this.mw.config.get( 'wgNamespaceNumber' ) === 118 ) {
+			this.config.HighlightEverything = true;
 		}
 	}
 
@@ -137,14 +148,14 @@ class CiteHighlighter {
 	 * If highlightEverything = true, delete wikipedia.org and wiktionary. Too many false positives.
 	 */
 	preventWikipediaFalsePositives() {
-		if ( window.citeHighlighterHighlightEverything ) {
+		if ( this.config.HighlightEverything ) {
 			this.deleteAll( this.sources, 'en.wikipedia.org', 'wikipedia.org', 'wiktionary.org' );
 			this.deleteFromArray( this.unreliableWordsForOrangeHighlighting, 'wiki' );
 		}
 	}
 
 	getColors() {
-		if ( window.citeHighlighterLighterColors ) {
+		if ( this.config.LighterColors ) {
 			return {
 				unreliableWord: '#ffb347',
 				preprint: '#ffcfd5',
@@ -175,8 +186,8 @@ class CiteHighlighter {
 
 	writeCSS() {
 		for ( const key in this.colors ) {
-			mw.util.addCSS( '.cite-highlighter-' + key + ' {background-color: ' + this.colors[ key ] + ';}' );
-			mw.util.addCSS( '.rt-tooltipTail.cite-highlighter-' + key + '::after {background: ' + this.colors[ key ] + ';}' );
+			this.mw.util.addCSS( '.cite-highlighter-' + key + ' {background-color: ' + this.colors[ key ] + ';}' );
+			this.mw.util.addCSS( '.rt-tooltipTail.cite-highlighter-' + key + '::after {background: ' + this.colors[ key ] + ';}' );
 		}
 	}
 
@@ -199,7 +210,7 @@ class CiteHighlighter {
 						this.highlightCitation( source, color );
 						this.highlightUnorderedListItem( source, color );
 
-						if ( window.citeHighlighterHighlightEverything ) {
+						if ( this.config.HighlightEverything ) {
 							this.highlightExternalLinks( source, color );
 						}
 					}
@@ -213,22 +224,22 @@ class CiteHighlighter {
 		// [title="source" i]... the "i" part is not working in :has() for some reason
 		// use .toLowerCase() for now
 		// using .addClass() instead of .css() or .attr('style') because I'm having issues getting medrs to override arXiv/Wikidata/other red sources
-		$( 'li[id^="cite_note-"]' ).has( 'a[href*="/' + source.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
-		$( 'li[id^="cite_note-"]' ).has( 'a[href*=".' + source.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
+		this.$( 'li[id^="cite_note-"]' ).has( 'a[href*="/' + source.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
+		this.$( 'li[id^="cite_note-"]' ).has( 'a[href*=".' + source.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
 	}
 
 	highlightUnorderedListItem( source, color ) {
 		// Also support any {{Cite}} template inside an unordered list. For example, a works cited section supporting a references section consisting of "Smith 1986, pp. 573-574" type citations. Example: https://en.wikipedia.org/wiki/C._J._Cregg#Articles_and_tweets
-		$( 'li' ).has( '.citation a[href*="/' + source.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
-		$( 'li' ).has( '.citation a[href*=".' + source.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
+		this.$( 'li' ).has( '.citation a[href*="/' + source.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
+		this.$( 'li' ).has( '.citation a[href*=".' + source.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
 	}
 
 	highlightExternalLinks( source, color ) {
 		// highlight external link only
 		// !important; needed for highlighting PDF external links. otherwise the HTML that generates the PDF icon has higher specificity, and makes it transparent
 		// [title="source" i]... the "i" means case insensitive. Default is case sensitive.
-		mw.util.addCSS( '#bodyContent a[href*="/' + source + '" i] {background-color: ' + this.colors[ color ] + ' !important;}' );
-		mw.util.addCSS( '#bodyContent a[href*=".' + source + '" i] {background-color: ' + this.colors[ color ] + ' !important;}' );
+		this.mw.util.addCSS( '#bodyContent a[href*="/' + source + '" i] {background-color: ' + this.colors[ color ] + ' !important;}' );
+		this.mw.util.addCSS( '#bodyContent a[href*=".' + source + '" i] {background-color: ' + this.colors[ color ] + ' !important;}' );
 	}
 
 	/**
@@ -247,8 +258,8 @@ class CiteHighlighter {
 					for ( const source of this.sources[ color ] ) {
 						if ( this.wikicode.includes( source ) || source === 'nih.gov' || source === 'twitter.com' ) {
 							if ( source.includes( '.' ) && !source.includes( ' ' ) ) {
-								$( el ).has( `a[href*="${ source.toLowerCase() }"]` ).addClass( 'cite-highlighter-' + color );
-								$( el ).has( `a[href*="${ source.toLowerCase() }"]` ).children().first().addClass( 'cite-highlighter-' + color );
+								this.$( el ).has( `a[href*="${ source.toLowerCase() }"]` ).addClass( 'cite-highlighter-' + color );
+								this.$( el ).has( `a[href*="${ source.toLowerCase() }"]` ).children().first().addClass( 'cite-highlighter-' + color );
 							}
 						}
 					}
@@ -268,10 +279,10 @@ class CiteHighlighter {
 		for ( const word of this.unreliableWordsForOrangeHighlighting ) {
 			const color = 'unreliableWord';
 			if ( this.wikicode.includes( word ) ) {
-				$( 'li[id^="cite_note-"]' ).has( 'a[href*="' + word.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
+				this.$( 'li[id^="cite_note-"]' ).has( 'a[href*="' + word.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
 				/* Too many false positives. Turning off for now. See https://github.com/NovemLinguae/UserScripts/issues/146 and https://github.com/NovemLinguae/UserScripts/issues/148
-				if ( window.citeHighlighterHighlightEverything ) {
-					mw.util.addCSS('#bodyContent a[href*="'+word+'" i] {background-color: '+this.colors[color]+' !important;}');
+				if ( this.config.HighlightEverything ) {
+					this.mw.util.addCSS('#bodyContent a[href*="'+word+'" i] {background-color: '+this.colors[color]+' !important;}');
 				}
 				*/
 			}
@@ -300,12 +311,12 @@ class CiteHighlighter {
 	}
 
 	async getWikicode( title ) {
-		const pageIsDeleted = !mw.config.get( 'wgCurRevisionId' );
+		const pageIsDeleted = !this.mw.config.get( 'wgCurRevisionId' );
 		if ( pageIsDeleted ) {
 			return '';
 		}
 
-		const api = new mw.Api();
+		const api = new this.mw.Api();
 		const response = await api.get( {
 			action: 'parse',
 			page: title,
@@ -318,7 +329,7 @@ class CiteHighlighter {
 
 	async getWikicodeFromCache( title ) {
 		// ForeignApi so that CiteHighlighter can be loaded on any wiki
-		const api = new mw.ForeignApi( 'https://en.wikipedia.org/w/api.php' );
+		const api = new this.mw.ForeignApi( 'https://en.wikipedia.org/w/api.php' );
 		const response = await api.get( {
 			action: 'query',
 			prop: 'revisions',
@@ -337,11 +348,12 @@ class CiteHighlighter {
 
 // TODO: Idea from chlod: use mw.hook("wikipage.content").add( () => { rehiglight(); } ); instead. will listen for VE finishes saving or the page gets reloaded in any way. Gets called multiple times by accident sometimes though, so need to be careful not to apply duplicate classes to HTML elements.
 $( async function () {
-	// TODO: I don't think I use mediawiki.Title. Remove that, and replace with mediawiki.Api?
-	await mw.loader.using( [ 'mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title', 'mediawiki.api' ], async () => {
-		const ch = new CiteHighlighter();
-		await ch.execute();
-	} );
+	await mw.loader.using(
+		[ 'mediawiki.util', 'mediawiki.api' ],
+		async function () {
+			await ( new CiteHighlighter( window, $, mw ) ).execute();
+		}
+	);
 } );
 
 // </nowiki>
