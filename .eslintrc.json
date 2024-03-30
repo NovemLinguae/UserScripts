@@ -18,6 +18,7 @@
 		"no-jquery/variable-pattern": 0,
 		"no-shadow": 0,
 		"no-jquery/no-global-selector": 0,
-		"camelcase": 0
+		"camelcase": 0,
+		"mediawiki/class-doc": 0
 	}
 }
