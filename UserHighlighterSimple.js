@@ -1,48 +1,12 @@
 // <nowiki>
 
 class UserHighlighterSimple {
-	// data
-	/** @type {Object} */
-	wmf;
-	/** @type {Object} */
-	stewards;
-	/** @type {Object} */
-	arbcom;
-	/** @type {Object} */
-	bureaucrats;
-	/** @type {Object} */
-	admins;
-	/** @type {Object} */
-	formeradmins;
-	/** @type {Object} */
-	newPageReviewers;
-	/** @type {Object} */
-	tenThousandEdits;
-	/** @type {Object} */
-	extendedConfirmed;
-
-	// other variables
-	/** @type {JQuery} */
-	$link;
-	/** @type {string} */
-	user;
-	/** @type {mw.Title} */
-	titleHelper;
-	/** @type {boolean} */
-	hasAdvancedPermissions;
-	/** @type {Object} */
-	$;
-	/** @type {Object} */
-	mw;
-	/** @type {Window} */
-	window;
-
 	/**
 	 * @param {Object} $ jquery
 	 * @param {Object} mw mediawiki
 	 * @param {Window} window
 	 */
-	constructor($, mw, window) {
+	constructor( $, mw, window ) {
 		this.$ = $;
 		this.mw = mw;
 		this.window = window;
@@ -50,17 +14,17 @@ class UserHighlighterSimple {
 
 	async execute() {
 		await this.getUsernames();
-		if ( ! this.window.userHighlighterSimpleNoColors ) {
+		if ( !this.window.userHighlighterSimpleNoColors ) {
 			this.setHighlightColors();
 		}
-		let $links = this.$('#article a, #bodyContent a, #mw_contentholder a');
-		$links.each(function(index, element) {
-			this.$link = this.$(element);
-			if ( ! this.linksToAUser() ) {
+		const $links = this.$( '#article a, #bodyContent a, #mw_contentholder a' );
+		$links.each( function ( index, element ) {
+			this.$link = this.$( element );
+			if ( !this.linksToAUser() ) {
 				return;
 			}
 			this.user = this.getUserName();
-			let isUserSubpage = this.user.includes('/');
+			const isUserSubpage = this.user.includes( '/' );
 			if ( isUserSubpage ) {
 				return;
 			}
@@ -68,29 +32,29 @@ class UserHighlighterSimple {
 			this.addClassesAndHoverTextToLinkIfNeeded();
 			// If the user has any advanced perms, they are likely to have a signature, so be aggressive about overriding the background and foreground color. That way there's no risk their signature is unreadable due to background color and foreground color being too similar. Don't do this for users without advanced perms... being able to see a redlinked username is useful.
 			if ( this.hasAdvancedPermissions ) {
-				this.$link.addClass(this.$link.attr('class') + ' UHS-override-signature-colors');
+				this.$link.addClass( this.$link.attr( 'class' ) + ' UHS-override-signature-colors' );
 			}
-		}.bind(this));
+		}.bind( this ) );
 	}
 
-	addCSS(htmlClass, cssDeclaration) {
+	addCSS( htmlClass, cssDeclaration ) {
 		// .plainlinks is for Wikipedia Signpost articles
 		// To support additional custom signature edge cases, add to the selectors here.
-		this.mw.util.addCSS(`
-			.plainlinks .${htmlClass}.external,
-			.${htmlClass},
-			.${htmlClass} b,
-			.${htmlClass} big,
-			.${htmlClass} font,
-			.${htmlClass} span {
-				${cssDeclaration}
+		this.mw.util.addCSS( `
+			.plainlinks .${ htmlClass }.external,
+			.${ htmlClass },
+			.${ htmlClass } b,
+			.${ htmlClass } big,
+			.${ htmlClass } font,
+			.${ htmlClass } span {
+				${ cssDeclaration }
 			}
-		`);
+		` );
 	}
 
-	async getWikitextFromCache(title) {
-		var api = new this.mw.ForeignApi('https://en.wikipedia.org/w/api.php');
-		var wikitext = '';
+	async getWikitextFromCache( title ) {
+		const api = new this.mw.ForeignApi( 'https://en.wikipedia.org/w/api.php' );
+		let wikitext = '';
 		await api.get( {
 			action: 'query',
 			prop: 'revisions',
@@ -102,19 +66,19 @@ class UserHighlighterSimple {
 			smaxage: '86400', // cache for 1 day
 			maxage: '86400' // cache for 1 day
 		} ).then( function ( data ) {
-			wikitext = data.query.pages[0].revisions[0].slots.main.content;
+			wikitext = data.query.pages[ 0 ].revisions[ 0 ].slots.main.content;
 		} );
 		return wikitext;
 	}
 
 	async getUsernames() {
-		let dataString = await this.getWikitextFromCache('User:NovemBot/userlist.js');
-		let dataJSON = JSON.parse(dataString);
+		const dataString = await this.getWikitextFromCache( 'User:NovemBot/userlist.js' );
+		const dataJSON = JSON.parse( dataString );
 
 		this.wmf = {
-			...dataJSON['founder'],
-			...dataJSON['boardOfTrustees'],
-			...dataJSON['staff'],
+			...dataJSON.founder,
+			...dataJSON.boardOfTrustees,
+			...dataJSON.staff
 			// WMF is hard-coded a bit further down. The script detects those strings in the username. This is safe to do because the WMF string is blacklisted from names, so has to be specially created.
 			// ...dataJSON['sysadmin'],
 			// ...dataJSON['global-interface-editor'],
@@ -123,101 +87,101 @@ class UserHighlighterSimple {
 			// ...dataJSON['global-sysop'],
 		};
 		this.stewards = {
-			...dataJSON['steward'],
-			...dataJSON['ombuds'],
+			...dataJSON.steward,
+			...dataJSON.ombuds
 		};
-		this.arbcom = dataJSON['arbcom'];
-		this.bureaucrats = dataJSON['bureaucrat'];
-		this.admins = dataJSON['sysop'];
-		this.formeradmins = dataJSON['formeradmin'];
-		this.newPageReviewers = dataJSON['patroller'];
-		this.tenThousandEdits = dataJSON['10k'];
+		this.arbcom = dataJSON.arbcom;
+		this.bureaucrats = dataJSON.bureaucrat;
+		this.admins = dataJSON.sysop;
+		this.formeradmins = dataJSON.formeradmin;
+		this.newPageReviewers = dataJSON.patroller;
+		this.tenThousandEdits = dataJSON[ '10k' ];
 		this.extendedConfirmed = {
-			...dataJSON['extendedconfirmed'],
-			...dataJSON['bot'],
-			...dataJSON['productiveIPs'],
+			...dataJSON.extendedconfirmed,
+			...dataJSON.bot,
+			...dataJSON.productiveIPs
 		};
 	}
 
-	hasHref(url) {
-		return Boolean(url);
+	hasHref( url ) {
+		return Boolean( url );
 	}
 
-	isAnchor(url) {
-		return url.charAt(0) === '#';
+	isAnchor( url ) {
+		return url.charAt( 0 ) === '#';
 	}
 
-	isHttpOrHttps(url) {
-		return url.startsWith("http://", 0) ||
-			url.startsWith("https://", 0) ||
-			url.startsWith("/", 0);
+	isHttpOrHttps( url ) {
+		return url.startsWith( 'http://', 0 ) ||
+			url.startsWith( 'https://', 0 ) ||
+			url.startsWith( '/', 0 );
 	}
 
 	/**
-	  * Figure out the wikipedia article title of the link
-	  * @param {string} url
-	  * @param {mw.Uri} urlHelper
-	  * @return {String}
-	  */
-	getTitle(url, urlHelper) {
+	 * Figure out the wikipedia article title of the link
+	 * @param {string} url
+	 * @param {mw.Uri} urlHelper
+	 * @return {string}
+	 */
+	getTitle( url, urlHelper ) {
 		// for links in the format /w/index.php?title=Blah
-		let titleParameterOfUrl = this.mw.util.getParamValue('title', url);
+		const titleParameterOfUrl = this.mw.util.getParamValue( 'title', url );
 		if ( titleParameterOfUrl ) {
 			return titleParameterOfUrl;
 		}
 
 		// for links in the format /wiki/PageName. Slice off the /wiki/ (first 6 characters)
-		if ( urlHelper.path.startsWith('/wiki/') ) {
-			return decodeURIComponent(urlHelper.path.slice(6));
+		if ( urlHelper.path.startsWith( '/wiki/' ) ) {
+			return decodeURIComponent( urlHelper.path.slice( 6 ) );
 		}
 
 		return '';
 	}
 
 	notInUserOrUserTalkNamespace() {
-		let namespace = this.titleHelper.getNamespaceId();
-		let notInSpecialUserOrUserTalkNamespace = this.$.inArray(namespace, [2, 3]) === -1;
+		const namespace = this.titleHelper.getNamespaceId();
+		const notInSpecialUserOrUserTalkNamespace = this.$.inArray( namespace, [ 2, 3 ] ) === -1;
 		return notInSpecialUserOrUserTalkNamespace;
 	}
 
 	linksToAUser() {
-		let url = this.$link.attr('href');
+		let url = this.$link.attr( 'href' );
 
-		if ( ! this.hasHref(url) || this.isAnchor(url) || ! this.isHttpOrHttps(url) ) {
+		if ( !this.hasHref( url ) || this.isAnchor( url ) || !this.isHttpOrHttps( url ) ) {
 			return false;
 		}
 
-		url = this.addDomainIfMissing(url);
+		url = this.addDomainIfMissing( url );
 
 		// mw.Uri(url) throws an error if it doesn't like the URL. An example of a URL it doesn't like is https://meta.wikimedia.org/wiki/Community_Wishlist_Survey_2022/Larger_suggestions#1%, which has a section link to a section titled 1% (one percent).
-		var urlHelper;
+		let urlHelper;
 		try {
-			urlHelper = new this.mw.Uri(url);
+			urlHelper = new this.mw.Uri( url );
 		} catch {
 			return false;
 		}
 
 		// Skip links that aren't to user pages
-		let isUserPageLink = url.includes('/w/index.php?title=User') || url.includes('/wiki/User');
-		if ( ! isUserPageLink ) {
+		const isUserPageLink = url.includes( '/w/index.php?title=User' ) || url.includes( '/wiki/User' );
+		if ( !isUserPageLink ) {
 			return false;
 		}
 
 		// Even if it is a link to a userpage, skip URLs that have any parameters except title=User, action=edit, and redlink=. We don't want links to diff pages, section editing pages, etc. to be highlighted.
-		let urlParameters = urlHelper.query;
-		delete urlParameters['title'];
-		delete urlParameters['action'];
-		delete urlParameters['redlink'];
-		let hasNonUserpageParametersInUrl = ! this.$.isEmptyObject(urlParameters);
+		const urlParameters = urlHelper.query;
+		delete urlParameters.title;
+		delete urlParameters.action;
+		delete urlParameters.redlink;
+		const hasNonUserpageParametersInUrl = !this.$.isEmptyObject( urlParameters );
 		if ( hasNonUserpageParametersInUrl ) {
 			return false;
 		}
 
-		let title = this.getTitle(url, urlHelper);
+		const title = this.getTitle( url, urlHelper );
 
 		// Handle edge cases such as https://web.archive.org/web/20231105033559/https://en.wikipedia.org/wiki/User:SandyGeorgia/SampleIssue, which shows up as isUserPageLink = true but isn't really a user page.
 		try {
-			this.titleHelper = new this.mw.Title(title);
+			this.titleHelper = new this.mw.Title( title );
 		} catch {
 			return false;
 		}
@@ -230,15 +194,16 @@ class UserHighlighterSimple {
 	}
 
 	// Brandon Frohbieter, CC BY-SA 4.0, https://stackoverflow.com/a/4009771/3480193
-	countInstances(string, word) {
-		return string.split(word).length - 1;
+	countInstances( string, word ) {
+		return string.split( word ).length - 1;
 	}
 
 	/**
 	 * mw.Uri(url) expects a complete URL. If we get something like /wiki/User:Test, convert it to https://en.wikipedia.org/wiki/User:Test. Without this, UserHighlighterSimple doesn't work on metawiki.
+	 * @param url
 	 */
-	addDomainIfMissing(url) {
-		if ( url.startsWith('/') ) {
+	addDomainIfMissing( url ) {
+		if ( url.startsWith( '/' ) ) {
 			url = window.location.origin + url;
 		}
 		return url;
@@ -248,22 +213,22 @@ class UserHighlighterSimple {
 	 * @return {string}
 	 */
 	getUserName() {
-		var user = this.titleHelper.getMain().replace(/_/g, ' ');
+		const user = this.titleHelper.getMain().replace( /_/g, ' ' );
 		return user;
 	}
 
-	checkForPermission(listOfUsernames, className, descriptionForHover) {
-		if ( listOfUsernames[this.user] === 1 ) {
-			this.addClassAndHoverText(className, descriptionForHover);
+	checkForPermission( listOfUsernames, className, descriptionForHover ) {
+		if ( listOfUsernames[ this.user ] === 1 ) {
+			this.addClassAndHoverText( className, descriptionForHover );
 		}
 	}
 
-	addClassAndHoverText(className, descriptionForHover) {
-		this.$link.addClass(className);
+	addClassAndHoverText( className, descriptionForHover ) {
+		this.$link.addClass( className );
 
-		let title = this.$link.attr("title");
-		if ( ! title || title.startsWith("User:") ) {
-			this.$link.attr("title", descriptionForHover);
+		const title = this.$link.attr( 'title' );
+		if ( !title || title.startsWith( 'User:' ) ) {
+			this.$link.attr( 'title', descriptionForHover );
 		}
 
 		this.hasAdvancedPermissions = true;
@@ -271,71 +236,66 @@ class UserHighlighterSimple {
 
 	addClassesAndHoverTextToLinkIfNeeded() {
 		// highlight anybody with "WMF" in their name, case insensitive. this should not generate false positives because "WMF" is on the username blacklist. see https://meta.wikimedia.org/wiki/Title_blacklist
-		if ( this.user.match(/^[^/]*WMF/i) ) {
-			this.addClassAndHoverText('UHS-wmf', 'Wikimedia Foundation (WMF)');
+		if ( this.user.match( /^[^/]*WMF/i ) ) {
+			this.addClassAndHoverText( 'UHS-wmf', 'Wikimedia Foundation (WMF)' );
 		}
 
 		// TODO: grab the order from an array, so I can keep checkForPermission and addCSS in the same order easily, lowering the risk of the HTML title="" being one thing, and the color being another
-		this.checkForPermission(this.wmf, 'UHS-wmf', 'Wikimedia Foundation (WMF)');
-		this.checkForPermission(this.stewards, 'UHS-steward', 'Steward or Ombud');
-		this.checkForPermission(this.arbcom, 'UHS-arbitration-committee', 'Arbitration Committee member');
-		this.checkForPermission(this.bureaucrats, 'UHS-bureaucrat', 'Bureaucrat');
-		this.checkForPermission(this.admins, 'UHS-administrator', 'Admin');
-		this.checkForPermission(this.formeradmins, 'UHS-former-administrator', 'Former Admin');
-		this.checkForPermission(this.newPageReviewers, 'UHS-new-page-reviewer', 'New page reviewer');
-		this.checkForPermission(this.tenThousandEdits, 'UHS-10000edits', 'More than 10,000 edits');
-		this.checkForPermission(this.extendedConfirmed, 'UHS-500edits-bot-trustedIP', 'Extended confirmed');
+		this.checkForPermission( this.wmf, 'UHS-wmf', 'Wikimedia Foundation (WMF)' );
+		this.checkForPermission( this.stewards, 'UHS-steward', 'Steward or Ombud' );
+		this.checkForPermission( this.arbcom, 'UHS-arbitration-committee', 'Arbitration Committee member' );
+		this.checkForPermission( this.bureaucrats, 'UHS-bureaucrat', 'Bureaucrat' );
+		this.checkForPermission( this.admins, 'UHS-administrator', 'Admin' );
+		this.checkForPermission( this.formeradmins, 'UHS-former-administrator', 'Former Admin' );
+		this.checkForPermission( this.newPageReviewers, 'UHS-new-page-reviewer', 'New page reviewer' );
+		this.checkForPermission( this.tenThousandEdits, 'UHS-10000edits', 'More than 10,000 edits' );
+		this.checkForPermission( this.extendedConfirmed, 'UHS-500edits-bot-trustedIP', 'Extended confirmed' );
 
 		// If they have no perms, just draw a box around their username, to make it more visible.
-		if ( ! this.hasAdvancedPermissions ) {
-			this.$link.addClass( "UHS-no-permissions" );
-			let title = this.$link.attr("title");
-			if ( ! title || title.startsWith("User:")) {
-				this.$link.attr("title", "Less than 500 edits");
+		if ( !this.hasAdvancedPermissions ) {
+			this.$link.addClass( 'UHS-no-permissions' );
+			const title = this.$link.attr( 'title' );
+			if ( !title || title.startsWith( 'User:' ) ) {
+				this.$link.attr( 'title', 'Less than 500 edits' );
 			}
 		}
 	}
 
 	setHighlightColors() {
 		// Highest specificity goes on bottom. So if you want an admin+steward to be highlighted steward, place the steward CSS below the admin CSS in this section.
-		this.addCSS('UHS-override-signature-colors', `
+		this.addCSS( 'UHS-override-signature-colors', `
 			color: #0645ad !important;
 			background-color: transparent !important;
 			background: unset !important;
-		`);
+		` );
 
-		this.mw.util.addCSS(`.UHS-no-permissions { border: 1px solid black !important; }`);
+		this.mw.util.addCSS( '.UHS-no-permissions { border: 1px solid black !important; }' );
 
 		// TODO: grab the order from an array, so I can keep checkForPermission and addCSS in the same order easily, lowering the risk of the HTML title="" being one thing, and the color being another
-		this.addCSS('UHS-500edits-bot-trustedIP', `background-color: lightgray !important;`);
-		this.addCSS('UHS-10000edits', `background-color: #9c9 !important;`);
-		this.addCSS('UHS-new-page-reviewer', `background-color: #99f !important;`);
-		this.addCSS('UHS-former-administrator', `background-color: #D3AC8B !important;`);
-		this.addCSS('UHS-administrator', `background-color: #9ff !important;`);
-		this.addCSS('UHS-bureaucrat', `background-color: orange !important; color: #0645ad !important;`);
-		this.addCSS('UHS-arbitration-committee', `background-color: #FF3F3F !important; color: white !important;`);
-		this.addCSS('UHS-steward', `background-color: #00FF00 !important;`);
-		this.addCSS('UHS-wmf', `background-color: hotpink !important; color: #0645ad !important;`);
+		this.addCSS( 'UHS-500edits-bot-trustedIP', 'background-color: lightgray !important;' );
+		this.addCSS( 'UHS-10000edits', 'background-color: #9c9 !important;' );
+		this.addCSS( 'UHS-new-page-reviewer', 'background-color: #99f !important;' );
+		this.addCSS( 'UHS-former-administrator', 'background-color: #D3AC8B !important;' );
+		this.addCSS( 'UHS-administrator', 'background-color: #9ff !important;' );
+		this.addCSS( 'UHS-bureaucrat', 'background-color: orange !important; color: #0645ad !important;' );
+		this.addCSS( 'UHS-arbitration-committee', 'background-color: #FF3F3F !important; color: white !important;' );
+		this.addCSS( 'UHS-steward', 'background-color: #00FF00 !important;' );
+		this.addCSS( 'UHS-wmf', 'background-color: hotpink !important; color: #0645ad !important;' );
 	}
 }
 
-// List of hooks: https://doc.wikimedia.org/mediawiki-core/master/js/Hooks.html#
-
 // Fire after wiki content is added to the DOM, such as when first loading a page, or when a gadget such as the XTools gadget loads.
-// TODO: wikipage.content returns only the changed content in a $content parameter. Could process only that for better performance.
-mw.hook('wikipage.content').add(async function() {
-	await mw.loader.using(['mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title'], async function() {
-		let uhs = new UserHighlighterSimple($, mw, window);
-		await uhs.execute();
-	});
-});
+mw.hook( 'wikipage.content' ).add( async function () {
+	await mw.loader.using( [ 'mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title' ], async function () {
+		await ( new UserHighlighterSimple( $, mw, window ) ).execute();
+	} );
+} );
 
 // Fire after an edit is successfully saved via JavaScript, such as edits by the Visual Editor and HotCat.
-mw.hook('postEdit').add(async function() {
-	await mw.loader.using(['mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title'], async function() {
-		let uhs = new UserHighlighterSimple($, mw, window);
-		await uhs.execute();
-	});
-});
+mw.hook( 'postEdit' ).add( async function () {
+	await mw.loader.using( [ 'mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title' ], async function () {
+		await ( new UserHighlighterSimple( $, mw, window ) ).execute();
+	} );
+} );
 
 // </nowiki>
