@@ -27,7 +27,6 @@ class CiteHighlighter {
 	}
 
 	getUnreliableWords() {
-		// /(blog|blogspot|caard|\/comment|fandom|forum|preprint|railfan|thread|weebly|wix|wordpress|blockchain|crypto|innovative|podcast|about|newswire|release|announce|acquire)/gm
 		return [
 			'/comment',
 			'about-me',
