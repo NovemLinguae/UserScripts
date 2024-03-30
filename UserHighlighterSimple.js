@@ -200,7 +200,8 @@ class UserHighlighterSimple {
 
 	/**
 	 * mw.Uri(url) expects a complete URL. If we get something like /wiki/User:Test, convert it to https://en.wikipedia.org/wiki/User:Test. Without this, UserHighlighterSimple doesn't work on metawiki.
-	 * @param url
+	 * @param {string} url
+	 * @return {string} url
 	 */
 	addDomainIfMissing( url ) {
 		if ( url.startsWith( '/' ) ) {
