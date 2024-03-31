@@ -5,31 +5,31 @@
 
 class VisualEditorEverywhere {
 	execute() {
-		this.articleName = mw.config.get('wgPageName');
-		this.articleName = encodeURIComponent(this.articleName); // fix bug involving & not getting converted to &amp;
-		let pageIsUserScript = this.articleName.match(/(?:\.js|\.css)$/);
+		this.articleName = mw.config.get( 'wgPageName' );
+		this.articleName = encodeURIComponent( this.articleName ); // fix bug involving & not getting converted to &amp;
+		const pageIsUserScript = this.articleName.match( /(?:\.js|\.css)$/ );
 
-		let veTabIsPresent = $('#ca-ve-edit').length;
-		if ( ! veTabIsPresent && ! pageIsUserScript ) {
+		const veTabIsPresent = $( '#ca-ve-edit' ).length;
+		if ( !veTabIsPresent && !pageIsUserScript ) {
 			this.insertVETab();
 		}
 
 		// we also need to check if section links are present. if you save a VE edit, the VETab will already be present, but the VESectionLinks will not be present and need to be added back
-		let veSectionLinkIsPresent = $('.mw-editsection-visualeditor').length;
-		if ( ! veSectionLinkIsPresent && ! pageIsUserScript ) {
+		const veSectionLinkIsPresent = $( '.mw-editsection-visualeditor' ).length;
+		if ( !veSectionLinkIsPresent && !pageIsUserScript ) {
 			this.insertVESectionLink();
 		}
 	}
 
 	/** Insert Edit tab at top of page */
 	insertVETab() {
-		let skin = mw.config.get('skin');
+		const skin = mw.config.get( 'skin' );
 		let htmlToInsert;
 		switch ( skin ) {
 			case 'timeless':
 				htmlToInsert =
 `<li id="ca-ve-edit" class="mw-list-item" style="display: inline-block">
-	<a href="/w/index.php?title=${this.articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
+	<a href="/w/index.php?title=${ this.articleName }&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">
 		<span>VEdit</span>
 	</a>
 </li>`;
@@ -37,51 +37,51 @@ class VisualEditorEverywhere {
 			case 'vector-2022':
 				htmlToInsert =
 `<li id="ca-ve-edit" class="vector-tab-noicon mw-list-item">
-	<a href="/w/index.php?title=${this.articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">	VEdit</a>
+	<a href="/w/index.php?title=${ this.articleName }&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">VEdit</a>
 </li>`;
 				break;
 			case 'modern':
 				htmlToInsert =
 `<li id="ca-ve-edit" class="collapsible" style="display: block;">
-	<a href="/w/index.php?title=${this.articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">	VEdit</a>
+	<a href="/w/index.php?title=${ this.articleName }&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">VEdit</a>
 </li>`;
 				break;
 			case 'minerva':
 				htmlToInsert =
-`<a id="ca-ve-edit" href="/w/index.php?title=${this.articleName}&amp;veaction=edit" class="edit-page menu__item--page-actions-edit mw-ui-icon mw-ui-icon-element mw-ui-icon-wikimedia-edit-base20 mw-ui-icon-with-label-desktop mw-ui-button mw-ui-quiet userlink" data-mw="interface" data-event-name="menu.edit" role="button" title="Edit this page [alt-shift-v]">VEdit</a>`;
+`<a id="ca-ve-edit" href="/w/index.php?title=${ this.articleName }&amp;veaction=edit" class="edit-page menu__item--page-actions-edit mw-ui-icon mw-ui-icon-element mw-ui-icon-wikimedia-edit-base20 mw-ui-icon-with-label-desktop mw-ui-button mw-ui-quiet userlink" data-mw="interface" data-event-name="menu.edit" role="button" title="Edit this page [alt-shift-v]">VEdit</a>`;
 				break;
 			case 'vector':
 			case 'monobook':
 			default:
 				htmlToInsert =
 `<li id="ca-ve-edit" class="collapsible">
-	<a href="/w/index.php?title=${this.articleName}&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">VEdit</a>
+	<a href="/w/index.php?title=${ this.articleName }&amp;veaction=edit" title="Edit this page [alt-shift-v]" accesskey="v">VEdit</a>
 </li>`;
 				break;
 		}
 
-		$('#ca-edit').before(htmlToInsert);
-		$('#ca-ve-edit').show();
+		$( '#ca-edit' ).before( htmlToInsert );
+		$( '#ca-ve-edit' ).show();
 	}
 
 	/** Insert [ vedit ] by each section */
 	insertVESectionLink() {
 		// Foreach edit button
-		$('.mw-editsection').each(function() {
+		$( '.mw-editsection' ).each( function () {
 			// Generate visual editor section link for this element
 			// Credit to Bartosz Dziewoński (WMF) for this fix
-			let veEditHref = $(this).find('a').attr('href').replace('&action=edit', '&veaction=edit');
+			const veEditHref = $( this ).find( 'a' ).attr( 'href' ).replace( '&action=edit', '&veaction=edit' );
 
 			// Generate HTML to insert
 			let htmlToInsert;
 
-			let skin = mw.config.get('skin');
+			const skin = mw.config.get( 'skin' );
 			switch ( skin ) {
 				case 'minerva':
 					// Generate HTML to insert
-					htmlToInsert = `<a href="" class="mw-editsection-visualeditor" style="padding-left:1em; font-size:0.6em; font-family:sans-serif;">vedit</a>`;
+					htmlToInsert = '<a href="" class="mw-editsection-visualeditor" style="padding-left:1em; font-size:0.6em; font-family:sans-serif;">vedit</a>';
 
-					$(this).prepend(htmlToInsert);
+					$( this ).prepend( htmlToInsert );
 					break;
 				default:
 					// Generate HTML to insert
@@ -91,16 +91,16 @@ class VisualEditorEverywhere {
 
 					// Insert the HTML right after <span class="mw-editsection"><span class="mw-editsection-bracket">
 					// Inline tags such as <span> do not work with :nth-child, .before(), etc. Must use :first-of-type.
-					$(this).children('span:first-of-type').after(htmlToInsert);
+					$( this ).children( 'span:first-of-type' ).after( htmlToInsert );
 					break;
 			}
 
 			// Inject our generated URL for the edit button
-			$(this).find('.mw-editsection-visualeditor').attr('href', veEditHref);
-		});
+			$( this ).find( '.mw-editsection-visualeditor' ).attr( 'href', veEditHref );
+		} );
 
 		this.showVEEditLink();
-		
+
 		// Doesn't work :(
 		// Good test case is https://en.wikipedia.org/wiki/User_talk:Onel5969?useskin=minerva. Ctrl-F5. 25-50% of the time it will not show the vedit section links.
 		/*
@@ -114,22 +114,22 @@ class VisualEditorEverywhere {
 	}
 
 	showVEEditLink() {
-		$('.mw-editsection-visualeditor, .mw-editsection-divider').show();
+		$( '.mw-editsection-visualeditor, .mw-editsection-divider' ).show();
 	}
 }
 
-$(function() {
+$( function () {
 	// TODO: this should in theory fix the race condition bug. instead, it breaks the whole script (displays nothing). why? debug.
 	// mw.hook( 've.activationComplete' ).add( function() {
-	let vee = new VisualEditorEverywhere();
+	const vee = new VisualEditorEverywhere();
 	vee.execute();
 	// } );
 
 	// when VE saves, the veSectionLinks should be put back
-	mw.hook( 've.deactivationComplete' ).add( function() {
-		let vee = new VisualEditorEverywhere();
+	mw.hook( 've.deactivationComplete' ).add( function () {
+		const vee = new VisualEditorEverywhere();
 		vee.execute();
-	});
-});
+	} );
+} );
 
 // </nowiki>
