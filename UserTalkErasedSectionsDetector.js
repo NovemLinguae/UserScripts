@@ -98,8 +98,19 @@ class ErasedSectionsDetector {
 	}
 
 	filterOutArchiving() {
-		this.revisions = this.revisions.filter( ( revision ) => !revision.comment.includes( 'OneClickArchiver' ) );
-		this.revisions = this.revisions.filter( ( revision ) => !revision.comment.toLowerCase().includes( 'archiv' ) ); // archiving, archive
+		const keywordsToIgnore = [
+			'arch', // arch, archive, archiving, OneClickArchiver
+			'bot mes', // mesg, message
+			'mass mes',
+			'newsletter'
+		];
+		for ( let keyword of keywordsToIgnore ) {
+			this.revisions = this.revisions.filter( function ( revision ) {
+				keyword = keyword.toLowerCase();
+				const editSummary = revision.comment.toLowerCase();
+				return !editSummary.includes( keyword );
+			} );
+		}
 	}
 
 	/**
