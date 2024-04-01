@@ -21,20 +21,20 @@ class ErasedSectionsDetector {
 		const totalRevisionCount = this.revisions.length;
 		this.addDiffsToRevisions();
 		this.filterForRevisionsByThisEditorOnly();
-		this.filterForNegativeDiffs();
-		this.filterOutArchiving();
-		this.addASpaceToBlankEditSummaries();
+		this.filterForContentRemoval();
+		this.filterOutReasonableEditSummaries();
+		this.expandBlankEditSummaries();
 		const negativeDiffCount = this.revisions.length;
 		if ( negativeDiffCount > 15 ) {
 			this.addHtml( negativeDiffCount, totalRevisionCount );
+			this.listenForShowDiffsClick();
 		}
-		this.listenForShowDiffsClick();
 	}
 
 	/**
 	 * Add a message to blank edit summaries. This is so the hyperlink can be clicked.
 	 */
-	addASpaceToBlankEditSummaries() {
+	expandBlankEditSummaries() {
 		this.revisions = this.revisions.map( function ( revision ) {
 			if ( revision.comment === '' ) {
 				revision.comment = '[no edit summary]';
@@ -79,7 +79,7 @@ class ErasedSectionsDetector {
 		this.$( '#contentSub2' ).after( html );
 	}
 
-	filterForNegativeDiffs() {
+	filterForContentRemoval() {
 		this.revisions = this.revisions.filter( ( revision ) => revision.diff < 0 );
 	}
 
@@ -88,7 +88,7 @@ class ErasedSectionsDetector {
 		this.revisions = this.revisions.filter( ( revision ) => revision.user === thisEditor );
 	}
 
-	filterOutArchiving() {
+	filterOutReasonableEditSummaries() {
 		const keywordsToIgnore = [
 			'arch', // arch, archive, archiving, OneClickArchiver
 			'bot mes', // mesg, message
