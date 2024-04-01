@@ -7,15 +7,6 @@ Useful for detecting if a WP:PERM applicant is whitewashing their User Talk page
 */
 
 class ErasedSectionsDetector {
-	/** @type {Object} */
-	mw;
-
-	/** @type {Object} */
-	$;
-
-	/** @type {Object} */
-	revisions;
-
 	constructor( mw, $ ) {
 		this.mw = mw;
 		this.$ = $;
