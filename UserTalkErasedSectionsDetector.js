@@ -1,7 +1,7 @@
 // <nowiki>
 
 /*
-A user script that alerts you with a yellow banner at the top of a User Talk page if a user has deleted content from more than 15 of the last 500 diffs.
+A user script that alerts you with a yellow banner at the top of a User Talk page if a user has deleted content from more than 15 of the last 500 diffs, with exceptions for some edit summary keywords such as "archiving".
 
 Useful for detecting if a WP:PERM applicant is whitewashing their User Talk page by removing warnings without archiving them.
 */
