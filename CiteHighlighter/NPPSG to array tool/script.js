@@ -16,7 +16,7 @@
 	- preprints such as bioarXiv can get DOI numbers. may need attention.
 */
 
-class NPPSG {
+class SourceListWikitextToJson {
 	constructor() {
 		this.sources = {
 			preprint: [],
@@ -29,7 +29,7 @@ class NPPSG {
 		};
 	}
 
-	getOutput( input ) {
+	getJson( input ) {
 		const lines = input.split( '\n' );
 		let color = '';
 		let matches = null;
@@ -248,15 +248,13 @@ class NPPSG {
 }
 
 window.addEventListener( 'DOMContentLoaded', async function () {
+	// This input textarea already contains the wikitext source of both NPPSG and AllSourcesExceptNPPSG. See PHP file for the code that fetches that wikitext. Had to do it in PHP due to CORS policy.
 	const inputTextArea = document.getElementById( 'input' );
 	const executeButton = document.getElementById( 'execute' );
 	const outputTextArea = document.getElementById( 'output' );
 
-	// inputTextArea.innerHTML should already have our sources loaded in it, grabbed from two pages onwiki. PHP does this for us. Had to do it in PHP because CORS policy does not let us do third party AJAX in JavaScript.
-
-	const nppsg1 = new NPPSG();
 	executeButton.addEventListener( 'click', function () {
-		outputTextArea.value = nppsg1.getOutput( inputTextArea.value );
+		outputTextArea.value = ( new SourceListWikitextToJson() ).getJson( inputTextArea.value );
 	} );
 
 	executeButton.dispatchEvent( new Event( 'click' ) );
