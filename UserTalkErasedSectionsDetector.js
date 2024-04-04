@@ -1,7 +1,7 @@
 // <nowiki>
 
 /*
-A user script that alerts you with a yellow banner at the top of a User Talk page if a user has deleted content from more than 15 of the last 500 diffs, with exceptions for some edit summary keywords such as "archiving".
+A user script that alerts you with a yellow banner at the top of a User Talk page if more than 3% of recent user talk diffs are self-deletions, with exceptions for some edit summary keywords such as "archiving".
 
 Useful for detecting if a WP:PERM applicant is whitewashing their User Talk page by removing warnings without archiving them.
 */
@@ -25,7 +25,8 @@ class ErasedSectionsDetector {
 		this.filterOutReasonableEditSummaries();
 		this.expandBlankEditSummaries();
 		const negativeDiffCount = this.revisions.length;
-		if ( negativeDiffCount > 15 ) {
+		const deletionPercent = negativeDiffCount / totalRevisionCount;
+		if ( deletionPercent > 0.03 ) {
 			this.addHtml( negativeDiffCount, totalRevisionCount );
 			this.listenForShowDiffsClick();
 		}
