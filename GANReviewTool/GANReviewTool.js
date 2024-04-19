@@ -1,5 +1,6 @@
 // <nowiki>
 
+// Move these to a bootstrap file?
 const { GANReviewController } = require("./modules/GANReviewController.js");
 const { GANReviewHTMLGenerator } = require("./modules/GANReviewHTMLGenerator.js");
 const { GANReviewWikicodeGenerator } = require("./modules/GANReviewWikicodeGenerator.js");
