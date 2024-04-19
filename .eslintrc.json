@@ -11,20 +11,21 @@
 		"ecmaVersion": "latest"
 	},
 	"rules": {
-		"camelcase": 0,
-		"es-x/no-array-prototype-includes": 0,
-		"es-x/no-async-functions": 0,
-		"es-x/no-class-fields": 0,
-		"es-x/no-optional-catch-binding": 0,
-		"es-x/no-regexp-lookbehind-assertions": 0,
-		"es-x/no-regexp-s-flag": 0,
-		"es-x/no-rest-spread-properties": 0,
-		"es-x/no-string-prototype-matchall": 0,
-		"max-len": 0,
-		"mediawiki/class-doc": 0,
-		"no-jquery/no-global-selector": 0,
-		"no-jquery/variable-pattern": 0,
-		"no-shadow": 0,
-		"security/detect-non-literal-regexp": 0
+		"camelcase": "off",
+		"es-x/no-array-prototype-includes": "off",
+		"es-x/no-async-functions": "off",
+		"es-x/no-class-fields": "off",
+		"es-x/no-optional-catch-binding": "off",
+		"es-x/no-regexp-lookbehind-assertions": "off",
+		"es-x/no-regexp-s-flag": "off",
+		"es-x/no-rest-spread-properties": "off",
+		"es-x/no-string-prototype-matchall": "off",
+		"jsdoc/require-param": "off",
+		"max-len": "off",
+		"mediawiki/class-doc": "off",
+		"no-jquery/no-global-selector": "off",
+		"no-jquery/variable-pattern": "off",
+		"no-shadow": "off",
+		"security/detect-non-literal-regexp": "off"
 	}
 }
