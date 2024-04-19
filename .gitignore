@@ -12,3 +12,4 @@ publish_old.php
 publish.config.php
 RequestedArticleSifter
 sandbox*.*
+test*.*
