@@ -21,6 +21,8 @@
 		"es-x/no-rest-spread-properties": "off",
 		"es-x/no-string-prototype-matchall": "off",
 		"jsdoc/require-param": "off",
+		"jsdoc/require-param-type": "off",
+		"jsdoc/require-returns": "off",
 		"max-len": "off",
 		"mediawiki/class-doc": "off",
 		"no-jquery/no-global-selector": "off",
