@@ -15,19 +15,23 @@ class DetectPromo {
 7-figure
 8-figure
 9-figure
+B2B
+B2C
 a record
+acclaimed
 accomplished
 are a necessity
 around the world
-award-winning
 award winning
-B2B
-B2C
+award-winning
+beloved
 best available
 bestselling
+boasts
 comprehensive
 countless hours
 create a revolution
+critical acclaim
 critical acclaim
 disrupt
 drastically
@@ -45,13 +49,16 @@ expert
 expertise
 extensive
 famous
+fascinating
 fast growing
 fast-growing
 fastest growing
 fastest-growing
+finest
 fully integrated
 fully-integrated
 globally
+globally recognized
 growing popularity
 highlights
 highly accomplished
@@ -60,7 +67,9 @@ highly specialized
 historic
 honored with
 hypnotic
+illustrious
 impressive
+indelible
 inexhaustible
 influential
 innovation
@@ -68,6 +77,7 @@ innovative
 insights
 inspired by
 integrate
+invaluable
 invaluable
 leader in
 leading
@@ -82,15 +92,18 @@ most important
 most impressive
 most notable
 mystical
+natural charm
 noteworthy
 numerous
 organically
 outstanding
 perfect
 philanthropist
+picturesque
 pioneer
 pioneering
 popular destination
+popularity
 premiere
 prestigious
 prominence
@@ -100,7 +113,10 @@ promulgator
 ranked
 reinvent
 remarkable
+remarkable
+renowed
 renowned
+resonating
 respected
 revolutionary
 rising star
@@ -109,7 +125,11 @@ savvy
 seamless
 sensual
 several offers
+showcased
 signature
+significant
+soulful
+spanning
 state of art
 state of the art
 state-of-art
@@ -117,6 +137,7 @@ state-of-the-art
 striking
 super famous
 tailored
+tranquility
 transcend
 transform
 underpin
@@ -129,71 +150,64 @@ world class
 world-class
 worldwide
 zero to hero
-renowed
-invaluable
-significant
-remarkable
-globally recognized
-critical acclaim
-indelible
 
 	`;
 
 	/**
-	 * @param {object} mw
+	 * @param {Object} mw
 	 * @param {jQuery} $
 	 */
-	constructor(mw, $) {
+	constructor( mw, $ ) {
 		this.mw = mw;
 		this.$ = $;
 	}
 
 	async execute() {
-		if ( ! this.shouldRunOnThisPage() ) {
+		if ( !this.shouldRunOnThisPage() ) {
 			return;
 		}
-		let wordsToSearchArray = this.getWordsToSearchArray();
-		let title = this.mw.config.get('wgPageName');
-		let wikicode = await this.getWikicode(title);
-		wikicode = this.cleanWikicode(wikicode);
-		let searchResultsArray = this.getSearchResultsArray(wordsToSearchArray, wikicode);
-		let searchResultsString = this.getSearchResultsString(searchResultsArray);
-		this.displayHtml(searchResultsString);
+		const wordsToSearchArray = this.getWordsToSearchArray();
+		const title = this.mw.config.get( 'wgPageName' );
+		let wikicode = await this.getWikicode( title );
+		wikicode = this.cleanWikicode( wikicode );
+		const searchResultsArray = this.getSearchResultsArray( wordsToSearchArray, wikicode );
+		const searchResultsString = this.getSearchResultsString( searchResultsArray );
+		this.displayHtml( searchResultsString );
 	}
 
-	displayHtml(searchResultsString) {
+	displayHtml( searchResultsString ) {
 		if ( searchResultsString ) {
-			let html = '<div id="DetectPromo" style="background-color: orange"><span style="font-weight: bold;">Promotional words:</span> ' + searchResultsString + '</div>';
-			this.$('#contentSub').before(html);
+			const html = '<div id="DetectPromo" style="background-color: orange"><span style="font-weight: bold;">Promotional words:</span> ' + searchResultsString + '</div>';
+			this.$( '#contentSub' ).before( html );
 		}
 	}
 
 	/**
 	 * @param {Array} searchResultsArray
-	 * @returns {string} searchResultsString - Example: `a record, comprehensive, drastically, entrepreneur, expert, leading, massive, more than, most important, numerous, outstanding, ranked, signature, worldwide, significant...... and more.`
+	 * @return {string} searchResultsString - Example: `a record, comprehensive, drastically, entrepreneur, expert, leading, massive, more than, most important, numerous, outstanding, ranked, signature, worldwide, significant...... and more.`
 	 */
-	getSearchResultsString(searchResultsArray) {
-		let MAX_DISPLAYED_RESULTS = 20;
+	getSearchResultsString( searchResultsArray ) {
+		const MAX_DISPLAYED_RESULTS = 20;
 		if ( searchResultsArray.length > MAX_DISPLAYED_RESULTS ) {
-			searchResultsArray = searchResultsArray.slice(0, MAX_DISPLAYED_RESULTS);
-			searchResultsArray.push('...... and more.');
+			searchResultsArray = searchResultsArray.slice( 0, MAX_DISPLAYED_RESULTS );
+			searchResultsArray.push( '...... and more.' );
 		}
-		let searchResultsString = searchResultsArray.join(', ');
+		const searchResultsString = searchResultsArray.join( ', ' );
 		return searchResultsString;
 	}
 
 	/**
 	 * @param {Array} wordsToSearchArray
 	 * @param {string} wikicode
-	 * @returns {Array} searchResultsArray
+	 * @return {Array} searchResultsArray
 	 */
-	getSearchResultsArray(wordsToSearchArray, wikicode) {
-		let searchResultsArray = [];
-		for ( let word of wordsToSearchArray ) {
+	getSearchResultsArray( wordsToSearchArray, wikicode ) {
+		const searchResultsArray = [];
+		for ( const word of wordsToSearchArray ) {
 			// can't use \b here because \)\b doesn't work correctly. using lookarounds instead
-			let regEx = new RegExp('(?<!\\w)' + this.escapeRegEx(word) + '(?!\\w)', "i");
-			if ( wikicode.match(regEx) ) {
-				searchResultsArray.push(word);
+			const regEx = new RegExp( '(?<!\\w)' + this.escapeRegEx( word ) + '(?!\\w)', 'i' );
+			if ( wikicode.match( regEx ) ) {
+				searchResultsArray.push( word );
 			}
 		}
 		return searchResultsArray;
@@ -201,60 +215,60 @@ indelible
 
 	/**
 	 * @param {string} wikicode
-	 * @returns {string} wikicode
+	 * @return {string} wikicode
 	 */
-	cleanWikicode(wikicode) {
+	cleanWikicode( wikicode ) {
 		// eliminate [[ ]], so that phrases with wikilink syntax in the middle don't mess up our search
-		wikicode = wikicode.replace(/\[\[/g, '')
-			.replace(/\]\]/g, '');
+		wikicode = wikicode.replace( /\[\[/g, '' )
+			.replace( /\]\]/g, '' );
 
 		// Eliminate <ref></ref> and <ref />. It's OK if newspaper articles contain promo words, and they often do. We don't want to display these. We only want to display promo words in the article prose.
-		wikicode = wikicode.replace(/<ref[^<]*<\/ref>/gm, '');
-		wikicode = wikicode.replace(/<ref[^>]*\/>/gm, '');
+		wikicode = wikicode.replace( /<ref[^<]*<\/ref>/gm, '' );
+		wikicode = wikicode.replace( /<ref[^>]*\/>/gm, '' );
 
 		return wikicode;
 	}
 
 	/**
-	 * @returns {Array} wordsToSearchArray
+	 * @return {Array} wordsToSearchArray
 	 */
 	getWordsToSearchArray() {
-		let wordsToSearchString = this.wordsToSearchString.replace(/^\/\/.*$/gm, ''); // replace comment lines with blank lines. using this approach fixes a bug involving // and comma on the same line
-		let wordsToSearchArray = wordsToSearchString.replace(/, /g, "\n")
+		const wordsToSearchString = this.wordsToSearchString.replace( /^\/\/.*$/gm, '' ); // replace comment lines with blank lines. using this approach fixes a bug involving // and comma on the same line
+		let wordsToSearchArray = wordsToSearchString.replace( /, /g, '\n' )
 			.trim()
-			.split("\n")
-			.map(v => v.trim())
-			.filter(v => v != '')
-			.filter(v => ! v.startsWith('//'));
-		wordsToSearchArray = this.eliminateDuplicates(wordsToSearchArray);
+			.split( '\n' )
+			.map( ( v ) => v.trim() )
+			.filter( ( v ) => v !== '' )
+			.filter( ( v ) => !v.startsWith( '//' ) );
+		wordsToSearchArray = this.eliminateDuplicates( wordsToSearchArray );
 		return wordsToSearchArray;
 	}
 
 	/**
-	 * @returns {boolean}
+	 * @return {boolean}
 	 */
 	shouldRunOnThisPage() {
 		// don't run when not viewing articles
-		let action = this.mw.config.get('wgAction');
-		if ( action != 'view' ) {
+		const action = this.mw.config.get( 'wgAction' );
+		if ( action !== 'view' ) {
 			return false;
 		}
 
 		// don't run when viewing diffs
-		let isDiff = this.mw.config.get('wgDiffNewId');
+		const isDiff = this.mw.config.get( 'wgDiffNewId' );
 		if ( isDiff ) {
 			return false;
 		}
 
-		let isDeletedPage = ! this.mw.config.get('wgCurRevisionId') ;
+		const isDeletedPage = !this.mw.config.get( 'wgCurRevisionId' );
 		if ( isDeletedPage ) {
 			return false;
 		}
 
 		// Only run in mainspace and draftspace
-		let namespace = this.mw.config.get('wgNamespaceNumber');
-		let title = this.mw.config.get('wgPageName');
-		if ( ! [0, 118].includes(namespace) && title != 'User:Novem_Linguae/sandbox' ) {
+		const namespace = this.mw.config.get( 'wgNamespaceNumber' );
+		const title = this.mw.config.get( 'wgPageName' );
+		if ( ![ 0, 118 ].includes( namespace ) && title !== 'User:Novem_Linguae/sandbox' ) {
 			return false;
 		}
 
@@ -263,16 +277,16 @@ indelible
 
 	/**
 	 * @param {string} title
-	 * @returns {string} wikicode
+	 * @return {string} wikicode
 	 */
-	async getWikicode(title) {
-		let pageIsDeleted = ! this.mw.config.get('wgCurRevisionId');
+	async getWikicode( title ) {
+		const pageIsDeleted = !this.mw.config.get( 'wgCurRevisionId' );
 		if ( pageIsDeleted ) {
 			return '';
 		}
 
-		let api = new this.mw.Api();
-		let response = await api.get( {
+		const api = new this.mw.Api();
+		const response = await api.get( {
 			action: 'parse',
 			page: title,
 			prop: 'wikitext',
@@ -282,20 +296,20 @@ indelible
 		return response.parse.wikitext;
 	}
 
-	eliminateDuplicates(array) {
-		return [...new Set(array)];
+	eliminateDuplicates( array ) {
+		return [ ...new Set( array ) ];
 	}
 
-	escapeRegEx(string) {
-		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+	escapeRegEx( string ) {
+		return string.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ); // $& means the whole matched string
 	}
 }
 
-$(async function() {
-	await mw.loader.using(['mediawiki.api'], async () => {
-		let detectPromo = new DetectPromo(mw, $);
+$( async function () {
+	await mw.loader.using( [ 'mediawiki.api' ], async () => {
+		const detectPromo = new DetectPromo( mw, $ );
 		await detectPromo.execute();
-	});
-});
+	} );
+} );
 
 // </nowiki>
