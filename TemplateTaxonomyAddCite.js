@@ -50,8 +50,7 @@ class TemplateTaxonomyAddCite {
 				description: 'All',
 				urlLeft: 'https://www.catalogueoflife.org/data/search?facet=rank&facet=issue&facet=status&facet=nomStatus&facet=nameType&facet=field&facet=authorship&facet=extinct&facet=environment&limit=50&offset=0&q=',
 				urlMiddle: taxon,
-				urlRight: '&sortBy=taxonomic',
-				comment: ''
+				urlRight: '&sortBy=taxonomic'
 			},
 			{
 				name: 'WoRMS',
@@ -59,8 +58,7 @@ class TemplateTaxonomyAddCite {
 				description: 'Marine animals, gastropods (snails and slugs)',
 				urlLeft: 'https://www.marinespecies.org/aphia.php?p=taxlist&searchpar=0&tComp=begins&tName=',
 				urlMiddle: taxon,
-				urlRight: '&action=search&rSkips=0&adv=0',
-				comment: ''
+				urlRight: '&action=search&rSkips=0&adv=0'
 			},
 			{
 				name: 'NCBI',
@@ -68,8 +66,7 @@ class TemplateTaxonomyAddCite {
 				description: 'Protozoa',
 				urlLeft: 'https://www.ncbi.nlm.nih.gov/taxonomy/?term=',
 				urlMiddle: taxon,
-				urlRight: '',
-				comment: ''
+				urlRight: ''
 			},
 			{
 				name: 'LPSN',
@@ -77,26 +74,25 @@ class TemplateTaxonomyAddCite {
 				description: 'Bacteria',
 				urlLeft: 'https://lpsn.dsmz.de/search?word=',
 				urlMiddle: taxon,
-				urlRight: '',
-				comment: ''
+				urlRight: ''
 			},
 			{
+				// AJAX-ish/App-ish website, can't custom search through URL
 				name: 'Index Fungorum',
 				id: 'ttac-index-fungorum',
 				description: 'Fungi',
 				urlLeft: 'http://www.indexfungorum.org/names/names.asp',
 				urlMiddle: '',
-				urlRight: '',
-				comment: 'AJAX-ish/App-ish website, can\'t custom search through URL'
+				urlRight: ''
 			},
 			{
+				// AJAX-ish/App-ish website, can't custom search through URL, also doesn't give a unique URL for the genus
 				name: 'MycoBank',
 				id: 'ttac-mycobank',
 				description: 'Fungi',
 				urlLeft: 'https://www.mycobank.org/page/Basic%20names%20search',
 				urlMiddle: '',
-				urlRight: '',
-				comment: 'AJAX-ish/App-ish website, can\'t custom search through URL, also doesn\'t give a unique URL for the genus'
+				urlRight: ''
 			},
 			{
 				name: 'Mindat.org',
@@ -104,8 +100,7 @@ class TemplateTaxonomyAddCite {
 				description: 'Protozoa, Parasites',
 				urlLeft: 'https://www.mindat.org/search.php?search=',
 				urlMiddle: taxon,
-				urlRight: '#autoanchor1',
-				comment: ''
+				urlRight: '#autoanchor1'
 			},
 			{
 				name: 'Other',
@@ -113,8 +108,7 @@ class TemplateTaxonomyAddCite {
 				description: '',
 				urlLeft: '',
 				urlMiddle: '',
-				urlRight: '',
-				comment: ''
+				urlRight: ''
 			}
 		];
 
