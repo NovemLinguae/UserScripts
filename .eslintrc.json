@@ -26,9 +26,12 @@
 		"jsdoc/require-returns": "off",
 		"max-len": "off",
 		"mediawiki/class-doc": "off",
+		"no-jquery/no-class-state": "off",
 		"no-jquery/no-global-selector": "off",
+		"no-jquery/no-parse-html-literal": "off",
 		"no-jquery/variable-pattern": "off",
 		"no-shadow": "off",
-		"security/detect-non-literal-regexp": "off"
+		"security/detect-non-literal-regexp": "off",
+		"security/detect-unsafe-regex": "off"
 	}
 }
