@@ -14,9 +14,56 @@ This script works in Special:UserRights, in watchlists, and when clicking "right
 
 */
 
-// Don't bother converting this user script to a class. There's a nasty bug involving calling this.functionName2 inside of $().each( this.functionName ). "this" is an HTML element, not the class. Not sure how to fix.
+// Don't bother converting this user script to a class. There's a nasty bug involving calling this.functionName2 inside of $().each( this.functionName ). "this" is an HTML element, not the class. Not sure how to fix. Tried that=this, and changing it to that.functionName( that ). Didn't work. Tried on 2023-06-05 and 2024-04-23.
 
 $( function () {
+	function execute() {
+		// User:BradV/Scripts/SuperLinks.js
+		$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', checkLog );
+
+		// Special:UserRights, Special:Log, Special:Watchlist
+		checkLog();
+	}
+
+	function checkLog() {
+		// prevent infinite loop
+		$( 'body' ).off( 'DOMNodeInserted' );
+		// don't run twice on the same page
+		if ( $( '.user-rights-diff' ).length === 0 ) {
+			// Special:UserRights, Special:Log, BradV SuperLinks
+			$( '.mw-logevent-loglines .mw-logline-rights' ).each( checkLine );
+			// Special:Watchlist
+			$( '.mw-changeslist-log-rights .mw-changeslist-log-entry' ).each( checkLine );
+		}
+		$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', checkLog );
+	}
+
+	function checkLine() {
+		let text = $( this ).text();
+		let from, to;
+		try {
+			text = deleteParenthesesAndTags( text );
+			text = deleteBeginningOfLogEntry( text );
+			const matches = / from (.*?) to (.*?)(?: \(.*)?$/.exec( text );
+			from = permStringToArray( matches[ 1 ] );
+			to = permStringToArray( matches[ 2 ] );
+		} catch ( err ) {
+			throw new Error( 'UserRightsDiff.js error. Error was: ' + err + '. Input text was: ' + $( this ).text() );
+		}
+		let added = to.filter( ( x ) => !from.includes( x ) );
+		let removed = from.filter( ( x ) => !to.includes( x ) );
+		added = added.length > 0 ?
+			'<span class="user-rights-diff" style="background-color:lawngreen">[ADDED: ' + permArrayToString( added ) + ']</span>' :
+			'';
+		removed = removed.length > 0 ?
+			'<span class="user-rights-diff" style="background-color:yellow">[REMOVED: ' + permArrayToString( removed ) + ']</span>' :
+			'';
+		const noChange = added.length === 0 && removed.length === 0 ?
+			'<span class="user-rights-diff" style="background-color:lightgray">[NO CHANGE]</span>' :
+			'';
+		$( this ).append( `<br />${ added } ${ removed } ${ noChange }` );
+	}
+
 	/** Don't delete "(none)". Delete all other parentheses and tags. */
 	function deleteParenthesesAndTags( text ) {
 		// delete unicode character U+200E. this whitespace character shows up on watchlists, and causes an extra space if not deleted.
@@ -48,7 +95,8 @@ $( function () {
 		}
 		const array = string.split( ', ' ).map( function ( str ) {
 			str = str.trim();
-			str = str.replace( /[\s.,/#!$%^&*;:{}=\-_`~()]{2,}/g, '' ); // remove fragments of punctuation. can result when trying to delete nested parentheses. will delete fragments such as " .)"
+			// remove fragments of punctuation. can result when trying to delete nested parentheses. will delete fragments such as " .)"
+			str = str.replace( /[\s.,/#!$%^&*;:{}=\-_`~()]{2,}/g, '' );
 			return str;
 		} );
 		return array;
@@ -59,46 +107,7 @@ $( function () {
 		return array;
 	}
 
-	function checkLine() {
-		let text = $( this ).text();
-		let from, to;
-		try {
-			text = deleteParenthesesAndTags( text );
-			text = deleteBeginningOfLogEntry( text );
-			const matches = / from (.*?) to (.*?)(?: \(.*)?$/.exec( text );
-			from = permStringToArray( matches[ 1 ] );
-			to = permStringToArray( matches[ 2 ] );
-		} catch ( err ) {
-			throw new Error( 'UserRightsDiff.js error. Error was: ' + err + '. Input text was: ' + $( this ).text() );
-		}
-		let added = to.filter( ( x ) => !from.includes( x ) );
-		let removed = from.filter( ( x ) => !to.includes( x ) );
-		added = added.length > 0 ?
-			'<span class="user-rights-diff" style="background-color:lawngreen">[ADDED: ' + permArrayToString( added ) + ']</span>' :
-			'';
-		removed = removed.length > 0 ?
-			'<span class="user-rights-diff" style="background-color:yellow">[REMOVED: ' + permArrayToString( removed ) + ']</span>' :
-			'';
-		const noChange = added.length === 0 && removed.length === 0 ?
-			'<span class="user-rights-diff" style="background-color:lightgray">[NO CHANGE]</span>' :
-			'';
-		$( this ).append( `<br />${ added } ${ removed } ${ noChange }` );
-	}
-
-	function checkLog() {
-		$( 'body' ).off( 'DOMNodeInserted' ); // prevent infinite loop
-		if ( $( '.user-rights-diff' ).length === 0 ) { // don't run twice on the same page
-			$( '.mw-logevent-loglines .mw-logline-rights' ).each( checkLine ); // Special:UserRights, BradV SuperLinks
-			$( '.mw-changeslist-log-rights .mw-changeslist-log-entry' ).each( checkLine ); // watchlist
-		}
-		$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', checkLog );
-	}
-
-	// User:BradV/Scripts/SuperLinks.js
-	$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', checkLog );
-
-	// Special:UserRights
-	checkLog();
+	execute();
 } );
 
 // </nowiki>
