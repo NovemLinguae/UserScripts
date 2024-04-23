@@ -20,6 +20,7 @@
 		"es-x/no-regexp-s-flag": "off",
 		"es-x/no-rest-spread-properties": "off",
 		"es-x/no-string-prototype-matchall": "off",
+		"es-x/no-string-prototype-replaceall": "off",
 		"jsdoc/require-param": "off",
 		"jsdoc/require-param-type": "off",
 		"jsdoc/require-returns": "off",
