@@ -74,7 +74,7 @@ class ANRFC {
 
 	toggle() {
 		const $anrfcListerLinkInMoreMenu = this.$( '#ca-anrfc a' );
-		if ( $anrfcListerLinkInMoreMenu.css( 'color' ) == 'rgb(255, 0, 0)' ) {
+		if ( $anrfcListerLinkInMoreMenu.css( 'color' ) === 'rgb(255, 0, 0)' ) {
 			$anrfcListerLinkInMoreMenu.css( 'color', '' );
 			this.removeLabels();
 		} else {
@@ -84,11 +84,12 @@ class ANRFC {
 	}
 
 	removeLabels() {
+		const that = this;
 		this.$( 'a.mw-ANRFC' ).each( function () {
 			this.remove();
 			const keyId = this.getAttribute( 'indexKey' ) + '-anrfcBox';
-			if ( this.document.getElementById( keyId ) != null ) {
-				return this.document.getElementById( keyId ).remove();
+			if ( that.document.getElementById( keyId ) !== null ) {
+				return that.document.getElementById( keyId ).remove();
 			}
 		} );
 	}
@@ -113,7 +114,7 @@ class ANRFC {
 	addForm( el ) {
 		// If there's a form already created, delete it. (This makes the "List on ANRFC" link a toggle that opens the form or closes the form, based on current state.)
 		const keyId = el.getAttribute( 'indexKey' ) + '-anrfcBox';
-		if ( this.document.getElementById( keyId ) != null ) {
+		if ( this.document.getElementById( keyId ) !== null ) {
 			return this.document.getElementById( keyId ).remove();
 		}
 
@@ -215,7 +216,7 @@ class ANRFC {
 	 */
 	async onSubmit( dropDown, messageInput, keyId ) {
 		// Dropdown is required.
-		if ( dropDown.getMenu().findSelectedItem() == null ) {
+		if ( dropDown.getMenu().findSelectedItem() === null ) {
 			return OO.ui.alert( 'Please select discussion section from dropdown menu!' ).then( function () {
 				dropDown.focus();
 			} );
@@ -251,7 +252,7 @@ class ANRFC {
 		} );
 
 		let wikitext = result.parse.wikitext[ '*' ];
-		if ( wikitext.replaceAll( ' ', '_' ).match( ( pageName + '#' + sectionTitle ).replaceAll( ' ', '_' ) ) != null ) {
+		if ( wikitext.replaceAll( ' ', '_' ).match( ( pageName + '#' + sectionTitle ).replaceAll( ' ', '_' ) ) !== null ) {
 			return OO.ui.alert( 'This discussion is already listed.' );
 		}
 
@@ -386,15 +387,15 @@ class ANRFC {
 
 		const firstPart = wikitext.slice( 0, wikitext.indexOf( discussions[ targetSection ] ) );
 		wikitext = wikitext.slice( wikitext.indexOf( discussions[ targetSection ] ) );
-		const isLastDiscussion = ( targetSection == discussions.length - 1 );
+		const isLastDiscussion = ( targetSection === discussions.length - 1 );
 		let relventDiscussion = ( isLastDiscussion ) ? wikitext : wikitext.slice( 0, wikitext.indexOf( discussions[ targetSection + 1 ] ) );
 		wikitext = ( isLastDiscussion ) ? '' : wikitext.slice( wikitext.indexOf( discussions[ targetSection + 1 ] ) );
 
 		const initMatches = relventDiscussion.match( /((i|I)nitiated\|[\d]{1,2}:[\d]{1,2},\s[\d]{1,2}\s[\w]+\s[\d]{4}\s\([\w]+\))/g );
 
 		const initDateObj = this.dateToObj( initiatedDate );
-		let matchIndex = ( initMatches != null ) ? initMatches.length - 1 : -1;
-		if ( initMatches != null ) {
+		let matchIndex = ( initMatches !== null ) ? initMatches.length - 1 : -1;
+		if ( initMatches !== null ) {
 			for ( ; matchIndex >= 0; matchIndex-- ) {
 				if ( this.isInitDateLatest( this.dateToObj( initMatches[ matchIndex ] ), initDateObj ) ) {
 					break;
