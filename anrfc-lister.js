@@ -51,29 +51,29 @@ class ANRFC {
 	}
 
 	execute() {
-		const isNotViewing = mw.config.get( 'wgAction' ) !== 'view';
+		const isNotViewing = this.mw.config.get( 'wgAction' ) !== 'view';
 		if ( isNotViewing ) {
 			return;
 		}
 
-		const isDiff = mw.config.get( 'wgDiffNewId' );
+		const isDiff = this.mw.config.get( 'wgDiffNewId' );
 		if ( isDiff ) {
 			return;
 		}
 
-		const isVirtualNamespace = mw.config.get( 'wgNamespaceNumber' ) < 0;
+		const isVirtualNamespace = this.mw.config.get( 'wgNamespaceNumber' ) < 0;
 		if ( isVirtualNamespace ) {
 			return;
 		}
 
-		mw.util.addPortletLink( 'p-cactions', '#', 'ANRFC lister', 'ca-anrfc' );
-		$( '#ca-anrfc' ).on( 'click', function () {
+		this.mw.util.addPortletLink( 'p-cactions', '#', 'ANRFC lister', 'ca-anrfc' );
+		this.$( '#ca-anrfc' ).on( 'click', function () {
 			this.toggle();
 		}.bind( this ) );
 	}
 
 	toggle() {
-		const $anrfcListerLinkInMoreMenu = $( '#ca-anrfc a' );
+		const $anrfcListerLinkInMoreMenu = this.$( '#ca-anrfc a' );
 		if ( $anrfcListerLinkInMoreMenu.css( 'color' ) == 'rgb(255, 0, 0)' ) {
 			$anrfcListerLinkInMoreMenu.css( 'color', '' );
 			this.removeLabels();
@@ -84,11 +84,11 @@ class ANRFC {
 	}
 
 	removeLabels() {
-		$( 'a.mw-ANRFC' ).each( function () {
+		this.$( 'a.mw-ANRFC' ).each( function () {
 			this.remove();
 			const keyId = this.getAttribute( 'indexKey' ) + '-anrfcBox';
-			if ( document.getElementById( keyId ) != null ) {
-				return document.getElementById( keyId ).remove();
+			if ( this.document.getElementById( keyId ) != null ) {
+				return this.document.getElementById( keyId ).remove();
 			}
 		} );
 	}
@@ -96,14 +96,14 @@ class ANRFC {
 	addLabels() {
 		// Target the [ vedit | edit source ] buttons by each section heading
 		const that = this;
-		$( 'span.mw-editsection' ).each( function ( index ) {
+		this.$( 'span.mw-editsection' ).each( function ( index ) {
 			// Add it
-			$( this.parentElement ).append( '<a indexKey=' + index + " class='mw-ANRFC'>List on ANRFC</a>" );
+			that.$( this.parentElement ).append( '<a indexKey=' + index + " class='mw-ANRFC'>List on ANRFC</a>" );
 			// Style it
-			$( 'a[indexkey="' + index + '"]' ).on( 'click', function () {
+			that.$( 'a[indexkey="' + index + '"]' ).on( 'click', function () {
 				that.addForm( this );
 			} );
-			$( 'a.mw-ANRFC' ).css( { 'margin-left': '8px', 'font-size': 'small', 'font-family': 'sans-serif' } );
+			that.$( 'a.mw-ANRFC' ).css( { 'margin-left': '8px', 'font-size': 'small', 'font-family': 'sans-serif' } );
 		} );
 	}
 
@@ -113,18 +113,18 @@ class ANRFC {
 	addForm( el ) {
 		// If there's a form already created, delete it. (This makes the "List on ANRFC" link a toggle that opens the form or closes the form, based on current state.)
 		const keyId = el.getAttribute( 'indexKey' ) + '-anrfcBox';
-		if ( document.getElementById( keyId ) != null ) {
-			return document.getElementById( keyId ).remove();
+		if ( this.document.getElementById( keyId ) != null ) {
+			return this.document.getElementById( keyId ).remove();
 		}
 
 		const $anrfcBox = this.getFormHtmlAndSetFormListeners( keyId );
 
 		// el (span.mw-editsection) -> parent (h2) -> after
-		$( el ).parent().after( $anrfcBox );
+		this.$( el ).parent().after( $anrfcBox );
 	}
 
 	getFormHtmlAndSetFormListeners( keyId ) {
-		const $anrfcBox = $( '<div>', {
+		const $anrfcBox = this.$( '<div>', {
 			id: keyId
 		} );
 
@@ -181,18 +181,18 @@ class ANRFC {
 		} );
 
 		$anrfcBox.append( '<h3 style="margin: 0 0 16px;">List this discussion on <a href="/wiki/Wikipedia:Closure_requests" target="_blank">Wikipedia:Closure requests</a></h3>' );
-		let wrapper = document.createElement( 'div' );
-		$( wrapper ).append( '<p>Under section: </p>' );
-		$( wrapper ).append( dropDown.$element );
+		let wrapper = this.document.createElement( 'div' );
+		this.$( wrapper ).append( '<p>Under section: </p>' );
+		this.$( wrapper ).append( dropDown.$element );
 		$anrfcBox.append( wrapper );
 
-		wrapper = document.createElement( 'div' );
-		$( wrapper ).css( { 'margin-top': '8px' } );
-		$( wrapper ).append( messageInput.$element );
-		$( wrapper ).append( $( submitButton.$element ).css( {
+		wrapper = this.document.createElement( 'div' );
+		this.$( wrapper ).css( { 'margin-top': '8px' } );
+		this.$( wrapper ).append( messageInput.$element );
+		this.$( wrapper ).append( this.$( submitButton.$element ).css( {
 			'margin-top': '8px'
 		} ) );
-		$( wrapper ).append( $( cancelButton.$element ).css( {
+		this.$( wrapper ).append( this.$( cancelButton.$element ).css( {
 			'margin-top': '8px'
 		} ) );
 		$anrfcBox.append( wrapper );
@@ -202,7 +202,7 @@ class ANRFC {
 		}.bind( this ) );
 
 		cancelButton.on( 'click', function () {
-			document.getElementById( keyId ).remove();
+			this.document.getElementById( keyId ).remove();
 		} );
 
 		return $anrfcBox;
@@ -226,10 +226,10 @@ class ANRFC {
 		const message = messageInput.getValue();
 
 		// Grab page title
-		const pageName = mw.config.get( 'wgPageName' ).replaceAll( '_', ' ' );
+		const pageName = this.mw.config.get( 'wgPageName' ).replaceAll( '_', ' ' );
 
 		// Grab section title
-		const sectionTitle = $( '#' + keyId ).prev().find( '.mw-headline' ).text();
+		const sectionTitle = this.$( '#' + keyId ).prev().find( '.mw-headline' ).text();
 
 		// Grab RFC date by looking for user signature timestamps
 		const initDateMatches = this.getRFCDate( keyId );
@@ -243,7 +243,7 @@ class ANRFC {
 		const initiatedTemplate = '{{initiated|' + initiatedDate + '}}';
 		const wikitextToWrite = heading + '\n' + initiatedTemplate + ' ' + message + ' ~~~~';
 
-		const api = new mw.Api();
+		const api = new this.mw.Api();
 		let result = await api.get( {
 			action: 'parse',
 			page: 'Wikipedia:Closure_requests',
@@ -302,7 +302,7 @@ class ANRFC {
 		const dateRegexForCommentsInLocalTimeGadget = /([\d]{1,2}:[\d]{1,2}(?: am| pm)?,\s[\d]{1,2}\s[\w]+\s[\d]{4}.*?\(UTC[^)]+\))/;
 		let initDateMatches = null;
 		let textToCheck = '';
-		let $nextEl = $( '#' + keyId ); // #0-anrfcBox
+		let $nextEl = this.$( '#' + keyId ); // #0-anrfcBox
 		// TODO: Only check elements between anrfcBox and the next H2 (or end of page). Right now it checks the entire page until it runs out of .next() elements.
 		do {
 			if ( $nextEl.next().hasClass( 'boilerplate' ) ) {
