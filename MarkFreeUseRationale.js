@@ -23,12 +23,11 @@ class MarkFreeUseRationale {
 			return;
 		}
 
-		// Only run if there is a {{Non-free use rationale ABCXYZ}} template AND a {{Non-free XYZABC}} template (https://en.wikipedia.org/wiki/Category:Wikipedia_non-free_file_copyright_templates)
+		// Only run if there is a {{Non-free XYZABC}} template (https://en.wikipedia.org/wiki/Category:Wikipedia_non-free_file_copyright_templates) that isnt a rationale template ( {{Non-free use rationale ABCXYZ}} )
 		const pageName = this.mw.config.get( 'wgPageName' );
 		const wikicode = await this.getWikicode( pageName );
-		const matches = wikicode.matchAll( /\{\{Non-free /gi );
-		const matchCount = [ ...matches ].length;
-		if ( matchCount < 2 ) {
+		const hasCopyrightTemplate = wikicode.match( /\{\{Non-free (?!use)/gi );
+		if ( !hasCopyrightTemplate ) {
 			return;
 		}
 
@@ -60,7 +59,7 @@ class MarkFreeUseRationale {
 		const wikicode = await this.getWikicode( pageName );
 
 		// insert image_has_rationale=yes into wikicode somewhere (look at Elli's example diff)
-		const newWikicode = wikicode.replace( /({{Non-free (?!use rationale)[^|}]+)(}})/i, '$1|image_has_rationale=yes$2' );
+		const newWikicode = wikicode.replace( /({{Non-free (?!use)[^|}]+)(}})/i, '$1|image_has_rationale=yes$2' );
 		if ( newWikicode === wikicode ) {
 			this.mw.notify( this.wrapErrorText( 'ERROR: Unable to find a place to insert |image_has_rationale=yes' ) );
 			return;
