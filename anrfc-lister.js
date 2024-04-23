@@ -44,7 +44,11 @@ NOVEM LINGUAE TODO:
 // <nowiki>
 
 class ANRFC {
-	// constructor( document, mw, $ ) {
+	constructor( document, mw, $ ) {
+		this.document = document;
+		this.mw = mw;
+		this.$ = $;
+	}
 
 	execute() {
 		const isNotViewing = mw.config.get( 'wgAction' ) !== 'view';
@@ -63,7 +67,7 @@ class ANRFC {
 		}
 
 		mw.util.addPortletLink( 'p-cactions', '#', 'ANRFC lister', 'ca-anrfc' );
-		$( '#ca-anrfc' ).on( 'click', function() {
+		$( '#ca-anrfc' ).on( 'click', function () {
 			this.toggle();
 		}.bind( this ) );
 	}
@@ -209,7 +213,7 @@ class ANRFC {
 	 * @param {OO.ui.MultilineTextInputWidget} messageInput The message the user typed.
 	 * @param {string} keyId The section number (starting at zero), concatenated with -anrfcBox. Example: 0-anrfcBox. This will eventually be used to do $('#0-anrfcBox'), which is the HTML created by addForm()
 	 */
-	onSubmit( dropDown, messageInput, keyId ) {
+	async onSubmit( dropDown, messageInput, keyId ) {
 		// Dropdown is required.
 		if ( dropDown.getMenu().findSelectedItem() == null ) {
 			return OO.ui.alert( 'Please select discussion section from dropdown menu!' ).then( function () {
@@ -239,37 +243,38 @@ class ANRFC {
 		const initiatedTemplate = '{{initiated|' + initiatedDate + '}}';
 		const wikitextToWrite = heading + '\n' + initiatedTemplate + ' ' + message + ' ~~~~';
 
-		new mw.Api().get( {
+		const api = new mw.Api();
+		let result = await api.get( {
 			action: 'parse',
 			page: 'Wikipedia:Closure_requests',
 			prop: 'wikitext'
-		} ).then( function ( result ) {
-			let wikitext = result.parse.wikitext[ '*' ];
-			if ( wikitext.replaceAll( ' ', '_' ).match( ( pageName + '#' + sectionTitle ).replaceAll( ' ', '_' ) ) != null ) {
-				return OO.ui.alert( 'This discussion is already listed.' );
-			}
-
-			wikitext = this.makeWikitext( wikitext, wikitextToWrite, initiatedDate, targetSection );
-
-			return new mw.Api().postWithEditToken( {
-				action: 'edit',
-				title: 'Wikipedia:Closure_requests',
-				text: wikitext,
-				summary: 'Listing new discussion using [[User:Novem Linguae/Scripts/anrfc-lister.js|anrfc-lister]]',
-				nocreate: true
-			} );
-		}.bind( this ) ).then( function ( result ) {
-			if ( result && result.edit && result.edit.result && result.edit.result === 'Success' ) {
-				OO.ui.confirm( 'This discussion has been listed on WP:ANRFC. Would you like to see it?' ).then( function ( confirmed ) {
-					if ( confirmed ) {
-						let sectionPartOfUri = pageName + '#' + sectionTitle;
-						sectionPartOfUri = sectionPartOfUri.replaceAll( ' ', '_' );
-						sectionPartOfUri = encodeURI( sectionPartOfUri );
-						window.open( '/wiki/Wikipedia:Closure_requests#' + sectionPartOfUri, '_blank' );
-					}
-				} );
-			}
 		} );
+
+		let wikitext = result.parse.wikitext[ '*' ];
+		if ( wikitext.replaceAll( ' ', '_' ).match( ( pageName + '#' + sectionTitle ).replaceAll( ' ', '_' ) ) != null ) {
+			return OO.ui.alert( 'This discussion is already listed.' );
+		}
+
+		wikitext = this.makeWikitext( wikitext, wikitextToWrite, initiatedDate, targetSection );
+
+		result = await api.postWithEditToken( {
+			action: 'edit',
+			title: 'Wikipedia:Closure_requests',
+			text: wikitext,
+			summary: 'Listing new discussion using [[User:Novem Linguae/Scripts/anrfc-lister.js|anrfc-lister]]',
+			nocreate: true
+		} );
+
+		if ( result && result.edit && result.edit.result && result.edit.result === 'Success' ) {
+			const confirmed = await OO.ui.confirm( 'This discussion has been listed on WP:ANRFC. Would you like to see it?' );
+
+			if ( confirmed ) {
+				let sectionPartOfUri = pageName + '#' + sectionTitle;
+				sectionPartOfUri = sectionPartOfUri.replaceAll( ' ', '_' );
+				sectionPartOfUri = encodeURI( sectionPartOfUri );
+				window.open( '/wiki/Wikipedia:Closure_requests#' + sectionPartOfUri, '_blank' );
+			}
+		}
 	}
 
 	dateToObj( dateString ) {
@@ -417,8 +422,10 @@ class ANRFC {
 	}
 }
 
-mw.loader.using( [ 'oojs-ui-widgets', 'oojs-ui-windows', 'mediawiki.util' ], function () {
-	( new ANRFC() ).execute();
+$( function () {
+	mw.loader.using( [ 'oojs-ui-widgets', 'oojs-ui-windows', 'mediawiki.util', 'mediawiki.api' ], function () {
+		( new ANRFC( document, mw, $ ) ).execute();
+	} );
 } );
 
 // </nowiki>
