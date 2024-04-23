@@ -43,41 +43,43 @@ NOVEM LINGUAE TODO:
 
 // <nowiki>
 
-var ANRFC = {
-	init: function () {
-		// don't run when not viewing articles
-		const action = mw.config.get( 'wgAction' );
-		const isNotViewing = action != 'view';
+class ANRFC {
+	// constructor( document, mw, $ ) {
+
+	execute() {
+		const isNotViewing = mw.config.get( 'wgAction' ) !== 'view';
 		if ( isNotViewing ) {
 			return;
 		}
 
-		// don't run when viewing diffs
 		const isDiff = mw.config.get( 'wgDiffNewId' );
 		if ( isDiff ) {
 			return;
 		}
 
-		// Don't run in virtual namespaces
 		const isVirtualNamespace = mw.config.get( 'wgNamespaceNumber' ) < 0;
 		if ( isVirtualNamespace ) {
 			return;
 		}
 
 		mw.util.addPortletLink( 'p-cactions', '#', 'ANRFC lister', 'ca-anrfc' );
-		$( '#ca-anrfc' ).attr( 'onClick', 'ANRFC.toggle();' );
-	},
-	toggle: function () {
+		$( '#ca-anrfc' ).on( 'click', function() {
+			this.toggle();
+		}.bind( this ) );
+	}
+
+	toggle() {
 		const $anrfcListerLinkInMoreMenu = $( '#ca-anrfc a' );
 		if ( $anrfcListerLinkInMoreMenu.css( 'color' ) == 'rgb(255, 0, 0)' ) {
 			$anrfcListerLinkInMoreMenu.css( 'color', '' );
-			ANRFC.removeLabels();
+			this.removeLabels();
 		} else {
 			$anrfcListerLinkInMoreMenu.css( 'color', 'red' );
-			ANRFC.addLabels();
+			this.addLabels();
 		}
-	},
-	removeLabels: function () {
+	}
+
+	removeLabels() {
 		$( 'a.mw-ANRFC' ).each( function () {
 			this.remove();
 			const keyId = this.getAttribute( 'indexKey' ) + '-anrfcBox';
@@ -85,31 +87,38 @@ var ANRFC = {
 				return document.getElementById( keyId ).remove();
 			}
 		} );
-	},
-	addLabels: function () {
+	}
+
+	addLabels() {
 		// Target the [ vedit | edit source ] buttons by each section heading
+		const that = this;
 		$( 'span.mw-editsection' ).each( function ( index ) {
 			// Add it
-			$( this.parentElement ).append( '<a indexKey=' + index + " class='mw-ANRFC' onclick='ANRFC.addForm(this)'>List on ANRFC</a>" );
+			$( this.parentElement ).append( '<a indexKey=' + index + " class='mw-ANRFC'>List on ANRFC</a>" );
 			// Style it
+			$( 'a[indexkey="' + index + '"]' ).on( 'click', function () {
+				that.addForm( this );
+			} );
 			$( 'a.mw-ANRFC' ).css( { 'margin-left': '8px', 'font-size': 'small', 'font-family': 'sans-serif' } );
 		} );
-	},
+	}
+
 	/**
 	 * @param el HTML element span.mw-editsection
 	 */
-	addForm: function ( el ) {
+	addForm( el ) {
 		// If there's a form already created, delete it. (This makes the "List on ANRFC" link a toggle that opens the form or closes the form, based on current state.)
 		const keyId = el.getAttribute( 'indexKey' ) + '-anrfcBox';
 		if ( document.getElementById( keyId ) != null ) {
 			return document.getElementById( keyId ).remove();
 		}
 
-		const $anrfcBox = ANRFC.getFormHtmlAndSetFormListeners( keyId );
+		const $anrfcBox = this.getFormHtmlAndSetFormListeners( keyId );
 
 		// el (span.mw-editsection) -> parent (h2) -> after
 		$( el ).parent().after( $anrfcBox );
-	},
+	}
+
 	getFormHtmlAndSetFormListeners( keyId ) {
 		const $anrfcBox = $( '<div>', {
 			id: keyId
@@ -185,15 +194,84 @@ var ANRFC = {
 		$anrfcBox.append( wrapper );
 
 		submitButton.on( 'click', function () {
-			ANRFC.onSubmit( dropDown, messageInput, keyId );
-		} );
+			this.onSubmit( dropDown, messageInput, keyId );
+		}.bind( this ) );
 
 		cancelButton.on( 'click', function () {
 			document.getElementById( keyId ).remove();
 		} );
 
 		return $anrfcBox;
-	},
+	}
+
+	/**
+	 * @param {OO.ui.DropdownWidget} dropDown The discussion section the user selected.
+	 * @param {OO.ui.MultilineTextInputWidget} messageInput The message the user typed.
+	 * @param {string} keyId The section number (starting at zero), concatenated with -anrfcBox. Example: 0-anrfcBox. This will eventually be used to do $('#0-anrfcBox'), which is the HTML created by addForm()
+	 */
+	onSubmit( dropDown, messageInput, keyId ) {
+		// Dropdown is required.
+		if ( dropDown.getMenu().findSelectedItem() == null ) {
+			return OO.ui.alert( 'Please select discussion section from dropdown menu!' ).then( function () {
+				dropDown.focus();
+			} );
+		}
+
+		// Grab what the user typed into the form.
+		const targetSection = dropDown.getMenu().findSelectedItem().getData();
+		const message = messageInput.getValue();
+
+		// Grab page title
+		const pageName = mw.config.get( 'wgPageName' ).replaceAll( '_', ' ' );
+
+		// Grab section title
+		const sectionTitle = $( '#' + keyId ).prev().find( '.mw-headline' ).text();
+
+		// Grab RFC date by looking for user signature timestamps
+		const initDateMatches = this.getRFCDate( keyId );
+		if ( !initDateMatches ) {
+			return OO.ui.alert( 'Unable to find a signature in this section. Unsure what date this RFC occurred. Aborting.' );
+		}
+		const initiatedDate = initDateMatches[ 0 ];
+
+		// Get ready to write some WP:ANRFC wikicode
+		const heading = '=== [[' + pageName + '#' + sectionTitle + ']] ===';
+		const initiatedTemplate = '{{initiated|' + initiatedDate + '}}';
+		const wikitextToWrite = heading + '\n' + initiatedTemplate + ' ' + message + ' ~~~~';
+
+		new mw.Api().get( {
+			action: 'parse',
+			page: 'Wikipedia:Closure_requests',
+			prop: 'wikitext'
+		} ).then( function ( result ) {
+			let wikitext = result.parse.wikitext[ '*' ];
+			if ( wikitext.replaceAll( ' ', '_' ).match( ( pageName + '#' + sectionTitle ).replaceAll( ' ', '_' ) ) != null ) {
+				return OO.ui.alert( 'This discussion is already listed.' );
+			}
+
+			wikitext = this.makeWikitext( wikitext, wikitextToWrite, initiatedDate, targetSection );
+
+			return new mw.Api().postWithEditToken( {
+				action: 'edit',
+				title: 'Wikipedia:Closure_requests',
+				text: wikitext,
+				summary: 'Listing new discussion using [[User:Novem Linguae/Scripts/anrfc-lister.js|anrfc-lister]]',
+				nocreate: true
+			} );
+		}.bind( this ) ).then( function ( result ) {
+			if ( result && result.edit && result.edit.result && result.edit.result === 'Success' ) {
+				OO.ui.confirm( 'This discussion has been listed on WP:ANRFC. Would you like to see it?' ).then( function ( confirmed ) {
+					if ( confirmed ) {
+						let sectionPartOfUri = pageName + '#' + sectionTitle;
+						sectionPartOfUri = sectionPartOfUri.replaceAll( ' ', '_' );
+						sectionPartOfUri = encodeURI( sectionPartOfUri );
+						window.open( '/wiki/Wikipedia:Closure_requests#' + sectionPartOfUri, '_blank' );
+					}
+				} );
+			}
+		} );
+	}
+
 	dateToObj( dateString ) {
 		const months = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ];
 		const oDate = dateString.split( /, | / );
@@ -208,8 +286,9 @@ var ANRFC = {
 			month: months.indexOf( oDate[ 2 ] ),
 			year: parseInt( oDate[ 3 ] )
 		};
-	},
-	getRFCDate: function ( keyId ) {
+	}
+
+	getRFCDate( keyId ) {
 		// Grab initiated date (the first signature in the section will have the initiated date)
 
 		// Looks for a standard signature: 03:31, 11 January 2024 (UTC)
@@ -233,7 +312,7 @@ var ANRFC = {
 				// Maybe the user has MediaWiki:Gadget-CommentsInLocalTime.js installed, which changes the format of signature dates. Try the other regex.
 				initDateMatches = textToCheck.match( dateRegexForCommentsInLocalTimeGadget );
 				if ( initDateMatches ) {
-					initDateMatches[ 0 ] = ANRFC.convertUtcWhateverToUtcZero( initDateMatches[ 0 ] );
+					initDateMatches[ 0 ] = this.convertUtcWhateverToUtcZero( initDateMatches[ 0 ] );
 				}
 			}
 
@@ -244,7 +323,8 @@ var ANRFC = {
 		} while ( !initDateMatches && $nextEl.length );
 
 		return initDateMatches;
-	},
+	}
+
 	/**
 	 * Convert MediaWiki:Gadget-CommentsInLocalTime.js date strings to regular date strings
 	 * @param {string} dateString 10:55 am, 29 November 2016, Tuesday (7 years, 1 month, 13 days ago) (UTC−8)
@@ -264,74 +344,8 @@ var ANRFC = {
 			months[ date.getUTCMonth() ] + ' ' +
 			date.getUTCFullYear();
 		return dateStringConverted; // 18:55, 29 November 2016
-	},
-	/**
-	 * @param {OO.ui.DropdownWidget} dropDown The discussion section the user selected.
-	 * @param {OO.ui.MultilineTextInputWidget} messageInput The message the user typed.
-	 * @param {string} keyId The section number (starting at zero), concatenated with -anrfcBox. Example: 0-anrfcBox. This will eventually be used to do $('#0-anrfcBox'), which is the HTML created by ANRFC.addForm()
-	 */
-	onSubmit: function ( dropDown, messageInput, keyId ) {
-		// Dropdown is required.
-		if ( dropDown.getMenu().findSelectedItem() == null ) {
-			return OO.ui.alert( 'Please select discussion section from dropdown menu!' ).then( function () {
-				dropDown.focus();
-			} );
-		}
+	}
 
-		// Grab what the user typed into the form.
-		const targetSection = dropDown.getMenu().findSelectedItem().getData();
-		const message = messageInput.getValue();
-
-		// Grab page title
-		const pageName = mw.config.get( 'wgPageName' ).replaceAll( '_', ' ' );
-
-		// Grab section title
-		const sectionTitle = $( '#' + keyId ).prev().find( '.mw-headline' ).text();
-
-		// Grab RFC date by looking for user signature timestamps
-		const initDateMatches = ANRFC.getRFCDate( keyId );
-		if ( !initDateMatches ) {
-			return OO.ui.alert( 'Unable to find a signature in this section. Unsure what date this RFC occurred. Aborting.' );
-		}
-		const initiatedDate = initDateMatches[ 0 ];
-
-		// Get ready to write some WP:ANRFC wikicode
-		const heading = '=== [[' + pageName + '#' + sectionTitle + ']] ===';
-		const initiatedTemplate = '{{initiated|' + initiatedDate + '}}';
-		const wikitextToWrite = heading + '\n' + initiatedTemplate + ' ' + message + ' ~~~~';
-
-		new mw.Api().get( {
-			action: 'parse',
-			page: 'Wikipedia:Closure_requests',
-			prop: 'wikitext'
-		} ).then( function ( result ) {
-			let wikitext = result.parse.wikitext[ '*' ];
-			if ( wikitext.replaceAll( ' ', '_' ).match( ( pageName + '#' + sectionTitle ).replaceAll( ' ', '_' ) ) != null ) {
-				return OO.ui.alert( 'This discussion is already listed.' );
-			}
-
-			wikitext = ANRFC.makeWikitext( wikitext, wikitextToWrite, initiatedDate, targetSection );
-
-			return new mw.Api().postWithEditToken( {
-				action: 'edit',
-				title: 'Wikipedia:Closure_requests',
-				text: wikitext,
-				summary: 'Listing new discussion using [[User:Novem Linguae/Scripts/anrfc-lister.js|anrfc-lister]]',
-				nocreate: true
-			} );
-		} ).then( function ( result ) {
-			if ( result && result.edit && result.edit.result && result.edit.result === 'Success' ) {
-				OO.ui.confirm( 'This discussion has been listed on WP:ANRFC. Would you like to see it?' ).then( function ( confirmed ) {
-					if ( confirmed ) {
-						let sectionPartOfUri = pageName + '#' + sectionTitle;
-						sectionPartOfUri = sectionPartOfUri.replaceAll( ' ', '_' );
-						sectionPartOfUri = encodeURI( sectionPartOfUri );
-						window.open( '/wiki/Wikipedia:Closure_requests#' + sectionPartOfUri, '_blank' );
-					}
-				} );
-			}
-		} );
-	},
 	isInitDateLatest( matchDate, initDate ) {
 		if ( initDate.year > matchDate.year ) {
 			return true;
@@ -355,8 +369,9 @@ var ANRFC = {
 			return false;
 		}
 		return true;
-	},
-	makeWikitext: function ( wikitext, wikitextToWrite, initiatedDate, targetSection ) {
+	}
+
+	makeWikitext( wikitext, wikitextToWrite, initiatedDate, targetSection ) {
 		const discussions = [
 			'== Administrative discussions ==',
 			'== Requests for comment ==',
@@ -372,11 +387,11 @@ var ANRFC = {
 
 		const initMatches = relventDiscussion.match( /((i|I)nitiated\|[\d]{1,2}:[\d]{1,2},\s[\d]{1,2}\s[\w]+\s[\d]{4}\s\([\w]+\))/g );
 
-		const initDateObj = ANRFC.dateToObj( initiatedDate );
+		const initDateObj = this.dateToObj( initiatedDate );
 		let matchIndex = ( initMatches != null ) ? initMatches.length - 1 : -1;
 		if ( initMatches != null ) {
 			for ( ; matchIndex >= 0; matchIndex-- ) {
-				if ( ANRFC.isInitDateLatest( ANRFC.dateToObj( initMatches[ matchIndex ] ), initDateObj ) ) {
+				if ( this.isInitDateLatest( this.dateToObj( initMatches[ matchIndex ] ), initDateObj ) ) {
 					break;
 				}
 			}
@@ -400,9 +415,10 @@ var ANRFC = {
 
 		return ( firstPart + relventDiscussion + wikitext );
 	}
-};
+}
 
 mw.loader.using( [ 'oojs-ui-widgets', 'oojs-ui-windows', 'mediawiki.util' ], function () {
-	ANRFC.init();
+	( new ANRFC() ).execute();
 } );
+
 // </nowiki>
