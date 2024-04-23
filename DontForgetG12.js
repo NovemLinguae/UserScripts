@@ -7,16 +7,6 @@
 */
 
 class DontForgetG12 {
-	/** @type {Object} */
-	mw;
-
-	/** @type {Object} */
-	$;
-
-	wikicode;
-
-	namespace;
-
 	constructor() {
 		this.mw = mw;
 		this.$ = $;
@@ -133,7 +123,9 @@ class DontForgetG12 {
 }
 
 $( async function () {
-	await ( new DontForgetG12( mw, $ ) ).execute();
+	await mw.loader.using( [ 'mediawiki.api' ], async () => {
+		await ( new DontForgetG12( mw, $ ) ).execute();
+	} );
 } );
 
 // </nowiki>

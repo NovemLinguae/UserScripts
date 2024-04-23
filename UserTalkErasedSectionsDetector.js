@@ -167,7 +167,9 @@ class ErasedSectionsDetector {
 }
 
 $( async function () {
-	await ( new ErasedSectionsDetector( mw, $ ) ).execute();
+	await mw.loader.using( [ 'mediawiki.api' ], async () => {
+		await ( new ErasedSectionsDetector( mw, $ ) ).execute();
+	} );
 } );
 
 // </nowiki>

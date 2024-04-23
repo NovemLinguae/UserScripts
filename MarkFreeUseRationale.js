@@ -148,7 +148,9 @@ class MarkFreeUseRationale {
 }
 
 $( async function () {
-	await ( new MarkFreeUseRationale( mw, $ ) ).execute();
+	await mw.loader.using( [ 'mediawiki.api' ], async () => {
+		await ( new MarkFreeUseRationale( mw, $ ) ).execute();
+	} );
 } );
 
 // </nowiki>
