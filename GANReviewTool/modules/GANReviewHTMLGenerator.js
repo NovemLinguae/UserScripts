@@ -249,17 +249,17 @@ ${ gaTopicComboBoxOptionsHTML }
 		wikicode = wikicode.replace( /<!--[^>]+>\s*\n/gi, '' );
 
 		// search for `==Headings==\n` not followed by `{{#invoke`, and replace with a disabled <option>
-		// <option value="Art and architecture" disabled>==Art and architecture==</option>
+		// 							<option value="Art and architecture" disabled>==Art and architecture==</option>
 		wikicode = wikicode.replace(
 			/(={2,}\s*[^=]+\s*={2,})\n(?!\{\{#invoke)/gi,
-			`<option value="${ topic }" disabled>$1</option>\n`
+			`							<option value="${ topic }" disabled>$1</option>\n`
 		);
 
 		// search for `==Headings==\n{{#invoke`, and replace with a non-disabled <option>
-		// <option value="Art and architecture">==Art and architecture==</option>
+		// 							<option value="Art and architecture">==Art and architecture==</option>
 		wikicode = wikicode.replace(
 			/(={2,}\s*[^=]+\s*={2,})\n(?=\{\{#invoke)/gi,
-			`<option value="${ topic }">$1</option>\n`
+			`							<option value="${ topic }">$1</option>\n`
 		);
 
 		// delete any line that isn't an <option>
