@@ -15,6 +15,7 @@ This script works in Special:UserRights, in watchlists, and when clicking "right
 */
 
 // Don't bother converting this user script to a class. There's a nasty bug involving calling this.functionName2 inside of $().each( this.functionName ). "this" is an HTML element, not the class. Not sure how to fix. Tried that=this, and changing it to that.functionName( that ). Didn't work. Tried on 2023-06-05 and 2024-04-23.
+// TODO: fix it by wrapping a function around it. example: .on( 'click', function () { that.functionName( this ); } );
 
 $( function () {
 	function execute() {
