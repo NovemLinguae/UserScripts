@@ -23,7 +23,7 @@ class UserRightsDiff {
 		const that = this;
 
 		// User:BradV/Scripts/SuperLinks.js
-		$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', function () {
+		this.$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', function () {
 			that.checkLog();
 		} );
 
@@ -35,28 +35,28 @@ class UserRightsDiff {
 		const that = this;
 
 		// turn listener off (prevent infinite loop)
-		$( 'body' ).off( 'DOMNodeInserted' );
+		this.$( 'body' ).off( 'DOMNodeInserted' );
 
 		// don't run twice on the same page
-		if ( $( '.user-rights-diff' ).length === 0 ) {
+		if ( this.$( '.user-rights-diff' ).length === 0 ) {
 			// Special:UserRights, Special:Log, BradV SuperLinks
-			$( '.mw-logevent-loglines .mw-logline-rights' ).each( function () {
+			this.$( '.mw-logevent-loglines .mw-logline-rights' ).each( function () {
 				that.checkLine( this );
 			} );
 			// Special:Watchlist
-			$( '.mw-changeslist-log-rights .mw-changeslist-log-entry' ).each( function () {
+			this.$( '.mw-changeslist-log-rights .mw-changeslist-log-entry' ).each( function () {
 				that.checkLine( this );
 			} );
 		}
 
 		// turn listener back on
-		$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', function () {
+		this.$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', function () {
 			that.checkLog();
 		} );
 	}
 
 	checkLine( el ) {
-		let text = $( el ).text();
+		let text = this.$( el ).text();
 		let from, to;
 		try {
 			text = this.deleteParenthesesAndTags( text );
@@ -65,7 +65,7 @@ class UserRightsDiff {
 			from = this.permStringToArray( matches[ 1 ] );
 			to = this.permStringToArray( matches[ 2 ] );
 		} catch ( err ) {
-			throw new Error( 'UserRightsDiff.js error. Error was: ' + err + '. Input text was: ' + $( el ).text() );
+			throw new Error( 'UserRightsDiff.js error. Error was: ' + err + '. Input text was: ' + this.$( el ).text() );
 		}
 		let added = to.filter( ( x ) => !from.includes( x ) );
 		let removed = from.filter( ( x ) => !to.includes( x ) );
@@ -78,7 +78,7 @@ class UserRightsDiff {
 		const noChange = added.length === 0 && removed.length === 0 ?
 			'<span class="user-rights-diff" style="background-color:lightgray">[NO CHANGE]</span>' :
 			'';
-		$( el ).append( `<br />${ added } ${ removed } ${ noChange }` );
+		this.$( el ).append( `<br />${ added } ${ removed } ${ noChange }` );
 	}
 
 	/** Don't delete "(none)". Delete all other parentheses and tags. */
