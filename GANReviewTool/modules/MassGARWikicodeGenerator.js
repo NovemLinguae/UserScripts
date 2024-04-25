@@ -1,13 +1,10 @@
 export class MassGARWikicodeGenerator {
 	hasGoodArticleTemplate(mainArticleWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		let gaTemplateNames = ['ga icon', 'ga article', 'good article'];
 		return this._wikicodeHasTemplate(mainArticleWikicode, gaTemplateNames);
 	}
 
 	talkPageIndicatesGA(talkPageWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		// Check for {{GA}}
 		let gaTemplateNames = ['GA'];
 		if ( this._wikicodeHasTemplate(talkPageWikicode, gaTemplateNames) ) {
@@ -24,7 +21,6 @@ export class MassGARWikicodeGenerator {
 	}
 
 	hasOpenGAR(talkPageWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		let garTemplateNames = ['GAR/link'];
 		return this._wikicodeHasTemplate(talkPageWikicode, garTemplateNames);
 	}
@@ -49,7 +45,6 @@ export class MassGARWikicodeGenerator {
 	 * CC BY-SA 4.0, coolaj86, https://stackoverflow.com/a/6969486/3480193
 	 */
 	_regExEscape(string) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	}
 }

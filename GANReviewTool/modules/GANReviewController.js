@@ -10,8 +10,6 @@ export class GANReviewController {
 	 * @param {GANReviewHTMLGenerator} hg
 	 */
 	async execute($, mw, location, wg, hg) {
-		if ( arguments.length !== 5 ) throw new Error('Incorrect # of arguments');
-
 		this.$ = $;
 		this.mw = mw;
 		this.location = location;
@@ -34,8 +32,6 @@ export class GANReviewController {
 	}
 
 	async clickSubmit() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.readFormAndSetVariables();
 
 		let hasFormValidationErrors = this.validateForm();
@@ -75,32 +71,24 @@ export class GANReviewController {
 	}
 
 	async placeOnHold() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.editSummary = `placed [[${this.gaTitle}]] GAN nomination on hold` + this.editSummarySuffix;
 
 		await this.processOnHoldForTalkPage();
 	}
 
 	async askSecondOpinion() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.editSummary = `asked for a 2nd opinion regarding [[${this.gaTitle}]] GAN nomination` + this.editSummarySuffix;
 
 		await this.processAskSecondOpinionForTalkPage();
 	}
 
 	async answerSecondOpinion() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.editSummary = `answered 2nd opinion request regarding [[${this.gaTitle}]] GAN nomination` + this.editSummarySuffix;
 
 		await this.processAnswerSecondOpinionForTalkPage();
 	}
 
 	async processOnHoldForTalkPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus('Marking article talk page status as "on hold"');
 		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
 		talkWikicode = this.wg.getOnHoldWikicodeForTalkPage(talkWikicode);
@@ -108,8 +96,6 @@ export class GANReviewController {
 	}
 
 	async processAskSecondOpinionForTalkPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus('Marking article talk page status as "asking for a second opinion"');
 		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
 		talkWikicode = this.wg.getAskSecondOpinionWikicodeForTalkPage(talkWikicode);
@@ -117,8 +103,6 @@ export class GANReviewController {
 	}
 
 	async processAnswerSecondOpinionForTalkPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus('Marking article talk page status as "answered second opinion request (onreview)"');
 		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
 		talkWikicode = this.wg.getAnswerSecondOpinionWikicodeForTalkPage(talkWikicode);
@@ -149,8 +133,6 @@ export class GANReviewController {
 	}
 
 	async doPass() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.editSummary = `promote [[${this.gaTitle}]] to good article` + this.editSummarySuffix;
 		this.gaSubpageShortTitle = this.$(`[name="GANReviewTool-Topic"]`).val();
 
@@ -162,8 +144,6 @@ export class GANReviewController {
 	}
 
 	async doFail() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.editSummary = `close [[${this.gaTitle}]] good article nomination as unsuccessful` + this.editSummarySuffix;
 
 		if ( this.needsATOP ) {
@@ -173,8 +153,6 @@ export class GANReviewController {
 	}
 
 	async processFailForGANPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus('Placing {{atop}} and {{abot}} on GA review page.');
 		let reviewWikicode = await this.getWikicode(this.ganReviewPageTitle); // get this wikicode again, in case it changed between page load and "submit" button click
 		reviewWikicode = this.wg.getFailWikicodeForGANPage(reviewWikicode);
@@ -182,8 +160,6 @@ export class GANReviewController {
 	}
 
 	async processFailForTalkPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus('Deleting {{GA nominee}} from article talk page.');
 		this.pushStatus('Adding {{FailedGA}} or {{Article history}} to article talk page.');
 		let talkWikicode = await this.getWikicode(this.gaTalkTitle); // get this wikicode again, in case it changed between page load and "submit" button click
@@ -198,8 +174,6 @@ export class GANReviewController {
 	}
 
 	async processPassForTalkPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus('Deleting {{GA nominee}} from article talk page.');
 		this.pushStatus('Adding {{GA}} or {{Article history}} to article talk page.');
 		this.pushStatus('Changing WikiProject template class parameters to GA on article talk page.');
@@ -215,8 +189,6 @@ export class GANReviewController {
 	}
 
 	async processPassForGASubPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus('Adding to appropriate subpage of [[WP:GA]]');
 		let gaSubpageLongTitle = `Wikipedia:Good articles/` + this.gaSubpageShortTitle;
 		let gaDisplayTitle = this.$(`[name="GANReviewTool-DisplayWikicode"]`).val();
@@ -234,8 +206,6 @@ export class GANReviewController {
 	}
 
 	async processPassForGANPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus('Placing {{atop}} and {{abot}} on GA review page.');
 		let reviewWikicode = await this.getWikicode(this.ganReviewPageTitle); // get this wikicode again, in case it changed between page load and "submit" button click
 		reviewWikicode = this.wg.getPassWikicodeForGANPage(reviewWikicode);
@@ -243,8 +213,6 @@ export class GANReviewController {
 	}
 
 	async getRevisionIDOfNewestRevision(pageTitle) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let api = new this.mw.Api();
 		let params = {
 			"action": "query",
@@ -261,8 +229,6 @@ export class GANReviewController {
 	}
 	
 	readFormAndSetVariables() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.action = this.$(`[name="GANReviewTool-PassOrFail"]:checked`).val();
 		this.needsATOP = this.$(`[name="GANReviewTool-ATOPYesNo"]`).is(":checked");
 		this.detailedTopic = document.querySelector(`[name="GANReviewTool-Topic"]`); // TODO: change this to jquery, so less dependencies, more unit testable
@@ -274,8 +240,6 @@ export class GANReviewController {
 	 * Show or hide different parts of the form depending on whether the user clicks pass or fail.
 	 */
 	handleUserChangingFormType() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.$(`[name="GANReviewTool-PassOrFail"]`).on('change', () => {
 			if ( this.$(`[name="GANReviewTool-PassOrFail"]:checked`).val() === 'pass' ) {
 				this.$(`#GANReviewTool-PassDiv`).show();
@@ -293,8 +257,6 @@ export class GANReviewController {
 	}
 
 	async listenForUncollapse() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.$('#GANReviewTool-Uncollapse').on('click', () => {
 			this.$('.GANReviewTool-Collapsed').hide();
 			this.$('#GANReviewTool-MainForm').show();
@@ -302,8 +264,6 @@ export class GANReviewController {
 	}
 
 	async displayForm() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		// split this query in two, to avoid the 12MB limit
 		let obj1 = await this.getWikicodeForMultiplePages([
 			'Wikipedia:Good articles/Agriculture, food and drink',
@@ -333,8 +293,6 @@ export class GANReviewController {
 	}
 
 	async shouldRunOnThisPageSlowChecks() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		// only run if this review hasn't already been closed. check for {{atop}}
 		let reviewWikicode = await this.getWikicode(this.ganReviewPageTitle);
 		if ( reviewWikicode.match(/\{\{atop/i) ) {
@@ -353,8 +311,6 @@ export class GANReviewController {
 	}
 	
 	async writeToLog() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		// always log no matter what. hopefully log some errors so I can fix them
 		this.pushStatus('Adding to log');
 		let username = this.mw.config.get('wgUserName');
@@ -363,8 +319,6 @@ export class GANReviewController {
 	}
 
 	async getWikicode(title) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let api = new this.mw.Api();
 		let params = {
 			"action": "parse",
@@ -383,8 +337,6 @@ export class GANReviewController {
 	  * @return {Promise<Object>} {'Page title': 'Page wikicode', 'Page title2': 'Page wikicode2'} Maximum 12MB of result wikicode. Will cut off after that.
 	  */
 	async getWikicodeForMultiplePages(listOfTitles) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let api = new this.mw.Api();
 		let params = {
 			"action": "query",
@@ -432,8 +384,6 @@ export class GANReviewController {
 	}
 
 	async makeEdit(title, editSummary, wikicode) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		let api = new this.mw.Api();
 		let params = {
 			"action": "edit",
@@ -451,8 +401,6 @@ export class GANReviewController {
 	 * Lets you append without getting the Wikicode first. Saves an API query.
 	 */
 	async appendToPage(title, editSummary, wikicodeToAppend) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		let api = new this.mw.Api();
 		let params = {
 			"action": "edit",
@@ -467,14 +415,10 @@ export class GANReviewController {
 	}
 
 	pushStatus(statusToAdd) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		this.$(`#GANReviewTool-ProcessingMessage > p`).append('<br />' + statusToAdd);
 	}
 
 	shouldRunOnThisPageQuickChecks(title) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		// don't run when not viewing articles
 		let action = this.mw.config.get('wgAction');
 		if ( action !== 'view' ) return false;
@@ -498,12 +442,10 @@ export class GANReviewController {
 	}
 
 	isGASubPage(title) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		return Boolean(title.match(/\/GA\d{1,2}$/));
 	}
 
 	getGATitle(title) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		title = title.replace('Talk:', '');
 		title = title.replace(/_/g, ' ');
 		title = title.replace(/\/[^\/]+$/, ''); // chop off /GA1 from the end of title
@@ -511,7 +453,6 @@ export class GANReviewController {
 	}
 
 	getGATalkTitle(gaTitle) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		return 'Talk:' + gaTitle;
 	}
 
@@ -519,8 +460,6 @@ export class GANReviewController {
 	 * @param {string} detailedTopic The heading name, with leading and trailing === to denote it as a heading
 	 */
 	getGASubPageEditSummary(editSummary, detailedTopic) {
-		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
 		// remove heading syntax == and trim
 		detailedTopic = detailedTopic.match(/={2,6} ?(.+?) ?={2,6}/)[1];
 

@@ -10,8 +10,6 @@ export class GARCloserController {
 	 * @param {GARCloserHTMLGenerator} hg
 	 */
 	async execute($, mw, location, wg, hg) {
-		if ( arguments.length !== 5 ) throw new Error('Incorrect # of arguments');
-
 		this.$ = $;
 		this.mw = mw;
 		this.location = location;
@@ -53,8 +51,6 @@ export class GARCloserController {
 	}
 
 	async clickKeep() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		// TODO: {{subst:GAR/result|result=outcome}} ~~~~ ? Ask Femke. May need to check if user already did it. Would do for both keep and delist.
 
 		try {
@@ -80,8 +76,6 @@ export class GARCloserController {
 	}
 
 	async clickDelist() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		try {
 			this.editSummary = `close GAR [[${this.garPageTitle}]] as delist` + this.editSummarySuffix;
 			if ( ! this.apiMode ) {
@@ -135,8 +129,6 @@ export class GARCloserController {
 	}
 
 	async getRevisionIDOfNewestRevision(pageTitle) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let api = new this.mw.Api();
 		let params = {
 			"action": "query",
@@ -167,15 +159,11 @@ export class GARCloserController {
 	}
 
 	deactivateBothButtons() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.$(`#GARCloser-Keep`).prop('disabled', true);
 		this.$(`#GARCloser-Delist`).prop('disabled', true);
 	}
 
 	async processKeepForGARPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`Place {{atop}} on GAR page. Replace {{GAR/current}} if present.`);
 		let wikicode = await this.getWikicode(this.garPageTitle);
 		wikicode = this.wg.processKeepForGARPage(wikicode, this.message, this.isCommunityAssessment());
@@ -186,8 +174,6 @@ export class GARCloserController {
 	}
 
 	async processDelistForGARPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`Place {{atop}} on GAR page`);
 		let wikicode = await this.getWikicode(this.garPageTitle);
 		wikicode = this.wg.processDelistForGARPage(wikicode, this.message, this.isCommunityAssessment());
@@ -198,8 +184,6 @@ export class GARCloserController {
 	}
 
 	async processKeepForTalkPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`Remove {{GAR/link}} from talk page, and update {{Article history}}`);
 		let wikicode = await this.getWikicode(this.talkPageTitle);
 		let oldid = await this.getRevisionIDOfNewestRevision(this.parentArticle);
@@ -211,8 +195,6 @@ export class GARCloserController {
 	}
 
 	isCommunityAssessment() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		if ( this.garPageTitle.startsWith('Wikipedia:Good article reassessment/') ) {
 			return true;
 		}
@@ -220,8 +202,6 @@ export class GARCloserController {
 	}
 
 	async makeCommunityAssessmentLogEntry() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`Add entry to community assessment log`);
 
 		// figure out newest GAR community assessment log (the "archive")
@@ -256,8 +236,6 @@ export class GARCloserController {
 	}
 
 	async makeSureCategoryPageHasWikitext() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		// use this.archiveTitle to figure out our current GAR archive #
 		let archiveNumber = this.archiveTitle.match(/\d+$/);
 
@@ -277,8 +255,6 @@ export class GARCloserController {
 	}
 
 	async incrementGARArchiveTemplate(archiveTitle) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`Update count at Template:GARarchive`);
 		let wikicode = await this.getWikicode('Template:GARarchive');
 		let newTemplateWikicode = this.wg.setGARArchiveTemplate(archiveTitle, wikicode);
@@ -292,8 +268,6 @@ export class GARCloserController {
 	 * Takes a Wikipedia page name with a number on the end, and returns that page name with the number on the end incremented by one. Example: "Wikipedia:Good article reassessment/Archive 67" -> "Wikipedia:Good article reassessment/Archive 68"
 	 */
 	incrementArchiveTitle(title) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let number = title.match(/\d{1,}$/);
 		number++;
 		let titleWithNoNumber = title.replace(/\d{1,}$/, '');
@@ -304,8 +278,6 @@ export class GARCloserController {
 	 * Counts number of times "{{Wikipedia:Good article reassessment/" occurs in wikicode.
 	 */
 	countGARTemplates(wikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return this.countOccurrencesInString(/\{\{Wikipedia:Good article reassessment\//g, wikicode);
 	}
 
@@ -314,8 +286,6 @@ export class GARCloserController {
 	 * @param {RegExp} needleRegEx Make sure to set the /g parameter.
 	 */
 	countOccurrencesInString(needleRegEx, haystack) {
-		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
 		return (haystack.match(needleRegEx)||[]).length;
 	}
 
@@ -323,8 +293,6 @@ export class GARCloserController {
 	 * @param {'keep'|'delist'} keepOrDelist
 	 */
 	async makeScriptLogEntry(keepOrDelist) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`Add entry to GARCloser debug log`);
 		let username = this.mw.config.get('wgUserName');
 		let wikicode = this.wg.makeScriptLogEntryToAppend(
@@ -344,8 +312,6 @@ export class GARCloserController {
 	}
 
 	async processDelistForTalkPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`Remove {{GAR/link}} from talk page, update {{Article history}}, remove |class=GA`);
 		let wikicode = await this.getWikicode(this.talkPageTitle);
 
@@ -362,8 +328,6 @@ export class GARCloserController {
 	}
 
 	async processDelistForArticle() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`Remove {{Good article}} from article`);
 		let wikicode = await this.getWikicode(this.parentArticle);
 		wikicode = this.wg.processDelistForArticle(wikicode);
@@ -372,8 +336,6 @@ export class GARCloserController {
 	}
 
 	async processDelistForGAList() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`Remove article from list of good articles`);
 
 		if ( ! this.gaListTitle ) {
@@ -390,8 +352,6 @@ export class GARCloserController {
 	 * This also checks if GARCloser should run at all. A falsey result means that the supplied title is not a GAR page.
 	 */
 	async confirmGARAndGetArticleName() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		let parentArticle = ``;
 		
 		// CASE 1: INDIVIDUAL ==================================
@@ -430,20 +390,14 @@ export class GARCloserController {
 	}
 
 	getIndividualReassessmentParentArticle(title) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return title.match(/Talk:(.*)\/GA/)[1];
 	}
 
 	getCommunityReassessmentParentArticle(title) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return title.match(/Wikipedia:Good article reassessment\/(.*)\/\d/)[1];
 	}
 
 	async getWikicode(title) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let api = new this.mw.Api();
 		let params = {
 			"action": "parse",
@@ -467,8 +421,6 @@ export class GARCloserController {
 	}
 
 	async makeEdit(title, editSummary, wikicode) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		if ( this.apiMode ) {
 			// API etiquette. 10 second delay between edits.
 			await this.delay(this.editThrottleInSeconds);
@@ -492,8 +444,6 @@ export class GARCloserController {
 	  * @private
 	  */
 	async appendToPage(title, editSummary, wikicodeToAppend) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		if ( this.apiMode ) {
 			// API etiquette. 10 second delay between edits.
 			await this.delay(this.editThrottleInSeconds);
@@ -517,8 +467,6 @@ export class GARCloserController {
 	  * @private
 	  */
 	async getHighestNumberedPage(prefix) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let t = new this.mw.Title(prefix); // https://doc.wikimedia.org/mediawiki-core/master/js/#!/api/mw.Title
 		let prefixNoNamespace = t.getMainText();
 		let namespaceNumber = t.getNamespaceId();
@@ -538,8 +486,6 @@ export class GARCloserController {
 	}
 
 	pushStatus(statusToAdd) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		if ( this.apiMode ) {
 			this.$(`#MassGARTool-Status`).show();
 			this.$(`#MassGARTool-Status > p`).append(`<br>${this.parentArticle}: ${statusToAdd}`);
@@ -550,8 +496,6 @@ export class GARCloserController {
 	}
 
 	shouldRunOnThisPageQuickChecks() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		// don't run when not viewing articles
 		let action = this.mw.config.get('wgAction');
 		if ( action !== 'view' ) return false;
@@ -570,8 +514,6 @@ export class GARCloserController {
 	}
 
 	isGASubPage(title) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return Boolean(title.match(/\/GA\d{1,2}$/));
 	}
 

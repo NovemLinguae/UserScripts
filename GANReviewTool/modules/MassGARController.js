@@ -14,8 +14,6 @@ export class MassGARController {
 	 * @param {GARCloserWikicodeGenerator} gcwg
 	 */
 	async execute($, mw, mgwg, gcc, gcwg) {
-		if ( arguments.length !== 5 ) throw new Error('Incorrect # of arguments');
-
 		// TODO: delete any of these that are unused
 		this.$ = $; // used
 		this.mw = mw; // used
@@ -50,8 +48,6 @@ export class MassGARController {
 	}
 
 	async clickRun() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`<br>Run button was clicked. Starting new run.`);
 
 		let listOfMainArticleTitles = this.$('#MassGARTool-ListOfGARs').val().trim().split('\n');
@@ -82,8 +78,6 @@ export class MassGARController {
 	}
 
 	verifyGoodArticleStatus() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`${this.mainArticleTitle}: Checking to make sure that it's a good article.`);
 
 		if ( ! this.mgwg.hasGoodArticleTemplate(this.mainArticleWikicode) ) {
@@ -96,8 +90,6 @@ export class MassGARController {
 	}
 
 	verifyNoOpenGAR() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`${this.mainArticleTitle}: Checking to make sure that there isn't an open GAR.`);
 
 		if ( this.mgwg.hasOpenGAR(this.talkPageWikicode) ) {
@@ -106,8 +98,6 @@ export class MassGARController {
 	}
 
 	async placeGARTemplateOnTalkPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`${this.mainArticleTitle}: Placing {{subst:GAR}} template on talk page, which will transform into {{GAR/link}}.`);
 
 		let textToPrepend = `{{subst:GAR}}\n`;
@@ -118,8 +108,6 @@ export class MassGARController {
 	  * This does not notify the nominator, notify the creator, or transclude the reassessment to the talk page. This only creates the individual reassessment page.
 	  */
 	async createIndividualReassessmentPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		this.pushStatus(`${this.mainArticleTitle}: Creating an individual assessment page.`);
 
 		let searchPrefixNoNamespace = this.mainArticleTitle + '/GA';
@@ -165,8 +153,6 @@ export class MassGARController {
 	  * @return {Promise<array>} listOfPages
 	  */
 	async getAllSubpagesStartingWith(searchPrefixNoNamespace) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let api = new this.mw.Api();
 		let params = {
 			"action": "query",
@@ -187,8 +173,6 @@ export class MassGARController {
 	}
 
 	showHTMLForm() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		let formHTML = `
 
 <style>
@@ -295,8 +279,6 @@ Trussed Concrete Steel Company`;
 	}
 
 	isCorrectPage() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		let currentPageTitle = this.mw.config.get('wgPageName').replace(/_/g, ' ');
 		if ( currentPageTitle === 'User:Novem Linguae/Scripts/GANReviewTool/MassGAR' ) {
 			return true;
@@ -305,8 +287,6 @@ Trussed Concrete Steel Company`;
 	}
 
 	isAuthorizedUser() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		let username = this.mw.config.get('wgUserName');
 		if ( username === 'Novem Linguae' || username === 'NovemBot' ) {
 			return true;
@@ -315,15 +295,11 @@ Trussed Concrete Steel Company`;
 	}
 
 	pushStatus(statusToAdd) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		this.$(`#MassGARTool-Status`).show();
 		this.$(`#MassGARTool-Status > p`).append('<br />' + statusToAdd);
 	}
 
 	async getWikicode(title) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let api = new this.mw.Api();
 		let params = {
 			"action": "parse",
@@ -346,8 +322,6 @@ Trussed Concrete Steel Company`;
 	}
 
 	async makeEdit(title, editSummary, wikicode) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		// API etiquette. 10 second delay between edits.
 		await this.delay(this.editThrottleInSeconds);
 
@@ -365,8 +339,6 @@ Trussed Concrete Steel Company`;
 	}
 
 	async prependEdit(title, editSummary, wikicode) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		// API etiquette. 10 second delay between edits.
 		await this.delay(this.editThrottleInSeconds);
 

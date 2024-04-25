@@ -1,13 +1,9 @@
 export class GANReviewWikicodeGenerator {
 	getPassWikicodeForGANPage(reviewWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return this.placeATOP(reviewWikicode, 'Passed. ~~~~', 'green');
 	}
 
 	getPassWikicodeForTalkPage(talkWikicode, reviewTitle, topic, oldid) {
-		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
-
 		// Delete {{GA nominee}} from article talk page.
 		let gaPageNumber = this.getTemplateParameter(talkWikicode, 'GA nominee', 'page');
 		talkWikicode = this.deleteGANomineeTemplate(talkWikicode);
@@ -27,8 +23,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle) {
-		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
-
 		gaDisplayTitle = gaDisplayTitle.trim();
 		this.findSectionStartAndEnd(gaSubpageHeading, gaSubpageWikicode);
 		let insertPosition = this.findAlphabeticalInsertPosition(gaSubpageWikicode, gaDisplayTitle);
@@ -37,14 +31,10 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	getFailWikicodeForGANPage(reviewWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return this.placeATOP(reviewWikicode, 'Unsuccessful. ~~~~', 'red');
 	}
 
 	getFailWikicodeForTalkPage(talkWikicode, reviewTitle, oldid) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		// Deleting {{GA nominee}} from article talk page.
 		let topic = this.getTopicFromGANomineeTemplate(talkWikicode);
 		let gaPageNumber = this.getTemplateParameter(talkWikicode, 'GA nominee', 'page');
@@ -63,17 +53,14 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	getOnHoldWikicodeForTalkPage(talkWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		return this.changeGANomineeTemplateStatus(talkWikicode, 'onhold');
 	}
 
 	getAskSecondOpinionWikicodeForTalkPage(talkWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		return this.changeGANomineeTemplateStatus(talkWikicode, '2ndopinion');
 	}
 
 	getAnswerSecondOpinionWikicodeForTalkPage(talkWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
 		return this.changeGANomineeTemplateStatus(talkWikicode, 'onreview');
 	}
 
@@ -128,8 +115,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	getLogMessageToAppend(username, action, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error) {
-		if ( arguments.length !== 7 ) throw new Error('Incorrect # of arguments');
-
 		let textToAppend = `\n* `;
 		if ( error ) {
 			textToAppend += `<span style="color: red; font-weight: bold;">ERROR:</span> ${error}. `;
@@ -169,8 +154,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	getWikicodeToInsert(gaTitle, gaDisplayTitle) {
-		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
 		if ( gaDisplayTitle === gaTitle ) { // use a non-piped wikilink, when possible
 			return `[[${gaTitle}]]\n`;
 		} else if ( gaDisplayTitle === `''${gaTitle}''` ) { // put italics on the outside, when possible
@@ -183,8 +166,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	placeATOP(wikicode, result, color) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		let colorCode = '';
 		switch ( color ) {
 			case 'green':
@@ -217,8 +198,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	getTopicFromGANomineeTemplate(talkWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let topic = this.getTemplateParameter(talkWikicode, 'GA nominee', 'topic');
 		if ( ! topic ) {
 			topic = this.getTemplateParameter(talkWikicode, 'GA nominee', 'subtopic');
@@ -227,8 +206,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	getTemplateParameter(wikicode, templateName, parameterName) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		templateName = this.regExEscape(templateName);
 		parameterName = this.regExEscape(parameterName);
 		let regex = new RegExp(`\\{\\{${templateName}[^\\}]+\\|\\s*${parameterName}\\s*=\\s*([^\\}\\|]+)\\s*[^\\}]*\\}\\}`, 'i');
@@ -244,34 +221,24 @@ export class GANReviewWikicodeGenerator {
 	 * CC BY-SA 4.0, coolaj86, https://stackoverflow.com/a/6969486/3480193
 	 */
 	regExEscape(string) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	}
 
 	deleteGANomineeTemplate(talkWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return talkWikicode.replace(/\{\{GA nominee[^\}]+\}\}\n?/i, '');
 	}
 
 	addGATemplate(talkWikicode, topic, gaPageNumber, oldid) {
-		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
-
 		let codeToAdd = `{{GA|~~~~~|topic=${topic}|page=${gaPageNumber}|oldid=${oldid}}}\n`;
 		return this.addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd);
 	}
 
 	addFailedGATemplate(talkWikicode, topic, gaPageNumber, oldid) {
-		if ( arguments.length !== 4 ) throw new Error('Incorrect # of arguments');
-
 		let codeToAdd = `{{FailedGA|~~~~~|topic=${topic}|page=${gaPageNumber}|oldid=${oldid}}}\n`;
 		return this.addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd);
 	}
 
 	addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd) {
-		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
 		let templateName = this.getFirstTemplateNameFromWikicode(codeToAdd);
 		let templatesThatGoBefore;
 		switch ( templateName ) {
@@ -286,8 +253,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	getFirstTemplateNameFromWikicode(wikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let match = wikicode.match(/(?<=\{\{)[^\|\}]+/);
 		if ( ! match ) {
 			throw new Error('getFirstTemplateNameFromWikicode: No template found in Wikicode.');
@@ -300,8 +265,6 @@ export class GANReviewWikicodeGenerator {
 	 * @param {string[]} templates
 	 */
 	addWikicodeAfterTemplates(wikicode, templates, codeToAdd) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		/* Started to write a lexer that would solve the edge case of putting the {{GA}} template too low when the [[MOS:TALKORDER]] is incorrect. It's a lot of work though. Pausing for now.
 
 		// Note: the MOS:TALKORDER $templates variable is fed to us as a parameter
@@ -336,8 +299,6 @@ export class GANReviewWikicodeGenerator {
 	 * @returns {number} endOfStringPosition Returns zero if not found
 	 */
 	getEndOfStringPositionOfLastMatch(haystack, regex) {
-		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
 		let matches = [...haystack.matchAll(regex)];
 		let hasMatches = matches.length;
 		if ( hasMatches ) {
@@ -351,8 +312,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	changeWikiProjectArticleClassToGA(talkWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		// TODO: need to rewrite this to handle the following test case: {{WikiProject Energy|importance=Mid}}. Should add |rating=GA
 
 		// replace existing |class=
@@ -368,8 +327,6 @@ export class GANReviewWikicodeGenerator {
 	 * Determine next |action= number in {{Article history}} template. This is so we can insert an action.
 	 */
 	determineNextActionNumber(talkWikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		let i = 1;
 		while ( true ) {
 			let regex = new RegExp(`\\|\\s*action${i}\\s*=`, 'i');
@@ -382,8 +339,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed, oldid) {
-		if ( arguments.length !== 5 ) throw new Error('Incorrect # of arguments');
-
 		let nextActionNumber = this.determineNextActionNumber(talkWikicode);
 
 		if ( listedOrFailed !== 'listed' && listedOrFailed !== 'failed' ) {
@@ -414,8 +369,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	getArticleHistoryNewStatus(existingStatus, listedOrFailed) {
-		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
 		if ( listedOrFailed === 'listed' ) {
 			switch ( existingStatus ) {
 				case 'FFA':
@@ -440,16 +393,12 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		// TODO: handle nested templates
 		let regex = new RegExp(`(\\{\\{${templateNameRegExNoDelimiters}[^\\}]*)(\\}\\})`, 'i');
 		return wikicode.replace(regex, `$1\n${codeToInsert}\n$2`);
 	}
 
 	firstTemplateGetParameterValue(wikicode, template, parameter) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
 		// new algorithm:
 			// find start of template. use regex /i (ignore case)
@@ -468,7 +417,6 @@ export class GANReviewWikicodeGenerator {
 	 * @param {RegExp} regex
 	 */
 	preg_position(regex, haystack) {
-		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
 		let matches = [...haystack.matchAll(regex)];
 		let hasMatches = matches.length;
 		if ( hasMatches ) {
@@ -500,8 +448,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	firstTemplateDeleteParameter(wikicode, templateRegEx, parameter) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		// templateStartPosition
 		let regex = new RegExp('\{\{' + templateRegEx, 'gi');
 		let templateStartPosition = this.preg_position(regex, wikicode);
@@ -525,8 +471,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	removeFormattingThatInterferesWithSort(str) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return str.replace(/^[^\[]*\[\[(?:[^\|]+\|)?/, '') // delete anything in front of [[, [[, and anything inside the left half of a piped wikilink
 			.replace(/\]\][^\]]*$/, '') // delete ]], and anything after ]]
 			.replace(/"/g, '') // delete "
@@ -537,8 +481,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	aSortsLowerThanB(a, b) {
-		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
 		// JavaScript appears to use an ASCII sort. See https://en.wikipedia.org/wiki/ASCII#Printable_characters
 
 		// make sure "A" and "a" sort the same. prevents a bug
@@ -563,8 +505,6 @@ export class GANReviewWikicodeGenerator {
 	 * Jeroen Ooms, CC BY-SA 3.0, https://stackoverflow.com/a/18123985/3480193
 	 */
 	removeDiacritics(str) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		var defaultDiacriticsRemovalMap = [
 			{'base': 'A', 'letters': /[\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F]/g},
 			{'base': 'AA', 'letters': /[\uA732]/g},
@@ -660,8 +600,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	getGASubpageHeadingPosition(shortenedVersionInComboBox, wikicode) {
-		if ( arguments.length !== 2 ) throw new Error('Incorrect # of arguments');
-
 		// split the heading into equalsSignOnOneSide + needle + equalsSignOnOneSide
 		let needle = /^={2,5}\s*(.*?)\s*={2,5}$/gm.exec(shortenedVersionInComboBox)[1];
 		let equalsSignsOnOneSide = /^(={2,5})/gm.exec(shortenedVersionInComboBox)[1];
@@ -680,8 +618,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	findFirstStringAfterPosition(needle, haystack, position) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		let len = haystack.length;
 		for ( let i = position; i < len; i++ ) {
 			let buffer = haystack.slice(i, len);
@@ -696,8 +632,6 @@ export class GANReviewWikicodeGenerator {
 	 * CC BY-SA 4.0, jAndy, https://stackoverflow.com/a/4364902/3480193
 	 */
 	insertStringIntoStringAtPosition(bigString, insertString, position) {
-		if ( arguments.length !== 3 ) throw new Error('Incorrect # of arguments');
-
 		return [
 			bigString.slice(0, position),
 			insertString,
@@ -706,8 +640,6 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	hasArticleHistoryTemplate(wikicode) {
-		if ( arguments.length !== 1 ) throw new Error('Incorrect # of arguments');
-
 		return Boolean(wikicode.match(/\{\{Article ?history/i));
 	}
 }

@@ -1,7 +1,5 @@
 export class GARCloserHTMLGenerator {
 	getHTML() {
-		if ( arguments.length !== 0 ) throw new Error('Incorrect # of arguments');
-
 		return `
 
 <style>
