@@ -14,59 +14,75 @@ This script works in Special:UserRights, in watchlists, and when clicking "right
 
 */
 
-// Don't bother converting this user script to a class. There's a nasty bug involving calling this.functionName2 inside of $().each( this.functionName ). "this" is an HTML element, not the class. Not sure how to fix. Tried that=this, and changing it to that.functionName( that ). Didn't work. Tried on 2023-06-05 and 2024-04-23.
-// TODO: fix it by wrapping a function around it. example: .on( 'click', function () { that.functionName( this ); } );
-
-$( function () {
-	function execute() {
-		// User:BradV/Scripts/SuperLinks.js
-		$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', checkLog );
-
-		// Special:UserRights, Special:Log, Special:Watchlist
-		checkLog();
+class UserRightsDiff {
+	constructor( $ ) {
+		this.$ = $;
 	}
 
-	function checkLog() {
-		// prevent infinite loop
+	execute() {
+		const that = this;
+
+		// User:BradV/Scripts/SuperLinks.js
+		$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', function () {
+			that.checkLog();
+		} );
+
+		// Special:UserRights, Special:Log, Special:Watchlist
+		this.checkLog();
+	}
+
+	checkLog() {
+		const that = this;
+
+		// turn listener off (prevent infinite loop)
 		$( 'body' ).off( 'DOMNodeInserted' );
+
 		// don't run twice on the same page
 		if ( $( '.user-rights-diff' ).length === 0 ) {
 			// Special:UserRights, Special:Log, BradV SuperLinks
-			$( '.mw-logevent-loglines .mw-logline-rights' ).each( checkLine );
+			$( '.mw-logevent-loglines .mw-logline-rights' ).each( function () {
+				that.checkLine( this );
+			} );
 			// Special:Watchlist
-			$( '.mw-changeslist-log-rights .mw-changeslist-log-entry' ).each( checkLine );
+			$( '.mw-changeslist-log-rights .mw-changeslist-log-entry' ).each( function () {
+				that.checkLine( this );
+			} );
 		}
-		$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', checkLog );
+
+		// turn listener back on
+		$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', function () {
+			that.checkLog();
+		} );
 	}
 
-	function checkLine() {
-		let text = $( this ).text();
+	checkLine( el ) {
+		let text = $( el ).text();
 		let from, to;
 		try {
-			text = deleteParenthesesAndTags( text );
-			text = deleteBeginningOfLogEntry( text );
+			text = this.deleteParenthesesAndTags( text );
+			text = this.deleteBeginningOfLogEntry( text );
 			const matches = / from (.*?) to (.*?)(?: \(.*)?$/.exec( text );
-			from = permStringToArray( matches[ 1 ] );
-			to = permStringToArray( matches[ 2 ] );
+			from = this.permStringToArray( matches[ 1 ] );
+			to = this.permStringToArray( matches[ 2 ] );
 		} catch ( err ) {
-			throw new Error( 'UserRightsDiff.js error. Error was: ' + err + '. Input text was: ' + $( this ).text() );
+			throw new Error( 'UserRightsDiff.js error. Error was: ' + err + '. Input text was: ' + $( el ).text() );
 		}
 		let added = to.filter( ( x ) => !from.includes( x ) );
 		let removed = from.filter( ( x ) => !to.includes( x ) );
 		added = added.length > 0 ?
-			'<span class="user-rights-diff" style="background-color:lawngreen">[ADDED: ' + permArrayToString( added ) + ']</span>' :
+			'<span class="user-rights-diff" style="background-color:lawngreen">[ADDED: ' + this.permArrayToString( added ) + ']</span>' :
 			'';
 		removed = removed.length > 0 ?
-			'<span class="user-rights-diff" style="background-color:yellow">[REMOVED: ' + permArrayToString( removed ) + ']</span>' :
+			'<span class="user-rights-diff" style="background-color:yellow">[REMOVED: ' + this.permArrayToString( removed ) + ']</span>' :
 			'';
 		const noChange = added.length === 0 && removed.length === 0 ?
 			'<span class="user-rights-diff" style="background-color:lightgray">[NO CHANGE]</span>' :
 			'';
-		$( this ).append( `<br />${ added } ${ removed } ${ noChange }` );
+		$( el ).append( `<br />${ added } ${ removed } ${ noChange }` );
 	}
 
 	/** Don't delete "(none)". Delete all other parentheses and tags. */
-	function deleteParenthesesAndTags( text ) {
+	deleteParenthesesAndTags( text ) {
 		// delete unicode character U+200E. this whitespace character shows up on watchlists, and causes an extra space if not deleted.
 		text = text.replace( '\u200E', '' );
 		// get rid of 2 layers of nested parentheses. will help with some edge cases.
@@ -83,13 +99,13 @@ $( function () {
 	}
 
 	/** Fixes a bug where the username contains the word "from", which is searched for by a RegEx later. */
-	function deleteBeginningOfLogEntry( text ) {
+	deleteBeginningOfLogEntry( text ) {
 		text = text.replace( /^.*changed group membership for .* from /, ' from ' );
 		text = text.replace( /^.*was automatically updated from /gs, ' from ' );
 		return text;
 	}
 
-	function permStringToArray( string ) {
+	permStringToArray( string ) {
 		string = string.replace( /^(.*) and (.*?$)/, '$1, $2' );
 		if ( string === '(none)' ) {
 			return [];
@@ -103,12 +119,14 @@ $( function () {
 		return array;
 	}
 
-	function permArrayToString( array ) {
+	permArrayToString( array ) {
 		array = array.join( ', ' );
 		return array;
 	}
+}
 
-	execute();
+$( function () {
+	( new UserRightsDiff( $ ) ).execute();
 } );
 
 // </nowiki>
