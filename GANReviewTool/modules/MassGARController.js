@@ -7,9 +7,9 @@ import { GARCloserWikicodeGenerator } from "./GARCloserWikicodeGenerator";
   */
 export class MassGARController {
 	/**
-	 * @param {Function} $ jQuery
+	 * @param {jQuery} $ jQuery
 	 * @param {mw} mw mediawiki, https://doc.wikimedia.org/mediawiki-core/master/js/#!/api/mw
-	 * @param {MassGARWikicodeGenerator} wg
+	 * @param {MassGARWikicodeGenerator} mgwg
 	 * @param {GARCloserController} gcc
 	 * @param {GARCloserWikicodeGenerator} gcwg
 	 */
@@ -262,13 +262,14 @@ export class MassGARController {
 		let defaultIndividualReassessmentPageWikicode = '{{subst:Wikipedia:Good article reassessment/February 2023/GAR notice}}';
 
 		/*
-		let defaultListOfGARs = 
+		let defaultListOfGARs =
 `Julius Kahn (inventor)
 Trussed Concrete Steel Company`;
 
-		let defaultListOfGARs = 
-`Julius Kahn (inventor)`;		*/
-		let defaultListOfGARs = 
+		let defaultListOfGARs =
+`Julius Kahn (inventor)`;
+		*/
+		let defaultListOfGARs =
 `Julius Kahn (inventor)
 Trussed Concrete Steel Company`;
 

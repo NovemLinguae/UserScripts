@@ -1,9 +1,9 @@
 export class GANReviewHTMLGenerator {
-	getHTML(gaTitle, wikicodeOfGASubPages) {
-		let defaultDisplayText = this.getDefaultDisplayText(gaTitle);
-		defaultDisplayText = this.escapeHtml(defaultDisplayText);
+	getHTML( gaTitle, wikicodeOfGASubPages ) {
+		let defaultDisplayText = this.getDefaultDisplayText( gaTitle );
+		defaultDisplayText = this.escapeHtml( defaultDisplayText );
 
-		let gaTopicComboBoxOptionsHTML = this.makeTopicComboBoxOptions(wikicodeOfGASubPages);
+		const gaTopicComboBoxOptionsHTML = this.makeTopicComboBoxOptions( wikicodeOfGASubPages );
 
 		return `
 <style>
@@ -93,7 +93,7 @@ export class GANReviewHTMLGenerator {
 						<select name="GANReviewTool-Topic">
 							<option></option>
 
-${gaTopicComboBoxOptionsHTML}
+${ gaTopicComboBoxOptionsHTML }
 						</select>
 					</p>
 
@@ -105,7 +105,7 @@ ${gaTopicComboBoxOptionsHTML}
 						Parentheses at the end should not be formatted: <code>''Revolver'' (Beatles album)</code><br />
 						Artwork, poetry, etc. may also require special formatting<br />
 						More info at [[<a href="/wiki/Wikipedia:Manual_of_Style/Titles_of_works#Italics">MOS:TITLE#Italics</a>]] and [[<a href="/wiki/Wikipedia:Manual_of_Style/Titles_of_works#Quotation_marks">MOS:TITLE#Quotation marks</a>]]<br />
-						<input type="text" name="GANReviewTool-DisplayWikicode" value="${defaultDisplayText}" />
+						<input type="text" name="GANReviewTool-DisplayWikicode" value="${ defaultDisplayText }" />
 					</p>
 				</div>
 				<!-- endif -->
@@ -138,22 +138,22 @@ ${gaTopicComboBoxOptionsHTML}
 	/**
 	 * CC BY-SA 4.0, bjornd, https://stackoverflow.com/a/6234804/3480193
 	 */
-	escapeHtml(unsafe) {
+	escapeHtml( unsafe ) {
 		return unsafe
-			.replace(/&/g, "&amp;")
-			.replace(/</g, "&lt;")
-			.replace(/>/g, "&gt;")
-			.replace(/"/g, "&quot;")
-			.replace(/'/g, "&#039;");
+			.replace( /&/g, '&amp;' )
+			.replace( /</g, '&lt;' )
+			.replace( />/g, '&gt;' )
+			.replace( /"/g, '&quot;' )
+			.replace( /'/g, '&#039;' );
 	}
 
-	getDefaultDisplayText(gaTitle) {
-		let endsWithParentheticalDisambiguator = gaTitle.match(/^.+ \(.+\)$/);
-		if ( ! endsWithParentheticalDisambiguator ) {
+	getDefaultDisplayText( gaTitle ) {
+		const endsWithParentheticalDisambiguator = gaTitle.match( /^.+ \(.+\)$/ );
+		if ( !endsWithParentheticalDisambiguator ) {
 			return gaTitle;
 		}
-		
-		let suffixesThatTriggerItalics = [
+
+		const suffixesThatTriggerItalics = [
 			'album',
 			'book',
 			'comic',
@@ -186,12 +186,12 @@ ${gaTopicComboBoxOptionsHTML}
 			'series 7',
 			'series 8',
 			'series 9',
-			'soundtrack',
+			'soundtrack'
 		];
-		let suffixesThatTriggerDoubleQuotes = [
-			'song',
+		const suffixesThatTriggerDoubleQuotes = [
+			'song'
 		];
-		let suffixesThatTriggerDoubleQuotesAndItalics = [
+		const suffixesThatTriggerDoubleQuotesAndItalics = [
 			'30 Rock',
 			'Family Guy',
 			'Fringe',
@@ -207,67 +207,67 @@ ${gaTopicComboBoxOptionsHTML}
 			'The X-Files'
 		];
 
-		let firstHalf = gaTitle.match(/^(.+) \((.+)\)$/)[1];
-		let secondHalf = gaTitle.match(/^(.+) \((.+)\)$/)[2];
-		
-		for ( let suffixToCheck of suffixesThatTriggerItalics ) {
-			if ( gaTitle.endsWith(suffixToCheck + ')') ) {
-				return `''${firstHalf}'' (${secondHalf})`;
+		const firstHalf = gaTitle.match( /^(.+) \((.+)\)$/ )[ 1 ];
+		const secondHalf = gaTitle.match( /^(.+) \((.+)\)$/ )[ 2 ];
+
+		for ( const suffixToCheck of suffixesThatTriggerItalics ) {
+			if ( gaTitle.endsWith( suffixToCheck + ')' ) ) {
+				return `''${ firstHalf }'' (${ secondHalf })`;
 			}
 		}
-		
-		for ( let suffixToCheck of suffixesThatTriggerDoubleQuotes ) {
-			if ( gaTitle.endsWith(suffixToCheck + ')') ) {
-				return `"${firstHalf}" (${secondHalf})`;
+
+		for ( const suffixToCheck of suffixesThatTriggerDoubleQuotes ) {
+			if ( gaTitle.endsWith( suffixToCheck + ')' ) ) {
+				return `"${ firstHalf }" (${ secondHalf })`;
 			}
 		}
-		
-		for ( let suffixToCheck of suffixesThatTriggerDoubleQuotesAndItalics ) {
-			if ( gaTitle.endsWith(suffixToCheck + ')') ) {
-				return `"${firstHalf}" (''${secondHalf}'')`;
+
+		for ( const suffixToCheck of suffixesThatTriggerDoubleQuotesAndItalics ) {
+			if ( gaTitle.endsWith( suffixToCheck + ')' ) ) {
+				return `"${ firstHalf }" (''${ secondHalf }'')`;
 			}
 		}
 
 		return gaTitle;
 	}
 
-	makeTopicComboBoxOptions(wikicodeOfGASubPages) {
+	makeTopicComboBoxOptions( wikicodeOfGASubPages ) {
 		let html = '';
-		for ( let key in wikicodeOfGASubPages ) {
-			let topic = key.replace(/^Wikipedia:Good articles\//, '');
-			let wikicode = wikicodeOfGASubPages[key];
-			html += this.makeTopicComboBoxOptionGroup(wikicode, topic);
+		for ( const key in wikicodeOfGASubPages ) {
+			const topic = key.replace( /^Wikipedia:Good articles\//, '' );
+			const wikicode = wikicodeOfGASubPages[ key ];
+			html += this.makeTopicComboBoxOptionGroup( wikicode, topic );
 		}
 		return html;
 	}
 
-	makeTopicComboBoxOptionGroup(wikicode, topic) {
+	makeTopicComboBoxOptionGroup( wikicode, topic ) {
 		// delete some stuff that throws it off
-		wikicode = wikicode.replace(/\s*\[\[File:[^\]]+\]\]\s*/gi, '');
-		wikicode = wikicode.replace(/\{\{(?!#invoke)[^\}]+\}\}\s*\n/gi, '');
-		wikicode = wikicode.replace(/={2,}\s*Contents\s*={2,}\s*\n/gi, '');
-		wikicode = wikicode.replace(/<!--[^>]+>\s*\n/gi, '');
+		wikicode = wikicode.replace( /\s*\[\[File:[^\]]+\]\]\s*/gi, '' );
+		wikicode = wikicode.replace( /\{\{(?!#invoke)[^}]+\}\}\s*\n/gi, '' );
+		wikicode = wikicode.replace( /={2,}\s*Contents\s*={2,}\s*\n/gi, '' );
+		wikicode = wikicode.replace( /<!--[^>]+>\s*\n/gi, '' );
 
 		// search for `==Headings==\n` not followed by `{{#invoke`, and replace with a disabled <option>
-		// 							<option value="Art and architecture" disabled>==Art and architecture==</option>
+		// <option value="Art and architecture" disabled>==Art and architecture==</option>
 		wikicode = wikicode.replace(
 			/(={2,}\s*[^=]+\s*={2,})\n(?!\{\{#invoke)/gi,
-			`							<option value="${topic}" disabled>$1</option>\n`
+			`<option value="${ topic }" disabled>$1</option>\n`
 		);
 
 		// search for `==Headings==\n{{#invoke`, and replace with a non-disabled <option>
-		// 							<option value="Art and architecture">==Art and architecture==</option>
+		// <option value="Art and architecture">==Art and architecture==</option>
 		wikicode = wikicode.replace(
 			/(={2,}\s*[^=]+\s*={2,})\n(?=\{\{#invoke)/gi,
-			`							<option value="${topic}">$1</option>\n`
+			`<option value="${ topic }">$1</option>\n`
 		);
 
 		// delete any line that isn't an <option>
-		wikicode = wikicode.replace(/^(?!\t{7}<option).*\n/gim, '');
+		wikicode = wikicode.replace( /^(?!\t{7}<option).*\n/gim, '' );
 
 		// turn === Heading === into ===Heading=== (delete spaces)
-		wikicode = wikicode.replace(/\s+=/gi, '=');
-		wikicode = wikicode.replace(/=\s+/gi, '=');
+		wikicode = wikicode.replace( /\s+=/gi, '=' );
+		wikicode = wikicode.replace( /=\s+/gi, '=' );
 
 		// add newline to the end of this group
 		wikicode += '\n';
