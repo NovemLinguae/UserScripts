@@ -25,12 +25,6 @@ jobs:
       run: npm test
       name: GANReviewTool unit tests
 
-    - working-directory: ./NotSoFast
-      run: npm install
-    - working-directory: ./NotSoFast
-      run: npm test
-      name: NotSoFast unit tests
-
     - working-directory: ./SpeciesHelper
       run: npm install
     - working-directory: ./SpeciesHelper
