@@ -8,10 +8,9 @@
 
 */
 
-$(async function() {
-	let vcc = new VoteCounterController();
-	await vcc.execute();
-});
+$( async function () {
+	await ( new VoteCounterController() ).execute();
+} );
 
 /*
 TEST CASES:

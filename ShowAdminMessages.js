@@ -2,7 +2,7 @@
 
 // There are various hidden messages onwiki that can be targeted to extended confirmed users, admins, checkusers, template editors, etc. This user script 1) shows these messages and 2) highlights them yellow so you can recognize them.
 
-mw.util.addCSS(`
+mw.util.addCSS( `
 
 div.sysop-show,
 div.checkuser-show,
@@ -71,6 +71,6 @@ li.extendedmover-show {
   background: yellow;
 }
 
-`);
+` );
 
 // </nowiki>

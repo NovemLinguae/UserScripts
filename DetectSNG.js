@@ -22,167 +22,173 @@
 class DetectSNG {
 	async execute() {
 		// don't run when not viewing articles
-		let action = mw.config.get('wgAction');
+		const action = mw.config.get( 'wgAction' );
 		if ( action !== 'view' ) {
 			return;
 		}
-		
+
 		// don't run when viewing diffs
-		let isDiff = mw.config.get('wgDiffNewId');
+		const isDiff = mw.config.get( 'wgDiffNewId' );
 		if ( isDiff ) {
 			return;
 		}
-		
-		let isDeletedPage = ( ! mw.config.get('wgCurRevisionId') );
+
+		const isDeletedPage = ( !mw.config.get( 'wgCurRevisionId' ) );
 		if ( isDeletedPage ) {
 			return;
 		}
-		
+
 		// Only run in mainspace and draftspace
-		let namespace = mw.config.get('wgNamespaceNumber');
-		let title = this.getArticleName();
-		if ( ! [0, 118].includes(namespace) && title !== 'User:Novem_Linguae/Scripts/DetectSNG/testcases' ) {
+		const namespace = mw.config.get( 'wgNamespaceNumber' );
+		const title = this.getArticleName();
+		if ( ![ 0, 118 ].includes( namespace ) && title !== 'User:Novem_Linguae/Scripts/DetectSNG/testcases' ) {
 			return;
 		}
 
 		// Only run on unpatrolled pages
-		let pageID = mw.config.get('wgArticleId');
-		let wikicode = await this.getWikicode(title);
-		let isReviewed = await this.isReviewed(pageID);
-		let isAtAfd = wikicode.match(/\{\{Article for deletion\/dated/i);
+		const pageID = mw.config.get( 'wgArticleId' );
+		let wikicode = await this.getWikicode( title );
+		const isReviewed = await this.isReviewed( pageID );
+		const isAtAfd = wikicode.match( /\{\{Article for deletion\/dated/i );
 		if ( isReviewed && !isAtAfd && title !== 'User:Novem_Linguae/Scripts/DetectSNG/testcases' ) {
 			return;
 		}
-		
+
 		let wordString = this.getWordString();
-		
+
 		// TODO: get rid of the replace(/championships/) line. because of the use of \b, that is not a good way to do it. maybe copy the entry and add both singular and plural to the dictionary
-		wordString = wordString.replace(/^\/\/.*$/gm, ''); // replace comment lines with blank lines. using this approach fixes a bug involving // and comma on the same line
-		let wordArray = wordString.replace(/, /g, "\n")
+		wordString = wordString.replace( /^\/\/.*$/gm, '' ); // replace comment lines with blank lines. using this approach fixes a bug involving // and comma on the same line
+		let wordArray = wordString.replace( /, /g, '\n' )
 			.trim()
-			.split("\n")
-			.map(v => v.trim())
-			.map(v => v.replace(/championships/i, 'championship'))
-			.filter(v => v !== '')
-			.filter(v => ! v.startsWith('//'));
-		wordArray = this.eliminateDuplicates(wordArray);
-		
+			.split( '\n' )
+			.map( ( v ) => v.trim() )
+			.map( ( v ) => v.replace( /championships/i, 'championship' ) )
+			.filter( ( v ) => v !== '' )
+			.filter( ( v ) => !v.startsWith( '//' ) );
+		wordArray = this.eliminateDuplicates( wordArray );
+
 		// if dictionary entry contains diacritics, add an entry with no diacritics
-		let wordArray2 = this.cloneArray(wordArray);
-		for ( let word of wordArray2 ) {
-			if ( this.hasDiacritics(word) ) {
-				wordArray.push(this.normalizeDiacritics(word));
+		const wordArray2 = this.cloneArray( wordArray );
+		for ( const word of wordArray2 ) {
+			if ( this.hasDiacritics( word ) ) {
+				wordArray.push( this.normalizeDiacritics( word ) );
 			}
 		}
-		
+
 		// convert from 1 level array with just text, to 2 level array with text and regex
-		let wordObject = [];
-		for ( let key in wordArray ) {
-			wordObject.push({
-				'text': wordArray[key],
-				'regex': this.escapeRegEx(wordArray[key])
-			});
+		const wordObject = [];
+		for ( const key in wordArray ) {
+			wordObject.push( {
+				text: wordArray[ key ],
+				regex: this.escapeRegEx( wordArray[ key ] )
+			} );
 		}
-		
+
 		// add a couple that need custom RegEx to work correctly
-		wordObject.push({
-			'text': 'Royal Society',
-			'regex': '(?<!Transactions of the )Royal Society'
-		});
-		wordObject.push({
-			'text': 'National Academy of Sciences',
-			'regex': '(?<!Proceedings of the )National Academy of Sciences'
-		});
-		
+		wordObject.push( {
+			text: 'Royal Society',
+			regex: '(?<!Transactions of the )Royal Society'
+		} );
+		wordObject.push( {
+			text: 'National Academy of Sciences',
+			regex: '(?<!Proceedings of the )National Academy of Sciences'
+		} );
+
 		// delete [[ ]], so that phrases with wikilink syntax in the middle don't mess up our search
-		wikicode = wikicode.replace(/\[\[/g, '')
-			.replace(/\]\]/g, '');
+		wikicode = wikicode.replace( /\[\[/g, '' )
+			.replace( /\]\]/g, '' );
 
 		// delete template parameter names, so that things like "| paralympics =" don't generate a false positive
-		wikicode = wikicode.replace(/\|\s*[^=|}<]+\s*=/g, '');
+		wikicode = wikicode.replace( /\|\s*[^=|}<]+\s*=/g, '' );
 
 		let searchResults = [];
-		for ( let word of wordObject ) {
+		for ( const word of wordObject ) {
 			// can't use \b here because \)\b doesn't work correctly. using lookarounds instead
-			let regEx = new RegExp('(?<!\\w)' + word['regex'] + '(?!\\w)', "i");
-			if ( wikicode.match(regEx) ) {
-				searchResults.push(word['text']);
+			const regEx = new RegExp( '(?<!\\w)' + word.regex + '(?!\\w)', 'i' );
+			if ( wikicode.match( regEx ) ) {
+				searchResults.push( word.text );
 			}
 		}
-		
+
 		if ( searchResults.length > 10 ) {
-			searchResults = searchResults.slice(0, 10);
-			searchResults.push('...... and more.');
+			searchResults = searchResults.slice( 0, 10 );
+			searchResults.push( '...... and more.' );
 		}
-		
-		if ( ! this.empty(searchResults) ) {
-			let html = searchResults.join(', ');
+
+		if ( !this.empty( searchResults ) ) {
+			let html = searchResults.join( ', ' );
 			html = '<div id="DetectSNG" style="background-color: #90EE90"><span style="font-weight: bold;">SNG keywords:</span> ' + html + '</div>';
-			
-			$('#contentSub').before(html);
+
+			$( '#contentSub' ).before( html );
 		}
 	}
 
-	async getWikicode(title) {
-		if ( ! mw.config.get('wgCurRevisionId') ) return ''; // if page is deleted, return blank
-		var wikicode = '';
-		title = encodeURIComponent(title);
-		await $.ajax({
-			url: 'https://en.wikipedia.org/w/api.php?action=parse&page='+title+'&prop=wikitext&formatversion=2&format=json',
-			success: function (result) {
-				wikicode = result['parse']['wikitext'];
+	async getWikicode( title ) {
+		if ( !mw.config.get( 'wgCurRevisionId' ) ) {
+			return '';
+		} // if page is deleted, return blank
+		let wikicode = '';
+		title = encodeURIComponent( title );
+		await $.ajax( {
+			url: 'https://en.wikipedia.org/w/api.php?action=parse&page=' + title + '&prop=wikitext&formatversion=2&format=json',
+			success: function ( result ) {
+				wikicode = result.parse.wikitext;
 			},
-			dataType: "json",
+			dataType: 'json',
 			async: false
-		});
+		} );
 		return wikicode;
 	}
-	
-	eliminateDuplicates(array) {
-		return [...new Set(array)];
+
+	eliminateDuplicates( array ) {
+		return [ ...new Set( array ) ];
 	}
-	
+
 	/** returns the pagename, including the namespace name, but with spaces replaced by underscores */
 	getArticleName() {
-		return mw.config.get('wgPageName');
+		return mw.config.get( 'wgPageName' );
 	}
-	
-	hasDiacritics(str) {
-		let str2 = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+	hasDiacritics( str ) {
+		const str2 = str.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' );
 		return str !== str2;
 	}
-	
-	normalizeDiacritics(str) {
-		return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+	normalizeDiacritics( str ) {
+		return str.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' );
 	}
-	
-	cloneArray(arr) {
-		return JSON.parse(JSON.stringify(arr));
+
+	cloneArray( arr ) {
+		return JSON.parse( JSON.stringify( arr ) );
 	}
-	
-	empty(arr) {
-		if ( arr === undefined ) return true;
-		if ( arr.length === 0 ) return true;
+
+	empty( arr ) {
+		if ( arr === undefined ) {
+			return true;
+		}
+		if ( arr.length === 0 ) {
+			return true;
+		}
 		return false;
 	}
 
-	escapeRegEx(string) {
-		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+	escapeRegEx( string ) {
+		return string.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ); // $& means the whole matched string
 	}
 
 	/**
-	* @param {number} pageID The page ID number. A positive number with no commas.
-	*/
-	async isReviewed(pageID) {
-		let api = new mw.Api();
-		let response = await api.get( {
+	 * @param {number} pageID The page ID number. A positive number with no commas.
+	 */
+	async isReviewed( pageID ) {
+		const api = new mw.Api();
+		const response = await api.get( {
 			action: 'query',
 			format: 'json',
 			formatversion: '2',
 			prop: 'isreviewed',
-			pageids: pageID,
+			pageids: pageID
 		} );
-		return response.query.pages[0].isreviewed;
+		return response.query.pages[ 0 ].isreviewed;
 	}
 
 	getWordString() {
@@ -1661,11 +1667,10 @@ Paralympics
 	}
 }
 
-$(async function() {
-	await mw.loader.using(['mediawiki.api'], async () => {
-		let dsng = new DetectSNG();
-		await dsng.execute();
-	});
-});
+$( async function () {
+	await mw.loader.using( [ 'mediawiki.api' ], async () => {
+		await ( new DetectSNG() ).execute();
+	} );
+} );
 
 // </nowiki>

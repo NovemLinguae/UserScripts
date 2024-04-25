@@ -8,10 +8,10 @@
 - Bonus featured: Adds "Watchlist RFA" and "Watchlist SPI" to user pages.
 */
 
-$(function() {
-	async function addToWatchlist(title, watchForever = false) {
-		let apiObject = {
-			url: mw.util.wikiScript('api'),
+$( function () {
+	async function addToWatchlist( title, watchForever = false ) {
+		const apiObject = {
+			url: mw.util.wikiScript( 'api' ),
 			type: 'POST',
 			dataType: 'json',
 			data: {
@@ -19,31 +19,31 @@ $(function() {
 				action: 'watch',
 				expiry: '6 months',
 				titles: title,
-				token: mw.user.tokens.get('watchToken')
-			},
+				token: mw.user.tokens.get( 'watchToken' )
+			}
 		};
 		if ( watchForever ) {
 			delete apiObject.data.expiry;
 		}
-		let debugInfo = await $.ajax(apiObject);
+		const debugInfo = await $.ajax( apiObject );
 		return debugInfo;
 	}
-	
+
 	function getTitleWithoutNamespace() {
-		let title = mw.config.get('wgPageName');
-		title = title.replace(/^.*?:/, ''); // strip all namespaces
+		let title = mw.config.get( 'wgPageName' );
+		title = title.replace( /^.*?:/, '' ); // strip all namespaces
 		return title;
 	}
-	
-	function getTitleWithoutSubpages(title) {
-		title = title.replace(/\/.*$/, ''); // strip all subpages
+
+	function getTitleWithoutSubpages( title ) {
+		title = title.replace( /\/.*$/, '' ); // strip all subpages
 		return title;
 	}
-	
+
 	// add options to More menu
-	let namespace = mw.config.get('wgNamespaceNumber');
-	let isUserPage = ( [2, 3].includes(namespace) );
-	let isArticleOrDraft = ( [0, 1, 118, 119].includes(namespace) );
+	const namespace = mw.config.get( 'wgNamespaceNumber' );
+	const isUserPage = ( [ 2, 3 ].includes( namespace ) );
+	const isArticleOrDraft = ( [ 0, 1, 118, 119 ].includes( namespace ) );
 	if ( isArticleOrDraft ) {
 		mw.util.addPortletLink(
 			'p-cactions',
@@ -66,42 +66,42 @@ $(function() {
 			'WatchlistSPI'
 		);
 	}
-	
+
 	// listen for More menu clicks
-	$('#WatchlistAFD').on('click', async function() {
+	$( '#WatchlistAFD' ).on( 'click', async function () {
+		const title = getTitleWithoutNamespace();
+		await addToWatchlist( 'Wikipedia:Articles for deletion/' + title );
+		mw.notify( 'Added AFD to watchlist.' );
+	} );
+	$( '#WatchlistRFA' ).on( 'click', async function () {
 		let title = getTitleWithoutNamespace();
-		await addToWatchlist('Wikipedia:Articles for deletion/'+title);
-		mw.notify(`Added AFD to watchlist.`);
-	});
-	$('#WatchlistRFA').on('click', async function() {
+		title = getTitleWithoutSubpages( title );
+		await addToWatchlist( 'Wikipedia:Requests for adminship/' + title, true );
+		mw.notify( 'Added RFA to watchlist.' );
+	} );
+	$( '#WatchlistSPI' ).on( 'click', async function () {
 		let title = getTitleWithoutNamespace();
-		title = getTitleWithoutSubpages(title);
-		await addToWatchlist('Wikipedia:Requests for adminship/'+title, true);
-		mw.notify(`Added RFA to watchlist.`);
-	});
-	$('#WatchlistSPI').on('click', async function() {
-		let title = getTitleWithoutNamespace();
-		title = getTitleWithoutSubpages(title);
-		await addToWatchlist('Wikipedia:Sockpuppet investigations/'+title, true);
-		mw.notify(`Added SPI to watchlist.`);
-	});
-	
+		title = getTitleWithoutSubpages( title );
+		await addToWatchlist( 'Wikipedia:Sockpuppet investigations/' + title, true );
+		mw.notify( 'Added SPI to watchlist.' );
+	} );
+
 	// listen for AFC accept
-	$('body').on('DOMNodeInserted', '.accept #afchSubmitForm', function() {
-		$('.accept #afchSubmitForm').on('click', function() {
-			let title = mw.config.get('wgPageName');
-			title = title.replace(/^Draft:/, '');
-			addToWatchlist('Wikipedia:Articles for deletion/'+title);
-		});
-	});
-	
+	$( 'body' ).on( 'DOMNodeInserted', '.accept #afchSubmitForm', function () {
+		$( '.accept #afchSubmitForm' ).on( 'click', function () {
+			let title = mw.config.get( 'wgPageName' );
+			title = title.replace( /^Draft:/, '' );
+			addToWatchlist( 'Wikipedia:Articles for deletion/' + title );
+		} );
+	} );
+
 	// listen for NPP mark as reviewed
-	$('body').on('DOMNodeInserted', '#mwe-pt-mark-as-reviewed-button', function() {
-		$('#mwe-pt-mark-as-reviewed-button').on('click', function() {
-			let title = mw.config.get('wgPageName');
-			addToWatchlist('Wikipedia:Articles for deletion/'+title);
-		});
-	});
-});
+	$( 'body' ).on( 'DOMNodeInserted', '#mwe-pt-mark-as-reviewed-button', function () {
+		$( '#mwe-pt-mark-as-reviewed-button' ).on( 'click', function () {
+			const title = mw.config.get( 'wgPageName' );
+			addToWatchlist( 'Wikipedia:Articles for deletion/' + title );
+		} );
+	} );
+} );
 
 // </nowiki>

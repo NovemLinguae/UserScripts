@@ -4,11 +4,11 @@
 - Adds Watchlist tab and Topic Subscriptions tab to your watchlist and topic subscriptions pages.
 */
 
-$(async function() {
+$( async function () {
 	// could also use mw.config.get('wgCanonicalSpecialPageName')
-	let title = mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
+	const title = mw.config.get( 'wgPageName' ); // includes namespace, underscores instead of spaces
 	if ( title === 'Special:Watchlist' || title === 'Special:TopicSubscriptions' ) {
-		$('#mw-content-text').before(`
+		$( '#mw-content-text' ).before( `
 			<style>
 				.TopicSubscriptionsTab {
 					
@@ -35,8 +35,8 @@ $(async function() {
 					</a>
 				</div>
 			</div>
-		`);
+		` );
 	}
-});
+} );
 
 // </nowiki>
