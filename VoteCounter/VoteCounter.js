@@ -23,5 +23,5 @@ BUGS:
 */
 
 // TODO: write a parser that keeps track of pairs of ''', to fix issue with '''vote''' text '''vote''' sometimes counting the text between them
-
 // TODO: handle CFD big merge lists, e.g. https://en.wikipedia.org/wiki/Wikipedia:Categories_for_discussion/Log/2021_December_10#Category:Cornish_emigrans_and_related_subcats
+// TODO: put a "days/hours left" timer at the top of AFDs. will need to check for relisting messages, and for page creation date

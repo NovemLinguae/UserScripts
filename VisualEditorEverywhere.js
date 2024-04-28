@@ -1,6 +1,7 @@
 // <nowiki>
 
-// TODO: fix the race condition. still present as of 04/19/24. got it when clicking from WT:NPPC to WP:NPPC. not consistently reproducible. use mw.hook( 've.activationComplete' )? list of VE hooks: https://codesearch.wmcloud.org/deployed/?q=mw%5C.hook.*%5C.fire&files=&excludeFiles=&repos=mediawiki%2Fextensions%2FVisualEditor
+// TODO: fix the race condition. still present as of 04/19/24. got it when clicking from WT:NPPC to WP:NPPC. not consistently reproducible. use mw.hook( 've.activationComplete' )? list of VE hooks: https://codesearch.wmcloud.org/deployed/?q=mw%5C.hook.*%5C.fire&files=&excludeFiles=&repos=mediawiki%2Fextensions%2FVisualEditor.
+// 04/25/24. got the race condition when visiting https://en.wikipedia.org/wiki/Wikipedia:New_pages_patrol/Backlog_drives/May_2024#Signing_up
 // TODO: add support for [edit] links in diffs
 
 class VisualEditorEverywhere {
