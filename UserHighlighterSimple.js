@@ -2,7 +2,7 @@
 
 class UserHighlighterSimple {
 	/**
-	 * @param {Object} $ jquery
+	 * @param {jQuery} $ jquery
 	 * @param {Object} mw mediawiki
 	 * @param {Window} window
 	 */
@@ -86,10 +86,7 @@ class UserHighlighterSimple {
 			// ...dataJSON['mediawikiPlusTwo'],
 			// ...dataJSON['global-sysop'],
 		};
-		this.stewards = {
-			...dataJSON.steward,
-			...dataJSON.ombuds
-		};
+		this.stewards = dataJSON.steward;
 		this.arbcom = dataJSON.arbcom;
 		this.bureaucrats = dataJSON.bureaucrat;
 		this.admins = dataJSON.sysop;
