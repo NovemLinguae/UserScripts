@@ -15,6 +15,7 @@
 		- Twinkle PROD log
 		- Twinkle XfD log
 		- Draftify log
+		- Page curation log
 
 	- all namespaces
 		- subpages
@@ -46,6 +47,7 @@ class Links {
 			this._generateRenameLogLinks();
 			this._generateGlobalLockLinks();
 			await this._generateTwinkleLogLinks();
+			this.userLinks += `<li><a href="https://en.wikipedia.org/wiki/Special:Log?type=pagetriage-curation&subtype=review&user=User%3A${ this.usernameURI }">Page curation log</a></li>`;
 		}
 	}
 
