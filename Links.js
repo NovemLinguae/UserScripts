@@ -29,7 +29,7 @@ class Links {
 	async execute() {
 		this._addPendingChangesToLeftMenu();
 		this.pageName = mw.config.get( 'wgPageName' );
-		this._generateLinksForUserSpace();
+		await this._generateLinksForUserSpace();
 		await this._generateLinksForAllNameSpaces();
 		this._insertLinksInLeftMenu();
 	}
@@ -42,10 +42,10 @@ class Links {
 			this.usernameURI = encodeURIComponent( this.username.replace( /_/g, ' ' ).replace( /^User:/, '' ) );
 
 			this._generateUserSpaceJsCssLinks();
-			this._generateCentralAuthLinks();
+			this.userLinks += `<li><a href="/wiki/Special:CentralAuth?target=${ this.usernameURI }">Central auth</a></li>`;
 			this._generateUserRightsLinks();
 			this._generateRenameLogLinks();
-			this._generateGlobalLockLinks();
+			this.userLinks += `<li><a href="https://meta.wikimedia.org/wiki/Special:Log?page=User%3A${ this.usernameURI }%40global">Global lock log</a></li>`;
 			await this._generateTwinkleLogLinks();
 			this.userLinks += `<li><a href="https://en.wikipedia.org/wiki/Special:Log?type=pagetriage-curation&subtype=review&user=User%3A${ this.usernameURI }">Page curation log</a></li>`;
 		}
@@ -181,10 +181,6 @@ class Links {
 		}
 	}
 
-	_generateGlobalLockLinks() {
-		this.userLinks += `<li><a href="https://meta.wikimedia.org/wiki/Special:Log?page=User%3A${ this.usernameURI }%40global">Global lock log</a></li>`;
-	}
-
 	_generateRenameLogLinks() {
 		// All modern renames seem to be put into both en:Special:Log->User rename log AND meta:Special:Log->User rename log.
 		// One older rename was put only into meta:Special:Log->User rename log.
@@ -198,10 +194,6 @@ class Links {
 	_generateUserRightsLinks() {
 		this.userLinks += `<li><a href="/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }">User rights log</a></li>`;
 		this.userLinks += `<li><a href="https://meta.wikimedia.org/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }@enwiki">User rights log (meta)</a></li>`;
-	}
-
-	_generateCentralAuthLinks() {
-		this.userLinks += `<li><a href="/wiki/Special:CentralAuth?target=${ this.usernameURI }">Central auth</a></li>`;
 	}
 
 	/** common.js and similar */
@@ -269,7 +261,8 @@ class Links {
 		response = response.query.pages;
 		const pages = [];
 		for ( const key in response ) {
-			if ( parseInt( key ) !== NaN && parseInt( key ) > 0 ) {
+			// the Number class will convert any non-numbers to zero
+			if ( Number( key ) > 0 ) {
 				pages.push( response[ key ].title );
 			}
 		}
