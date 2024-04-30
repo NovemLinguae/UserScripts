@@ -26,9 +26,13 @@
 */
 
 class Links {
+	constructor( mw ) {
+		this.mw = mw;
+	}
+
 	async execute() {
 		this.addPendingChangesToLeftMenu();
-		this.pageName = mw.config.get( 'wgPageName' );
+		this.pageName = this.mw.config.get( 'wgPageName' );
 		await this.generateLinksForUserSpace();
 		await this.generateLinksForAllNameSpaces();
 		this.insertLinksInLeftMenu();
@@ -52,9 +56,11 @@ class Links {
 	}
 
 	insertLinksInLeftMenu() {
+		// this.mw.util.addPortlet( 'p-links', 'More tools', 'p-tb' );
+
 		const menuTitle = 'More tools';
 		let html = '';
-		const skin = mw.config.get( 'skin' );
+		const skin = this.mw.config.get( 'skin' );
 		switch ( skin ) {
 			case 'minerva':
 				// TODO: insert into the "More" menu, rather than the hamburger
@@ -205,9 +211,9 @@ class Links {
 	}
 
 	addPendingChangesToLeftMenu() {
-		mw.util.addPortletLink(
+		this.mw.util.addPortletLink(
 			'p-navigation',
-			mw.util.getUrl( 'Special:PendingChanges' ),
+			this.mw.util.getUrl( 'Special:PendingChanges' ),
 			'Pending changes' // can't put comma here, silent error
 		);
 	}
@@ -224,7 +230,7 @@ class Links {
 		* @param {Array} titles
 	 */
 	async pagesExist( titles ) {
-		const api = new mw.Api();
+		const api = new this.mw.Api();
 		let response = await api.get( {
 			action: 'query',
 			format: 'json',
@@ -272,7 +278,7 @@ class Links {
 }
 
 $( async function () {
-	await ( new Links() ).execute();
+	await ( new Links( mw ) ).execute();
 } );
 
 // </nowiki>
