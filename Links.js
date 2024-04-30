@@ -27,31 +27,31 @@
 
 class Links {
 	async execute() {
-		this._addPendingChangesToLeftMenu();
+		this.addPendingChangesToLeftMenu();
 		this.pageName = mw.config.get( 'wgPageName' );
-		await this._generateLinksForUserSpace();
-		await this._generateLinksForAllNameSpaces();
-		this._insertLinksInLeftMenu();
+		await this.generateLinksForUserSpace();
+		await this.generateLinksForAllNameSpaces();
+		this.insertLinksInLeftMenu();
 	}
 
-	async _generateLinksForUserSpace() {
-		this.username = this._getFirstMatch( this.pageName, /(?:User:|User_talk:)([^/]+).*/ );
+	async generateLinksForUserSpace() {
+		this.username = this.getFirstMatch( this.pageName, /(?:User:|User_talk:)([^/]+).*/ );
 		this.userLinks = '';
 		if ( this.username ) {
 			this.username = 'User:' + this.username;
 			this.usernameURI = encodeURIComponent( this.username.replace( /_/g, ' ' ).replace( /^User:/, '' ) );
 
-			this._generateUserSpaceJsCssLinks();
+			this.generateUserSpaceJsCssLinks();
 			this.userLinks += `<li><a href="/wiki/Special:CentralAuth?target=${ this.usernameURI }">Central auth</a></li>`;
-			this._generateUserRightsLinks();
-			this._generateRenameLogLinks();
+			this.generateUserRightsLinks();
+			this.generateRenameLogLinks();
 			this.userLinks += `<li><a href="https://meta.wikimedia.org/wiki/Special:Log?page=User%3A${ this.usernameURI }%40global">Global lock log</a></li>`;
-			await this._generateTwinkleLogLinks();
+			await this.generateTwinkleLogLinks();
 			this.userLinks += `<li><a href="https://en.wikipedia.org/wiki/Special:Log?type=pagetriage-curation&subtype=review&user=User%3A${ this.usernameURI }">Page curation log</a></li>`;
 		}
 	}
 
-	_insertLinksInLeftMenu() {
+	insertLinksInLeftMenu() {
 		const menuTitle = 'More tools';
 		let html = '';
 		const skin = mw.config.get( 'skin' );
@@ -157,19 +157,19 @@ class Links {
 		}
 	}
 
-	_generateLinksForAllNameSpaces() {
+	generateLinksForAllNameSpaces() {
 		let parentName = this.pageName + '/';
 		this.allPageLinks = '';
 		if ( this.pageName.includes( '/' ) ) {
-			parentName = this._getFirstMatch( this.pageName, /^([^/]+\/)/ );
+			parentName = this.getFirstMatch( this.pageName, /^([^/]+\/)/ );
 		}
 		this.allPageLinks += `<li><a href="/wiki/Special:PrefixIndex/${ parentName }">Subpages</a></li>`;
 	}
 
-	async _generateTwinkleLogLinks() {
+	async generateTwinkleLogLinks() {
 		// twinkle logs (csd, prod, xfd) and draftify log
 		// check if they exist with an API query before adding links
-		const logPages = await this._pagesExist( [
+		const logPages = await this.pagesExist( [
 			`${ this.username }/CSD log`,
 			`${ this.username }/PROD log`,
 			`${ this.username }/XfD log`,
@@ -181,7 +181,7 @@ class Links {
 		}
 	}
 
-	_generateRenameLogLinks() {
+	generateRenameLogLinks() {
 		// All modern renames seem to be put into both en:Special:Log->User rename log AND meta:Special:Log->User rename log.
 		// One older rename was put only into meta:Special:Log->User rename log.
 		// Another older rename was put only into en:Special:Log->User rename log, and was complicated by the fact that ~enwiki had been added to the end of it.
@@ -191,20 +191,20 @@ class Links {
 		this.userLinks += `<li><a href="https://en.wikipedia.org/wiki/Special:Log?type=renameuser&user=&page=${ this.usernameURI }%7Eenwiki">Rename log 3</a></li>`;
 	}
 
-	_generateUserRightsLinks() {
+	generateUserRightsLinks() {
 		this.userLinks += `<li><a href="/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }">User rights log</a></li>`;
 		this.userLinks += `<li><a href="https://meta.wikimedia.org/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }@enwiki">User rights log (meta)</a></li>`;
 	}
 
 	/** common.js and similar */
-	_generateUserSpaceJsCssLinks() {
+	generateUserSpaceJsCssLinks() {
 		this.userLinks += `<li><a href="/wiki/${ this.username }/common.js">common.js</a></li>`;
 		this.userLinks += `<li><a href="https://meta.wikimedia.org/wiki/${ this.username }/global.js">global.js</a></li>`;
 		this.userLinks += `<li><a href="/wiki/${ this.username }/vector.js">vector.js</a></li>`;
 		this.userLinks += `<li><a href="/wiki/${ this.username }/common.css">common.css</a></li>`;
 	}
 
-	_addPendingChangesToLeftMenu() {
+	addPendingChangesToLeftMenu() {
 		mw.util.addPortletLink(
 			'p-navigation',
 			mw.util.getUrl( 'Special:PendingChanges' ),
@@ -212,7 +212,7 @@ class Links {
 		);
 	}
 
-	_getFirstMatch( string, regex ) {
+	getFirstMatch( string, regex ) {
 		const matches = string.match( regex );
 		if ( matches && matches[ 1 ] ) {
 			return matches[ 1 ];
@@ -223,7 +223,7 @@ class Links {
 	/**
 		* @param {Array} titles
 	 */
-	async _pagesExist( titles ) {
+	async pagesExist( titles ) {
 		const api = new mw.Api();
 		let response = await api.get( {
 			action: 'query',
