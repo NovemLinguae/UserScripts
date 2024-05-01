@@ -52,7 +52,7 @@ class Links {
 
 	createBottomLeftMenuContainer() {
 		// Works as expected in vector, modern, monobook, timeless. Is in right menu instead of left menu in vector-2022. Doesn't show up at all in minerva.
-		// Fixing those last two cases is more complicated than just doing const portlet = mw.addPortlet() then $( '#target' ).before( portlet ). Based on my testing, the mw.addPortlet() code adds some styling to it. If you just use jQuery, you lose that styling and it looks ugly.
+		// Could fix in those skins by adding it before an existing nearby portlet, then using the p.parentNode.appendChild( p ); trick.
 		this.mw.util.addPortlet( 'p-links', 'More tools', '#p-coll-print_export' );
 	}
 
