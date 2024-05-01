@@ -22,7 +22,16 @@
 
 	This script also adds "Pending changes" to the left main menu.
 
-	| skins = minerva, modern, monobook, timeless, vector, vector-2022
+	Skin support
+		- left menu
+			- vector
+			- modern
+			- monobook
+			- timeless
+		- right menu (tools menu)
+			- vector-2022
+		- not displayed at all
+			- minerva
 */
 
 class Links {
@@ -33,12 +42,18 @@ class Links {
 	async execute() {
 		this.mw.util.addPortletLink( 'p-navigation', this.mw.util.getUrl( 'Special:PendingChanges' ), 'Pending changes' );
 		this.pageName = this.mw.config.get( 'wgPageName' );
-		this.mw.util.addPortlet( 'p-links', 'More tools', '#p-coll-print_export' );
+		this.createBottomLeftMenuContainer();
 		this.username = this.getFirstMatch( this.pageName, /(?:User:|User_talk:)([^/]+).*/ );
 		if ( this.username ) {
 			await this.generateUserspaceLinks();
 		}
 		await this.generateSubpageLink();
+	}
+
+	createBottomLeftMenuContainer() {
+		// Works as expected in vector, modern, monobook, timeless. Is in right menu instead of left menu in vector-2022. Doesn't show up at all in minerva.
+		// Fixing those last two cases is more complicated than just doing const portlet = mw.addPortlet() then $( '#target' ).before( portlet ). Based on my testing, the mw.addPortlet() code adds some styling to it. If you just use jQuery, you lose that styling and it looks ugly.
+		this.mw.util.addPortlet( 'p-links', 'More tools', '#p-coll-print_export' );
 	}
 
 	async generateUserspaceLinks() {
