@@ -9,7 +9,9 @@
 */
 
 $( async function () {
-	await ( new VoteCounterController() ).execute();
+	await mw.loader.using( [ 'mediawiki.api' ], async function () {
+		await ( new VoteCounterController() ).execute();
+	} );
 } );
 
 /*
