@@ -4,6 +4,16 @@ var markblocked_contributions = 'Special:Contributions';
 mw.loader.load('//en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markblocked.js&bcache=1&maxage=259200&action=raw&ctype=text/javascript');
 
 This gadget will pull the user accounts and IPs from the history page and will strike out the users that are currently blocked.
+
+Configuration variables:
+- window.markblocked_contributions - Let wikis that are importing this gadget specify the local alias of Special:Contributions
+- window.mbIndefStyle - custom CSS to override default CSS for indefinite blocks
+- window.mbNoAutoStart - if set to true, doesn't mark blocked until you click "XX" in the "More" menu
+- window.mbPartialStyle - custom CSS to override default CSS for partial blocks
+- window.mbTempStyle - custom CSS to override default CSS for short duration blocks
+- window.mbTipBox - if set to true, loads a yellow box with a pound sign next to blocked usernames. upon hovering over it, displays a tooltip.
+- window.mbTipBoxStyle - custom CSS to override default CSS for the tip box (see above)
+- window.mbTooltip - custom pattern to use for tooltips. default is '; blocked ($1) by $2: $3 ($4 ago)'
 */
 function markBlocked( container ) {
 	const ipv6Regex = /^((?=.*::)(?!.*::.+::)(::)?([\dA-F]{1,4}:(:|\b)|){5}|([\dA-F]{1,4}:){6})((([\dA-F]{1,4}((?!\3)::|:\b|$))|(?!\2\3)){2}|(((2[0-4]|1\d|[1-9])?\d|25[0-5])\.?\b){4})$/i;
@@ -11,7 +21,7 @@ function markBlocked( container ) {
 	// Collect all the links in the page's content
 	const contentLinks = $( container ).find( 'a' );
 
-	const tooltipPreference = window.mbTooltip || '; blocked ($1) by $2: $3 ($4 ago)';
+	const tooltipStringPattern = window.mbTooltip || '; blocked ($1) by $2: $3 ($4 ago)';
 
 	// Get all aliases for user: & user_talk:
 	const userNS = [];
@@ -122,7 +132,7 @@ function markBlocked( container ) {
 				htmlClass = partial ? 'user-blocked-partial' : 'user-blocked-temp';
 				blockTime = inHours( parseTimestamp( block.expiry ) - parseTimestamp( block.timestamp ) );
 			}
-			tooltipString = tooltipPreference;
+			tooltipString = tooltipStringPattern;
 			if ( partial ) {
 				tooltipString = tooltipString.replace( 'blocked', 'partially blocked' );
 			}
@@ -146,33 +156,30 @@ function markBlocked( container ) {
 			container.removeClass( 'markblocked-loading' );
 			$( '#ca-showblocks' ).parent().remove(); // remove added portlet link
 		}
-
 	}
 
-	// --------AUX functions
-
-	// 20081226220605  or  2008-01-26T06:34:19Z   -> date
-	function parseTimestamp( ts ) {
-		const m = ts.replace( /\D/g, '' ).match( /(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/ );
-		return new Date( Date.UTC( m[ 1 ], m[ 2 ] - 1, m[ 3 ], m[ 4 ], m[ 5 ], m[ 6 ] ) );
+	// 20081226220605  or  2008-01-26T06:34:19Z -> date
+	function parseTimestamp( timestamp ) {
+		const matches = timestamp.replace( /\D/g, '' ).match( /(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/ );
+		return new Date( Date.UTC( matches[ 1 ], matches[ 2 ] - 1, matches[ 3 ], matches[ 4 ], matches[ 5 ], matches[ 6 ] ) );
 	}
 
-	function inHours( ms ) { // milliseconds -> "2:30" or 5,06d or 21d
-		let mm = Math.floor( ms / 60000 );
-		if ( !mm ) {
-			return Math.floor( ms / 1000 ) + 's';
+	function inHours( milliseconds ) { // milliseconds -> "2:30" or 5,06d or 21d
+		let minutes = Math.floor( milliseconds / 60000 );
+		if ( !minutes ) {
+			return Math.floor( milliseconds / 1000 ) + 's';
 		}
-		let hh = Math.floor( mm / 60 );
-		mm = mm % 60;
-		const dd = Math.floor( hh / 24 );
-		hh = hh % 24;
-		if ( dd ) {
-			return dd + ( dd < 10 ? '.' + zz( hh ) : '' ) + 'd';
+		let hours = Math.floor( minutes / 60 );
+		minutes = minutes % 60;
+		const days = Math.floor( hours / 24 );
+		hours = hours % 24;
+		if ( days ) {
+			return days + ( days < 10 ? '.' + addLeadingZeroIfNeeded( hours ) : '' ) + 'd';
 		}
-		return hh + ':' + zz( mm );
+		return hours + ':' + addLeadingZeroIfNeeded( minutes );
 	}
 
-	function zz( v ) { // 6 -> '06'
+	function addLeadingZeroIfNeeded( v ) { // 6 -> '06'
 		if ( v <= 9 ) {
 			v = '0' + v;
 		}
@@ -198,7 +205,7 @@ switch ( mw.config.get( 'wgAction' ) ) {
 			maybeAutostart.resolve();
 		}
 
-		$.when( $.ready, mw.loader.using( 'mediawiki.util' ), maybeAutostart ).then( function () {
+		$.when( $.ready, mw.loader.using( [ 'mediawiki.util', 'mediawiki.api' ] ), maybeAutostart ).then( function () {
 			let firstTime = true;
 
 			mw.hook( 'wikipage.content' ).add( function ( container ) {
