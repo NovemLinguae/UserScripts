@@ -144,7 +144,9 @@ class Links {
 }
 
 $( async function () {
-	await ( new Links( mw ) ).execute();
+	await mw.loader.using( [ 'mediawiki.api' ], async function () {
+		await ( new Links( mw ) ).execute();
+	} );
 } );
 
 // </nowiki>
