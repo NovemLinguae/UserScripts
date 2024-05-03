@@ -51,7 +51,7 @@ class ANRFC {
 		this.$ = $;
 	}
 
-	execute() {
+	async execute() {
 		const isNotViewing = this.mw.config.get( 'wgAction' ) !== 'view';
 		if ( isNotViewing ) {
 			return;
@@ -424,9 +424,9 @@ class ANRFC {
 	}
 }
 
-$( function () {
-	mw.loader.using( [ 'oojs-ui-widgets', 'oojs-ui-windows', 'mediawiki.util', 'mediawiki.api' ], function () {
-		( new ANRFC( document, mw, $ ) ).execute();
+$( async function () {
+	await mw.loader.using( [ 'oojs-ui-widgets', 'oojs-ui-windows', 'mediawiki.util', 'mediawiki.api' ], async function () {
+		await ( new ANRFC( document, mw, $ ) ).execute();
 	} );
 } );
 
