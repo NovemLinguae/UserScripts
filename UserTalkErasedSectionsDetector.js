@@ -91,7 +91,7 @@ class ErasedSectionsDetector {
 
 	filterOutReasonableEditSummaries() {
 		const keywordsToIgnore = [
-			'arch', // arch, archive, archiving, OneClickArchiver
+			'arc', // arc, arch, archive, archiving, OneClickArchiver
 			'bot mes', // mesg, message
 			'mass mes',
 			'newsletter'
