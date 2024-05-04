@@ -611,11 +611,11 @@ $(function () {
 		var lines = d.split('\n');
 		for (var i = 0; i < lines.length; ++i) {
 			lines[i] = lines[i]
-				.replace(RegExp('[[]{2}([^|\\]]*?[|])?(.*?)[\\]]{2}', 'g'), '$2')
+				.replace(/[[]{2}([^|\]]*?[|])?(.*?)[\]]{2}/g, '$2')
 				.replace(/'''([^'])/g, '$1')
-				.replace(RegExp("''([^'])", 'g'), '$1');
+				.replace(/''([^'])/g, '$1');
 			if (lines[i].match(anchRe)) {
-				return d.split('\n').slice(i).join('\n').replace(RegExp('^[^=]*'), '');
+				return d.split('\n').slice(i).join('\n').replace(/^[^=]*/, '');
 			}
 		}
 		return d;
@@ -984,7 +984,7 @@ $(function () {
 	copyStructure('fancy', 'fancy2');
 	pg.structures.fancy2.popupTopLinks = function (x) {
 		// hack out the <br> at the end and put one at the beginning
-		return '<br>' + pg.structures.fancy.popupTopLinks(x).replace(RegExp('<br>$', 'i'), '');
+		return '<br>' + pg.structures.fancy.popupTopLinks(x).replace(/<br>$/i, '');
 	};
 	pg.structures.fancy2.popupLayout = function () {
 		// move toplinks to after the title
@@ -2512,7 +2512,7 @@ $(function () {
 		var now = new Date();
 		var age = now - lastmod;
 		if (lastmod && getValueOf('popupLastModified')) {
-			return tprintf('%s old', [formatAge(age)]).replace(RegExp(' ', 'g'), '&nbsp;');
+			return tprintf('%s old', [formatAge(age)]).replace(/ /g, '&nbsp;');
 		}
 		return '';
 	}
@@ -3657,12 +3657,12 @@ $(function () {
 	function listLinks(wikitext, oldTarget, titleToEdit) {
 		// mediawiki strips trailing spaces, so we do the same
 		// testcase: https://en.wikipedia.org/w/index.php?title=Radial&oldid=97365633
-		var reg = RegExp('\\[\\[([^|]*?) *(\\||\\]\\])', 'gi');
+		var reg = /\[\[([^|]*?) *(\||\]\])/gi;
 		var ret = [];
 		var splitted = wikitext.parenSplit(reg);
 		// ^[a-z]+ should match interwiki links, hopefully (case-insensitive)
 		// and ^[a-z]* should match those and [[:Category...]] style links too
-		var omitRegex = RegExp('^[a-z]*:|^[Ss]pecial:|^[Ii]mage|^[Cc]ategory');
+		var omitRegex = /^[a-z]*:|^[Ss]pecial:|^[Ii]mage|^[Cc]ategory/;
 		var friendlyCurrentArticleName = oldTarget.toString();
 		var wikPos = getValueOf('popupDabWiktionary');
 
@@ -3681,7 +3681,7 @@ $(function () {
 		if (wikPos) {
 			var wikTarget =
 				'wiktionary:' +
-				friendlyCurrentArticleName.replace(RegExp('^(.+)\\s+[(][^)]+[)]\\s*$'), '$1');
+				friendlyCurrentArticleName.replace(/^(.+)\s+[(][^)]+[)]\s*$/, '$1');
 
 			var meth;
 			if (wikPos.toLowerCase() == 'first') {
@@ -3927,7 +3927,7 @@ $(function () {
 			if (typeof list[i] == typeof '') {
 				ret += emptySpanHTML(list[i], navpop.idNumber, 'div');
 			} else if (typeof list[i] == typeof [] && list[i].length > 0) {
-				ret = ret.parenSplit(RegExp('(</[^>]*?>$)')).join(makeEmptySpans(list[i], navpop));
+				ret = ret.parenSplit(/(<\/[^>]*?>$)/).join(makeEmptySpans(list[i], navpop));
 			} else if (typeof list[i] == typeof {} && list[i].nodeType) {
 				ret += emptySpanHTML(list[i].name, navpop.idNumber, list[i].nodeType);
 			}
@@ -4128,7 +4128,7 @@ $(function () {
 	Previewmaker.prototype.killComments = function () {
 		// this also kills one trailing newline, eg [[diamyo]]
 		this.data = this.data.replace(
-			RegExp('^<!--[^$]*?-->\\n|\\n<!--[^$]*?-->(?=\\n)|<!--[^$]*?-->', 'g'),
+			/^<!--[^$]*?-->\n|\n<!--[^$]*?-->(?=\n)|<!--[^$]*?-->/g,
 			''
 		);
 	};
@@ -4138,14 +4138,14 @@ $(function () {
 	 */
 	Previewmaker.prototype.killDivs = function () {
 		// say goodbye, divs (can be nested, so use * not *?)
-		this.data = this.data.replace(RegExp('< *div[^>]* *>[\\s\\S]*?< */ *div *>', 'gi'), '');
+		this.data = this.data.replace(/< *div[^>]* *>[\s\S]*?< *\/ *div *>/gi, '');
 	};
 
 	/**
 	 * @private
 	 */
 	Previewmaker.prototype.killGalleries = function () {
-		this.data = this.data.replace(RegExp('< *gallery[^>]* *>[\\s\\S]*?< */ *gallery *>', 'gi'), '');
+		this.data = this.data.replace(/< *gallery[^>]* *>[\s\S]*?< *\/ *gallery *>/gi, '');
 	};
 
 	/**
@@ -4243,11 +4243,11 @@ $(function () {
 	Previewmaker.prototype.killBoxTemplates = function () {
 		// taxobox removal... in fact, there's a saudiprincebox_begin, so let's be more general
 		// also, have float_begin, ... float_end
-		this.kill(RegExp('[{][{][^{}\\s|]*?(float|box)[_ ](begin|start)', 'i'), /[}][}]\s*/, '{{');
+		this.kill(/[{][{][^{}\s|]*?(float|box)[_ ](begin|start)/i, /[}][}]\s*/, '{{');
 
 		// infoboxes etc
 		// from [[User:Zyxw/popups.js]]: kill frames too
-		this.kill(RegExp('[{][{][^{}\\s|]*?(infobox|elementbox|frame)[_ ]', 'i'), /[}][}]\s*/, '{{');
+		this.kill(/[{][{][^{}\s|]*?(infobox|elementbox|frame)[_ ]/i, /[}][}]\s*/, '{{');
 	};
 
 	/**
@@ -4267,7 +4267,7 @@ $(function () {
 		this.kill('{|', /[|]}\s*/, '{|');
 		this.kill(/<table.*?>/i, /<\/table.*?>/i, /<table.*?>/i);
 		// remove lines starting with a pipe for the hell of it (?)
-		this.data = this.data.replace(RegExp('^[|].*$', 'mg'), '');
+		this.data = this.data.replace(/^[|].*$/mg, '');
 	};
 
 	/**
@@ -4299,7 +4299,7 @@ $(function () {
 		this.kill(/<ref\b[^/>]*?>/i, /<\/ref>/i);
 
 		// let's also delete entire lines starting with <. it's worth a try.
-		this.data = this.data.replace(RegExp('(^|\\n) *<.*', 'g'), '\n');
+		this.data = this.data.replace(/(^|\n) *<.*/g, '\n');
 
 		// and those pesky html tags, but not <nowiki> or <blockquote>
 		var splitted = this.data.parenSplit(/(<[\w\W]*?(?:>|$|(?=<)))/);
@@ -4324,10 +4324,7 @@ $(function () {
 	Previewmaker.prototype.killChunks = function () {
 		// heuristics alert
 		// chunks of italic text? you crazy, man?
-		var italicChunkRegex = new RegExp(
-			"((^|\\n)\\s*:*\\s*''[^']([^']|'''|'[^']){20}(.|\\n[^\\n])*''[.!?\\s]*\\n)+",
-			'g'
-		);
+		var italicChunkRegex = /((^|\n)\s*:*\s*''[^']([^']|'''|'[^']){20}(.|\n[^\n])*''[.!?\s]*\n)+/g;
 		// keep stuff separated, though, so stick in \n (fixes [[Union Jack]]?
 		this.data = this.data.replace(italicChunkRegex, '\n');
 	};
@@ -4337,14 +4334,14 @@ $(function () {
 	 */
 	Previewmaker.prototype.mopup = function () {
 		// we simply *can't* be doing with horizontal rules right now
-		this.data = this.data.replace(RegExp('^-{4,}', 'mg'), '');
+		this.data = this.data.replace(/^-{4,}/mg, '');
 
 		// no indented lines
-		this.data = this.data.replace(RegExp('(^|\\n) *:[^\\n]*', 'g'), '');
+		this.data = this.data.replace(/(^|\n) *:[^\n]*/g, '');
 
 		// replace __TOC__, __NOTOC__ and whatever else there is
 		// this'll probably do
-		this.data = this.data.replace(RegExp('^__[A-Z_]*__ *$', 'gmi'), '');
+		this.data = this.data.replace(/^__[A-Z_]*__ *$/gmi, '');
 	};
 
 	/**
@@ -4356,12 +4353,12 @@ $(function () {
 		var d = this.data;
 
 		if (getValueOf('popupPreviewCutHeadings')) {
-			this.data = this.data.replace(RegExp('\\s*(==+[^=]*==+)\\s*', 'g'), '\n\n$1 ');
+			this.data = this.data.replace(/\s*(==+[^=]*==+)\s*/g, '\n\n$1 ');
 			/// then we want to get rid of paragraph breaks whose text ends badly
-			this.data = this.data.replace(RegExp('([:;]) *\\n{2,}', 'g'), '$1\n');
+			this.data = this.data.replace(/([:;]) *\n{2,}/g, '$1\n');
 
-			this.data = this.data.replace(RegExp('^[\\s\\n]*'), '');
-			var stuff = RegExp('^([^\\n]|\\n[^\\n\\s])*').exec(this.data);
+			this.data = this.data.replace(/^[\s\n]*/, '');
+			var stuff = /^([^\n]|\n[^\n\s])*/.exec(this.data);
 			if (stuff) {
 				d = stuff[0];
 			}
@@ -4370,19 +4367,16 @@ $(function () {
 			}
 
 			/// now put \n\n after sections so that bullets and numbered lists work
-			d = d.replace(RegExp('(==+[^=]*==+)\\s*', 'g'), '$1\n\n');
+			d = d.replace(/(==+[^=]*==+)\s*/g, '$1\n\n');
 		}
 
 		// Split sentences. Superfluous sentences are RIGHT OUT.
 		// note: exactly 1 set of parens here needed to make the slice work
 		d = d.parenSplit(RegExp('([!?.]+["' + "'" + ']*\\s)', 'g'));
 		// leading space is bad, mmkay?
-		d[0] = d[0].replace(RegExp('^\\s*'), '');
+		d[0] = d[0].replace(/^\s*/, '');
 
-		var notSentenceEnds = RegExp(
-			'([^.][a-z][.] *[a-z]|etc|sic|Dr|Mr|Mrs|Ms|St|no|op|cit|\\[[^\\]]*|\\s[A-Zvclm])$',
-			'i'
-		);
+		var notSentenceEnds = /([^.][a-z][.] *[a-z]|etc|sic|Dr|Mr|Mrs|Ms|St|no|op|cit|\[[^\]]*|\s[A-Zvclm])$/i;
 		d = this.fixSentenceEnds(d, notSentenceEnds);
 
 		this.fullLength = d.join('').length;
@@ -4437,7 +4431,7 @@ $(function () {
 	 */
 	Previewmaker.prototype.killBadWhitespace = function () {
 		// also cleans up isolated '''', eg [[Suntory Sungoliath]]
-		this.data = this.data.replace(RegExp("^ *'+ *$", 'gm'), '');
+		this.data = this.data.replace(/^ *'+ *$/gm, '');
 	};
 
 	/**
@@ -4668,7 +4662,7 @@ $(function () {
 		if (typeof this.html != typeof '') {
 			return;
 		}
-		if (RegExp('^\\s*$').test(this.html)) {
+		if (/^\s*$/.test(this.html)) {
 			return;
 		}
 		setPopupHTML('<hr />', 'popupPrePreviewSep', this.owner.idNumber);
@@ -4702,11 +4696,11 @@ $(function () {
 	Previewmaker.prototype.stripLongTemplates = function () {
 		// operates on the HTML!
 		this.html = this.html.replace(
-			RegExp('^.{0,1000}[{][{][^}]*?(<(p|br)( /)?>\\s*){2,}([^{}]*?[}][}])?', 'gi'),
+			/^.{0,1000}[{][{][^}]*?(<(p|br)( \/)?>\s*){2,}([^{}]*?[}][}])?/gi,
 			''
 		);
 		this.html = this.html.split('\n').join(' '); // workaround for <pre> templates
-		this.html = this.html.replace(RegExp('[{][{][^}]*<pre>[^}]*[}][}]', 'gi'), '');
+		this.html = this.html.replace(/[{][{][^}]*<pre>[^}]*[}][}]/gi, '');
 	};
 
 	/**
@@ -4714,7 +4708,7 @@ $(function () {
 	 */
 	Previewmaker.prototype.killMultilineTemplates = function () {
 		this.kill('{{{', '}}}');
-		this.kill(RegExp('\\s*[{][{][^{}]*\\n'), '}}', '{{');
+		this.kill(/\s*[{][{][^{}]*\n/, '}}', '{{');
 	};
 	// ENDFILE: previewmaker.js
 
@@ -5653,9 +5647,9 @@ $(function () {
 		// strip html comments, used by evil bots :-(
 		var t = removeMatchesUnless(
 			wikiText,
-			RegExp('(<!--[\\s\\S]*?-->)'),
+			/(<!--[\s\S]*?-->)/,
 			1,
-			RegExp('^<!--[^[]*popup', 'i')
+			/^<!--[^[]*popup/i
 		);
 
 		while ((match = pg.re.image.exec(t))) {
@@ -5758,7 +5752,7 @@ $(function () {
 			pg.re.interwiki = RegExp('^' + pg.wiki.interwiki + ':');
 		} else {
 			pg.wiki.interwiki = null;
-			pg.re.interwiki = RegExp('^$');
+			pg.re.interwiki = /^$/;
 		}
 	}
 
@@ -6636,7 +6630,7 @@ $(function () {
 	}
 
 	function shortenDiffString(str, context) {
-		var re = RegExp('(<del[\\s\\S]*?</del>|<ins[\\s\\S]*?</ins>)');
+		var re = /(<del[\s\S]*?<\/del>|<ins[\s\S]*?<\/ins>)/;
 		var splitted = str.parenSplit(re);
 		var ret = [''];
 		for (var i = 0; i < splitted.length; i += 2) {
@@ -6662,7 +6656,7 @@ $(function () {
 	}
 
 	function diffString(o, n, simpleSplit) {
-		var splitRe = RegExp('([[]{2}|[\\]]{2}|[{]{2,3}|[}]{2,3}|[|]|=|<|>|[*:]+|\\s|\\b)');
+		var splitRe = /([[]{2}|[\]]{2}|[{]{2,3}|[}]{2,3}|[|]|=|<|>|[*:]+|\s|\b)/;
 
 		//  We need to split the strings o and n first, and entify() the parts
 		//  individually, so that the HTML entities are never cut apart. (AxelBoldt)
@@ -6821,11 +6815,9 @@ $(function () {
 		} else {
 			pg.wiki.hostname = location.hostname; // use in preference to location.hostname for flexibility (?)
 		}
-		pg.wiki.wikimedia = RegExp(
-			'(wiki([pm]edia|source|books|news|quote|versity|species|voyage|data)|metawiki|wiktionary|mediawiki)[.]org'
-		).test(pg.wiki.hostname);
-		pg.wiki.wikia = RegExp('[.]wikia[.]com$', 'i').test(pg.wiki.hostname);
-		pg.wiki.isLocal = RegExp('^localhost').test(pg.wiki.hostname);
+		pg.wiki.wikimedia = /(wiki([pm]edia|source|books|news|quote|versity|species|voyage|data)|metawiki|wiktionary|mediawiki)[.]org/.test(pg.wiki.hostname);
+		pg.wiki.wikia = /[.]wikia[.]com$/i.test(pg.wiki.hostname);
+		pg.wiki.isLocal = /^localhost/.test(pg.wiki.hostname);
 		pg.wiki.commons =
 			pg.wiki.wikimedia && pg.wiki.hostname != 'commons.wikimedia.org' ?
 				'commons.wikimedia.org' :
@@ -7009,8 +7001,8 @@ $(function () {
 		pg.re.disambig = RegExp(getValueOf('popupDabRegexp'), 'im');
 
 		// FIXME replace with general parameter parsing function, this is daft
-		pg.re.oldid = RegExp('[?&]oldid=([^&]*)');
-		pg.re.diff = RegExp('[?&]diff=([^&]*)');
+		pg.re.oldid = /[?&]oldid=([^&]*)/;
+		pg.re.diff = /[?&]diff=([^&]*)/;
 	}
 
 	//////////////////////////////////////////////////
@@ -7262,7 +7254,7 @@ $(function () {
 
 	function navlinkStringToArray(s, article, params) {
 		s = expandConditionalNavlinkString(s, article, params);
-		var splitted = s.parenSplit(RegExp('<<(.*?)>>'));
+		var splitted = s.parenSplit(/<<(.*?)>>/);
 		var ret = [];
 		for (var i = 0; i < splitted.length; ++i) {
 			if (i % 2) {
@@ -7794,7 +7786,7 @@ $(function () {
 		if (key == ' ') {
 			key = popupString('spacebar');
 		}
-		return ret.replace(RegExp('^(.*?)(title=")(.*?)(".*)$', 'i'), '$1$2$3 [' + key + ']$4');
+		return ret.replace(/^(.*?)(title=")(.*?)(".*)$/i, '$1$2$3 [' + key + ']$4');
 	}
 	// ENDFILE: shortcutkeys.js
 
@@ -8599,7 +8591,7 @@ $(function () {
 	}
 
 	function appendParamsToLink(linkstr, params) {
-		var sp = linkstr.parenSplit(RegExp('(href="[^"]+?)"', 'i'));
+		var sp = linkstr.parenSplit(/(href="[^"]+?)"/i);
 		if (sp.length < 2) {
 			return null;
 		}
@@ -8626,7 +8618,7 @@ $(function () {
 		chs = '[' + chs + chs.toLowerCase() + ']';
 		var currentArticleRegexBit = chs + cA.substring(1);
 		currentArticleRegexBit = currentArticleRegexBit
-			.split(RegExp('(?:[_ ]+|%20)', 'g'))
+			.split(/(?:[_ ]+|%20)/g)
 			.join('(?:[_ ]+|%20)')
 			.split('\\(')
 			.join('(?:%28|\\()')
