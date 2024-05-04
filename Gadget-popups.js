@@ -8557,7 +8557,7 @@ $(function () {
 	 * @param {Object} link
 	 * @param {string} link.url URL
 	 * @param {string} link.text The text to show for a link
-	 * @param {string} link.title Title of the link, this shows up 
+	 * @param {string} link.title Title of the link, this shows up
 	 * when you hover over the link
 	 * @param {boolean} link.newWin Should open in a new Window
 	 * @param {number} link.noPopup Should nest new popups from link (0 or 1)
