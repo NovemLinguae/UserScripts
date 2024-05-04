@@ -1463,7 +1463,7 @@ $(function () {
 	 * Creates a new Downloader
 	 * @constructor
 	 * @class The Downloader class. Create a new instance of this class to download stuff.
-	 * @param {String} url The url to download. This can be omitted and supplied later.
+	 * @param {string} url The url to download. This can be omitted and supplied later.
 	 */
 	function Downloader(url) {
 		if (typeof XMLHttpRequest != 'undefined') {
@@ -1623,7 +1623,7 @@ $(function () {
 
 	/**
 	 * Creates a new {@link Downloader} and prepares it for action.
-	 * @param {String} url The url to download
+	 * @param {string} url The url to download
 	 * @param {number} id The ID of the {@link Downloader} object
 	 * @param {Function} callback The callback function invoked on success
 	 * @return {String/Downloader} the {@link Downloader} object created, or 'ohdear' if an unsupported browser
@@ -1665,7 +1665,7 @@ $(function () {
 	/**
 	 * Simulates a download from cached data.
 	 * The supplied data is put into a {@link Downloader} as if it had downloaded it.
-	 * @param {String} url The url.
+	 * @param {string} url The url.
 	 * @param {number} id The ID.
 	 * @param {Function} callback The callback, which is invoked immediately as <code>callback(d)</code>,
 	 * where <code>d</code> is the new {@link Downloader}.
@@ -1683,7 +1683,7 @@ $(function () {
 
 	/**
 	 * Starts a download.
-	 * @param {String} url The url to download
+	 * @param {string} url The url to download
 	 * @param {number} id The ID of the {@link Downloader} object
 	 * @param {Function} callback The callback function invoked on success
 	 * @return {String/Downloader} the {@link Downloader} object created, or 'ohdear' if an unsupported browser
@@ -2673,7 +2673,7 @@ $(function () {
 	function Stringwrapper() {
 		/**
 		 * Wrapper for this.toString().indexOf()
-		 * @param {String} x
+		 * @param {string} x
 		 * @type {number}
 		 */
 		this.indexOf = function (x) {
@@ -2696,7 +2696,7 @@ $(function () {
 		};
 		/**
 		 * Wrapper for this.toString().substring()
-		 * @param {String} x
+		 * @param {string} x
 		 * @param {String} y (optional)
 		 * @type {string}
 		 */
@@ -2708,7 +2708,7 @@ $(function () {
 		};
 		/**
 		 * Wrapper for this.toString().split()
-		 * @param {String} x
+		 * @param {string} x
 		 * @type {Array}
 		 */
 		this.split = function (x) {
@@ -2716,7 +2716,7 @@ $(function () {
 		};
 		/**
 		 * Wrapper for this.toString().replace()
-		 * @param {String} x
+		 * @param {string} x
 		 * @param {String} y
 		 * @type {string}
 		 */
@@ -2734,7 +2734,7 @@ $(function () {
 	 * of the article URL after a # character, representing locations
 	 * within an article.
 	 *
-	 * @param {String} value The initial value to assign to the
+	 * @param {string} value The initial value to assign to the
 	 * article. This must be the canonical title (see {@link
 	 * Title#value}. Omit this in the constructor and use another function
 	 * to set the title if this is unavailable.
@@ -4100,7 +4100,7 @@ $(function () {
 	 * Creates a new Previewmaker
 	 * @constructor
 	 * @class The Previewmaker class. Use an instance of this to generate short previews from Wikitext.
-	 * @param {String} wikiText The Wikitext source of the page we wish to preview.
+	 * @param {string} wikiText The Wikitext source of the page we wish to preview.
 	 * @param {String} baseUrl The url we should prepend when creating relative urls.
 	 * @param {Navpopup} owner The navpop associated to this preview generator
 	 */
@@ -6366,7 +6366,7 @@ $(function () {
 	/**
 	 * Runs hooks added with {@link #addHook}.
 	 * @private
-	 * @param {String} key Key name of the {@link #hooks} array - one of 'create', 'unhide', 'hide'
+	 * @param {string} key Key name of the {@link #hooks} array - one of 'create', 'unhide', 'hide'
 	 * @param {String} when Controls exactly when the hook is run: either 'before' or 'after'
 	 */
 	Navpopup.prototype.runHooks = function (key, when) {
@@ -6392,7 +6392,7 @@ $(function () {
 	 * Adds a hook to the popup. Hook functions are run with <code>this</code> set to refer to the
 	 * Navpopup instance, and no arguments.
 	 * @param {Function} hook The hook function. Functions that return true are deleted.
-	 * @param {String} key Key name of the {@link #hooks} array - one of 'create', 'unhide', 'hide'
+	 * @param {string} key Key name of the {@link #hooks} array - one of 'create', 'unhide', 'hide'
 	 * @param {String} when Controls exactly when the hook is run: either 'before' or 'after'
 	 * @param {String} uid A truthy string identifying the hook function; if it matches another hook
 	 * in this position, it won't be added again.
@@ -6522,7 +6522,7 @@ $(function () {
 
 	/**
 	 * Sets the <code>innerHTML</code> attribute of the main div containing the popup content.
-	 * @param {String} html The HTML to set.
+	 * @param {string} html The HTML to set.
 	 */
 	Navpopup.prototype.setInnerHTML = function (html) {
 		this.mainDiv.innerHTML = html;
@@ -7805,7 +7805,7 @@ $(function () {
 	 * lets jump through hoops to find the rev ids we need to retrieve
 	 *
 	 * @param {Title} article
-	 * @param {String} oldid
+	 * @param {string} oldid
 	 * @param {String} diff
 	 * @param {Navpopup} navpop
 	 */
@@ -8554,7 +8554,7 @@ $(function () {
 
 	/**
 	 * Builds a link from a object representing a link
-	 * @param {object} link
+	 * @param {Object} link
 	 * @param {string} link.url URL
 	 * @param {string} link.text The text to show for a link
 	 * @param {string} link.title Title of the link, this shows up 
