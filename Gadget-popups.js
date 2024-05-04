@@ -4275,7 +4275,7 @@ $(function () {
 	 */
 	Previewmaker.prototype.killImages = function () {
 		var forbiddenNamespaceAliases = [];
-		jQuery.each(mw.config.get('wgNamespaceIds'), function (_localizedNamespaceLc, _namespaceId) {
+		$.each(mw.config.get('wgNamespaceIds'), function (_localizedNamespaceLc, _namespaceId) {
 			if (_namespaceId != pg.nsImageId && _namespaceId != pg.nsCategoryId) {
 				return;
 			}
@@ -5759,7 +5759,7 @@ $(function () {
 	// return a regexp pattern matching all variants to write the given namespace
 	function nsRe(namespaceId) {
 		var imageNamespaceVariants = [];
-		jQuery.each(mw.config.get('wgNamespaceIds'), function (_localizedNamespaceLc, _namespaceId) {
+		$.each(mw.config.get('wgNamespaceIds'), function (_localizedNamespaceLc, _namespaceId) {
 			if (_namespaceId != namespaceId) {
 				return;
 			}
