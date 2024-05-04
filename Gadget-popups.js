@@ -5496,7 +5496,7 @@ $(function () {
 			var ret = editPreviewTable(article, edits, reallyContribs);
 			return ret;
 		} catch (someError) {
-			return 'History preview failed :-(';
+			return popupString('History preview failed');
 		}
 	}
 
@@ -9245,6 +9245,7 @@ $(function () {
 		hist: 'hist', ///// history, diffs, editors, related
 		history: 'history',
 		historyHint: 'List the changes made to %s',
+		'History preview failed': 'History preview failed :-(',
 		last: 'prev', // For labelling the previous revision in history pages; the key is "last" for backwards compatibility
 		lastEdit: 'lastEdit',
 		'mark patrolled': 'mark patrolled',
