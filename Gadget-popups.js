@@ -642,25 +642,25 @@ $(function () {
 	// ENDFILE: actions.js
 
 	// STARTFILE: domdrag.js
-	/*
-	@file
-	The {@link Drag} object, which enables objects to be dragged around.
-
-	<pre>
-	*************************************************
-	dom-drag.js
-	09.25.2001
-	www.youngpup.net
-	**************************************************
-	10.28.2001 - fixed minor bug where events
-	sometimes fired off the handle, not the root.
-	*************************************************
-	Pared down, some hooks added by [[User:Lupin]]
-
-	Copyright Aaron Boodman.
-	Saying stupid things daily since March 2001.
-	</pre>
-	*/
+	/**
+	 * @file
+	 * The {@link Drag} object, which enables objects to be dragged around.
+	 * 
+	 * <pre>
+	 * *************************************************
+	 * dom-drag.js
+	 * 09.25.2001
+	 * www.youngpup.net
+	 * **************************************************
+	 * 10.28.2001 - fixed minor bug where events
+	 * sometimes fired off the handle, not the root.
+	 * *************************************************
+	 * Pared down, some hooks added by [[User:Lupin]]
+	 * 
+	 * Copyright Aaron Boodman.
+	 * Saying stupid things daily since March 2001.
+	 * </pre>
+	 */
 
 	/**
 	 * Creates a new Drag object. This is used to make various DOM elements draggable.
