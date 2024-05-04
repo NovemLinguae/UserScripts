@@ -237,7 +237,7 @@ $(function () {
 	 * Gets the references list item that the provided footnote link targets. This
 	 * is typically a li element within the ol.references element inside the reflist.
 	 * @param {Element} a - A footnote link.
-	 * @returns {Element|boolean} The targeted element, or false if one can't be found.
+	 * @return {Element|boolean} The targeted element, or false if one can't be found.
 	 */
 	function footnoteTarget(a) {
 		var aTitle = Title.fromAnchor(a);
@@ -644,7 +644,7 @@ $(function () {
 
 	// STARTFILE: domdrag.js
 	/**
-	@fileoverview
+	@file
 	The {@link Drag} object, which enables objects to be dragged around.
 
 	<pre>
@@ -1455,7 +1455,7 @@ $(function () {
 
 	// STARTFILE: downloader.js
 	/**
-	 * @fileoverview
+	 * @file
 	 * {@link Downloader}, a xmlhttprequest wrapper, and helper functions.
 	 */
 
@@ -2655,7 +2655,7 @@ $(function () {
 
 	// STARTFILE: titles.js
 	/**
-	 * @fileoverview Defines the {@link Title} class, and associated crufty functions.
+	 * @file Defines the {@link Title} class, and associated crufty functions.
 
 	 * <code>Title</code> deals with article titles and their various
 	 * forms.  {@link Stringwrapper} is the parent class of
@@ -4092,7 +4092,7 @@ $(function () {
 
 	// STARTFILE: previewmaker.js
 	/**
-	 * @fileoverview
+	 * @file
 	 * Defines the {@link Previewmaker} object, which generates short previews from wiki markup.
 	 */
 
@@ -5862,7 +5862,7 @@ $(function () {
 
 	// STARTFILE: navpopup.js
 	/**
-	 * @fileoverview  Defines two classes: {@link Navpopup} and {@link Mousetracker}.
+	 * @file  Defines two classes: {@link Navpopup} and {@link Mousetracker}.
 	 *
 	 * <code>Navpopup</code> describes popups: when they appear, where, what
 	 * they look like and so on.
@@ -8562,7 +8562,7 @@ $(function () {
 	 * @param {boolean} link.newWin Should open in a new Window
 	 * @param {number} link.noPopup Should nest new popups from link (0 or 1)
 	 * @param {string} link.onclick
-	 * @returns {string|null} null if no url is given
+	 * @return {string|null} null if no url is given
 	 */
 	function generalLink(link) {
 		if (typeof link.url == 'undefined') {
