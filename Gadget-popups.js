@@ -1897,9 +1897,9 @@ $(function () {
 		// if passed a string it will compare only the first string.length characters
 		// if passed a regexp the result is stored in r
 		function compareLineStringOrReg(c) {
-			return typeof c == 'string'
-				? ll[0] && ll[0].substr(0, c.length) == c
-				: (r = ll[0] && ll[0].match(c));
+			return typeof c == 'string' ?
+				ll[0] && ll[0].substr(0, c.length) == c :
+				(r = ll[0] && ll[0].match(c));
 		}
 
 		function compareLineString(c) {
@@ -2518,12 +2518,12 @@ $(function () {
 	}
 
 	function popupFilterWikibaseItem(data, download) {
-		return download.wikibaseItem
-			? tprintf('<a href="%s">%s</a>', [
+		return download.wikibaseItem ?
+			tprintf('<a href="%s">%s</a>', [
 				download.wikibaseRepo.replace(/\$1/g, download.wikibaseItem),
 				download.wikibaseItem,
-			])
-			: '';
+			]) :
+			'';
 	}
 
 	function formatAge(age) {
@@ -2647,9 +2647,9 @@ $(function () {
 	}
 
 	function formatBytes(num) {
-		return num > 949
-			? Math.round(num / 100) / 10 + popupString('kB')
-			: num + '&nbsp;' + popupString('bytes');
+		return num > 949 ?
+			Math.round(num / 100) / 10 + popupString('kB') :
+			num + '&nbsp;' + popupString('bytes');
 	}
 	// ENDFILE: pageinfo.js
 
@@ -5184,17 +5184,17 @@ $(function () {
 			var content =
 				page && page.revisions && page.revisions[0] &&
 				page.revisions[0].slots && page.revisions[0].slots.main &&
-				page.revisions[0].slots.main.contentmodel === 'wikitext'
-					? page.revisions[0].slots.main.content
-					: null;
+				page.revisions[0].slots.main.contentmodel === 'wikitext' ?
+					page.revisions[0].slots.main.content :
+					null;
 			if (typeof content === 'string') {
 				download.data = content;
 				download.lastModified = new Date(page.revisions[0].timestamp);
 			}
 			if (page.pageprops.wikibase_item) {
 				download.wikibaseItem = page.pageprops.wikibase_item;
-				download.wikibaseRepo = jsObj.query.wikibase.repo.url.base
-										+ jsObj.query.wikibase.repo.url.articlepath;
+				download.wikibaseRepo = jsObj.query.wikibase.repo.url.base +
+										jsObj.query.wikibase.repo.url.articlepath;
 			}
 		} catch (someError) {
 			return 'Revision preview failed :(';
@@ -5234,9 +5234,9 @@ $(function () {
 			var content =
 				page && page.revisions && page.revisions[0] &&
 				page.revisions[0].slots && page.revisions[0].slots.main &&
-				page.revisions[0].slots.main.contentmodel === 'wikitext'
-					? page.revisions[0].slots.main.content
-					: null;
+				page.revisions[0].slots.main.contentmodel === 'wikitext' ?
+					page.revisions[0].slots.main.content :
+					null;
 			if (
 				typeof content === 'string' &&
 				pg &&
@@ -5263,9 +5263,9 @@ $(function () {
 			var content =
 				page && page.revisions && page.revisions[0] &&
 				page.revisions[0].slots && page.revisions[0].slots.main &&
-				page.revisions[0].slots.main.contentmodel === 'wikitext'
-					? page.revisions[0].slots.main.content
-					: null;
+				page.revisions[0].slots.main.contentmodel === 'wikitext' ?
+					page.revisions[0].slots.main.content :
+					null;
 			var ret = '';
 			var alt = '';
 			try {
@@ -5458,9 +5458,9 @@ $(function () {
 			for (var l = 0; l < queryobj.blocks.length; l++) {
 				var rbstr =
 					queryobj.blocks[l].rangestart === queryobj.blocks[l].rangeend ? 'BLOCK' : 'RANGEBLOCK';
-				rbstr = !Array.isArray(queryobj.blocks[l].restrictions)
-					? 'Has ' + rbstr.toLowerCase() + 's'
-					: rbstr + 'ED';
+				rbstr = !Array.isArray(queryobj.blocks[l].restrictions) ?
+					'Has ' + rbstr.toLowerCase() + 's' :
+					rbstr + 'ED';
 				ret.push('<b>' + popupString(rbstr) + '</b>');
 			}
 		}
@@ -6827,9 +6827,9 @@ $(function () {
 		pg.wiki.wikia = RegExp('[.]wikia[.]com$', 'i').test(pg.wiki.hostname);
 		pg.wiki.isLocal = RegExp('^localhost').test(pg.wiki.hostname);
 		pg.wiki.commons =
-			pg.wiki.wikimedia && pg.wiki.hostname != 'commons.wikimedia.org'
-				? 'commons.wikimedia.org'
-				: null;
+			pg.wiki.wikimedia && pg.wiki.hostname != 'commons.wikimedia.org' ?
+				'commons.wikimedia.org' :
+				null;
 		pg.wiki.lang = mw.config.get('wgContentLanguage');
 		var port = location.port ? ':' + location.port : '';
 		pg.wiki.sitebase = pg.wiki.hostname + port;
@@ -8102,9 +8102,9 @@ $(function () {
 		).join('<hr />');
 		setPopupTipsAndHTML(
 			html.split('\n').join('<br>') +
-				(truncated
-					? '<hr /><b>' + popupString('Diff truncated for performance reasons') + '</b>'
-					: ''),
+				(truncated ?
+					'<hr /><b>' + popupString('Diff truncated for performance reasons') + '</b>' :
+					''),
 			'popupPreview',
 			navpop.idNumber
 		);
@@ -8882,11 +8882,11 @@ $(function () {
 		log('getHistoryInfo');
 		getHistory(
 			wikipage,
-			whatNext
-				? function (d) {
+			whatNext ?
+				function (d) {
 					whatNext(processHistory(d));
-				  }
-				: processHistory
+				  } :
+				processHistory
 		);
 	}
 
