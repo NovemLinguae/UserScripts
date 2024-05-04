@@ -34,7 +34,6 @@
 		"no-shadow": "off",
 		"no-underscore-dangle": "off",
 		"security/detect-non-literal-regexp": "off",
-		"security/detect-unsafe-regex": "off",
-		"unicorn/prefer-string-slice": "off"
+		"security/detect-unsafe-regex": "off"
 	}
 }
