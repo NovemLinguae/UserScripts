@@ -4056,7 +4056,7 @@ $(function () {
 				return false;
 			}
 			// we have a hide delay set
-			var d = Number(new Date());
+			var d = Date.now();
 			if (!navpop.mouseLeavingTime) {
 				navpop.mouseLeavingTime = d;
 				return false;
