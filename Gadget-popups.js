@@ -1626,7 +1626,7 @@ $(function () {
 	 * @param {string} url The url to download
 	 * @param {number} id The ID of the {@link Downloader} object
 	 * @param {Function} callback The callback function invoked on success
-	 * @return {String/Downloader} the {@link Downloader} object created, or 'ohdear' if an unsupported browser
+	 * @return {string|Downloader} the {@link Downloader} object created, or 'ohdear' if an unsupported browser
 	 */
 	function newDownload(url, id, callback, onfailure) {
 		var d = new Downloader(url);
@@ -1669,7 +1669,7 @@ $(function () {
 	 * @param {number} id The ID.
 	 * @param {Function} callback The callback, which is invoked immediately as <code>callback(d)</code>,
 	 * where <code>d</code> is the new {@link Downloader}.
-	 * @param {String} data The (cached) data.
+	 * @param {string} data The (cached) data.
 	 * @param {Date} lastModified The (cached) last modified date.
 	 */
 	function fakeDownload(url, id, callback, data, lastModified, owner) {
@@ -1686,7 +1686,7 @@ $(function () {
 	 * @param {string} url The url to download
 	 * @param {number} id The ID of the {@link Downloader} object
 	 * @param {Function} callback The callback function invoked on success
-	 * @return {String/Downloader} the {@link Downloader} object created, or 'ohdear' if an unsupported browser
+	 * @return {string|Downloader} the {@link Downloader} object created, or 'ohdear' if an unsupported browser
 	 */
 	function startDownload(url, id, callback) {
 		var d = newDownload(url, id, callback);
@@ -2697,7 +2697,7 @@ $(function () {
 		/**
 		 * Wrapper for this.toString().substring()
 		 * @param {string} x
-		 * @param {String} y (optional)
+		 * @param {string} y (optional)
 		 * @type {string}
 		 */
 		this.substring = function (x, y) {
@@ -2717,7 +2717,7 @@ $(function () {
 		/**
 		 * Wrapper for this.toString().replace()
 		 * @param {string} x
-		 * @param {String} y
+		 * @param {string} y
 		 * @type {string}
 		 */
 		this.replace = function (x, y) {
@@ -4101,7 +4101,7 @@ $(function () {
 	 * @constructor
 	 * @class The Previewmaker class. Use an instance of this to generate short previews from Wikitext.
 	 * @param {string} wikiText The Wikitext source of the page we wish to preview.
-	 * @param {String} baseUrl The url we should prepend when creating relative urls.
+	 * @param {string} baseUrl The url we should prepend when creating relative urls.
 	 * @param {Navpopup} owner The navpop associated to this preview generator
 	 */
 	function Previewmaker(wikiText, baseUrl, owner) {
@@ -6002,7 +6002,8 @@ $(function () {
 	/**
 	 * Sets the x and y coordinates stored and takes appropriate action,
 	 * running hooks as appropriate.
-	 * @param {number} x, y Screen coordinates to set
+	 * @param {number} x Screen coordinates to set
+	 * @param {number} y Screen coordinates to set
 	 */
 	Mousetracker.prototype.setPosition = function (x, y) {
 		this.x = x;
@@ -6361,7 +6362,7 @@ $(function () {
 	 * Runs hooks added with {@link #addHook}.
 	 * @private
 	 * @param {string} key Key name of the {@link #hooks} array - one of 'create', 'unhide', 'hide'
-	 * @param {String} when Controls exactly when the hook is run: either 'before' or 'after'
+	 * @param {string} when Controls exactly when the hook is run: either 'before' or 'after'
 	 */
 	Navpopup.prototype.runHooks = function (key, when) {
 		if (!this.hooks[key]) {
@@ -7798,7 +7799,7 @@ $(function () {
 	 *
 	 * @param {Title} article
 	 * @param {string} oldid
-	 * @param {String} diff
+	 * @param {string} diff
 	 * @param {Navpopup} navpop
 	 */
 	function loadDiff(article, oldid, diff, navpop) {
