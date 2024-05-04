@@ -718,7 +718,7 @@ $(function () {
 		o.hmode = true;
 		o.vmode = true;
 
-		o.root = oRoot ? oRoot : o;
+		o.root = oRoot || o;
 
 		if (isNaN(parseInt(o.root.style.left, 10))) {
 			o.root.style.left = '0px';
