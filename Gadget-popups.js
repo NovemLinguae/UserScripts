@@ -642,7 +642,7 @@ $(function () {
 	// ENDFILE: actions.js
 
 	// STARTFILE: domdrag.js
-	/**
+	/*
 	@file
 	The {@link Drag} object, which enables objects to be dragged around.
 
@@ -1515,9 +1515,9 @@ $(function () {
 		 */
 		this.method = 'GET';
 		/**
-		Async flag.
-		@type {boolean}
-	*/
+		 * Async flag.
+		 * @type {boolean}
+		 */
 		this.async = true;
 	}
 
@@ -2655,7 +2655,7 @@ $(function () {
 	// STARTFILE: titles.js
 	/**
 	 * @file Defines the {@link Title} class, and associated crufty functions.
-
+	 *
 	 * <code>Title</code> deals with article titles and their various
 	 * forms.  {@link Stringwrapper} is the parent class of
 	 * <code>Title</code>, which exists simply to make things a little
@@ -2665,7 +2665,7 @@ $(function () {
 	/**
 	 * Creates a new Stringwrapper.
 	 * @constructor
-
+	 *
 	 * @class the Stringwrapper class. This base class is not really
 	 * useful on its own; it just wraps various common string operations.
 	 */
@@ -4652,7 +4652,7 @@ $(function () {
 
 	/**
 	 * Generates the preview and displays it in the current popup.
-
+	 *
 	 * Does nothing if the generated preview is invalid or consists of whitespace only.
 	 * Also activates wikilinks in the preview for subpopups if the popupSubpopups option is true.
 	 */
