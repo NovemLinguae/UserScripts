@@ -1067,7 +1067,7 @@ $(function () {
 			'<menurow><<unprotect|unprotectShort>>|' +
 			'<<protect|shortcut=p>>|<<protectlog|log>></menurow>';
 		var del =
-			'<menurow><<undelete|undeleteShort>>|<<delete|shortcut=d>>|' + '<<deletelog|log>></menurow>';
+			'<menurow><<undelete|undeleteShort>>|<<delete|shortcut=d>>|<<deletelog|log>></menurow>';
 		var move = '<<move|shortcut=m|move page>>';
 		var nullPurge = '<menurow><<nullEdit|shortcut=n|null edit>>|<<purge|shortcut=P>></menurow>';
 		var viewOptions = '<menurow><<view|shortcut=v>>|<<render|shortcut=S>>|<<raw>></menurow>';
@@ -1083,7 +1083,7 @@ $(function () {
 		if (getValueOf('popupActionsMenu')) {
 			s.push('<<mainlink>>*' + menuTitle(dropclass, 'actions'));
 		} else {
-			s.push('<div class="' + dropclass + '">' + '<<mainlink>>');
+			s.push('<div class="' + dropclass + '"><<mainlink>>');
 		}
 		s.push('<menu>');
 		s.push(editRow + markPatrolled + newTopic + hist + lastedit + thank);
@@ -1147,7 +1147,7 @@ $(function () {
 	function menuTitle(dropclass, s) {
 		var text = popupString(s); // i18n
 		var len = text.length;
-		return '<div class="' + dropclass + '" style="--navpop-m-len:' + len + 'ch">' + '<a href="#" noPopup=1>' + text + '</a>';
+		return '<div class="' + dropclass + '" style="--navpop-m-len:' + len + 'ch"><a href="#" noPopup=1>' + text + '</a>';
 	}
 
 	pg.structures.menus.popupRedirTitle = pg.structures.menus.popupTitle;
@@ -4372,7 +4372,7 @@ $(function () {
 
 		// Split sentences. Superfluous sentences are RIGHT OUT.
 		// note: exactly 1 set of parens here needed to make the slice work
-		d = d.parenSplit(RegExp('([!?.]+["' + "'" + ']*\\s)', 'g'));
+		d = d.parenSplit(/([!?.]+["']*\s)/g);
 		// leading space is bad, mmkay?
 		d[0] = d[0].replace(/^\s*/, '');
 
@@ -6937,7 +6937,7 @@ $(function () {
 				);
 			} else if (specialpage.realname === 'Diff') {
 				pg.re.specialdiff = RegExp(
-					'/' + sp + '(?:%3A|:)(?:' + buildSpecialPageGroup(specialpage) + ')' + '/([^?#]*)',
+					'/' + sp + '(?:%3A|:)(?:' + buildSpecialPageGroup(specialpage) + ')/([^?#]*)',
 					'i'
 				);
 			} else if (specialpage.realname === 'Emailuser') {
