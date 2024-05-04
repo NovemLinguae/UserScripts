@@ -9497,6 +9497,6 @@ $(function () {
 		mw.hook('ext.echo.overlay.beforeShowingOverlay').add(function ($overlay) {
 			dynamicContentHandler($overlay.find('.mw-echo-state'));
 		});
-	})();
+	}());
 });
 // ENDFILE: run.js
