@@ -18,7 +18,6 @@
 
 // Fix later
 /* global log, errlog, popupStrings, wikEdUseWikEd, WikEdUpdateFrame */
-/* eslint no-mixed-spaces-and-tabs: 0, no-empty: 0 */
 
 $(function () {
 	//////////////////////////////////////////////////
@@ -8878,7 +8877,7 @@ $(function () {
 			whatNext ?
 				function (d) {
 					whatNext(processHistory(d));
-				  } :
+				} :
 				processHistory
 		);
 	}
