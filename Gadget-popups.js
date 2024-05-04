@@ -5086,7 +5086,7 @@ $(function () {
 		}
 
 		var options = getValueOf('popupDateTimeFormatterOptions');
-		options['timeZone'] = getTimeZone();
+		options.timeZone = getTimeZone();
 		return date.toLocaleString(getLocales(), options);
 	}
 
@@ -5104,7 +5104,7 @@ $(function () {
 		}
 
 		var options = getValueOf('popupDateFormatterOptions');
-		options['timeZone'] = getTimeZone();
+		options.timeZone = getTimeZone();
 		return date.toLocaleDateString(getLocales(), options);
 	}
 
@@ -5122,7 +5122,7 @@ $(function () {
 		}
 
 		var options = getValueOf('popupTimeFormatterOptions');
-		options['timeZone'] = getTimeZone();
+		options.timeZone = getTimeZone();
 		return date.toLocaleTimeString(getLocales(), options);
 	}
 
@@ -5211,7 +5211,7 @@ $(function () {
 				);
 			}
 			html = html.join(', ');
-			if (jsObj['continue'] && jsObj['continue'].blcontinue) {
+			if (jsObj.continue && jsObj.continue.blcontinue) {
 				html += popupString(' and more');
 			}
 			return html;
@@ -5350,7 +5350,7 @@ $(function () {
 				return popupString('Empty category');
 			}
 			ret = '<h2>' + tprintf('Category members (%s shown)', [ret.length]) + '</h2>' + linkList(ret);
-			if (jsobj['continue'] && jsobj['continue'].cmcontinue) {
+			if (jsobj.continue && jsobj.continue.cmcontinue) {
 				ret += popupString(' and more');
 			}
 			return ret;
@@ -6907,8 +6907,8 @@ $(function () {
 
 	function buildSpecialPageGroup(specialPageObj) {
 		var variants = [];
-		variants.push(mw.util.escapeRegExp(specialPageObj['realname']));
-		variants.push(mw.util.escapeRegExp(encodeURI(specialPageObj['realname'])));
+		variants.push(mw.util.escapeRegExp(specialPageObj.realname));
+		variants.push(mw.util.escapeRegExp(encodeURI(specialPageObj.realname)));
 		specialPageObj.aliases.forEach(function (alias) {
 			variants.push(mw.util.escapeRegExp(alias));
 			variants.push(mw.util.escapeRegExp(encodeURI(alias)));
