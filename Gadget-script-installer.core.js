@@ -366,7 +366,7 @@
 			.append(
 				$( '<input>' )
 					.attr( { id: 'siNormalize', type: 'checkbox' } )
-					.click( function () {
+					.on( 'click', function () {
 						$( '.normalize-wrapper' ).toggle( 0 );
 					} ),
 				$( '<label>' )
@@ -374,7 +374,7 @@
 					.text( STRINGS.showNormalizeLinks ),
 				$( '<input>' )
 					.attr( { id: 'siMove', type: 'checkbox' } )
-					.click( function () {
+					.on( 'click', function () {
 						$( '.move-wrapper' ).toggle( 0 );
 					} ),
 				$( '<label>' )
@@ -420,7 +420,7 @@
 								' (',
 								$( '<a>' )
 									.text( STRINGS.normalize )
-									.click( function () {
+									.on( 'click', function () {
 										normalize( targetName ).done( function () {
 											conditionalReload( true );
 										} );
@@ -440,7 +440,7 @@
 									' (',
 									$( '<a>' )
 										.text( STRINGS.uninstallLinkText )
-										.click( function () {
+										.on( 'click', function () {
 											$( this ).text( STRINGS.uninstallProgressMsg );
 											anImport.uninstall().done( function () {
 												conditionalReload( true );
@@ -449,7 +449,7 @@
 									' | ',
 									$( '<a>' )
 										.text( anImport.disabled ? STRINGS.enableLinkText : STRINGS.disableLinkText )
-										.click( function () {
+										.on( 'click', function () {
 											$( this ).text( anImport.disabled ? STRINGS.enableProgressMsg : STRINGS.disableProgressMsg );
 											anImport.toggleDisabled().done( function () {
 												$( this ).toggleClass( 'disabled' );
@@ -462,7 +462,7 @@
 											' | ',
 											$( '<a>' )
 												.text( STRINGS.moveLinkText )
-												.click( function () {
+												.on( 'click', function () {
 													var dest = null;
 													var PROMPT = STRINGS.movePrompt + ' ' + SKINS.join( ', ' );
 													do {
@@ -536,19 +536,19 @@
 			installElement.prepend( $( '<a>' )
 				.attr( 'id', 'script-installer-main-install' )
 				.text( localScriptsByName[ fixedPageName ] ? STRINGS.uninstallLinkText : STRINGS.installLinkText )
-				.click( makeLocalInstallClickHandler( fixedPageName ) ) );
+				.on( 'click', makeLocalInstallClickHandler( fixedPageName ) ) );
 
 			// If the script is installed but disabled, allow the user to enable it
 			var allScriptsInTarget = imports[ localScriptsByName[ fixedPageName ] ];
 			var importObj = allScriptsInTarget && allScriptsInTarget.find( function ( anImport ) {
-				return anImport.page === fixedPageName; 
+				return anImport.page === fixedPageName;
 			} );
 			if ( importObj && importObj.disabled ) {
 				installElement.append( ' | ',
 					$( '<a>' )
 						.attr( 'id', 'script-installer-main-enable' )
 						.text( STRINGS.enableLinkText )
-						.click( function () {
+						.on( 'click', function () {
 							$( this ).text( STRINGS.enableProgressMsg );
 							importObj.setDisabled( false ).done( function () {
 								conditionalReload( false );
@@ -570,7 +570,7 @@
 				buildCurrentPageInstallElement(),
 				' | ',
 				$( '<a>' )
-					.text( STRINGS.manageUserScripts ).click( function () {
+					.text( STRINGS.manageUserScripts ).on( 'click', function () {
 						if ( !document.getElementById( 'script-installer-panel' ) ) {
 							$( '#mw-content-text' ).before( makePanel() );
 						} else {
@@ -586,7 +586,7 @@
 			var scriptName = this.id;
 			$( this ).append( ' | ', $( '<a>' )
 				.text( localScriptsByName[ scriptName ] ? STRINGS.uninstallLinkText : STRINGS.installLinkText )
-				.click( makeLocalInstallClickHandler( scriptName ) ) );
+				.on( 'click', makeLocalInstallClickHandler( scriptName ) ) );
 		} );
 
 		$( 'table.infobox-user-script' ).each( function () {
@@ -608,7 +608,7 @@
 				.append( $( '<button>' )
 					.addClass( 'mw-ui-button mw-ui-progressive mw-ui-big' )
 					.text( localScriptsByName[ scriptName ] ? STRINGS.uninstallLinkText : STRINGS.installLinkText )
-					.click( makeLocalInstallClickHandler( scriptName ) ) ) ) );
+					.on( 'click', makeLocalInstallClickHandler( scriptName ) ) ) ) );
 		} );
 	}
 
@@ -630,7 +630,7 @@
 				$( this ).text( STRINGS.uninstallProgressMsg );
 				var uninstalls = uniques( localScriptsByName[ scriptName ] )
 					.map( function ( target ) {
-						return Import.ofLocal( scriptName, target ).uninstall(); 
+						return Import.ofLocal( scriptName, target ).uninstall();
 					} );
 				$.when.apply( $, uninstalls ).then( function () {
 					$( this ).text( STRINGS.installLinkText );
