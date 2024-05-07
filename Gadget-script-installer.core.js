@@ -1,30 +1,30 @@
 ( function () {
 	// An mw.Api object
-	var api;
+	let api;
 
 	// Keep "common" at beginning
-	var SKINS = [ 'common', 'monobook', 'minerva', 'vector', 'vector-2022', 'timeless' ];
+	const SKINS = [ 'common', 'monobook', 'minerva', 'vector', 'vector-2022', 'timeless' ];
 
 	// How many scripts do we need before we show the quick filter?
-	var NUM_SCRIPTS_FOR_SEARCH = 5;
+	const NUM_SCRIPTS_FOR_SEARCH = 5;
 
 	// The primary import list, keyed by target. (A "target" is a user JS subpage
 	// where the script is imported, like "common" or "vector".) Set in buildImportList
-	var imports = {};
+	const imports = {};
 
 	// Local scripts, keyed on name; value will be the target. Set in buildImportList.
-	var localScriptsByName = {};
+	const localScriptsByName = {};
 
 	// How many scripts are installed?
-	var scriptCount = 0;
+	let scriptCount = 0;
 
 	// Goes on the end of edit summaries
-	var ADVERT = ' ([[User:Enterprisey/script-installer|script-installer]])';
+	const ADVERT = ' ([[User:Enterprisey/script-installer|script-installer]])';
 
 	/**
 	 * Strings, for translation
 	 */
-	var STRINGS = {
+	const STRINGS = {
 		skinCommon: 'common (applies to all skins)',
 		backlink: 'Backlink:',
 		installSummary: 'Installing $1',
@@ -62,7 +62,7 @@
 		securityWarningSection: ' About to install $1.'
 	};
 
-	var USER_NAMESPACE_NAME = mw.config.get( 'wgFormattedNamespaces' )[ 2 ];
+	const USER_NAMESPACE_NAME = mw.config.get( 'wgFormattedNamespaces' )[ 2 ];
 
 	/**
 	 * Constructs an Import. An Import is a line in a JS file that imports a
@@ -103,10 +103,10 @@
 		if ( disabled === undefined ) {
 			disabled = false;
 		}
-		var URL_RGX = /^(?:https?:)?\/\/(.+?)\.org\/w\/index\.php\?.*?title=(.+?(?:&|$))/;
-		var match;
+		const URL_RGX = /^(?:https?:)?\/\/(.+?)\.org\/w\/index\.php\?.*?title=(.+?(?:&|$))/;
+		let match;
 		if ( match = URL_RGX.exec( url ) ) {
-			var title = decodeURIComponent( match[ 2 ].replace( /&$/, '' ) ),
+			const title = decodeURIComponent( match[ 2 ].replace( /&$/, '' ) ),
 				wiki = decodeURIComponent( match[ 1 ] );
 			return new Import( title, wiki, null, target, disabled );
 		}
@@ -114,13 +114,13 @@
 	};
 
 	Import.fromJs = function ( line, target ) {
-		var IMPORT_RGX = /^\s*(\/\/)?\s*importScript\s*\(\s*(?:"|')(.+?)(?:"|')\s*\)/;
-		var match;
+		const IMPORT_RGX = /^\s*(\/\/)?\s*importScript\s*\(\s*(?:"|')(.+?)(?:"|')\s*\)/;
+		let match;
 		if ( match = IMPORT_RGX.exec( line ) ) {
 			return Import.ofLocal( unescapeForJsString( match[ 2 ] ), target, !!match[ 1 ] );
 		}
 
-		var LOADER_RGX = /^\s*(\/\/)?\s*mw\.loader\.load\s*\(\s*(?:"|')(.+?)(?:"|')\s*\)/;
+		const LOADER_RGX = /^\s*(\/\/)?\s*mw\.loader\.load\s*\(\s*(?:"|')(.+?)(?:"|')\s*\)/;
 		if ( match = LOADER_RGX.exec( line ) ) {
 			return Import.ofUrl( unescapeForJsString( match[ 2 ] ), target, !!match[ 1 ] );
 		}
@@ -146,7 +146,7 @@
 	};
 
 	Import.prototype.toJs = function () {
-		var dis = this.disabled ? '//' : '',
+		let dis = this.disabled ? '//' : '',
 			url = this.url;
 		switch ( this.type ) {
 			case 0: return dis + "importScript('" + escapeForJsString( this.page ) + "'); // " + STRINGS.backlink + ' [[' + escapeForJsComment( this.page ) + ']]';
@@ -177,7 +177,7 @@
 		function quoted( s ) {
 			return new RegExp( "(['\"])" + escapeForRegex( s ) + '\\1' );
 		}
-		var toFind;
+		let toFind;
 		switch ( this.type ) {
 			case 0:
 				toFind = quoted( escapeForJsString( this.page ) );
@@ -190,8 +190,8 @@
 				toFind = quoted( escapeForJsString( this.url ) );
 				break;
 		}
-		var lineNums = [], lines = targetWikitext.split( '\n' );
-		for ( var i = 0; i < lines.length; i++ ) {
+		const lineNums = [], lines = targetWikitext.split( '\n' );
+		for ( let i = 0; i < lines.length; i++ ) {
 			if ( toFind.test( lines[ i ] ) ) {
 				lineNums.push( i );
 			}
@@ -204,9 +204,9 @@
 	 * target page that import the specified script.
 	 */
 	Import.prototype.uninstall = function () {
-		var that = this;
+		const that = this;
 		return getWikitext( getFullTarget( this.target ) ).then( function ( wikitext ) {
-			var lineNums = that.getLineNums( wikitext ),
+			const lineNums = that.getLineNums( wikitext ),
 				newWikitext = wikitext.split( '\n' ).filter( function ( _, idx ) {
 					return lineNums.indexOf( idx ) < 0;
 				} ).join( '\n' );
@@ -224,10 +224,10 @@
 	 * boolean value.
 	 */
 	Import.prototype.setDisabled = function ( disabled ) {
-		var that = this;
+		const that = this;
 		this.disabled = disabled;
 		return getWikitext( getFullTarget( this.target ) ).then( function ( wikitext ) {
-			var lineNums = that.getLineNums( wikitext ),
+			const lineNums = that.getLineNums( wikitext ),
 				newWikitextLines = wikitext.split( '\n' );
 
 			if ( disabled ) {
@@ -244,7 +244,7 @@
 				} );
 			}
 
-			var summary = ( disabled ? STRINGS.disableSummary : STRINGS.enableSummary )
+			const summary = ( disabled ? STRINGS.disableSummary : STRINGS.enableSummary )
 				.replace( '$1', that.getDescription( /* useWikitext */ true ) ) + ADVERT;
 			return api.postWithEditToken( {
 				action: 'edit',
@@ -267,7 +267,7 @@
 		if ( this.target === newTarget ) {
 			return;
 		}
-		var old = new Import( this.page, this.wiki, this.url, this.target, this.disabled );
+		const old = new Import( this.page, this.wiki, this.url, this.target, this.disabled );
 		this.target = newTarget;
 		return $.when( old.uninstall(), this.install() );
 	};
@@ -285,11 +285,11 @@
 			}
 		).then( function ( data ) {
 			if ( data && data.query && data.query.pages ) {
-				var result = {};
+				const result = {};
 				prefixLength = mw.config.get( 'wgUserName' ).length + 6;
 				Object.values( data.query.pages ).forEach( function ( moreData ) {
-					var nameWithoutExtension = new mw.Title( moreData.title ).getNameText();
-					var targetName = nameWithoutExtension.substring( nameWithoutExtension.indexOf( '/' ) + 1 );
+					const nameWithoutExtension = new mw.Title( moreData.title ).getNameText();
+					const targetName = nameWithoutExtension.substring( nameWithoutExtension.indexOf( '/' ) + 1 );
 					result[ targetName ] = moreData.revisions ? moreData.revisions[ 0 ].slots.main[ '*' ] : null;
 				} );
 				return result;
@@ -300,11 +300,11 @@
 	function buildImportList() {
 		return getAllTargetWikitexts().then( function ( wikitexts ) {
 			Object.keys( wikitexts ).forEach( function ( targetName ) {
-				var targetImports = [];
+				const targetImports = [];
 				if ( wikitexts[ targetName ] ) {
-					var lines = wikitexts[ targetName ].split( '\n' );
-					var currImport;
-					for ( var i = 0; i < lines.length; i++ ) {
+					const lines = wikitexts[ targetName ].split( '\n' );
+					let currImport;
+					for ( let i = 0; i < lines.length; i++ ) {
 						if ( currImport = Import.fromJs( lines[ i ], targetName ) ) {
 							targetImports.push( currImport );
 							scriptCount++;
@@ -328,10 +328,10 @@
 	 */
 	function normalize( target ) {
 		return getWikitext( getFullTarget( target ) ).then( function ( wikitext ) {
-			var lines = wikitext.split( '\n' ),
+			let lines = wikitext.split( '\n' ),
 				newLines = Array( lines.length ),
 				currImport;
-			for ( var i = 0; i < lines.length; i++ ) {
+			for ( let i = 0; i < lines.length; i++ ) {
 				if ( currImport = Import.fromJs( lines[ i ], target ) ) {
 					newLines[ i ] = currImport.toJs();
 				} else {
@@ -362,9 +362,9 @@
 	 *
 	 ********************************************/
 	function makePanel() {
-		var list = $( '<div>' ).attr( 'id', 'script-installer-panel' )
+		const list = $( '<div>' ).attr( 'id', 'script-installer-panel' )
 			.append( $( '<header>' ).text( STRINGS.panelHeader ) );
-		var container = $( '<div>' ).addClass( 'container' ).appendTo( list );
+		const container = $( '<div>' ).addClass( 'container' ).appendTo( list );
 
 		// Container for checkboxes
 		container.append( $( '<div>' )
@@ -396,9 +396,9 @@
 					$( '<input>' )
 						.attr( { id: 'siQuickFilter', type: 'text' } )
 						.on( 'input', function () {
-							var filterString = $( this ).val();
+							const filterString = $( this ).val();
 							if ( filterString ) {
-								var sel = "#script-installer-panel li[name*='" +
+								const sel = "#script-installer-panel li[name*='" +
                                         $.escapeSelector( $( this ).val() ) + "']";
 								$( '#script-installer-panel li.script' ).toggle( false );
 								$( sel ).toggle( true );
@@ -413,7 +413,7 @@
 				.css( 'float', 'right' );
 		}
 		$.each( imports, function ( targetName, targetImports ) {
-			var fmtTargetName = ( targetName === 'common' ?
+			const fmtTargetName = ( targetName === 'common' ?
 				STRINGS.skinCommon :
 				targetName );
 			if ( targetImports.length ) {
@@ -469,8 +469,8 @@
 											$( '<a>' )
 												.text( STRINGS.moveLinkText )
 												.on( 'click', function () {
-													var dest = null;
-													var PROMPT = STRINGS.movePrompt + ' ' + SKINS.join( ', ' );
+													let dest = null;
+													const PROMPT = STRINGS.movePrompt + ' ' + SKINS.join( ', ' );
 													do {
 														dest = ( window.prompt( PROMPT ) || '' ).toLowerCase();
 													} while ( dest && SKINS.indexOf( dest ) < 0 );
@@ -493,20 +493,20 @@
 	}
 
 	function buildCurrentPageInstallElement() {
-		var addingInstallLink = false; // will we be adding a legitimate install link?
-		var installElement = $( '<span>' ); // only used if addingInstallLink is set to true
+		let addingInstallLink = false; // will we be adding a legitimate install link?
+		const installElement = $( '<span>' ); // only used if addingInstallLink is set to true
 
-		var namespaceNumber = mw.config.get( 'wgNamespaceNumber' );
-		var pageName = mw.config.get( 'wgPageName' );
+		const namespaceNumber = mw.config.get( 'wgNamespaceNumber' );
+		const pageName = mw.config.get( 'wgPageName' );
 
 		// Namespace 2 is User
 		if ( namespaceNumber === 2 &&
                 pageName.indexOf( '/' ) > 0 ) {
-			var contentModel = mw.config.get( 'wgPageContentModel' );
+			const contentModel = mw.config.get( 'wgPageContentModel' );
 			if ( contentModel === 'javascript' ) {
-				var prefixLength = mw.config.get( 'wgUserName' ).length + 6;
+				const prefixLength = mw.config.get( 'wgUserName' ).length + 6;
 				if ( pageName.indexOf( USER_NAMESPACE_NAME + ':' + mw.config.get( 'wgUserName' ) ) === 0 ) {
-					var skinIndex = SKINS.indexOf( pageName.substring( prefixLength ).slice( 0, -3 ) );
+					const skinIndex = SKINS.indexOf( pageName.substring( prefixLength ).slice( 0, -3 ) );
 					if ( skinIndex >= 0 ) {
 						return $( '<abbr>' ).text( STRINGS.cannotInstall )
 							.attr( 'title', STRINGS.cannotInstallSkin );
@@ -525,7 +525,7 @@
 				.attr( 'href', mw.util.getUrl( 'Special:Preferences' ) + '#mw-prefsection-gadgets' );
 		}
 
-		var editRestriction = mw.config.get( 'wgRestrictionEdit' ) || [];
+		const editRestriction = mw.config.get( 'wgRestrictionEdit' ) || [];
 		if ( ( namespaceNumber !== 2 && namespaceNumber !== 8 ) &&
             ( editRestriction.indexOf( 'sysop' ) >= 0 ||
                 editRestriction.indexOf( 'editprotected' ) >= 0 ) ) {
@@ -538,15 +538,15 @@
 		}
 
 		if ( addingInstallLink ) {
-			var fixedPageName = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
+			const fixedPageName = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
 			installElement.prepend( $( '<a>' )
 				.attr( 'id', 'script-installer-main-install' )
 				.text( localScriptsByName[ fixedPageName ] ? STRINGS.uninstallLinkText : STRINGS.installLinkText )
 				.on( 'click', makeLocalInstallClickHandler( fixedPageName ) ) );
 
 			// If the script is installed but disabled, allow the user to enable it
-			var allScriptsInTarget = imports[ localScriptsByName[ fixedPageName ] ];
-			var importObj = allScriptsInTarget && allScriptsInTarget.find( function ( anImport ) {
+			const allScriptsInTarget = imports[ localScriptsByName[ fixedPageName ] ];
+			const importObj = allScriptsInTarget && allScriptsInTarget.find( function ( anImport ) {
 				return anImport.page === fixedPageName;
 			} );
 			if ( importObj && importObj.disabled ) {
@@ -588,18 +588,18 @@
 		// At the end of each {{Userscript}} transclusion, there is
 		// <span id='User:Foo/Bar.js' class='scriptInstallerLink'></span>
 		$( 'span.scriptInstallerLink' ).each( function () {
-			var scriptName = this.id;
+			const scriptName = this.id;
 			$( this ).append( ' | ', $( '<a>' )
 				.text( localScriptsByName[ scriptName ] ? STRINGS.uninstallLinkText : STRINGS.installLinkText )
 				.on( 'click', makeLocalInstallClickHandler( scriptName ) ) );
 		} );
 
 		$( 'table.infobox-user-script' ).each( function () {
-			var infoboxScriptField = $( this ).find( "th:contains('Source')" ).next();
-			var scriptName = mw.config.get( 'wgPageName' );
+			const infoboxScriptField = $( this ).find( "th:contains('Source')" ).next();
+			let scriptName = mw.config.get( 'wgPageName' );
 			// quick test to check if we are dealing with a link
 			if ( infoboxScriptField.html() !== infoboxScriptField.text() ) {
-				var lnk = infoboxScriptField.find( 'a' );
+				const lnk = infoboxScriptField.find( 'a' );
 				if ( !lnk.hasClass( 'external' ) ) {
 					scriptName = /\/wiki\/(.*)/.exec( lnk.attr( 'href' ) )[ 1 ];
 				}
@@ -619,9 +619,9 @@
 
 	function makeLocalInstallClickHandler( scriptName ) {
 		return function () {
-			var $this = $( this );
+			const $this = $( this );
 			if ( $this.text() === STRINGS.installLinkText ) {
-				var okay = window.confirm(
+				const okay = window.confirm(
 					STRINGS.bigSecurityWarning.replace( '$1',
 						STRINGS.securityWarningSection.replace( '$1', scriptName ) ) );
 				if ( okay ) {
@@ -633,7 +633,7 @@
 				}
 			} else {
 				$( this ).text( STRINGS.uninstallProgressMsg );
-				var uninstalls = uniques( localScriptsByName[ scriptName ] )
+				const uninstalls = uniques( localScriptsByName[ scriptName ] )
 					.map( function ( target ) {
 						return Import.ofLocal( scriptName, target ).uninstall();
 					} );
@@ -667,7 +667,7 @@
 				titles: title
 			}
 		).then( function ( data ) {
-			var pageId = Object.keys( data.query.pages )[ 0 ];
+			const pageId = Object.keys( data.query.pages )[ 0 ];
 			if ( data.query.pages[ pageId ].revisions ) {
 				return data.query.pages[ pageId ].revisions[ 0 ].slots.main[ '*' ];
 			}
@@ -777,7 +777,7 @@
 		window.scriptInstallerInstallTarget = 'common'; // by default, install things to the user's common.js
 	}
 
-	var jsPage = mw.config.get( 'wgPageName' ).slice( -3 ) === '.js' ||
+	const jsPage = mw.config.get( 'wgPageName' ).slice( -3 ) === '.js' ||
         mw.config.get( 'wgPageContentModel' ) === 'javascript';
 	$.when(
 		$.ready,
