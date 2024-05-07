@@ -146,8 +146,8 @@
 	};
 
 	Import.prototype.toJs = function () {
-		let dis = this.disabled ? '//' : '',
-			url = this.url;
+		const dis = this.disabled ? '//' : '';
+		let url = this.url;
 		switch ( this.type ) {
 			case 0: return dis + "importScript('" + escapeForJsString( this.page ) + "'); // " + STRINGS.backlink + ' [[' + escapeForJsComment( this.page ) + ']]';
 			case 1: url = '//' + encodeURIComponent( this.wiki ) + '.org/w/index.php?title=' +
@@ -327,9 +327,9 @@
 	 */
 	function normalize( target ) {
 		return getWikitext( getFullTarget( target ) ).then( function ( wikitext ) {
-			let lines = wikitext.split( '\n' ),
-				newLines = Array( lines.length ),
-				currImport;
+			const lines = wikitext.split( '\n' ),
+				newLines = Array( lines.length );
+			let currImport;
 			for ( let i = 0; i < lines.length; i++ ) {
 				if ( currImport = Import.fromJs( lines[ i ], target ) ) {
 					newLines[ i ] = currImport.toJs();
