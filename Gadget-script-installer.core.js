@@ -179,10 +179,16 @@
 		}
 		var toFind;
 		switch ( this.type ) {
-			case 0: toFind = quoted( escapeForJsString( this.page ) ); break;
-			case 1: toFind = new RegExp( escapeForRegex( encodeURIComponent( this.wiki ) ) + '.*?' +
-                            escapeForRegex( encodeURIComponent( this.page ) ) ); break;
-			case 2: toFind = quoted( escapeForJsString( this.url ) ); break;
+			case 0:
+				toFind = quoted( escapeForJsString( this.page ) );
+				break;
+			case 1:
+				toFind = new RegExp( escapeForRegex( encodeURIComponent( this.wiki ) ) + '.*?' +
+                    escapeForRegex( encodeURIComponent( this.page ) ) );
+				break;
+			case 2:
+				toFind = quoted( escapeForJsString( this.url ) );
+				break;
 		}
 		var lineNums = [], lines = targetWikitext.split( '\n' );
 		for ( var i = 0; i < lines.length; i++ ) {
@@ -407,9 +413,9 @@
 				.css( 'float', 'right' );
 		}
 		$.each( imports, function ( targetName, targetImports ) {
-			var fmtTargetName = ( targetName === 'common'
-				? STRINGS.skinCommon
-				: targetName );
+			var fmtTargetName = ( targetName === 'common' ?
+				STRINGS.skinCommon :
+				targetName );
 			if ( targetImports.length ) {
 				container.append(
 					$( '<h2>' ).append(
@@ -671,7 +677,7 @@
 	}
 
 	function escapeForRegex( s ) {
-		return s.replace( /[-\/\\^$*+?.()|[\]{}]/g, '\\$&' );
+		return s.replace( /[-/\\^$*+?.()|[\]{}]/g, '\\$&' );
 	}
 
 	/**
