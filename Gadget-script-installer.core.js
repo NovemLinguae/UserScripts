@@ -62,7 +62,7 @@
 		securityWarningSection: ' About to install $1.'
 	};
 
-	var USER_NAMESPACE_NAME = mw.config.get( 'wgFormattedNamespaces' )[2];
+	var USER_NAMESPACE_NAME = mw.config.get( 'wgFormattedNamespaces' )[ 2 ];
 
 	/**
 	 * Constructs an Import. An Import is a line in a JS file that imports a
@@ -92,18 +92,18 @@
 	}
 
 	Import.ofLocal = function ( page, target, disabled ) {
-		if( disabled === undefined ) disabled = false;
+		if ( disabled === undefined ) disabled = false;
 		return new Import( page, null, null, target, disabled );
 	}
 
 	/** URL to Import. Assumes wgScriptPath is "/w" */
 	Import.ofUrl = function ( url, target, disabled ) {
-		if( disabled === undefined ) disabled = false;
+		if ( disabled === undefined ) disabled = false;
 		var URL_RGX = /^(?:https?:)?\/\/(.+?)\.org\/w\/index\.php\?.*?title=(.+?(?:&|$))/;
 		var match;
-		if( match = URL_RGX.exec( url ) ) {
-			var title = decodeURIComponent( match[2].replace( /&$/, '' ) ),
-				wiki = decodeURIComponent( match[1] );
+		if ( match = URL_RGX.exec( url ) ) {
+			var title = decodeURIComponent( match[ 2 ].replace( /&$/, '' ) ),
+				wiki = decodeURIComponent( match[ 1 ] );
 			return new Import( title, wiki, null, target, disabled );
 		}
 		return new Import( null, null, url, target, disabled );
@@ -112,18 +112,18 @@
 	Import.fromJs = function ( line, target ) {
 		var IMPORT_RGX = /^\s*(\/\/)?\s*importScript\s*\(\s*(?:"|')(.+?)(?:"|')\s*\)/;
 		var match;
-		if( match = IMPORT_RGX.exec( line ) ) {
-			return Import.ofLocal( unescapeForJsString( match[2] ), target, !!match[1] );
+		if ( match = IMPORT_RGX.exec( line ) ) {
+			return Import.ofLocal( unescapeForJsString( match[ 2 ] ), target, !!match[ 1 ] );
 		}
 
 		var LOADER_RGX = /^\s*(\/\/)?\s*mw\.loader\.load\s*\(\s*(?:"|')(.+?)(?:"|')\s*\)/;
-		if( match = LOADER_RGX.exec( line ) ) {
-			return Import.ofUrl( unescapeForJsString( match[2] ), target, !!match[1] );
+		if ( match = LOADER_RGX.exec( line ) ) {
+			return Import.ofUrl( unescapeForJsString( match[ 2 ] ), target, !!match[ 1 ] );
 		}
 	}
 
 	Import.prototype.getDescription = function ( useWikitext ) {
-		switch( this.type ) {
+		switch ( this.type ) {
 			case 0: return useWikitext ? ( '[[' + this.page + ']]' ) : this.page;
 			case 1: return STRINGS.remoteUrlDesc.replace( '$1', this.page ).replace( '$2', this.wiki );
 			case 2: return this.url;
@@ -134,7 +134,7 @@
 	 * Human-readable (NOT necessarily suitable for ResourceLoader) URL.
 	 */
 	Import.prototype.getHumanUrl = function () {
-		switch( this.type ) {
+		switch ( this.type ) {
 			case 0: return '/wiki/' + encodeURI( this.page );
 			case 1: return '//' + this.wiki + '.org/wiki/' + encodeURI( this.page );
 			case 2: return this.url;
@@ -144,7 +144,7 @@
 	Import.prototype.toJs = function () {
 		var dis = this.disabled ? '//' : '',
 			url = this.url;
-		switch( this.type ) {
+		switch ( this.type ) {
 			case 0: return dis + "importScript('" + escapeForJsString( this.page ) + "'); // " + STRINGS.backlink + ' [[' + escapeForJsComment( this.page ) + ']]';
 			case 1: url = '//' + encodeURIComponent( this.wiki ) + '.org/w/index.php?title=' +
                             encodeURIComponent( this.page ) + '&action=raw&ctype=text/javascript';
@@ -174,15 +174,15 @@
 			return new RegExp( "(['\"])" + escapeForRegex( s ) + '\\1' );
 		}
 		var toFind;
-		switch( this.type ) {
+		switch ( this.type ) {
 			case 0: toFind = quoted( escapeForJsString( this.page ) ); break;
 			case 1: toFind = new RegExp( escapeForRegex( encodeURIComponent( this.wiki ) ) + '.*?' +
                             escapeForRegex( encodeURIComponent( this.page ) ) ); break;
 			case 2: toFind = quoted( escapeForJsString( this.url ) ); break;
 		}
 		var lineNums = [], lines = targetWikitext.split( '\n' );
-		for( var i = 0; i < lines.length; i++ ) {
-			if( toFind.test( lines[i] ) ) {
+		for ( var i = 0; i < lines.length; i++ ) {
+			if ( toFind.test( lines[ i ] ) ) {
 				lineNums.push( i );
 			}
 		}
@@ -220,16 +220,16 @@
 			var lineNums = that.getLineNums( wikitext ),
 				newWikitextLines = wikitext.split( '\n' );
 
-			if( disabled ) {
+			if ( disabled ) {
 				lineNums.forEach( function ( lineNum ) {
-					if( newWikitextLines[lineNum].trim().indexOf( '//' ) != 0 ) {
-						newWikitextLines[lineNum] = '//' + newWikitextLines[lineNum].trim();
+					if ( newWikitextLines[ lineNum ].trim().indexOf( '//' ) != 0 ) {
+						newWikitextLines[ lineNum ] = '//' + newWikitextLines[ lineNum ].trim();
 					}
 				} );
 			} else {
 				lineNums.forEach( function ( lineNum ) {
-					if( newWikitextLines[lineNum].trim().indexOf( '//' ) == 0 ) {
-						newWikitextLines[lineNum] = newWikitextLines[lineNum].replace( /^\s*\/\/\s*/, '' );
+					if ( newWikitextLines[ lineNum ].trim().indexOf( '//' ) == 0 ) {
+						newWikitextLines[ lineNum ] = newWikitextLines[ lineNum ].replace( /^\s*\/\/\s*/, '' );
 					}
 				} );
 			}
@@ -254,7 +254,7 @@
 	 * Move this import to another file.
 	 */
 	Import.prototype.move = function ( newTarget ) {
-		if( this.target === newTarget ) return;
+		if ( this.target === newTarget ) return;
 		var old = new Import( this.page, this.wiki, this.url, this.target, this.disabled );
 		this.target = newTarget;
 		return $.when( old.uninstall(), this.install() );
@@ -272,13 +272,13 @@
 				titles: SKINS.map( getFullTarget ).join( '|' )
 			}
 		).then( function ( data ) {
-			if( data && data.query && data.query.pages ) {
+			if ( data && data.query && data.query.pages ) {
 				var result = {};
 				prefixLength = mw.config.get( 'wgUserName' ).length + 6;
 				Object.values( data.query.pages ).forEach( function ( moreData ) {
 					var nameWithoutExtension = new mw.Title( moreData.title ).getNameText();
 					var targetName = nameWithoutExtension.substring( nameWithoutExtension.indexOf( '/' ) + 1 );
-					result[targetName] = moreData.revisions ? moreData.revisions[0].slots.main['*'] : null;
+					result[ targetName ] = moreData.revisions ? moreData.revisions[ 0 ].slots.main[ '*' ] : null;
 				} );
 				return result;
 			}
@@ -289,15 +289,15 @@
 		return getAllTargetWikitexts().then( function ( wikitexts ) {
 			Object.keys( wikitexts ).forEach( function ( targetName ) {
 				var targetImports = [];
-				if( wikitexts[ targetName ] ) {
+				if ( wikitexts[ targetName ] ) {
 					var lines = wikitexts[ targetName ].split( '\n' );
 					var currImport;
-					for( var i = 0; i < lines.length; i++ ) {
-						if( currImport = Import.fromJs( lines[i], targetName ) ) {
+					for ( var i = 0; i < lines.length; i++ ) {
+						if ( currImport = Import.fromJs( lines[ i ], targetName ) ) {
 							targetImports.push( currImport );
 							scriptCount++;
-							if( currImport.type === 0 ) {
-								if( !localScriptsByName[ currImport.page ] )
+							if ( currImport.type === 0 ) {
+								if ( !localScriptsByName[ currImport.page ] )
 									localScriptsByName[ currImport.page ] = [];
 								localScriptsByName[ currImport.page ].push( currImport.target );
 							}
@@ -309,7 +309,6 @@
 		} );
 	}
 
-
 	/*
 	 * "Normalizes" (standardizes the format of) lines in the given
 	 * config page.
@@ -319,11 +318,11 @@
 			var lines = wikitext.split( '\n' ),
 				newLines = Array( lines.length ),
 				currImport;
-			for( var i = 0; i < lines.length; i++ ) {
-				if( currImport = Import.fromJs( lines[i], target ) ) {
-					newLines[i] = currImport.toJs();
+			for ( var i = 0; i < lines.length; i++ ) {
+				if ( currImport = Import.fromJs( lines[ i ], target ) ) {
+					newLines[ i ] = currImport.toJs();
 				} else {
-					newLines[i] = lines[i];
+					newLines[ i ] = lines[ i ];
 				}
 			}
 			return api.postWithEditToken( {
@@ -336,8 +335,8 @@
 	}
 
 	function conditionalReload( openPanel ) {
-		if( window.scriptInstallerAutoReload ) {
-			if( openPanel ) document.cookie = 'open_script_installer=yes';
+		if ( window.scriptInstallerAutoReload ) {
+			if ( openPanel ) document.cookie = 'open_script_installer=yes';
 			window.location.reload( true );
 		}
 	}
@@ -372,7 +371,7 @@
 				$( '<label>' )
 					.attr( 'for', 'siMove' )
 					.text( STRINGS.showMoveLinks ) ) );
-		if( scriptCount > NUM_SCRIPTS_FOR_SEARCH ) {
+		if ( scriptCount > NUM_SCRIPTS_FOR_SEARCH ) {
 			container.append( $( '<div>' )
 				.attr( 'class', 'filter-container' )
 				.append(
@@ -383,7 +382,7 @@
 						.attr( { 'id': 'siQuickFilter', 'type': 'text' } )
 						.on( 'input', function () {
 							var filterString = $( this ).val();
-							if( filterString ) {
+							if ( filterString ) {
 								var sel = "#script-installer-panel li[name*='" +
                                         $.escapeSelector( $( this ).val() ) + "']";
 								$( '#script-installer-panel li.script' ).toggle( false );
@@ -402,7 +401,7 @@
 			var fmtTargetName = ( targetName === 'common'
 				? STRINGS.skinCommon
 				: targetName );
-			if( targetImports.length ) {
+			if ( targetImports.length ) {
 				container.append(
 					$( '<h2>' ).append(
 						fmtTargetName,
@@ -459,8 +458,8 @@
 													var PROMPT = STRINGS.movePrompt + ' ' + SKINS.join( ', ' );
 													do {
 														dest = ( window.prompt( PROMPT ) || '' ).toLowerCase();
-													} while( dest && SKINS.indexOf( dest ) < 0 )
-													if( !dest ) return;
+													} while ( dest && SKINS.indexOf( dest ) < 0 )
+													if ( !dest ) return;
 													$( this ).text( STRINGS.moveProgressMsg );
 													anImport.move( dest ).done( function () {
 														conditionalReload( true );
@@ -484,14 +483,14 @@
 		var pageName = mw.config.get( 'wgPageName' );
 
 		// Namespace 2 is User
-		if( namespaceNumber === 2 &&
+		if ( namespaceNumber === 2 &&
                 pageName.indexOf( '/' ) > 0 ) {
 			var contentModel = mw.config.get( 'wgPageContentModel' );
-			if( contentModel === 'javascript' ) {
+			if ( contentModel === 'javascript' ) {
 				var prefixLength = mw.config.get( 'wgUserName' ).length + 6;
-				if( pageName.indexOf( USER_NAMESPACE_NAME + ':' + mw.config.get( 'wgUserName' ) ) === 0 ) {
+				if ( pageName.indexOf( USER_NAMESPACE_NAME + ':' + mw.config.get( 'wgUserName' ) ) === 0 ) {
 					var skinIndex = SKINS.indexOf( pageName.substring( prefixLength ).slice( 0, -3 ) );
-					if( skinIndex >= 0 ) {
+					if ( skinIndex >= 0 ) {
 						return $( '<abbr>' ).text( STRINGS.cannotInstall )
 							.attr( 'title', STRINGS.cannotInstallSkin );
 					}
@@ -504,13 +503,13 @@
 		}
 
 		// Namespace 8 is MediaWiki
-		if( namespaceNumber === 8 ) {
+		if ( namespaceNumber === 8 ) {
 			return $( '<a>' ).text( STRINGS.installViaPreferences )
 				.attr( 'href', mw.util.getUrl( 'Special:Preferences' ) + '#mw-prefsection-gadgets' );
 		}
 
 		var editRestriction = mw.config.get( 'wgRestrictionEdit' ) || [];
-		if( ( namespaceNumber !== 2 && namespaceNumber !== 8 ) &&
+		if ( ( namespaceNumber !== 2 && namespaceNumber !== 8 ) &&
             ( editRestriction.indexOf( 'sysop' ) >= 0 ||
                 editRestriction.indexOf( 'editprotected' ) >= 0 ) ) {
 			installElement.append( ' ',
@@ -521,7 +520,7 @@
 			addingInstallLink = true;
 		}
 
-		if( addingInstallLink ) {
+		if ( addingInstallLink ) {
 			var fixedPageName = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
 			installElement.prepend( $( '<a>' )
 				.attr( 'id', 'script-installer-main-install' )
@@ -531,7 +530,7 @@
 			// If the script is installed but disabled, allow the user to enable it
 			var allScriptsInTarget = imports[ localScriptsByName[ fixedPageName ] ];
 			var importObj = allScriptsInTarget && allScriptsInTarget.find( function ( anImport ) { return anImport.page === fixedPageName; } );
-			if( importObj && importObj.disabled ) {
+			if ( importObj && importObj.disabled ) {
 				installElement.append( ' | ',
 					$( '<a>' )
 						.attr( 'id', 'script-installer-main-enable' )
@@ -559,7 +558,7 @@
 				' | ',
 				$( '<a>' )
 					.text( STRINGS.manageUserScripts ).click( function () {
-						if( !document.getElementById( 'script-installer-panel' ) ) {
+						if ( !document.getElementById( 'script-installer-panel' ) ) {
 							$( '#mw-content-text' ).before( makePanel() );
 						} else {
 							$( '#script-installer-panel' ).remove();
@@ -584,12 +583,12 @@
 			if ( infoboxScriptField.html() !== infoboxScriptField.text() ) {
 				var lnk = infoboxScriptField.find( 'a' );
 				if ( !lnk.hasClass( 'external' ) ) {
-					scriptName = /\/wiki\/(.*)/.exec( lnk.attr( 'href' ) )[1];
+					scriptName = /\/wiki\/(.*)/.exec( lnk.attr( 'href' ) )[ 1 ];
 				}
 			} else {
 				scriptName = infoboxScriptField.text();
 			}
-			scriptName = /user:.+?\/.+?.js/i.exec( scriptName )[0];
+			scriptName = /user:.+?\/.+?.js/i.exec( scriptName )[ 0 ];
 			$( this ).children( 'tbody' ).append( $( '<tr>' ).append( $( '<td>' )
 				.attr( 'colspan', '2' )
 				.addClass( 'script-installer-ibx' )
@@ -603,11 +602,11 @@
 	function makeLocalInstallClickHandler( scriptName ) {
 		return function () {
 			var $this = $( this );
-			if( $this.text() === STRINGS.installLinkText ) {
+			if ( $this.text() === STRINGS.installLinkText ) {
 				var okay = window.confirm(
 					STRINGS.bigSecurityWarning.replace( '$1',
 						STRINGS.securityWarningSection.replace( '$1', scriptName ) ) );
-				if( okay ) {
+				if ( okay ) {
 					$( this ).text( STRINGS.installProgressMsg )
 					Import.ofLocal( scriptName, window.scriptInstallerInstallTarget ).install().done( function () {
 						$( this ).text( STRINGS.uninstallLinkText );
@@ -648,9 +647,9 @@
 				titles: title
 			}
 		).then( function ( data ) {
-			var pageId = Object.keys( data.query.pages )[0];
-			if( data.query.pages[pageId].revisions ) {
-				return data.query.pages[pageId].revisions[0].slots.main['*'];
+			var pageId = Object.keys( data.query.pages )[ 0 ];
+			if ( data.query.pages[ pageId ].revisions ) {
+				return data.query.pages[ pageId ].revisions[ 0 ].slots.main[ '*' ];
 			}
 			return '';
 		} );
@@ -738,23 +737,23 @@
 		} );
 	}
 
-	function getFullTarget ( target ) {
+	function getFullTarget( target ) {
 		return USER_NAMESPACE_NAME + ':' + mw.config.get( 'wgUserName' ) + '/' +
                 target + '.js';
 	}
 
 	// From https://stackoverflow.com/a/10192255
-	function uniques( array ){
-		return array.filter( function( el, index, arr ) {
+	function uniques( array ) {
+		return array.filter( function ( el, index, arr ) {
 			return index === arr.indexOf( el );
-		});
+		} );
 	}
 
-	if( window.scriptInstallerAutoReload === undefined ) {
+	if ( window.scriptInstallerAutoReload === undefined ) {
 		window.scriptInstallerAutoReload = true;
 	}
 
-	if( window.scriptInstallerInstallTarget === undefined ) {
+	if ( window.scriptInstallerInstallTarget === undefined ) {
 		window.scriptInstallerInstallTarget = 'common'; // by default, install things to the user's common.js
 	}
 
@@ -767,13 +766,13 @@
 		api = new mw.Api();
 		buildImportList().then( function () {
 			attachInstallLinks();
-			if( jsPage ) showUi();
+			if ( jsPage ) showUi();
 
 			// Auto-open the panel if we set the cookie to do so (see `conditionalReload()`)
-			if( document.cookie.indexOf( 'open_script_installer=yes' ) >= 0 ) {
+			if ( document.cookie.indexOf( 'open_script_installer=yes' ) >= 0 ) {
 				document.cookie = 'open_script_installer=; expires=Thu, 01 Jan 1970 00:00:01 GMT';
 				$( "#script-installer-top-container a:contains('Manage')" ).trigger( 'click' );
 			}
 		} );
 	} );
-} ());
+}() );
