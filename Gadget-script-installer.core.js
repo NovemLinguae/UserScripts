@@ -598,7 +598,7 @@
 			let scriptName = mw.config.get( 'wgPageName' );
 			const isHyperlink = $infoboxScriptField.html() !== $infoboxScriptField.text();
 			if ( isHyperlink ) {
-				const $link = $infoboxScriptField.find( 'a' );
+				const $link = $infoboxScriptField.find( 'a' ).first();
 				const isExternalLink = $link.hasClass( 'external' );
 				if ( !isExternalLink ) {
 					scriptName = /\/wiki\/(.*)/.exec( $link.attr( 'href' ) )[ 1 ];
