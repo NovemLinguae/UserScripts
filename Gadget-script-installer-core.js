@@ -106,8 +106,8 @@
 			disabled = false;
 		}
 		const URL_RGX = /^(?:https?:)?\/\/(.+?)\.org\/w\/index\.php\?.*?title=(.+?(?:&|$))/;
-		let match;
-		if ( match = URL_RGX.exec( url ) ) {
+		const match = URL_RGX.exec( url );
+		if ( match ) {
 			const title = decodeURIComponent( match[ 2 ].replace( /&$/, '' ) ),
 				wiki = decodeURIComponent( match[ 1 ] );
 			return new Import( title, wiki, null, target, disabled );
@@ -117,13 +117,14 @@
 
 	Import.fromJs = function ( line, target ) {
 		const IMPORT_RGX = /^\s*(\/\/)?\s*importScript\s*\(\s*(?:"|')(.+?)(?:"|')\s*\)/;
-		let match;
-		if ( match = IMPORT_RGX.exec( line ) ) {
+		let match = IMPORT_RGX.exec( line );
+		if ( match ) {
 			return Import.ofLocal( unescapeForJsString( match[ 2 ] ), target, !!match[ 1 ] );
 		}
 
 		const LOADER_RGX = /^\s*(\/\/)?\s*mw\.loader\.load\s*\(\s*(?:"|')(.+?)(?:"|')\s*\)/;
-		if ( match = LOADER_RGX.exec( line ) ) {
+		match = LOADER_RGX.exec( line );
+		if ( match ) {
 			return Import.ofUrl( unescapeForJsString( match[ 2 ] ), target, !!match[ 1 ] );
 		}
 	};
@@ -306,7 +307,8 @@
 					const lines = wikitexts[ targetName ].split( '\n' );
 					let currImport;
 					for ( let i = 0; i < lines.length; i++ ) {
-						if ( currImport = Import.fromJs( lines[ i ], targetName ) ) {
+						currImport = Import.fromJs( lines[ i ], targetName );
+						if ( currImport ) {
 							targetImports.push( currImport );
 							scriptCount++;
 							if ( currImport.type === 0 ) {
@@ -333,7 +335,8 @@
 				newLines = Array( lines.length );
 			let currImport;
 			for ( let i = 0; i < lines.length; i++ ) {
-				if ( currImport = Import.fromJs( lines[ i ], target ) ) {
+				currImport = Import.fromJs( lines[ i ], target );
+				if ( currImport ) {
 					newLines[ i ] = currImport.toJs();
 				} else {
 					newLines[ i ] = lines[ i ];
