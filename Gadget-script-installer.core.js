@@ -92,13 +92,17 @@
 	}
 
 	Import.ofLocal = function ( page, target, disabled ) {
-		if ( disabled === undefined ) disabled = false;
+		if ( disabled === undefined ) {
+			disabled = false;
+		}
 		return new Import( page, null, null, target, disabled );
 	};
 
 	/** URL to Import. Assumes wgScriptPath is "/w" */
 	Import.ofUrl = function ( url, target, disabled ) {
-		if ( disabled === undefined ) disabled = false;
+		if ( disabled === undefined ) {
+			disabled = false;
+		}
 		var URL_RGX = /^(?:https?:)?\/\/(.+?)\.org\/w\/index\.php\?.*?title=(.+?(?:&|$))/;
 		var match;
 		if ( match = URL_RGX.exec( url ) ) {
@@ -254,7 +258,9 @@
 	 * Move this import to another file.
 	 */
 	Import.prototype.move = function ( newTarget ) {
-		if ( this.target === newTarget ) return;
+		if ( this.target === newTarget ) {
+			return;
+		}
 		var old = new Import( this.page, this.wiki, this.url, this.target, this.disabled );
 		this.target = newTarget;
 		return $.when( old.uninstall(), this.install() );
@@ -297,8 +303,9 @@
 							targetImports.push( currImport );
 							scriptCount++;
 							if ( currImport.type === 0 ) {
-								if ( !localScriptsByName[ currImport.page ] )
+								if ( !localScriptsByName[ currImport.page ] ) {
 									localScriptsByName[ currImport.page ] = [];
+								}
 								localScriptsByName[ currImport.page ].push( currImport.target );
 							}
 						}
@@ -336,7 +343,9 @@
 
 	function conditionalReload( openPanel ) {
 		if ( window.scriptInstallerAutoReload ) {
-			if ( openPanel ) document.cookie = 'open_script_installer=yes';
+			if ( openPanel ) {
+				document.cookie = 'open_script_installer=yes';
+			}
 			window.location.reload( true );
 		}
 	}
@@ -459,7 +468,9 @@
 													do {
 														dest = ( window.prompt( PROMPT ) || '' ).toLowerCase();
 													} while ( dest && SKINS.indexOf( dest ) < 0 );
-													if ( !dest ) return;
+													if ( !dest ) {
+														return;
+													}
 													$( this ).text( STRINGS.moveProgressMsg );
 													anImport.move( dest ).done( function () {
 														conditionalReload( true );
@@ -529,7 +540,9 @@
 
 			// If the script is installed but disabled, allow the user to enable it
 			var allScriptsInTarget = imports[ localScriptsByName[ fixedPageName ] ];
-			var importObj = allScriptsInTarget && allScriptsInTarget.find( function ( anImport ) { return anImport.page === fixedPageName; } );
+			var importObj = allScriptsInTarget && allScriptsInTarget.find( function ( anImport ) {
+				return anImport.page === fixedPageName; 
+			} );
 			if ( importObj && importObj.disabled ) {
 				installElement.append( ' | ',
 					$( '<a>' )
@@ -616,7 +629,9 @@
 			} else {
 				$( this ).text( STRINGS.uninstallProgressMsg );
 				var uninstalls = uniques( localScriptsByName[ scriptName ] )
-					.map( function ( target ) { return Import.ofLocal( scriptName, target ).uninstall(); } );
+					.map( function ( target ) {
+						return Import.ofLocal( scriptName, target ).uninstall(); 
+					} );
 				$.when.apply( $, uninstalls ).then( function () {
 					$( this ).text( STRINGS.installLinkText );
 					conditionalReload( false );
@@ -766,7 +781,9 @@
 		api = new mw.Api();
 		buildImportList().then( function () {
 			attachInstallLinks();
-			if ( jsPage ) showUi();
+			if ( jsPage ) {
+				showUi();
+			}
 
 			// Auto-open the panel if we set the cookie to do so (see `conditionalReload()`)
 			if ( document.cookie.indexOf( 'open_script_installer=yes' ) >= 0 ) {
