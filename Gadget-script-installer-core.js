@@ -68,19 +68,19 @@
 	 * Constructs an Import. An Import is a line in a JS file that imports a
 	 * user script. Properties:
 	 *
-	 *  - "page" is a page name, such as "User:Foo/Bar.js".
-	 *  - "wiki" is a wiki from which the script is loaded, such as
-	 *    "en.wikipedia". If null, the script is local, on the user's
-	 *    wiki.
-	 *  - "url" is a URL that can be passed into mw.loader.load.
-	 *  - "target" is the title of the user subpage where the script is,
-	 *    without the .js ending: for example, "common".
-	 *  - "disabled" is whether this import is commented out.
-	 *  - "type" is 0 if local, 1 if remotely loaded, and 2 if URL.
-	 *
 	 * EXACTLY one of "page" or "url" are null for every Import. This
 	 * constructor should not be used directly; use the factory
 	 * functions (Import.ofLocal, Import.ofUrl, Import.fromJs) instead.
+	 *
+	 * @param page a page name, such as "User:Foo/Bar.js".
+	 * @param wiki a wiki from which the script is loaded, such as
+	 *    "en.wikipedia" If null, the script is local, on the user's
+	 *    wiki.
+	 * @param url a URL that can be passed into mw.loader.load.
+	 * @param target the title of the user subpage where the script is,
+	 *    without the .js ending: for example, "common".
+	 * @param disabled whether this import is commented out.
+	 * @param type 0 if local, 1 if remotely loaded, and 2 if URL.
 	 */
 	function Import( page, wiki, url, target, disabled ) {
 		this.page = page;
@@ -98,7 +98,9 @@
 		return new Import( page, null, null, target, disabled );
 	};
 
-	/** URL to Import. Assumes wgScriptPath is "/w" */
+	/**
+	 * URL to Import. Assumes wgScriptPath is "/w"
+	 */
 	Import.ofUrl = function ( url, target, disabled ) {
 		if ( disabled === undefined ) {
 			disabled = false;
@@ -321,7 +323,7 @@
 		} );
 	}
 
-	/*
+	/**
 	 * "Normalizes" (standardizes the format of) lines in the given
 	 * config page.
 	 */
@@ -759,7 +761,7 @@
 
 	function getFullTarget( target ) {
 		return USER_NAMESPACE_NAME + ':' + mw.config.get( 'wgUserName' ) + '/' +
-                target + '.js';
+            target + '.js';
 	}
 
 	// From https://stackoverflow.com/a/10192255
