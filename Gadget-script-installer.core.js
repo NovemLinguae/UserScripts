@@ -361,12 +361,12 @@
 	 *
 	 ********************************************/
 	function makePanel() {
-		const list = $( '<div>' ).attr( 'id', 'script-installer-panel' )
+		const $list = $( '<div>' ).attr( 'id', 'script-installer-panel' )
 			.append( $( '<header>' ).text( STRINGS.panelHeader ) );
-		const container = $( '<div>' ).addClass( 'container' ).appendTo( list );
+		const $container = $( '<div>' ).addClass( 'container' ).appendTo( $list );
 
 		// Container for checkboxes
-		container.append( $( '<div>' )
+		$container.append( $( '<div>' )
 			.attr( 'class', 'checkbox-container' )
 			.append(
 				$( '<input>' )
@@ -386,7 +386,7 @@
 					.attr( 'for', 'siMove' )
 					.text( STRINGS.showMoveLinks ) ) );
 		if ( scriptCount > NUM_SCRIPTS_FOR_SEARCH ) {
-			container.append( $( '<div>' )
+			$container.append( $( '<div>' )
 				.attr( 'class', 'filter-container' )
 				.append(
 					$( '<label>' )
@@ -408,7 +408,7 @@
 				) );
 
 			// Now, get the checkboxes out of the way
-			container.find( '.checkbox-container' )
+			$container.find( '.checkbox-container' )
 				.css( 'float', 'right' );
 		}
 		$.each( imports, function ( targetName, targetImports ) {
@@ -416,7 +416,7 @@
 				STRINGS.skinCommon :
 				targetName );
 			if ( targetImports.length ) {
-				container.append(
+				$container.append(
 					$( '<h2>' ).append(
 						fmtTargetName,
 						$( '<span>' )
@@ -488,12 +488,12 @@
 						} ) ) );
 			}
 		} );
-		return list;
+		return $list;
 	}
 
 	function buildCurrentPageInstallElement() {
 		let addingInstallLink = false; // will we be adding a legitimate install link?
-		const installElement = $( '<span>' ); // only used if addingInstallLink is set to true
+		const $installElement = $( '<span>' ); // only used if addingInstallLink is set to true
 
 		const namespaceNumber = mw.config.get( 'wgNamespaceNumber' );
 		const pageName = mw.config.get( 'wgPageName' );
@@ -528,7 +528,7 @@
 		if ( ( namespaceNumber !== 2 && namespaceNumber !== 8 ) &&
             ( editRestriction.indexOf( 'sysop' ) >= 0 ||
                 editRestriction.indexOf( 'editprotected' ) >= 0 ) ) {
-			installElement.append( ' ',
+			$installElement.append( ' ',
 				$( '<abbr>' ).append(
 					$( '<img>' ).attr( 'src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Achtung-yellow.svg/20px-Achtung-yellow.svg.png' ).addClass( 'warning' ),
 					STRINGS.insecure )
@@ -538,7 +538,7 @@
 
 		if ( addingInstallLink ) {
 			const fixedPageName = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
-			installElement.prepend( $( '<a>' )
+			$installElement.prepend( $( '<a>' )
 				.attr( 'id', 'script-installer-main-install' )
 				.text( localScriptsByName[ fixedPageName ] ? STRINGS.uninstallLinkText : STRINGS.installLinkText )
 				.on( 'click', makeLocalInstallClickHandler( fixedPageName ) ) );
@@ -549,7 +549,7 @@
 				return anImport.page === fixedPageName;
 			} );
 			if ( importObj && importObj.disabled ) {
-				installElement.append( ' | ',
+				$installElement.append( ' | ',
 					$( '<a>' )
 						.attr( 'id', 'script-installer-main-enable' )
 						.text( STRINGS.enableLinkText )
@@ -560,7 +560,7 @@
 							} );
 						} ) );
 			}
-			return installElement;
+			return $installElement;
 		}
 
 		return $( '<abbr>' ).text( STRINGS.cannotInstall + ' ' + STRINGS.insecure )
@@ -594,17 +594,17 @@
 		} );
 
 		$( 'table.infobox-user-script' ).each( function () {
-			const infoboxScriptField = $( this ).find( "th:contains('Source')" ).next();
+			const $infoboxScriptField = $( this ).find( "th:contains('Source')" ).next();
 			let scriptName = mw.config.get( 'wgPageName' );
-			const isHyperlink = infoboxScriptField.html() !== infoboxScriptField.text();
+			const isHyperlink = $infoboxScriptField.html() !== $infoboxScriptField.text();
 			if ( isHyperlink ) {
-				const link = infoboxScriptField.find( 'a' );
-				const isExternalLink = link.hasClass( 'external' );
+				const $link = $infoboxScriptField.find( 'a' );
+				const isExternalLink = $link.hasClass( 'external' );
 				if ( !isExternalLink ) {
-					scriptName = /\/wiki\/(.*)/.exec( link.attr( 'href' ) )[ 1 ];
+					scriptName = /\/wiki\/(.*)/.exec( $link.attr( 'href' ) )[ 1 ];
 				}
 			} else {
-				scriptName = infoboxScriptField.text();
+				scriptName = $infoboxScriptField.text();
 			}
 			scriptName = /user:.+?\/.+?.js/i.exec( scriptName )[ 0 ];
 			$( this ).children( 'tbody' ).append( $( '<tr>' ).append( $( '<td>' )

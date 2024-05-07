@@ -30,7 +30,6 @@
 		"no-jquery/no-class-state": "off",
 		"no-jquery/no-global-selector": "off",
 		"no-jquery/no-parse-html-literal": "off",
-		"no-jquery/variable-pattern": "off",
 		"no-shadow": "off",
 		"no-underscore-dangle": "off",
 		"security/detect-non-literal-regexp": "off",
