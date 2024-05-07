@@ -94,7 +94,7 @@
 	Import.ofLocal = function ( page, target, disabled ) {
 		if ( disabled === undefined ) disabled = false;
 		return new Import( page, null, null, target, disabled );
-	}
+	};
 
 	/** URL to Import. Assumes wgScriptPath is "/w" */
 	Import.ofUrl = function ( url, target, disabled ) {
@@ -107,7 +107,7 @@
 			return new Import( title, wiki, null, target, disabled );
 		}
 		return new Import( null, null, url, target, disabled );
-	}
+	};
 
 	Import.fromJs = function ( line, target ) {
 		var IMPORT_RGX = /^\s*(\/\/)?\s*importScript\s*\(\s*(?:"|')(.+?)(?:"|')\s*\)/;
@@ -120,7 +120,7 @@
 		if ( match = LOADER_RGX.exec( line ) ) {
 			return Import.ofUrl( unescapeForJsString( match[ 2 ] ), target, !!match[ 1 ] );
 		}
-	}
+	};
 
 	Import.prototype.getDescription = function ( useWikitext ) {
 		switch ( this.type ) {
@@ -128,7 +128,7 @@
 			case 1: return STRINGS.remoteUrlDesc.replace( '$1', this.page ).replace( '$2', this.wiki );
 			case 2: return this.url;
 		}
-	}
+	};
 
 	/**
 	 * Human-readable (NOT necessarily suitable for ResourceLoader) URL.
@@ -139,7 +139,7 @@
 			case 1: return '//' + this.wiki + '.org/wiki/' + encodeURI( this.page );
 			case 2: return this.url;
 		}
-	}
+	};
 
 	Import.prototype.toJs = function () {
 		var dis = this.disabled ? '//' : '',
@@ -151,7 +151,7 @@
 				/* FALL THROUGH */
 			case 2: return dis + "mw.loader.load('" + escapeForJsString( url ) + "');";
 		}
-	}
+	};
 
 	/**
 	 * Installs the import.
@@ -163,7 +163,7 @@
 			summary: STRINGS.installSummary.replace( '$1', this.getDescription( /* useWikitext */ true ) ) + ADVERT,
 			appendtext: '\n' + this.toJs()
 		} );
-	}
+	};
 
 	/**
 	 * Get all line numbers from the target page that mention
@@ -187,7 +187,7 @@
 			}
 		}
 		return lineNums;
-	}
+	};
 
 	/**
 	 * Uninstalls the given import. That is, delete all lines from the
@@ -207,7 +207,7 @@
 				text: newWikitext
 			} );
 		} );
-	}
+	};
 
 	/**
 	 * Sets whether the given import is disabled, based on the provided
@@ -243,12 +243,12 @@
 				text: newWikitextLines.join( '\n' )
 			} );
 		} );
-	}
+	};
 
 	Import.prototype.toggleDisabled = function () {
 		this.disabled = !this.disabled;
 		return this.setDisabled( this.disabled );
-	}
+	};
 
 	/**
 	 * Move this import to another file.
@@ -258,7 +258,7 @@
 		var old = new Import( this.page, this.wiki, this.url, this.target, this.disabled );
 		this.target = newTarget;
 		return $.when( old.uninstall(), this.install() );
-	}
+	};
 
 	function getAllTargetWikitexts() {
 		return $.getJSON(
@@ -358,7 +358,7 @@
 				$( '<input>' )
 					.attr( { 'id': 'siNormalize', 'type': 'checkbox' } )
 					.click( function () {
-						$( '.normalize-wrapper' ).toggle( 0 )
+						$( '.normalize-wrapper' ).toggle( 0 );
 					} ),
 				$( '<label>' )
 					.attr( 'for', 'siNormalize' )
@@ -366,7 +366,7 @@
 				$( '<input>' )
 					.attr( { 'id': 'siMove', 'type': 'checkbox' } )
 					.click( function () {
-						$( '.move-wrapper' ).toggle( 0 )
+						$( '.move-wrapper' ).toggle( 0 );
 					} ),
 				$( '<label>' )
 					.attr( 'for', 'siMove' )
@@ -458,7 +458,7 @@
 													var PROMPT = STRINGS.movePrompt + ' ' + SKINS.join( ', ' );
 													do {
 														dest = ( window.prompt( PROMPT ) || '' ).toLowerCase();
-													} while ( dest && SKINS.indexOf( dest ) < 0 )
+													} while ( dest && SKINS.indexOf( dest ) < 0 );
 													if ( !dest ) return;
 													$( this ).text( STRINGS.moveProgressMsg );
 													anImport.move( dest ).done( function () {
@@ -607,16 +607,16 @@
 					STRINGS.bigSecurityWarning.replace( '$1',
 						STRINGS.securityWarningSection.replace( '$1', scriptName ) ) );
 				if ( okay ) {
-					$( this ).text( STRINGS.installProgressMsg )
+					$( this ).text( STRINGS.installProgressMsg );
 					Import.ofLocal( scriptName, window.scriptInstallerInstallTarget ).install().done( function () {
 						$( this ).text( STRINGS.uninstallLinkText );
 						conditionalReload( false );
 					}.bind( this ) );
 				}
 			} else {
-				$( this ).text( STRINGS.uninstallProgressMsg )
+				$( this ).text( STRINGS.uninstallProgressMsg );
 				var uninstalls = uniques( localScriptsByName[ scriptName ] )
-					.map( function ( target ) { return Import.ofLocal( scriptName, target ).uninstall(); } )
+					.map( function ( target ) { return Import.ofLocal( scriptName, target ).uninstall(); } );
 				$.when.apply( $, uninstalls ).then( function () {
 					$( this ).text( STRINGS.installLinkText );
 					conditionalReload( false );
