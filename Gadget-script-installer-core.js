@@ -72,6 +72,8 @@
 	 * constructor should not be used directly; use the factory
 	 * functions (Import.ofLocal, Import.ofUrl, Import.fromJs) instead.
 	 *
+	 * this.type = 0 if local, 1 if remotely loaded, and 2 if URL.
+	 *
 	 * @param page a page name, such as "User:Foo/Bar.js".
 	 * @param wiki a wiki from which the script is loaded, such as
 	 *    "en.wikipedia" If null, the script is local, on the user's
@@ -80,7 +82,6 @@
 	 * @param target the title of the user subpage where the script is,
 	 *    without the .js ending: for example, "common".
 	 * @param disabled whether this import is commented out.
-	 * @param type 0 if local, 1 if remotely loaded, and 2 if URL.
 	 */
 	function Import( page, wiki, url, target, disabled ) {
 		this.page = page;
