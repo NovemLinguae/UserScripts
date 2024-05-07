@@ -365,7 +365,7 @@
 			.attr( 'class', 'checkbox-container' )
 			.append(
 				$( '<input>' )
-					.attr( { 'id': 'siNormalize', 'type': 'checkbox' } )
+					.attr( { id: 'siNormalize', type: 'checkbox' } )
 					.click( function () {
 						$( '.normalize-wrapper' ).toggle( 0 );
 					} ),
@@ -373,7 +373,7 @@
 					.attr( 'for', 'siNormalize' )
 					.text( STRINGS.showNormalizeLinks ),
 				$( '<input>' )
-					.attr( { 'id': 'siMove', 'type': 'checkbox' } )
+					.attr( { id: 'siMove', type: 'checkbox' } )
 					.click( function () {
 						$( '.move-wrapper' ).toggle( 0 );
 					} ),
@@ -388,7 +388,7 @@
 						.attr( 'for', 'siQuickFilter' )
 						.text( STRINGS.quickFilter ),
 					$( '<input>' )
-						.attr( { 'id': 'siQuickFilter', 'type': 'text' } )
+						.attr( { id: 'siQuickFilter', type: 'text' } )
 						.on( 'input', function () {
 							var filterString = $( this ).val();
 							if ( filterString ) {
