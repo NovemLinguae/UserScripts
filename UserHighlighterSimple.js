@@ -7,6 +7,7 @@ class UserHighlighterSimple {
 	 * @param {Window} window
 	 */
 	constructor( $, mw, window ) {
+		// eslint-disable-next-line no-jquery/variable-pattern
 		this.$ = $;
 		this.mw = mw;
 		this.window = window;

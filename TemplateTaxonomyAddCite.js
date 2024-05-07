@@ -10,6 +10,7 @@ Adds some buttons (Cite iNaturalist, Cite WoRMS, Cite NCBI, Cite Other) to the e
 class TemplateTaxonomyAddCite {
 	constructor( mw, $ ) {
 		this.mw = mw;
+		// eslint-disable-next-line no-jquery/variable-pattern
 		this.$ = $;
 	}
 

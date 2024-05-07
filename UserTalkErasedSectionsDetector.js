@@ -9,6 +9,7 @@ Useful for detecting if a WP:PERM applicant is whitewashing their User Talk page
 class ErasedSectionsDetector {
 	constructor( mw, $ ) {
 		this.mw = mw;
+		// eslint-disable-next-line no-jquery/variable-pattern
 		this.$ = $;
 	}
 

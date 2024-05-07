@@ -15,6 +15,7 @@
 class MarkFreeUseRationale {
 	constructor( mw, $ ) {
 		this.mw = mw;
+		// eslint-disable-next-line no-jquery/variable-pattern
 		this.$ = $;
 	}
 
