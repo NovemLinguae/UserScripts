@@ -235,13 +235,13 @@
 
 			if ( disabled ) {
 				lineNums.forEach( function ( lineNum ) {
-					if ( newWikitextLines[ lineNum ].trim().indexOf( '//' ) != 0 ) {
+					if ( newWikitextLines[ lineNum ].trim().indexOf( '//' ) !== 0 ) {
 						newWikitextLines[ lineNum ] = '//' + newWikitextLines[ lineNum ].trim();
 					}
 				} );
 			} else {
 				lineNums.forEach( function ( lineNum ) {
-					if ( newWikitextLines[ lineNum ].trim().indexOf( '//' ) == 0 ) {
+					if ( newWikitextLines[ lineNum ].trim().indexOf( '//' ) === 0 ) {
 						newWikitextLines[ lineNum ] = newWikitextLines[ lineNum ].replace( /^\s*\/\/\s*/, '' );
 					}
 				} );
