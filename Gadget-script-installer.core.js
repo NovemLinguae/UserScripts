@@ -569,7 +569,6 @@
 	}
 
 	function showUi() {
-		var fixedPageName = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
 		$( '#firstHeading' ).append( $( '<span>' )
 			.attr( 'id', 'script-installer-top-container' )
 			.append(
