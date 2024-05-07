@@ -286,7 +286,6 @@
 		).then( function ( data ) {
 			if ( data && data.query && data.query.pages ) {
 				const result = {};
-				prefixLength = mw.config.get( 'wgUserName' ).length + 6;
 				Object.values( data.query.pages ).forEach( function ( moreData ) {
 					const nameWithoutExtension = new mw.Title( moreData.title ).getNameText();
 					const targetName = nameWithoutExtension.substring( nameWithoutExtension.indexOf( '/' ) + 1 );
