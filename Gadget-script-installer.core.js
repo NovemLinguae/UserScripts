@@ -596,11 +596,12 @@
 		$( 'table.infobox-user-script' ).each( function () {
 			const infoboxScriptField = $( this ).find( "th:contains('Source')" ).next();
 			let scriptName = mw.config.get( 'wgPageName' );
-			// quick test to check if we are dealing with a link
-			if ( infoboxScriptField.html() !== infoboxScriptField.text() ) {
-				const lnk = infoboxScriptField.find( 'a' );
-				if ( !lnk.hasClass( 'external' ) ) {
-					scriptName = /\/wiki\/(.*)/.exec( lnk.attr( 'href' ) )[ 1 ];
+			const isHyperlink = infoboxScriptField.html() !== infoboxScriptField.text();
+			if ( isHyperlink ) {
+				const link = infoboxScriptField.find( 'a' );
+				const isExternalLink = link.hasClass( 'external' );
+				if ( !isExternalLink ) {
+					scriptName = /\/wiki\/(.*)/.exec( link.attr( 'href' ) )[ 1 ];
 				}
 			} else {
 				scriptName = infoboxScriptField.text();
