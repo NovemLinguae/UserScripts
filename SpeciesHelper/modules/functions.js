@@ -1,218 +1,231 @@
+/* eslint-disable */
 import { MOSOrderPositionFinder } from "./MOSOrderPositionFinder";
 import { Inflect } from "./Inflect";
+/* eslint-enable */
 
 // TODO: convert to class. name it SHUtil or SpeciesHelperUtil or something. or move all these to main and make a giant SpeciesHelperController class, then extract some classes out of that
 
-export async function getWikicodeOfDiff(diffID) {
-	if ( ! mw.config.get('wgCurRevisionId') ) return ''; // if page is deleted, return blank
-	var wikicode = '';
-	diffID = encodeURIComponent(diffID);
-	await $.ajax({
-		url: 'https://en.wikipedia.org/w/api.php?action=parse&oldid='+diffID+'&prop=wikitext&formatversion=2&format=json',
-		success: function (result) {
-			wikicode = result['parse']['wikitext'];
+export async function getWikicodeOfDiff( diffID ) {
+	const pageIsDeleted = !mw.config.get( 'wgCurRevisionId' );
+	if ( pageIsDeleted ) {
+		return '';
+	}
+	let wikicode = '';
+	diffID = encodeURIComponent( diffID );
+	await $.ajax( {
+		url: 'https://en.wikipedia.org/w/api.php?action=parse&oldid=' + diffID + '&prop=wikitext&formatversion=2&format=json',
+		success: function ( result ) {
+			wikicode = result.parse.wikitext;
 		},
-		dataType: "json",
-	});
+		dataType: 'json'
+	} );
 	return wikicode;
 }
 
-export async function getWikidataID(title) {
-	let api = new mw.ForeignApi('https://www.wikidata.org/w/api.php');
-	let response = await api.get( {
-		"action": "wbsearchentities",
-		"format": "json",
-		"search": title,
-		"language": "en"
+export async function getWikidataID( title ) {
+	const api = new mw.ForeignApi( 'https://www.wikidata.org/w/api.php' );
+	const response = await api.get( {
+		action: 'wbsearchentities',
+		format: 'json',
+		search: title,
+		language: 'en'
 	} );
-	if ( ! response.search.length ) return '';
-	return response.search[0].id;
+	if ( !response.search.length ) {
+		return '';
+	}
+	return response.search[ 0 ].id;
 }
 
-export async function getTaxa(genus) {
+export async function getTaxa( genus ) {
 	// Getting tree of life via API notes: https://en.wikipedia.org/wiki/Wikipedia_talk:Automated_taxobox_system#Family_for_user_script - {{#invoke:Autotaxobox|listAll|Bellis}} → Bellis-genus, Astereae-tribus, Asterodae-supertribus, etc.
-	let api = new mw.Api();
-	let response = await api.get( {
-		"action": "expandtemplates",
-		"format": "json",
-		"text": `{{#invoke:Autotaxobox|listAll|${genus}}}`,
-		"prop": "wikitext"
+	const api = new mw.Api();
+	const response = await api.get( {
+		action: 'expandtemplates',
+		format: 'json',
+		text: `{{#invoke:Autotaxobox|listAll|${ genus }}}`,
+		prop: 'wikitext'
 	} );
 	let taxa = response.expandtemplates.wikitext;
-	if ( taxa.match(/^[^-]+-$/i) ) { // when taxonomy template is missing, it will return something like Genus-
+	if ( taxa.match( /^[^-]+-$/i ) ) { // when taxonomy template is missing, it will return something like Genus-
 		taxa = '';
 	}
 	return taxa;
 }
 
-export async function doPagesExist(listOfPages) {
-	let api = new mw.Api();
-	let response = await api.get( {                   
-		"action": "query",
-		"format": "json",
-		"prop": "revisions",
-		"titles": listOfPages.join('|'), // | is an illegal title character, so no need to escape it
+export async function doPagesExist( listOfPages ) {
+	const api = new mw.Api();
+	const response = await api.get( {
+		action: 'query',
+		format: 'json',
+		prop: 'revisions',
+		titles: listOfPages.join( '|' ) // | is an illegal title character, so no need to escape it
 	} );
-	let listOfLivePages = [];
-	let responsePages = response.query.pages;
-	for ( let [key, value] of Object.entries(responsePages) ) {
-		if ( parseInt(key) !== NaN && parseInt(key) > 0 ) {
-			listOfLivePages.push(value.title);
+	const listOfLivePages = [];
+	const responsePages = response.query.pages;
+	for ( const [ key, value ] of Object.entries( responsePages ) ) {
+		if ( parseInt( key ) !== NaN && parseInt( key ) > 0 ) {
+			listOfLivePages.push( value.title );
 		}
 	}
 	return listOfLivePages;
 }
 
-export function regExEscape(string) {
-	return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+export function regExEscape( string ) {
+	return string.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ); // $& means the whole matched string
 }
 
-export function goToShowChangesScreen(titleWithNamespaceAndUnderscores, wikicode, editSummaryItems) {
-	let titleEncoded = encodeURIComponent(titleWithNamespaceAndUnderscores);
-	let wgServer = mw.config.get('wgServer');
-	let wgScriptPath = mw.config.get('wgScriptPath');
-	let baseURL = wgServer + wgScriptPath + '/';
+export function goToShowChangesScreen( titleWithNamespaceAndUnderscores, wikicode, editSummaryItems ) {
+	const titleEncoded = encodeURIComponent( titleWithNamespaceAndUnderscores );
+	const wgServer = mw.config.get( 'wgServer' );
+	const wgScriptPath = mw.config.get( 'wgScriptPath' );
+	const baseURL = wgServer + wgScriptPath + '/';
 	// https://stackoverflow.com/a/12464290/3480193
-	$(`<form action="${baseURL}index.php?title=${titleEncoded}&action=submit" method="POST"/>`)
-		.append($('<input type="hidden" name="wpTextbox1">').val(wikicode))
-		.append($('<input type="hidden" name="wpSummary">').val(editSummaryItems))
-		.append($('<input type="hidden" name="mode">').val('preview'))
-		.append($('<input type="hidden" name="wpDiff">').val('Show changes'))
-		.append($('<input type="hidden" name="wpUltimateParam">').val('1'))
-		.appendTo($(document.body)) //it has to be added somewhere into the <body>
-		.submit();
+	$( `<form action="${ baseURL }index.php?title=${ titleEncoded }&action=submit" method="POST"/>` )
+		.append( $( '<input type="hidden" name="wpTextbox1">' ).val( wikicode ) )
+		.append( $( '<input type="hidden" name="wpSummary">' ).val( editSummaryItems ) )
+		.append( $( '<input type="hidden" name="mode">' ).val( 'preview' ) )
+		.append( $( '<input type="hidden" name="wpDiff">' ).val( 'Show changes' ) )
+		.append( $( '<input type="hidden" name="wpUltimateParam">' ).val( '1' ) )
+		.appendTo( $( document.body ) ) // it has to be added somewhere into the <body>
+		.trigger( 'submit' );
 }
 
-export function shouldRunOnThisPage(title) {
+export function shouldRunOnThisPage( title ) {
 	// don't run when not viewing articles
-	let action = mw.config.get('wgAction');
-	if ( action != 'view' ) return false;
-	
+	const action = mw.config.get( 'wgAction' );
+	if ( action !== 'view' ) {
+		return false;
+	}
+
 	// don't run when viewing diffs
-	//let isDiff = mw.config.get('wgDiffNewId');
-	//if ( isDiff ) return false;
-	
-	let isDeletedPage = ( ! mw.config.get('wgCurRevisionId') );
-	if ( isDeletedPage ) return false;
-	
+	// let isDiff = mw.config.get('wgDiffNewId');
+	// if ( isDiff ) return false;
+
+	const isDeletedPage = ( !mw.config.get( 'wgCurRevisionId' ) );
+	if ( isDeletedPage ) {
+		return false;
+	}
+
 	// Only run in mainspace or draftspace
-	let namespace = mw.config.get('wgNamespaceNumber');
-	let isMainspaceOrDraftspace = ( [0, 118].includes(namespace) );
-	if ( ! isMainspaceOrDraftspace && ! title.startsWith('User:Novem_Linguae/sandbox') ) {
+	const namespace = mw.config.get( 'wgNamespaceNumber' );
+	const isMainspaceOrDraftspace = ( [ 0, 118 ].includes( namespace ) );
+	if ( !isMainspaceOrDraftspace && !title.startsWith( 'User:Novem_Linguae/sandbox' ) ) {
 		return false;
 	}
 
 	return true;
 }
 
-export function getPagesToCheck(taxa, listOfNonLatinSpeciesCategories) {
-	let depthToCheck = 20; // there's an API limit on the # of pages you can check. possible to get around this with multiple API calls, if needed.
-	let chunk = taxa.slice(0, depthToCheck);
+export function getPagesToCheck( taxa, listOfNonLatinSpeciesCategories ) {
+	const depthToCheck = 20; // there's an API limit on the # of pages you can check. possible to get around this with multiple API calls, if needed.
+	const chunk = taxa.slice( 0, depthToCheck );
 	let pagesToCheck = [];
 	// Check several levels of these
 	let i = 0;
 	for ( let piece of chunk ) {
 		i++;
 		// handle edge case "Incertae sedis" or "Incertae sedis/something"
-		piece = piece.replace('Incertae sedis', '');
-		piece = piece.replace('/', '');
-		if ( ! piece ) continue;
+		piece = piece.replace( 'Incertae sedis', '' );
+		piece = piece.replace( '/', '' );
+		if ( !piece ) {
+			continue;
+		}
 		// stub
-		pagesToCheck.push(`Template:${piece}-stub`);
+		pagesToCheck.push( `Template:${ piece }-stub` );
 		// category
-		pagesToCheck.push(`Category:${piece}`);
- 		// some genus categories have disambugators at the end, such as (genus) or (plant). check for this edge case
+		pagesToCheck.push( `Category:${ piece }` );
+		// some genus categories have disambugators at the end, such as (genus) or (plant). check for this edge case
 		if ( i === 1 ) {
-			pagesToCheck.push(`Category:${piece} (genus)`);
+			pagesToCheck.push( `Category:${ piece } (genus)` );
 		}
 		// skip {{Viola-stub}}, false positive (is for the instrument, not the genus)
-		pagesToCheck = deleteFromArray('Template:Viola-stub', pagesToCheck);
+		pagesToCheck = deleteFromArray( 'Template:Viola-stub', pagesToCheck );
 	}
 
 	// Replace any latin stubs that have non-latin equivalents, with the non-latin stub
-	let listOfNonLatinSpeciesStubs = {
+	const listOfNonLatinSpeciesStubs = {
 		// SENTENCE CASE. Left side spaces, right side dashes. Usually singular.
 		// latin (deprecated) -> non-latin (preferred)
 		// '': 'Abyssochrysidae', // TODO: make Template:Taxonomy
-		'Acanthocephala': 'Acanthocephalan',
+		Acanthocephala: 'Acanthocephalan',
 		// '': 'Agonoxeninae', // "disputed"
 		// '': 'Alucitoidea', // Template:Taxonomy has a /? after it
-		'Ammonoidea': 'Ammonite',
+		Ammonoidea: 'Ammonite',
 		// '': 'Ancylonotini',
-		'Anomodontia': 'Anomodont',
+		Anomodontia: 'Anomodont',
 		'Anthiinae (beetle)': 'AnthiinaeBeetle',
-		'Archosauria': 'Archosaur',
-		'Arthropoda': 'Arthropod',
+		Archosauria: 'Archosaur',
+		Arthropoda: 'Arthropod',
 		// '': 'Australia-asterid',
 		// '': 'Australia-eudicot',
 		// '': 'Australia-plant',
 		// '': 'Australia-rosid',
 		// '': 'Autostichinae', // TODO: make Template:Taxonomy
-		'Bambusoideae': 'Bamboo',
-		'Bryophyta': 'Bryophyte',
-		'Chiroptera': 'Bat',
-		'Anthophila': 'Bee',
+		Bambusoideae: 'Bamboo',
+		Bryophyta: 'Bryophyte',
+		Chiroptera: 'Bat',
+		Anthophila: 'Bee',
 		// '': 'Bicyclus', // TODO: make Template:Taxonomy
-		'Bikonta': 'Bikont',
-		'Osteichthyes': 'Bony-fish',
-		'Brachiopoda': 'Brachiopod',
+		Bikonta: 'Bikont',
+		Osteichthyes: 'Bony-fish',
+		Brachiopoda: 'Brachiopod',
 		// '': 'Bradina', // TODO: make Template:Taxonomy
 		// '': 'Bryophyte', // proposed, polyphyletic
-		'Bryozoa': 'Bryozoan',
+		Bryozoa: 'Bryozoan',
 		// '': 'Buccinulidae', // TODO: make Template:Taxonomy
-		'Rhopalocera': 'Butterfly',
+		Rhopalocera: 'Butterfly',
 		// '': 'Cabniini', // TODO: make Template:Taxonomy
-		'Gymnophiona': 'Caecilian',
+		Gymnophiona: 'Caecilian',
 		// '': 'Caliphyllidae', // disputed
 		// '': 'Canid',
 		// '': 'Carposina',
 		// '': 'Ceromitia',
 		// '': 'Cettiidae‎',
-		'Chamaeleonidae': 'Chameleon',
+		Chamaeleonidae: 'Chameleon',
 		// '': 'Chilinidae',
-		'Chilodontaidae': 'Chilodontidae-gastropod',
+		Chilodontaidae: 'Chilodontidae-gastropod',
 		// '': 'Chlamydephoridae',
 		// '': 'Chordate',
 		// '': 'Ciliate',
 		// '': 'Cochlicopidae',
-		'Colubridae': 'Colubrids',
-		'Pinophyta': 'Conifer',
+		Colubridae: 'Colubrids',
+		Pinophyta: 'Conifer',
 		// '': 'Conodont',
-		'Copepoda': 'Copepod',
-		'Crustacea': 'Crustacean',
+		Copepoda: 'Copepod',
+		Crustacea: 'Crustacean',
 		// '': 'Cryptoblabini',
-		'Sepiida': 'Cuttlefish',
+		Sepiida: 'Cuttlefish',
 		// '': 'Cycad',
-		'Zygoptera': 'Damselfly',
-		'Decapoda': 'Decapod',
+		Zygoptera: 'Damselfly',
+		Decapoda: 'Decapod',
 		// '': 'Depressaria',
 		// '': 'Dialidae',
 		// '': 'Diatom',
-		'Dinoflagellata': 'Dinoflagellate',
-		'Dinosauria': 'Dinosaur',
-		'Diprotodontia': 'Diprotodont',
-		'Dermaptera': 'Earwig',
+		Dinoflagellata: 'Dinoflagellate',
+		Dinosauria: 'Dinosaur',
+		Diprotodontia: 'Diprotodont',
+		Dermaptera: 'Earwig',
 		// '': 'Eatoniellidae',
 		// '': 'Eburodacrys',
-		'Echinodermata': 'Echinoderm',
+		Echinodermata: 'Echinoderm',
 		// '': 'Egesina',
 		// '': 'Elaphidiini',
 		// '': 'Eoophyla',
 		// '': 'Erinaceomorpha',
-		'Eukaryota': 'Eukaryote',
+		Eukaryota: 'Eukaryote',
 		// '': 'Eventoedungulate',
-		'Fabaceae': 'Fabaceae-tree',
-		'Felidae': 'Feline',
-		'Polypodiophyta': 'Fern',
-		'Lampyridae': 'Firefly',
-		'Platyhelminthes': 'Flatworm',
-		'Flavobacteriia': 'Flavobacteria',
-		'Siphonaptera': 'Flea',
-		'Pteropodoidea': 'Fruit-bat',
+		Fabaceae: 'Fabaceae-tree',
+		Felidae: 'Feline',
+		Polypodiophyta: 'Fern',
+		Lampyridae: 'Firefly',
+		Platyhelminthes: 'Flatworm',
+		Flavobacteriia: 'Flavobacteria',
+		Siphonaptera: 'Flea',
+		Pteropodoidea: 'Fruit-bat',
 		// '': 'Glipa',
 		// '': 'Glottulinae',
-		'Poaceae': 'Grass',
-		'Marmotini': 'Ground-squirrel',
+		Poaceae: 'Grass',
+		Marmotini: 'Ground-squirrel',
 		// '': 'Haplotrematidae',
 		// '': 'Hemichordate',
 		// '': 'Heterokont',
@@ -225,41 +238,41 @@ export function getPagesToCheck(taxa, listOfNonLatinSpeciesCategories) {
 		// '': 'Isomerase',
 		// '': 'Jordanoleiopus',
 		// '': 'Lactobacilli',
-		'Lagomorpha': 'Lagomorph',
+		Lagomorpha: 'Lagomorph',
 		// '': 'Lamprosema',
-		'Phyllostomidae': 'Leafnosed-bat',
+		Phyllostomidae: 'Leafnosed-bat',
 		// '': 'Leptostylus',
 		// '': 'Lepturges',
 		// '': 'Ligase',
-		'Sarcopterygii': 'Lobefinned-fish',
-		'Phthiraptera': 'Louse',
+		Sarcopterygii: 'Lobefinned-fish',
+		Phthiraptera: 'Louse',
 		// '': 'Lyase',
-		'Lycophytes': 'Lycophyte',
+		Lycophytes: 'Lycophyte',
 		// '': 'Macrosphenidae‎',
-		'Magnoliids': 'Magnoliid',
-		'Mammalia': 'Mammal',
-		'Marsupialia': 'Marsupial',
+		Magnoliids: 'Magnoliid',
+		Mammalia: 'Mammal',
+		Marsupialia: 'Marsupial',
 		// '': 'Megomphicidae',
 		// '': 'Methiini',
 		// '': 'Miaenia',
-		'Mollusca': 'Mollusc',
-		'Simiiformes': 'Monkey',
+		Mollusca: 'Mollusc',
+		Simiiformes: 'Monkey',
 		// '': 'Muroid',
 		// '': 'Mythimnini',
 		// '': 'Nacoleia',
 		// '': 'Neoibidionini',
 		// '': 'Netechma',
-		'Platyrrhini': 'Newworld-monkey',
+		Platyrrhini: 'Newworld-monkey',
 		// '': 'Nitrobacteraceae',
 		// '': 'Nymphicula',
 		// '': 'Nyssodrysternum',
 		// '': 'Obtortionidae',
 		// '': 'Oddtoedungulate',
 		// '': 'Oemini',
-		'Cercopithecoidea': 'Oldworld-monkey',
+		Cercopithecoidea: 'Oldworld-monkey',
 		// '': 'Olivellidae',
 		// '': 'Opisthokont',
-		'Orchidaceae': 'Orchid',
+		Orchidaceae: 'Orchid',
 		// '': 'Oreodera',
 		// '': 'Oreohelicidae',
 		// '': 'Ornithischian',
@@ -281,8 +294,8 @@ export function getPagesToCheck(taxa, listOfNonLatinSpeciesCategories) {
 		// '': 'Placoderm',
 		// '': 'Plesiosaur',
 		// '': 'Poriferan',
-		'Eumeninae': 'Potter-wasp',
-		'Primates': 'Primate',
+		Eumeninae: 'Potter-wasp',
+		Primates: 'Primate',
 		// '': 'Prionapterygini',
 		// '': 'Procerithiidae',
 		// '': 'Propionibacterineae',
@@ -292,37 +305,37 @@ export function getPagesToCheck(taxa, listOfNonLatinSpeciesCategories) {
 		// '': 'Psaphidinae',
 		// '': 'Pseudolividae',
 		// '': 'Pseudonocardineae',
-		'Pterosauria': 'Pterosaur',
+		Pterosauria: 'Pterosaur',
 		// '': 'Pyramidulidae',
-		'Pyrausta': 'Pyrausta (moth)',
+		Pyrausta: 'Pyrausta (moth)',
 		// '': 'Rasboras',
 		// '': 'Remizidae‎',
-		'Rodentia': 'Rodent',
-		'Rosids': 'Rosid',
+		Rodentia: 'Rodent',
+		Rosids: 'Rosid',
 		// '': 'Rotifer',
-		'Urodela': 'Salamander',
+		Urodela: 'Salamander',
 		// '': 'Saurita',
 		// '': 'Sauropodomorph',
-		'Symphyta': 'Sawfly',
+		Symphyta: 'Sawfly',
 		// '': 'Scaliolidae',
 		// '': 'Scaphopod',
-		'Scorpiones': 'Scorpion',
-		'Selachimorpha': 'Shark',
-		'Soricidae': 'Shrew',
+		Scorpiones: 'Scorpion',
+		Selachimorpha: 'Shark',
+		Soricidae: 'Shrew',
 		// '': 'Siliquariidae',
 		// '': 'Siphonariidae',
-		'Serpentes': 'Snake',
+		Serpentes: 'Snake',
 		// '': 'Solenogaster',
 		// '': 'Spirochaetae',
 		// '': 'Springtail',
-		'Sciuridae': 'Squirrel',
+		Sciuridae: 'Squirrel',
 		// '': 'Stenalia',
 		// '': 'Stenothyridae',
 		// '': 'Stictopterinae',
 		// '': 'Strepsimaninae',
 		// '': 'Strobilopsidae',
 		// '': 'Subulinidae',
-		'Cygnus': 'Swan',
+		Cygnus: 'Swan',
 		// '': 'Synapsid',
 		// '': 'Tardigrade',
 		// '': 'Teliomycotina',
@@ -333,414 +346,422 @@ export function getPagesToCheck(taxa, listOfNonLatinSpeciesCategories) {
 		// '': 'Trigonochlamydidae',
 		// '': 'Trilobite',
 		// '': 'Truncatellidae',
-		'Oomycota': 'Watermould',
+		Oomycota: 'Watermould',
 		// '': 'Zetaproteobacteria', // TODO: create Template:Taxonomy
-		'Acariformes': 'Acari', // mites and ticks part 1
-		'Acoelomorpha': 'Xenacoelomorpha', // redirects to this parent taxon
-		'Actinopterygii': 'Rayfinned-fish',
-		'Amphibia': 'Amphibian',
-		'Amphipoda': 'Amphipod',
-		'Anatidae': 'Duck',
-		'Animalia': 'Animal',
-		'Anisoptera': 'Dragonfly',
-		'Annelida': 'Annelid',
+		Acariformes: 'Acari', // mites and ticks part 1
+		Acoelomorpha: 'Xenacoelomorpha', // redirects to this parent taxon
+		Actinopterygii: 'Rayfinned-fish',
+		Amphibia: 'Amphibian',
+		Amphipoda: 'Amphipod',
+		Anatidae: 'Duck',
+		Animalia: 'Animal',
+		Anisoptera: 'Dragonfly',
+		Annelida: 'Annelid',
 		// 'Apocrita': 'Wasp', // polyphyletic
-		'Arachnida': 'Arachnid',
-		'Araneae': 'Spider',
-		'Arecaceae': 'Palm',
+		Arachnida: 'Arachnid',
+		Araneae: 'Spider',
+		Arecaceae: 'Palm',
 		'Alsophila (plant)': 'Alsophila-plant',
-		'Astacoidea': 'Crayfish',
-		'Asterids': 'Asterid',
-		'Aves': 'Bird',
-		'Bivalvia': 'Bivalve',
-		'Blattodea': 'Cockroach',
-		'Brachyura': 'Crab',
-		'Bromeliaceae': 'Bromeliad',
-		'Cactaceae': 'Cactus',
-		'Cephalopoda': 'Cephalopod',
-		'Cnidaria': 'Cnidarian',
-		'Crocidurinae': 'Whitetoothed-shrew',
-		'Coffea': 'Coffee',
-		'Coleoptera': 'Beetle',
-		'Ctenophora': 'Ctenophore',
-		'Curculionoidea': 'Weevil',
-		'Decapodiformes': 'Squid',
-		'Demospongiae': 'Demosponge',
-		'Ephemeroptera': 'Mayfly',
-		'Formicidae': 'Ant',
-		'Fungi': 'Fungus',
-		'Gastropoda': 'Gastropod',
-		'Gekkota': 'Gecko',
-		'Heterocera': 'Moth',
-		'Insecta': 'Insect',
-		'Isopoda': 'Isopod',
-		'Isoptera': 'Termite',
+		Astacoidea: 'Crayfish',
+		Asterids: 'Asterid',
+		Aves: 'Bird',
+		Bivalvia: 'Bivalve',
+		Blattodea: 'Cockroach',
+		Brachyura: 'Crab',
+		Bromeliaceae: 'Bromeliad',
+		Cactaceae: 'Cactus',
+		Cephalopoda: 'Cephalopod',
+		Cnidaria: 'Cnidarian',
+		Crocidurinae: 'Whitetoothed-shrew',
+		Coffea: 'Coffee',
+		Coleoptera: 'Beetle',
+		Ctenophora: 'Ctenophore',
+		Curculionoidea: 'Weevil',
+		Decapodiformes: 'Squid',
+		Demospongiae: 'Demosponge',
+		Ephemeroptera: 'Mayfly',
+		Formicidae: 'Ant',
+		Fungi: 'Fungus',
+		Gastropoda: 'Gastropod',
+		Gekkota: 'Gecko',
+		Heterocera: 'Moth',
+		Insecta: 'Insect',
+		Isopoda: 'Isopod',
+		Isoptera: 'Termite',
 		'Mimosoid clade': 'Mimosoideae', // this one is weird. intentional though
-		'Monocots': 'Monocot',
-		'Myrmeleontidae': 'Antlion',
-		'Nematoda': 'Nematode',
-		'Nemertea': 'Nemertean',
-		'Octopoda': 'Octopus',
-		'Onychophora': 'Onychophore',
-		'Parasitiformes': 'Acari', // mites and ticks part 2
-		'Parastacoidea': 'Crayfish',
-		'Picidae': 'Woodpecker',
-		'Plantae': 'Plant',
-		'Psittaciformes': 'Parrot',
-		'Reptilia': 'Reptile',
-		'Salticidae': 'Jumping-spider',
-		'Scincidae': 'Skink',
-		'Siluriformes': 'Catfish',
-		'Soricinae': 'Redtoothed-shrew',
+		Monocots: 'Monocot',
+		Myrmeleontidae: 'Antlion',
+		Nematoda: 'Nematode',
+		Nemertea: 'Nemertean',
+		Octopoda: 'Octopus',
+		Onychophora: 'Onychophore',
+		Parasitiformes: 'Acari', // mites and ticks part 2
+		Parastacoidea: 'Crayfish',
+		Picidae: 'Woodpecker',
+		Plantae: 'Plant',
+		Psittaciformes: 'Parrot',
+		Reptilia: 'Reptile',
+		Salticidae: 'Jumping-spider',
+		Scincidae: 'Skink',
+		Siluriformes: 'Catfish',
+		Soricinae: 'Redtoothed-shrew',
 		// 'Squamata': 'Lizard', // paraphyletic
-		'Testudines': 'Turtle',
-		'Thysanoptera': 'Thrips',
-		'Trochilidae': 'Hummingbird',
+		Testudines: 'Turtle',
+		Thysanoptera: 'Thrips',
+		Trochilidae: 'Hummingbird'
 	};
-	for ( let key in listOfNonLatinSpeciesStubs ) {
-		for ( let key2 in pagesToCheck ) {
-			let stubNameToCheck = 'Template:' + key + '-stub';
-			let pageName = pagesToCheck[key2];
+	for ( const key in listOfNonLatinSpeciesStubs ) {
+		for ( const key2 in pagesToCheck ) {
+			const stubNameToCheck = 'Template:' + key + '-stub';
+			const pageName = pagesToCheck[ key2 ];
 			if ( pageName === stubNameToCheck ) {
-				pagesToCheck[key2] = 'Template:' + listOfNonLatinSpeciesStubs[key] + '-stub';
+				pagesToCheck[ key2 ] = 'Template:' + listOfNonLatinSpeciesStubs[ key ] + '-stub';
 			}
 		}
 	}
 
 	// Replace any latin categories that have non-latin equivalents, with the non-latin categories
-	for ( let key in listOfNonLatinSpeciesCategories ) {
-		for ( let key2 in pagesToCheck ) {
-			let stubNameToCheck = 'Category:' + key;
-			let pageName = pagesToCheck[key2];
+	for ( const key in listOfNonLatinSpeciesCategories ) {
+		for ( const key2 in pagesToCheck ) {
+			const stubNameToCheck = 'Category:' + key;
+			const pageName = pagesToCheck[ key2 ];
 			if ( pageName === stubNameToCheck ) {
-				pagesToCheck[key2] = 'Category:' + listOfNonLatinSpeciesCategories[key];
+				pagesToCheck[ key2 ] = 'Category:' + listOfNonLatinSpeciesCategories[ key ];
 			}
 		}
 	}
 	return pagesToCheck;
 }
 
-export function parseListOfPages(listOfPages, type) {
+export function parseListOfPages( listOfPages, type ) {
 	// get rid of entries that aren't of the correct type
 	switch ( type ) {
 		case 'category':
-			listOfPages = listOfPages.filter(function(str) {
-				return str.match(/^Category:.*$/i);
-			});
+			listOfPages = listOfPages.filter( function ( str ) {
+				return str.match( /^Category:.*$/i );
+			} );
 			break;
 		case 'navbox':
-			listOfPages = listOfPages.filter(function(str) {
-				return str.match(/^Template:.*(?<!-stub)$/i);
-			});
+			listOfPages = listOfPages.filter( function ( str ) {
+				return str.match( /^Template:.*(?<!-stub)$/i );
+			} );
 			break;
 		case 'stub':
-			listOfPages = listOfPages.filter(function(str) {
-				return str.match(/^Template:.*-stub$/i);
-			});
+			listOfPages = listOfPages.filter( function ( str ) {
+				return str.match( /^Template:.*-stub$/i );
+			} );
 			break;
 	}
 	// only return the deepest taxa that was found (the entry closest to the beginning of the list)
-	listOfPages = listOfPages[0] || '';
+	listOfPages = listOfPages[ 0 ] || '';
 	// get rid of Template: and Category:
-	return listOfPages.replace(/(?:Template:|Category:)/i, '');
+	return listOfPages.replace( /(?:Template:|Category:)/i, '' );
 }
 
-export function getAllTaxaCategories(listOfPages) {
-	listOfPages = listOfPages.filter(function(str) {
-		return str.match(/^Category:.*$/);
-	});
+export function getAllTaxaCategories( listOfPages ) {
+	listOfPages = listOfPages.filter( function ( str ) {
+		return str.match( /^Category:.*$/ );
+	} );
 	return listOfPages;
 }
 
 /** Fixes the order of the array, which got scrambled when running the API query. The correctOrder array is bigger and in order, the incorrectOrder array is smaller and scrambled. The result will be smaller and in order. */
-export function fixArrayOrder(correctOrder, incorrectOrder) {
-	return correctOrder.filter(function(str) {
-		return incorrectOrder.indexOf(str) !== -1;
-	});
+export function fixArrayOrder( correctOrder, incorrectOrder ) {
+	return correctOrder.filter( function ( str ) {
+		return incorrectOrder.indexOf( str ) !== -1;
+	} );
 }
 
 // TODO: write unit test for this function. maybe move it to a class
-export function countWords(wikicode) {
+export function countWords( wikicode ) {
 	// convert {{Blockquote}} to text
-	wikicode = wikicode.replace(/\{\{Blockquote\s*\|([^\}]*)\}\}/g, '$1');
+	wikicode = wikicode.replace( /\{\{Blockquote\s*\|([^}]*)\}\}/g, '$1' );
 
 	// strip templates
 	// TODO: handle nested templates
-	wikicode = wikicode.replace(/\{\{.*?\}\}/gsi, '');
+	wikicode = wikicode.replace( /\{\{.*?\}\}/gsi, '' );
 	// strip images
-	wikicode = wikicode.replace(/\[\[File:.*?\]\]/gsi, '');
+	wikicode = wikicode.replace( /\[\[File:.*?\]\]/gsi, '' );
 	// strip HTML comments
-	wikicode = wikicode.replace(/<!--.*?-->/gsi, '');
+	wikicode = wikicode.replace( /<!--.*?-->/gsi, '' );
 	// strip HTML tags and refs
-	wikicode = wikicode.replace(/<.*?.*?\/.*?>/gsi, '');
+	wikicode = wikicode.replace( /<.*?.*?\/.*?>/gsi, '' );
 	// strip heading formatting
-	wikicode = wikicode.replace(/ {0,}=={1,} {0,}/gsi, '');
+	wikicode = wikicode.replace( / {0,}=={1,} {0,}/gsi, '' );
 	// strip categories
-	wikicode = wikicode.replace(/\[\[:?Category:.*?\]\]/gsi, '');
+	wikicode = wikicode.replace( /\[\[:?Category:.*?\]\]/gsi, '' );
 	// handle piped wikilinks
 	// TODO: handle nested brackets (for example, a wikilink as an image caption)
-	wikicode = wikicode.replace(/\[\[[^\]]+\|([^\]]+)\]\]/gsi, '$1');
+	wikicode = wikicode.replace( /\[\[[^\]]+\|([^\]]+)\]\]/gsi, '$1' );
 	// handle simple wikilinks
-	wikicode = wikicode.replace(/\[\[/g, '').replace(/\]\]/g, '');
+	wikicode = wikicode.replace( /\[\[/g, '' ).replace( /\]\]/g, '' );
 	// strip bold and italics
-	wikicode = wikicode.replace(/'{2,}/g, '');
+	wikicode = wikicode.replace( /'{2,}/g, '' );
 	// consolidate whitespace
-	wikicode = wikicode.replace(/\s+/gsi, ' ');
+	wikicode = wikicode.replace( /\s+/gsi, ' ' );
 	// &nbsp; to space
-	wikicode = wikicode.replace(/&nbsp;/gsi, ' ');
+	wikicode = wikicode.replace( /&nbsp;/gsi, ' ' );
 
 	// In one of my test cases, there was a }} that didn't get deleted. But this is not detected by \w+, so no need to worry about it.
 
 	wikicode = wikicode.trim();
 
-	let wordCount = wikicode.match(/(\w+)/g).length;
+	const wordCount = wikicode.match( /(\w+)/g ).length;
 	return wordCount;
 }
 
-export function isMinorChange(wikicode, wikicode2) {
-	let wikicode2LowerCase = wikicode2.replace(/\n/g, '').toLowerCase().trim();
-	let wikicodeLowerCase = wikicode.replace(/\n/g, '').toLowerCase().trim();
+export function isMinorChange( wikicode, wikicode2 ) {
+	const wikicode2LowerCase = wikicode2.replace( /\n/g, '' ).toLowerCase().trim();
+	const wikicodeLowerCase = wikicode.replace( /\n/g, '' ).toLowerCase().trim();
 	return wikicode2LowerCase === wikicodeLowerCase;
 }
 
-export function arraysHaveSameValuesCaseInsensitive(array1, array2) {
-	if ( array1 === null && array2 === null ) return true;
-	if ( array1 === null || array2 === null ) return false;
+export function arraysHaveSameValuesCaseInsensitive( array1, array2 ) {
+	if ( array1 === null && array2 === null ) {
+		return true;
+	}
+	if ( array1 === null || array2 === null ) {
+		return false;
+	}
 	// https://stackoverflow.com/a/6230314/3480193
-	if ( array1.sort().join(',').toLowerCase() === array2.sort().join(',').toLowerCase() ) {
+	if ( array1.sort().join( ',' ).toLowerCase() === array2.sort().join( ',' ).toLowerCase() ) {
 		return true;
 	}
 	return false;
 }
 
-export function taxaStringToArray(taxa) {
+export function taxaStringToArray( taxa ) {
 	// get rid of "Life" at the end
-	taxa = taxa.replace(', Life-', '');
+	taxa = taxa.replace( ', Life-', '' );
 	// convert to array
-	taxa = taxa.split(', ');
+	taxa = taxa.split( ', ' );
 	// get rid of both -Genus and /Plantae
-	taxa = taxa.map(function(str) {
-		return str.replace(/[-\/].*?$/, '');
-	});
+	taxa = taxa.map( function ( str ) {
+		return str.replace( /[-/].*?$/, '' );
+	} );
 	return taxa;
 }
 
-export function deleteAllStubs(wikicode) {
-	return wikicode.replace(/\{\{[^\}]*\-stub\}\}\n/gi, '');
+export function deleteAllStubs( wikicode ) {
+	return wikicode.replace( /\{\{[^}]*-stub\}\}\n/gi, '' );
 }
 
-export function isSandbox(titleWithNamespaceAndUnderscores) {
-	return titleWithNamespaceAndUnderscores.match(/sandbox/i) ? true : false;
+export function isSandbox( titleWithNamespaceAndUnderscores ) {
+	return !!titleWithNamespaceAndUnderscores.match( /sandbox/i );
 }
 
-export async function getPageCreationDate(title) {
-	let api = new mw.Api();
-	let response = await api.get( {
-		"action": "query",
-		"format": "json",
-		"prop": "revisions",
-		"titles": title,
-		"rvlimit": "1",
-		"rvdir": "newer"
+export async function getPageCreationDate( title ) {
+	const api = new mw.Api();
+	const response = await api.get( {
+		action: 'query',
+		format: 'json',
+		prop: 'revisions',
+		titles: title,
+		rvlimit: '1',
+		rvdir: 'newer'
 	} );
-	let page = getFirstValueInObject(response.query.pages);
-	let pageCreatedDate = page.revisions[0].timestamp; // 2015-09-30T17:28:35Z
-	pageCreatedDate = pageCreatedDate.slice(0, 10); // keep the date, chop off the time
+	const page = getFirstValueInObject( response.query.pages );
+	let pageCreatedDate = page.revisions[ 0 ].timestamp; // 2015-09-30T17:28:35Z
+	pageCreatedDate = pageCreatedDate.slice( 0, 10 ); // keep the date, chop off the time
 	return pageCreatedDate;
 }
 
-export function getFirstValueInObject(obj) {
-	return obj[Object.keys(obj)[0]];
+export function getFirstValueInObject( obj ) {
+	return obj[ Object.keys( obj )[ 0 ] ];
 }
 
 // TODO: unit test failing in CI but not locally. this function isn't used anymore though. commenting out unit test.
-export function getDateOneYearAgo(today) {
+export function getDateOneYearAgo( today ) {
 	// https://stackoverflow.com/a/33070481/3480193
-    var year = today.getFullYear();
-    var month = today.getMonth();
-    var day = today.getDate();
-    var lastYear = new Date(year - 1, month, day + 1);
+	const year = today.getFullYear();
+	const month = today.getMonth();
+	const day = today.getDate();
+	const lastYear = new Date( year - 1, month, day + 1 );
 
 	// https://stackoverflow.com/a/29774197/3480193
-	return lastYear.toISOString().split('T')[0];
+	return lastYear.toISOString().split( 'T' )[ 0 ];
 }
 
-export function fixSpeciesParameterThatContainsGenus(wikicode2) {
-	let hasSpeciesBox = getSpeciesBox(wikicode2);
-	let hasGenusParameter = wikicode2.match(/\|\s*genus\s*=\s*([A-Za-z \(\)]+?)\s*[<\n|}]/);
-	let hasSpeciesParameter = wikicode2.match(/\|\s*species\s*=\s*([A-Za-z \(\)]+?)\s*[<\n|}]/);
+export function fixSpeciesParameterThatContainsGenus( wikicode2 ) {
+	const hasSpeciesBox = getSpeciesBox( wikicode2 );
+	const hasGenusParameter = wikicode2.match( /\|\s*genus\s*=\s*([A-Za-z ()]+?)\s*[<\n|}]/ );
+	const hasSpeciesParameter = wikicode2.match( /\|\s*species\s*=\s*([A-Za-z ()]+?)\s*[<\n|}]/ );
 	if ( hasSpeciesBox && hasGenusParameter && hasSpeciesParameter ) {
-		let genusParameter = hasGenusParameter[1];
-		let speciesParameter = hasSpeciesParameter[1];
-		if ( genusParameter === speciesParameter.split(' ')[0] ) {
-			wikicode2 = wikicode2.replace(/(\|\s*species\s*=\s*)([A-Za-z\(\)]+ )/, '$1');
+		const genusParameter = hasGenusParameter[ 1 ];
+		const speciesParameter = hasSpeciesParameter[ 1 ];
+		if ( genusParameter === speciesParameter.split( ' ' )[ 0 ] ) {
+			wikicode2 = wikicode2.replace( /(\|\s*species\s*=\s*)([A-Za-z()]+ )/, '$1' );
 		}
 	}
 	return wikicode2;
 }
 
-export function getSpeciesBox(wikicode2) {
-	return wikicode2.match(/\{\{(?:Speciesbox|Species[ _]box)/i);
+export function getSpeciesBox( wikicode2 ) {
+	return wikicode2.match( /\{\{(?:Speciesbox|Species[ _]box)/i );
 }
 
-export function removeItalicTitleIfSpeciesBoxPresent(wikicode2) {
-	let hasSpeciesBox = getSpeciesBox(wikicode2);
+export function removeItalicTitleIfSpeciesBoxPresent( wikicode2 ) {
+	const hasSpeciesBox = getSpeciesBox( wikicode2 );
 	if ( hasSpeciesBox ) {
 		// remove {{Italic title}}
-		wikicode2 = wikicode2.replace(/\{\{(?:Italic[ _]?title)[^}]*\}\}\n?/gsi, '');
+		wikicode2 = wikicode2.replace( /\{\{(?:Italic[ _]?title)[^}]*\}\}\n?/gsi, '' );
 	}
 	return wikicode2;
 }
 
-export function replaceReferencesWithReflist(wikicode2) {
-	let referencesTag = wikicode2.match(/<references ?\/>/i);
+export function replaceReferencesWithReflist( wikicode2 ) {
+	const referencesTag = wikicode2.match( /<references ?\/>/i );
 	if ( referencesTag ) {
-		wikicode2 = wikicode2.replace(/<references ?\/>/i, '{{Reflist}}');
+		wikicode2 = wikicode2.replace( /<references ?\/>/i, '{{Reflist}}' );
 	}
 	return wikicode2;
 }
 
-export function deleteFromArray(needle, haystack) {
-	const index = haystack.indexOf(needle);
-	if (index > -1) {
-		haystack.splice(index, 1);
+export function deleteFromArray( needle, haystack ) {
+	const index = haystack.indexOf( needle );
+	if ( index > -1 ) {
+		haystack.splice( index, 1 );
 	}
 	return haystack;
 }
 
 /** returns null if none, or ['Category:test1', 'Category:test2', etc.] if found */
-export function getListOfCategoriesFromWikitext(wikicode2) {
-	let allCategoriesRegEx = new RegExp(`(?<=\\[\\[:?)Category:.+?(?=\\]|\\|)`, 'gi');
-	return wikicode2.match(allCategoriesRegEx);
+export function getListOfCategoriesFromWikitext( wikicode2 ) {
+	const allCategoriesRegEx = /(?<=\[\[:?)Category:.+?(?=\]|\|)/gi;
+	return wikicode2.match( allCategoriesRegEx );
 }
 
-export function suggestShortDescriptionFromWikicode(wikicode2, disallowedList = []) {
+export function suggestShortDescriptionFromWikicode( wikicode2, disallowedList = [] ) {
 	// delete quotation marks
-	wikicode2 = wikicode2.replace(/"/g, '');
+	wikicode2 = wikicode2.replace( /"/g, '' );
 	// delete brackets, including the first part of the pipe
 	// TODO: handle nested brackets (for example, a wikilink as an image caption)
-	wikicode2 = wikicode2.replace(/\[\[(?:[^\|\]]+\|)?([^\]]+)\]\]/g, '$1');
+	wikicode2 = wikicode2.replace( /\[\[(?:[^|\]]+\|)?([^\]]+)\]\]/g, '$1' );
 	// delete templates
 	// TODO: handle nested templates
-	wikicode2 = wikicode2.replace(/\{\{.*?\}\}/gs, '');
+	wikicode2 = wikicode2.replace( /\{\{.*?\}\}/gs, '' );
 	// delete <ref></ref>
-	wikicode2 = wikicode2.replace(/<ref[^<]+<\/ref>/gis, '');
+	wikicode2 = wikicode2.replace( /<ref[^<]+<\/ref>/gis, '' );
 	// delete <ref />
-	wikicode2 = wikicode2.replace(/<ref[^\/]+\/>/gi, '');
+	wikicode2 = wikicode2.replace( /<ref[^/]+\/>/gi, '' );
 	// delete <!-- comments -->
-	wikicode2 = wikicode2.replace(/<!--.*?-->/gs, '');
+	wikicode2 = wikicode2.replace( /<!--.*?-->/gs, '' );
 
 	// exit if "is a species of" not found
-	let hasSpeciesPhrase = wikicode2.match(/ is a \[?\[?species\]?\]? of /i);
-	if ( ! hasSpeciesPhrase ) return '';
+	const hasSpeciesPhrase = wikicode2.match( / is a \[?\[?species\]?\]? of /i );
+	if ( !hasSpeciesPhrase ) {
+		return '';
+	}
 
 	// chop everything before and including "is a species of "
-	wikicode2 = wikicode2.replace(/^.*?is a \[?\[?species\]?\]? of /is, '');
+	wikicode2 = wikicode2.replace( /^.*?is a \[?\[?species\]?\]? of /is, '' );
 	// delete bold and italic formatting, without deleting their encasing word
-	wikicode2 = wikicode2.replace(/'{2,}/g, '');
+	wikicode2 = wikicode2.replace( /'{2,}/g, '' );
 	// delete anything after punctuation, including the punctuation. except punctuation that occurs mid-sentence, such as dash
-	wikicode2 = wikicode2.replace(/[~!@#$%^&*()_+`=\\\]\[{}|;':",./<>?].*$/s, '');
+	wikicode2 = wikicode2.replace( /[~!@#$%^&*()_+`=\\\][{}|;':",./<>?].*$/s, '' );
 	// chop certain adjectives that just make the short description longer and aren't that helpful
-	wikicode2 = wikicode2.replace(/(?:nocturnal|strepsirrhine|marine|small to medium)/gi, '');
+	wikicode2 = wikicode2.replace( /(?:nocturnal|strepsirrhine|marine|small to medium)/gi, '' );
 	// fix double spacing issues caused by above replace
-	wikicode2 = wikicode2.replace(/ {2,}/gi, ' ');
+	wikicode2 = wikicode2.replace( / {2,}/gi, ' ' );
 	// delete anything after certain conjunctions
-	wikicode2 = wikicode2.replace(/ (?:And|Belonging|Commonly|Described|Discovered|Endemic|Found|Known|Native|Observed|Occurring|That|which).*$/is, '');
+	wikicode2 = wikicode2.replace( / (?:And|Belonging|Commonly|Described|Discovered|Endemic|Found|Known|Native|Observed|Occurring|That|which).*$/is, '' );
 	// delete anything after the first encountered preposition, including the preposition
-	wikicode2 = wikicode2.replace(/ (?:Aboard|About|Above|According to|Across|After|Against|Ago|Ahead|Along|Along with|Alongside|Amid|Among|Anti|Apart from|Around|As|As for|As per|As to|As well as|Aside from|Astride|At|Atop|Away|Bar|Barring|Because of|Before|Behind|Below|Beneath|Beside|Besides|Between|Beyond|But|By|Circa|Close to|Concerning|Considering|Contrary to|Counting|Depending on|Despite|Down|Due to|During|Except|Except for|Excepting|Excluding|Far|Following|For|Forward of|From|Further to|Given|Gone|In|Including|Inside|Instead of|Into|Less|Like|Minus|Near|Near to|Next to|Notwithstanding|Of|On|Opposite|Other than|Out|Over|Owing to|Past|Pending|Per|Plus|Prior to|Pro|Re|Regarding|Regardless of|Round|Save|Save for|Saving|Since|Than|Thanks to|Through|Throughout|till|To|Together with|Toward|towards|Under|Underneath|Unlike|Until|Up|Versus|Via|With|Within|Worth)[.,!? ].*$/is, '');
+	wikicode2 = wikicode2.replace( / (?:Aboard|About|Above|According to|Across|After|Against|Ago|Ahead|Along|Along with|Alongside|Amid|Among|Anti|Apart from|Around|As|As for|As per|As to|As well as|Aside from|Astride|At|Atop|Away|Bar|Barring|Because of|Before|Behind|Below|Beneath|Beside|Besides|Between|Beyond|But|By|Circa|Close to|Concerning|Considering|Contrary to|Counting|Depending on|Despite|Down|Due to|During|Except|Except for|Excepting|Excluding|Far|Following|For|Forward of|From|Further to|Given|Gone|In|Including|Inside|Instead of|Into|Less|Like|Minus|Near|Near to|Next to|Notwithstanding|Of|On|Opposite|Other than|Out|Over|Owing to|Past|Pending|Per|Plus|Prior to|Pro|Re|Regarding|Regardless of|Round|Save|Save for|Saving|Since|Than|Thanks to|Through|Throughout|till|To|Together with|Toward|towards|Under|Underneath|Unlike|Until|Up|Versus|Via|With|Within|Worth)[.,!? ].*$/is, '' );
 	// trim
 	wikicode2 = wikicode2.trim();
 
 	// don't just regurgitate a taxa
-	for ( let disallowed of disallowedList ) {
-		let regEx = new RegExp(regExEscape(disallowed), 'i');
-		if ( disallowed && wikicode2.match(regEx) ) {
+	for ( const disallowed of disallowedList ) {
+		const regEx = new RegExp( regExEscape( disallowed ), 'i' );
+		if ( disallowed && wikicode2.match( regEx ) ) {
 			return '';
 		}
 	}
 
 	// Chop all words except the last word, which should be a noun
 	// Species of western saltwater crocodile -> Species of crocodile
-	//let firstWords = getFirstWords(wikicode2);
-	let lastWord = getLastWord(wikicode2);
-	lastWord = new Inflect().singularize(lastWord);
-	wikicode2 = /*firstWords +*/ lastWord;
+	// let firstWords = getFirstWords(wikicode2);
+	let lastWord = getLastWord( wikicode2 );
+	lastWord = new Inflect().singularize( lastWord );
+	wikicode2 = /* firstWords + */ lastWord;
 
 	// keep short description 40 characters or less, per WP:SDSHORT
-	if ( wikicode2.length + 11 > 40 ) return '';
+	if ( wikicode2.length + 11 > 40 ) {
+		return '';
+	}
 
 	// return {{Short description|Species of ...}}
 	if ( wikicode2 ) {
-		return `{{Short description|Species of ${wikicode2}}}`;
+		return `{{Short description|Species of ${ wikicode2 }}}`;
 	}
 	return '';
 }
 
 /** In a string such as "1 2 3 4", return "1 2 3 " */
-export function getFirstWords(wikicode2) {
-	let matches = wikicode2.match(/^(.*?)([^ ]*)$/m);
-	return matches[1];
+export function getFirstWords( wikicode2 ) {
+	const matches = wikicode2.match( /^(.*?)([^ ]*)$/m );
+	return matches[ 1 ];
 }
 
 /** In a string such as "1 2 3 4", return "4" */
-export function getLastWord(wikicode2) {
-	let matches = wikicode2.match(/^(.*?)([^ ]*)$/m);
-	return matches[2];
+export function getLastWord( wikicode2 ) {
+	const matches = wikicode2.match( /^(.*?)([^ ]*)$/m );
+	return matches[ 2 ];
 }
 
 /** convert =TitleHeading= to ==H2Heading== */
-export function convertH1ToH2(wikicode) {
-	return wikicode.replace(/^= ?([^=]*?) ?=$/gm, '== $1 ==');
+export function convertH1ToH2( wikicode ) {
+	return wikicode.replace( /^= ?([^=]*?) ?=$/gm, '== $1 ==' );
 }
 
 /** no more than 2 newlines (1 blank line) in a row. except stubs, which get 3 newlines (2 blank lines) */
-export function deleteMoreThanTwoEntersInARow(wikicode) {
+export function deleteMoreThanTwoEntersInARow( wikicode ) {
 	// fix \n[space]\n. If not fixed, this will mess up patterns below.
-	wikicode = wikicode.replace(/\n +\n/g, '\n\n');
+	wikicode = wikicode.replace( /\n +\n/g, '\n\n' );
 
 	// delete extra enters
-	wikicode = wikicode.replace(/\n{3,}/gm, "\n\n");
-	wikicode = wikicode.replace(/\n{2}(\{\{[^}]*stub\}\})/gi, '\n\n\n$1');
+	wikicode = wikicode.replace( /\n{3,}/gm, '\n\n' );
+	wikicode = wikicode.replace( /\n{2}(\{\{[^}]*stub\}\})/gi, '\n\n\n$1' );
 	return wikicode;
 }
 
-export function deleteMoreThanTwoEntersInARowBeforeReferences(wikicode, mopf) {
-	let referencesSectionPosition = mopf.getSectionPosition(wikicode, 'notesAndReferences');
-	let topHalf = wikicode.slice(0, referencesSectionPosition);
-	let bottomHalf = wikicode.slice(referencesSectionPosition);
-	topHalf = topHalf.replace(/\n{3,}/gm, "\n\n");
+export function deleteMoreThanTwoEntersInARowBeforeReferences( wikicode, mopf ) {
+	const referencesSectionPosition = mopf.getSectionPosition( wikicode, 'notesAndReferences' );
+	let topHalf = wikicode.slice( 0, referencesSectionPosition );
+	const bottomHalf = wikicode.slice( referencesSectionPosition );
+	topHalf = topHalf.replace( /\n{3,}/gm, '\n\n' );
 	wikicode = topHalf + bottomHalf;
 	return wikicode;
 }
 
-export function fixWhitespaceInCategories(wikicode) {
-	wikicode = wikicode.replace(/(\[\[:?Category:)\s*([^\]\|]+?)\s*(\]\])/gi, "$1$2$3");
-	wikicode = wikicode.replace(/(\[\[:?Category:)\s*([^\]\|]+?)\s*(\|)\s*([^\]\|]+?)\s*(\]\])/gi, "$1$2$3$4$5");
+export function fixWhitespaceInCategories( wikicode ) {
+	wikicode = wikicode.replace( /(\[\[:?Category:)\s*([^\]|]+?)\s*(\]\])/gi, '$1$2$3' );
+	wikicode = wikicode.replace( /(\[\[:?Category:)\s*([^\]|]+?)\s*(\|)\s*([^\]|]+?)\s*(\]\])/gi, '$1$2$3$4$5' );
 	return wikicode;
 }
 
-export function removeAuthorityControlIfTaxonbarPresent(wikicode2) {
-	let hasTaxonBar = wikicode2.match(/\{\{(?:Taxonbar|Taxon-bar|Taxobar|TaxonIDs|Taxon[ _]identifiers|Taxon[ _]bar)/i);
+export function removeAuthorityControlIfTaxonbarPresent( wikicode2 ) {
+	const hasTaxonBar = wikicode2.match( /\{\{(?:Taxonbar|Taxon-bar|Taxobar|TaxonIDs|Taxon[ _]identifiers|Taxon[ _]bar)/i );
 	if ( hasTaxonBar ) {
-		wikicode2 = wikicode2.replace(/\{\{(?:Authority[ _]control|Normdaten|Authoritycontrol|External[ _]identifiers|Autorité|Control[ _]de[ _]autoridades|전거[ _]통제|Normativna[ _]kontrola)\}\}\n/gi, '');
+		wikicode2 = wikicode2.replace( /\{\{(?:Authority[ _]control|Normdaten|Authoritycontrol|External[ _]identifiers|Autorité|Control[ _]de[ _]autoridades|전거[ _]통제|Normativna[ _]kontrola)\}\}\n/gi, '' );
 	}
 	return wikicode2;
 }
 
-export function removeEmptyDefaultSort(wikicode2) {
-	wikicode2 = wikicode2.replace(/\{\{(?:DEFAULTSORT|Default[ _]sort|SORTIERUNG)[:\|]?\s*\}\}\n?/gi, '');
+export function removeEmptyDefaultSort( wikicode2 ) {
+	wikicode2 = wikicode2.replace( /\{\{(?:DEFAULTSORT|Default[ _]sort|SORTIERUNG)[:|]?\s*\}\}\n?/gi, '' );
 	return wikicode2;
 }
 
-export function removeDefaultSortIdenticalToTitle(wikicode2, titleNoNamespaceNoUnderscores) {
-	let titleRegExEscaped = regExEscape(titleNoNamespaceNoUnderscores);
-	let regex = new RegExp(`\\{\\{(?:DEFAULTSORT|Default[ _]sort|SORTIERUNG)[:\\|]${titleRegExEscaped}\\}\\}\\n?`, 'gi');
-	wikicode2 = wikicode2.replace(regex, '');
+export function removeDefaultSortIdenticalToTitle( wikicode2, titleNoNamespaceNoUnderscores ) {
+	const titleRegExEscaped = regExEscape( titleNoNamespaceNoUnderscores );
+	const regex = new RegExp( `\\{\\{(?:DEFAULTSORT|Default[ _]sort|SORTIERUNG)[:\\|]${ titleRegExEscaped }\\}\\}\\n?`, 'gi' );
+	wikicode2 = wikicode2.replace( regex, '' );
 	return wikicode2;
 }
 
-export function addSafelistedStubs(newStubs, wikicode2) {
-	let stubSafelist = [
+export function addSafelistedStubs( newStubs, wikicode2 ) {
+	const stubSafelist = [
 		// Stubs that do not 1:1 correspond with taxonomy, but that should not be deleted
 		// SENTENCE CASE AND DASHES PLEASE, usually singular
 		'Australia-asterid',
@@ -760,83 +781,83 @@ export function addSafelistedStubs(newStubs, wikicode2) {
 		'Samoa',
 		'Solomons',
 		'Squat-lobster',
-		'Tree',
+		'Tree'
 	];
-	for ( let stub of stubSafelist ) {
-		let regexString = regExEscape(stub);
-		let isPresent = wikicode2.match(new RegExp('\\{\\{' + regexString + '-stub\\}\\}', 'i'));
-		if ( isPresent && ! newStubs.includes('{{' + stub + '-stub}}') ) {
-			newStubs.push('{{' + stub + '-stub}}');
+	for ( const stub of stubSafelist ) {
+		const regexString = regExEscape( stub );
+		const isPresent = wikicode2.match( new RegExp( '\\{\\{' + regexString + '-stub\\}\\}', 'i' ) );
+		if ( isPresent && !newStubs.includes( '{{' + stub + '-stub}}' ) ) {
+			newStubs.push( '{{' + stub + '-stub}}' );
 		}
 	}
 	return newStubs;
 }
 
-export function getTitleNoNamespace(title) {
-	return mw.Title.newFromText(title).getName(); // TODO: bug when the title contains a period, everything after the period is chopped, e.g. 
+export function getTitleNoNamespace( title ) {
+	return mw.Title.newFromText( title ).getName(); // TODO: bug when the title contains a period, everything after the period is chopped, e.g.
 }
 
-export function isSubSpecies(title, wikicode2) {
-	let titleContainsSubSpecies = title.includes('subsp.');
-	let wikicodeContainsInfraSpeciesBox = wikicode2.match(/\{\{Infraspeciesbox/i) !== null;
+export function isSubSpecies( title, wikicode2 ) {
+	const titleContainsSubSpecies = title.includes( 'subsp.' );
+	const wikicodeContainsInfraSpeciesBox = wikicode2.match( /\{\{Infraspeciesbox/i ) !== null;
 	return titleContainsSubSpecies || wikicodeContainsInfraSpeciesBox;
 }
 
-export function enableCategories(wikicode2, isDraft) {
-	if ( ! isDraft ) {
-		wikicode2 = wikicode2.replace(/\[\[:Category:/gi, '[[Category:');
+export function enableCategories( wikicode2, isDraft ) {
+	if ( !isDraft ) {
+		wikicode2 = wikicode2.replace( /\[\[:Category:/gi, '[[Category:' );
 	}
 	return wikicode2;
 }
 
-export function disableCategories(wikicode2, isDraft) {
+export function disableCategories( wikicode2, isDraft ) {
 	if ( isDraft ) {
-		wikicode2 = wikicode2.replace(/\[\[Category:/gi, '[[:Category:');
+		wikicode2 = wikicode2.replace( /\[\[Category:/gi, '[[:Category:' );
 	}
 	return wikicode2;
 }
 
-export function deleteGenusCategoryWithSpaceDisambiguator(wikicode2, genus, draftCategoryColon) {
-	let regEx = new RegExp(`\\[\\[${draftCategoryColon}Category:` + regExEscape(genus) + `\\| \\]\\]\\n`, 'i');
-	return wikicode2.replace(regEx, '');
+export function deleteGenusCategoryWithSpaceDisambiguator( wikicode2, genus, draftCategoryColon ) {
+	const regEx = new RegExp( `\\[\\[${ draftCategoryColon }Category:` + regExEscape( genus ) + '\\| \\]\\]\\n', 'i' );
+	return wikicode2.replace( regEx, '' );
 }
 
-export function removeDraftTagIfNotDraftspace(wikicode2, isDraft) {
+export function removeDraftTagIfNotDraftspace( wikicode2, isDraft ) {
 	if ( isDraft ) {
 		return wikicode2;
 	}
-	return wikicode2.replace(/\{\{Draft[^\}]*\}\}/gi, '');
+	return wikicode2.replace( /\{\{Draft[^}]*\}\}/gi, '' );
 }
 
-export function isDisambiguationPage(wikicode2) {
-	return Boolean(wikicode2.match(/disambiguation(?:\}\}|\|)/i));
+export function isDisambiguationPage( wikicode2 ) {
+	return Boolean( wikicode2.match( /disambiguation(?:\}\}|\|)/i ) );
 }
 
-export function isRedirectPage(wikicode2) {
-	return Boolean(wikicode2.match(/^[\n ]*#REDIRECT \[\[/is));
+export function isRedirectPage( wikicode2 ) {
+	return Boolean( wikicode2.match( /^[\n ]*#REDIRECT \[\[/is ) );
 }
 
-export function deleteStubTemplateIfAnyOtherStubsPresent(wikicode2) {
-	let hasNonGenericStub = wikicode2.match(/\{\{.+\-stub\}\}/gi);
-	let hasGenericStub = wikicode2.match(/\{\{stub\}\}/gi);
+export function deleteStubTemplateIfAnyOtherStubsPresent( wikicode2 ) {
+	const hasNonGenericStub = wikicode2.match( /\{\{.+-stub\}\}/gi );
+	const hasGenericStub = wikicode2.match( /\{\{stub\}\}/gi );
 	if ( hasNonGenericStub && hasGenericStub ) {
-		wikicode2 = wikicode2.replace(/\{\{stub\}\}\n?/gi, '');
+		wikicode2 = wikicode2.replace( /\{\{stub\}\}\n?/gi, '' );
 	}
 	return wikicode2;
 }
 
-export function getSpeciesboxTaxonAndParentParameters(wikicode2) {
-	let hasTaxonParameter = wikicode2.match(/\|\s*taxon\s*=\s*([A-Z][a-z]+) ([a-z]+)\s*[<\n|}]/);
-	if ( hasTaxonParameter )  {
-		let species = hasTaxonParameter[2];
-		let hasParentParameter = wikicode2.match(/\|\s*parent\s*=\s*([A-Za-z \(\)]+?)\s*[<\n|}]/);
+export function getSpeciesboxTaxonAndParentParameters( wikicode2 ) {
+	const hasTaxonParameter = wikicode2.match( /\|\s*taxon\s*=\s*([A-Z][a-z]+) ([a-z]+)\s*[<\n|}]/ );
+	if ( hasTaxonParameter ) {
+		const species = hasTaxonParameter[ 2 ];
+		const hasParentParameter = wikicode2.match( /\|\s*parent\s*=\s*([A-Za-z ()]+?)\s*[<\n|}]/ );
 		if ( hasParentParameter && species ) {
-			let taxonomyTemplateGenus = hasParentParameter[1];
-			let genusForAlert = taxonomyTemplateGenus;
+			const taxonomyTemplateGenus = hasParentParameter[ 1 ];
+			const genusForAlert = taxonomyTemplateGenus;
 			return {
-				'taxonomyTemplateGenus': taxonomyTemplateGenus,
-				'genusForAlert': genusForAlert,
-				'species': species,
+				taxonomyTemplateGenus: taxonomyTemplateGenus,
+				genusForAlert: genusForAlert,
+				species: species
 			};
 		}
 	}
