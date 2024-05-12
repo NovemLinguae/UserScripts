@@ -401,6 +401,10 @@ async function speciesHelper(title) {
 		'Iguanidae',
 		'Lizard',
 		'Potato',
+		// [[User talk:Novem Linguae/Scripts/SpeciesHelper#Dual Stub Removal]]
+		'Plant-disease',
+		// [[User talk:Novem Linguae/Scripts/SpeciesHelper#Dual Stub Removal]]
+		'Paleo-gastropod',
 	];
 	let skip = false;
 	for ( let stub of stubsThatTriggerSkip ) {
