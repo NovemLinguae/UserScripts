@@ -3,6 +3,8 @@ import { MOSOrderPositionFinder } from "./MOSOrderPositionFinder";
 import { Inflect } from "./Inflect";
 /* eslint-enable */
 
+/* eslint-disable security/detect-bidi-characters */
+
 // TODO: convert to class. name it SHUtil or SpeciesHelperUtil or something. or move all these to main and make a giant SpeciesHelperController class, then extract some classes out of that
 
 export async function getWikicodeOfDiff( diffID ) {
