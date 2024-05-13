@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# A script for developers to delete and recreate their localhost MediaWiki. Deletes and recreates core,extensions, and skins. Specify extensions and skins in the array below.
+# A script for developers to delete and recreate their localhost MediaWiki. Deletes and recreates core, extensions, and skins. Specify extensions and skins in the array below.
 # This script assumes: Docker, WSL/Ubuntu, MariaDB not SQLite, installation location of MediaWiki core is ~/mediawiki
 # TODO: just use advanced patchdemo docker instead of this script? https://gitlab.wikimedia.org/samtar/patchdemo/-/commit/d0fbe70728113c29520fad280bdc5a31ee2221b3
 
@@ -124,7 +124,7 @@ sudo tee -a ~/mediawiki/LocalSettings.php << EOL
 // ***************** EXTENSIONS & SKINS ********************
 EOL
 
-# make uploads/images directory writeable
+# make uploads directory writeable
 chmod 0777 ~/mediawiki/images
 
 # install extensions
