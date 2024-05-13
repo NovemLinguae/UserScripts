@@ -13,8 +13,8 @@ sshUsername="novemlinguae"
 # docker: make sure docker engine is running
 dockerStatus=$(docker --help)
 if [[ $dockerStatus =~ "could not be found" ]]; then
-	echo "Error: Docker is not running. Please start Docker, then try again."
-	exit 1
+  echo "Error: Docker is not running. Please start Docker, then try again."
+  exit 1
 fi
 
 # use node version 18. wikimedia currently uses this version
@@ -26,8 +26,8 @@ ssh-add ~/.ssh/id_ed25519
 
 # docker: delete database (volume = mediawiki_mariadbdata)
 if [ -d "$HOME/mediawiki" ]; then
-	cd ~/mediawiki || exit
-	docker compose down --volumes
+  cd ~/mediawiki || exit
+  docker compose down --volumes
 fi
 
 # delete files from previous installation
@@ -35,6 +35,7 @@ sudo rm -rfv ~/mediawiki
 
 # mediawiki core: download files
 # docker: download files (e.g. docker-compose.yml)
+cd ~/ || exit
 git clone "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/core" ~/mediawiki
 
 # docker: create .env file
@@ -58,20 +59,20 @@ EOF
 cat > ~/mediawiki/docker-compose.override.yml << EOF
 version: '3.7'
 services:
-	mariadb:
-		image: 'bitnami/mariadb:latest'
-		volumes:
-			- mariadbdata:/bitnami/mariadb
-		environment:
-			- MARIADB_ROOT_PASSWORD=root_password
-			- MARIADB_USER=my_user
-			- MARIADB_PASSWORD=my_password
-			- MARIADB_DATABASE=my_database
-		ports:
-			- 3306:3306
+  mariadb:
+    image: 'bitnami/mariadb:latest'
+    volumes:
+      - mariadbdata:/bitnami/mariadb
+    environment:
+      - MARIADB_ROOT_PASSWORD=root_password
+      - MARIADB_USER=my_user
+      - MARIADB_PASSWORD=my_password
+      - MARIADB_DATABASE=my_database
+    ports:
+      - 3306:3306
 volumes:
-	mariadbdata:
-		driver: local
+  mariadbdata:
+    driver: local
 EOF
 
 # start Docker
@@ -128,30 +129,30 @@ chmod 0777 ~/mediawiki/images
 
 # install extensions
 for extensionName in "${extensions[@]}"; do
-	cd ~/mediawiki/extensions || exit
-	git clone "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/extensions/$extensionName"
-	docker compose exec mediawiki composer update --working-dir "extensions/$extensionName"
-	cd "$extensionName" || exit
-	npm ci
-	mkdir .vscode
-	cd .vscode || exit
-	touch settings.json
-	printf "{\n\t\"intelephense.environment.includePaths\": [\n\t\t\"../../\"\n\t]\n}\n" >> settings.json
-	echo "wfLoadExtension( '$extensionName' );" | sudo tee -a ~/mediawiki/LocalSettings.php
+  cd ~/mediawiki/extensions || exit
+  git clone "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/extensions/$extensionName"
+  docker compose exec mediawiki composer update --working-dir "extensions/$extensionName"
+  cd "$extensionName" || exit
+  npm ci
+  mkdir .vscode
+  cd .vscode || exit
+  touch settings.json
+  printf "{\n\t\"intelephense.environment.includePaths\": [\n\t\t\"../../\"\n\t]\n}\n" >> settings.json
+  echo "wfLoadExtension( '$extensionName' );" | sudo tee -a ~/mediawiki/LocalSettings.php
 done
 
 # install skins
 for skinName in "${skins[@]}"; do
-	cd ~/mediawiki/skins || exit
-	git clone "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/skins/$skinName"
-	docker compose exec mediawiki composer update --working-dir "skins/$skinName"
-	cd "$skinName" || exit
-	npm ci
-	mkdir .vscode
-	cd .vscode || exit
-	touch settings.json
-	printf "{\n\t\"intelephense.environment.includePaths\": [\n\t\t\"../../\"\n\t]\n}\n" >> settings.json
-	echo "wfLoadSkin( '$skinName' );" | sudo tee -a ~/mediawiki/LocalSettings.php
+  cd ~/mediawiki/skins || exit
+  git clone "ssh://$sshUsername@gerrit.wikimedia.org:29418/mediawiki/skins/$skinName"
+  docker compose exec mediawiki composer update --working-dir "skins/$skinName"
+  cd "$skinName" || exit
+  npm ci
+  mkdir .vscode
+  cd .vscode || exit
+  touch settings.json
+  printf "{\n\t\"intelephense.environment.includePaths\": [\n\t\t\"../../\"\n\t]\n}\n" >> settings.json
+  echo "wfLoadSkin( '$skinName' );" | sudo tee -a ~/mediawiki/LocalSettings.php
 done
 
 # run database update
