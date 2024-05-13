@@ -57,7 +57,6 @@ EOF
 
 # docker: create MariaDB configuration file
 cat > ~/mediawiki/docker-compose.override.yml << EOF
-version: '3.7'
 services:
   mariadb:
     image: 'bitnami/mariadb:latest'
