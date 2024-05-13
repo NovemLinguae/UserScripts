@@ -18,6 +18,8 @@ if [[ $dockerStatus =~ "could not be found" ]]; then
 fi
 
 # use node version 18. wikimedia currently uses this version
+export NVM_DIR=$HOME/.nvm;
+source $NVM_DIR/nvm.sh;
 nvm use 18
 
 # save password for this session. will prevent shell constantly asking the user for it
