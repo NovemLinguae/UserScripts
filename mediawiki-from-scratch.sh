@@ -8,7 +8,6 @@
 # TODO: just use advanced patchdemo docker instead of this script? https://gitlab.wikimedia.org/samtar/patchdemo/-/commit/d0fbe70728113c29520fad280bdc5a31ee2221b3
 
 # UPDATE THESE VARIABLES BEFORE RUNNING THE SCRIPT ************************
-# These are arrays, so you can specify multiple. e.g. extensions=("PageTriage" "Echo")
 extensions=("PageTriage" "Echo" "WikiLove" "ORES")
 skins=("Vector")
 sshUsername="novemlinguae"
