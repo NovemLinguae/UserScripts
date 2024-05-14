@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # A script for developers to delete and recreate their localhost MediaWiki. Deletes and recreates core, extensions, and skins. Specify extensions and skins in the array below.
-# This script assumes: Docker, WSL/Ubuntu, MariaDB not SQLite, installation location of MediaWiki core is ~/mediawiki, VS Code
-# Oh and you should have git and nvm installed. `sudo apt install git`, `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash`, close and reopen bash window, `nvm install 18`
+# This script assumes:
+#    - Docker, WSL/Ubuntu, MariaDB not SQLite, installation location of MediaWiki core is ~/mediawiki, VS Code
+#    - You should have git and nvm installed. `sudo apt install git`, `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash`, close and reopen bash window, `nvm install 18`
+#    - Your Gerrit SSH key should be saved at ~/.ssh/id_ed25519
 # TODO: just use advanced patchdemo docker instead of this script? https://gitlab.wikimedia.org/samtar/patchdemo/-/commit/d0fbe70728113c29520fad280bdc5a31ee2221b3
 
 # UPDATE THESE VARIABLES BEFORE RUNNING THE SCRIPT ************************
@@ -15,7 +17,7 @@ sshUsername="novemlinguae"
 # docker: make sure docker engine is running
 dockerStatus=$(docker --help)
 if [[ $dockerStatus =~ "could not be found" ]]; then
-  echo "Error: Docker is not running. Please start Docker, then try again."
+  echo "Error: Docker is not running. Please start Docker Desktop, then try again."
   exit 1
 fi
 
