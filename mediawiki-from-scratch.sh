@@ -9,7 +9,7 @@
 
 # UPDATE THESE VARIABLES BEFORE RUNNING THE SCRIPT ************************
 # These are arrays, so you can specify multiple. e.g. extensions=("PageTriage" "Echo")
-extensions=("PageTriage")
+extensions=("PageTriage" "Echo" "WikiLove" "ORES")
 skins=("Vector")
 sshUsername="novemlinguae"
 # *************************************************************************
@@ -125,6 +125,19 @@ sudo tee -a ~/mediawiki/LocalSettings.php << EOL
 \$wgEnableUploads = true;
 
 \$wgDefaultSkin = "vector";
+
+// ORES & PageTriage configuration
+\$wgPageTriageDraftNamespaceId = 118;
+\$wgExtraNamespaces[ \$wgPageTriageDraftNamespaceId ] = 'Draft';
+\$wgExtraNamespaces[ \$wgPageTriageDraftNamespaceId + 1 ] = 'Draft_talk';
+\$wgPageTriageNoIndexUnreviewedNewArticles = true;
+\$wgPageTriageEnableCopyvio = true;
+\$wgPageTriageEnableOresFilters = true;
+\$wgOresWikiId = 'enwiki';
+\$wgOresModels = [
+	'articlequality' => [ 'enabled' => true, 'namespaces' => [ 0 ], 'cleanParent' => true ],
+	'draftquality' => [ 'enabled' => true, 'namespaces' => [ 0 ], 'types' => [ 1 ] ]
+];
 
 // ***************** EXTENSIONS & SKINS ********************
 EOL
