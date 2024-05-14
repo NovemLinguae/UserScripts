@@ -2,9 +2,11 @@
 
 # A script for developers to delete and recreate their localhost MediaWiki. Deletes and recreates core, extensions, and skins. Specify extensions and skins in the array below.
 # This script assumes: Docker, WSL/Ubuntu, MariaDB not SQLite, installation location of MediaWiki core is ~/mediawiki, VS Code
+# Oh and you should have git and nvm installed. `sudo apt install git`, `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash`, close and reopen bash window, `nvm install 18`
 # TODO: just use advanced patchdemo docker instead of this script? https://gitlab.wikimedia.org/samtar/patchdemo/-/commit/d0fbe70728113c29520fad280bdc5a31ee2221b3
 
 # UPDATE THESE VARIABLES BEFORE RUNNING THE SCRIPT ************************
+# These are arrays, so you can specify multiple. e.g. extensions=("PageTriage" "Echo")
 extensions=("PageTriage")
 skins=("Vector")
 sshUsername="novemlinguae"
