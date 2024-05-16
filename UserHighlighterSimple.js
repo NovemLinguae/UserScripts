@@ -47,6 +47,8 @@ class UserHighlighterSimple {
 			.${ htmlClass } b,
 			.${ htmlClass } big,
 			.${ htmlClass } font,
+			.${ htmlClass } kbd,
+			.${ htmlClass } small,
 			.${ htmlClass } span {
 				${ cssDeclaration }
 			}
