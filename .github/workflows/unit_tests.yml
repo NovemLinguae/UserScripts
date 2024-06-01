@@ -12,12 +12,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    # too many failing tests. commenting out for now
-    # - working-directory: ./DraftCleaner
-    #   run: npm install
-    # - working-directory: ./DraftCleaner
-    #   run: npm test
-    #   name: DraftCleaner unit tests
+    - working-directory: ./DraftCleaner
+      run: npm install
+    - working-directory: ./DraftCleaner
+      run: npm test
+      name: DraftCleaner unit tests
 
     - working-directory: ./GANReviewTool
       run: npm install

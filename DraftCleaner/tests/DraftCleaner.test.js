@@ -1,106 +1,106 @@
-import { DraftCleaner } from "../modules/DraftCleaner.js";
+import { DraftCleaner } from '../modules/DraftCleaner.js';
 
 // Babel is required to use ES6 module syntax
 // Copy package.json and .babelrc from a project that already has this working
 // Babel tutorial: https://www.sitepoint.com/babel-beginners-guide/
 
-let dc = new DraftCleaner();
+const dc = new DraftCleaner();
 
-describe('_escapeRegEx(string)', () => {
-	test('', () => {
-		let string = `{|}`;
-		let output = `\\{\\|\\}`; // backslash is always escaped in JavaScript. so actual output is 1 backslash each, but we have to do 2 backshashes here
-		expect(dc._escapeRegEx(string)).toBe(output);
-	});
-});
+describe( '_escapeRegEx(string)', () => {
+	test( '', () => {
+		const string = '{|}';
+		const output = '\\{\\|\\}'; // backslash is always escaped in JavaScript. so actual output is 1 backslash each, but we have to do 2 backshashes here
+		expect( dc._escapeRegEx( string ) ).toBe( output );
+	} );
+} );
 
-describe('addReferencesSectionIfMissing(wikicode)', () => {
-	test('Blank', () => {
-		let wikicode = ``;
-		let output =
+describe( 'addReferencesSectionIfMissing(wikicode)', () => {
+	test( 'Blank', () => {
+		const wikicode = '';
+		const output =
 `
 
 == References ==
 {{Reflist}}`;
-		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
-	});
+		expect( dc.addReferencesSectionIfMissing( wikicode ) ).toBe( output );
+	} );
 
-	test('Reference section present, so add nothing', () => {
-		let wikicode = `== References ==`;
-		let output = `== References ==`;
-		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
-	});
+	test( 'Reference section present, so add nothing', () => {
+		const wikicode = '== References ==';
+		const output = '== References ==';
+		expect( dc.addReferencesSectionIfMissing( wikicode ) ).toBe( output );
+	} );
 
-	test('{{Reflist}} present, so add nothing', () => {
-		let wikicode = `{{Reflist}}`;
-		let output = `{{Reflist}}`;
-		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
-	});
+	test( '{{Reflist}} present, so add nothing', () => {
+		const wikicode = '{{Reflist}}';
+		const output = '{{Reflist}}';
+		expect( dc.addReferencesSectionIfMissing( wikicode ) ).toBe( output );
+	} );
 
-	test('{{reflist}} present, so add nothing', () => {
-		let wikicode = `{{reflist}}`;
-		let output = `{{reflist}}`;
-		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
-	});
+	test( '{{reflist}} present, so add nothing', () => {
+		const wikicode = '{{reflist}}';
+		const output = '{{reflist}}';
+		expect( dc.addReferencesSectionIfMissing( wikicode ) ).toBe( output );
+	} );
 
-	test('<references /> present, so add nothing', () => {
-		let wikicode = `<references />`;
-		let output = `<references />`;
-		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
-	});
+	test( '<references /> present, so add nothing', () => {
+		const wikicode = '<references />';
+		const output = '<references />';
+		expect( dc.addReferencesSectionIfMissing( wikicode ) ).toBe( output );
+	} );
 
-	test.skip('{{Drafts moved from mainspace}} should be at bottom of page', () => {
-		let wikicode =
+	test.skip( '{{Drafts moved from mainspace}} should be at bottom of page', () => {
+		const wikicode =
 `Text
 
 {{Drafts moved from mainspace|date=December 2021}}`;
-		let output =
+		const output =
 `Text
 
 == References ==
 {{Reflist}}
 
 {{Drafts moved from mainspace|date=December 2021}}`;
-		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
-	});
+		expect( dc.addReferencesSectionIfMissing( wikicode ) ).toBe( output );
+	} );
 
-	test.skip('{{Uncategorized}} should be at bottom of page', () => {
-		let wikicode =
+	test.skip( '{{Uncategorized}} should be at bottom of page', () => {
+		const wikicode =
 `Text
 
 {{Uncategorized|date=December 2021}}`;
-		let output =
+		const output =
 `Text
 
 == References ==
 {{Reflist}}
 
 {{Uncategorized|date=December 2021}}`;
-		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
-	});
+		expect( dc.addReferencesSectionIfMissing( wikicode ) ).toBe( output );
+	} );
 
-	test.skip('<references/> with no == References ==', () => {
-		let wikicode =
+	test.skip( '<references/> with no == References ==', () => {
+		const wikicode =
 `Siblings with 46X,Y [[gonadal dysgenesis]], a disorder of [[sex development]], had a deletion of 8 of the 9 c2orf80 [[Exon|exons]], and an interstitial duplication of the [[SUPT3H]] gene.<ref name=":10" /> Both mutations were inherited from the healthy mother.<ref name=":10" /> There is no known interaction between these two genes as of now.<ref name=":10" />
 
 <references />
 `;
-		let output =
+		const output =
 `Siblings with 46X,Y [[gonadal dysgenesis]], a disorder of [[sex development]], had a deletion of 8 of the 9 c2orf80 [[Exon|exons]], and an interstitial duplication of the [[SUPT3H]] gene.<ref name=":10" /> Both mutations were inherited from the healthy mother.<ref name=":10" /> There is no known interaction between these two genes as of now.<ref name=":10" />
 
 == Reflist ==
 <references />`;
-		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
-	});
+		expect( dc.addReferencesSectionIfMissing( wikicode ) ).toBe( output );
+	} );
 
-	test.skip('Place above {{stub}} tag', () => {
-		let wikicode =
+	test.skip( 'Place above {{stub}} tag', () => {
+		const wikicode =
 `'''Calderwood''' is a suburb of [[East Calder]], [[Livingston]], in [[West Lothian]].
 
 {{WestLothian-geo-stub}}
 [[Category:Populated places in West Lothian]]
 [[Category:Livingston, West Lothian]]`;
-		let output =
+		const output =
 `'''Calderwood''' is a suburb of [[East Calder]], [[Livingston]], in [[West Lothian]].
 
 == References ==
@@ -109,87 +109,87 @@ describe('addReferencesSectionIfMissing(wikicode)', () => {
 {{WestLothian-geo-stub}}
 [[Category:Populated places in West Lothian]]
 [[Category:Livingston, West Lothian]]`;
-		expect(dc.addReferencesSectionIfMissing(wikicode)).toBe(output);
-	});
-});
+		expect( dc.addReferencesSectionIfMissing( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('fixEmptyReferencesSection(wikicode)', () => {
-	test('Blank', () => {
-		let wikicode = ``;
-		let output = ``;
-		expect(dc.fixEmptyReferencesSection(wikicode)).toBe(output);
-	});
+describe( 'fixEmptyReferencesSection(wikicode)', () => {
+	test( 'Blank', () => {
+		const wikicode = '';
+		const output = '';
+		expect( dc.fixEmptyReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test('Reference section present, so add {{Reflist}}', () => {
-		let wikicode = `== References ==`;
-		let output =
+	test( 'Reference section present, so add {{Reflist}}', () => {
+		const wikicode = '== References ==';
+		const output =
 `== References ==
 {{Reflist}}`;
-		expect(dc.fixEmptyReferencesSection(wikicode)).toBe(output);
-	});
+		expect( dc.fixEmptyReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test('{{Reflist}} present, so add nothing', () => {
-		let wikicode =
+	test( '{{Reflist}} present, so add nothing', () => {
+		const wikicode =
 `== References ==
 {{Reflist}}`;
-		let output =
+		const output =
 `== References ==
 {{Reflist}}`;
-		expect(dc.fixEmptyReferencesSection(wikicode)).toBe(output);
-	});
+		expect( dc.fixEmptyReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test('{{reflist}} present, so add nothing', () => {
-		let wikicode =
+	test( '{{reflist}} present, so add nothing', () => {
+		const wikicode =
 `== References ==
 {{reflist}}`;
-		let output =
+		const output =
 `== References ==
 {{reflist}}`;
-		expect(dc.fixEmptyReferencesSection(wikicode)).toBe(output);
-	});
+		expect( dc.fixEmptyReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test('<references /> present, so add nothing', () => {
-		let wikicode =
+	test( '<references /> present, so add nothing', () => {
+		const wikicode =
 `== References ==
 <references />`;
-		let output =
+		const output =
 `== References ==
 <references />`;
-		expect(dc.fixEmptyReferencesSection(wikicode)).toBe(output);
-	});
+		expect( dc.fixEmptyReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test("Recognize {{Reflist}} with parameters 1", () => {
-		let wikicode =
+	test( 'Recognize {{Reflist}} with parameters 1', () => {
+		const wikicode =
 `== References ==
 {{Reflist|30em}}`;
-		let output =
+		const output =
 `== References ==
 {{Reflist|30em}}`;
-		expect(dc.fixEmptyReferencesSection(wikicode)).toBe(output);
-	});
+		expect( dc.fixEmptyReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test("Recognize {{Reflist}} with parameters 2", () => {
-		let wikicode =
+	test( 'Recognize {{Reflist}} with parameters 2', () => {
+		const wikicode =
 `== References ==
 {{Reflist|colwidth=30em}}`;
-		let output =
+		const output =
 `== References ==
 {{Reflist|colwidth=30em}}`;
-		expect(dc.fixEmptyReferencesSection(wikicode)).toBe(output);
-	});
+		expect( dc.fixEmptyReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test("Recognize {{Reflist}} with parameters 3", () => {
-		let wikicode =
+	test( 'Recognize {{Reflist}} with parameters 3', () => {
+		const wikicode =
 `== References ==
 {{reflist|
 <ref>Zhang DC, Liu YX, Huang HJ, Weber K, Margesin R. ''Oceanihabitans sediminis''</ref>}}`;
-		let output =
+		const output =
 `== References ==
 {{reflist|
 <ref>Zhang DC, Liu YX, Huang HJ, Weber K, Margesin R. ''Oceanihabitans sediminis''</ref>}}`;
-		expect(dc.fixEmptyReferencesSection(wikicode)).toBe(output);
-	});
-});
+		expect( dc.fixEmptyReferencesSection( wikicode ) ).toBe( output );
+	} );
+} );
 
 /*
 describe('deleteBRTagsOutsideInfoboxes(wikicode)', () => {
@@ -241,49 +241,49 @@ describe('deleteBRTagsOutsideInfoboxes(wikicode)', () => {
 });
 */
 
-describe('replaceUnicodeBulletsWithAsterisks(wikicode)', () => {
-	test("small bullet", () => {
-		let wikicode = `· [[Ecology]]`;
-		let output = `* [[Ecology]]`;
-		expect(dc.replaceUnicodeBulletsWithAsterisks(wikicode)).toBe(output);
-	});
+describe( 'replaceUnicodeBulletsWithAsterisks(wikicode)', () => {
+	test( 'small bullet', () => {
+		const wikicode = '· [[Ecology]]';
+		const output = '* [[Ecology]]';
+		expect( dc.replaceUnicodeBulletsWithAsterisks( wikicode ) ).toBe( output );
+	} );
 
-	test("medium bullet", () => {
-		let wikicode = `• [[Ecology]]`;
-		let output = `* [[Ecology]]`;
-		expect(dc.replaceUnicodeBulletsWithAsterisks(wikicode)).toBe(output);
-	});
+	test( 'medium bullet', () => {
+		const wikicode = '• [[Ecology]]';
+		const output = '* [[Ecology]]';
+		expect( dc.replaceUnicodeBulletsWithAsterisks( wikicode ) ).toBe( output );
+	} );
 
-	test("big bullet", () => {
-		let wikicode = `● [[Ecology]]`;
-		let output = `* [[Ecology]]`;
-		expect(dc.replaceUnicodeBulletsWithAsterisks(wikicode)).toBe(output);
-	});
-});
+	test( 'big bullet', () => {
+		const wikicode = '● [[Ecology]]';
+		const output = '* [[Ecology]]';
+		expect( dc.replaceUnicodeBulletsWithAsterisks( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('deleteCopyPastedEditAndEditSource(wikicode)', () => {
-	test('[editar]', () => {
-		let wikicode = '=== The travel[editar] ===';
-		let output = '=== The travel ===';
-		expect(dc.deleteCopyPastedEditAndEditSource(wikicode)).toBe(output);
-	});
-});
+describe( 'deleteCopyPastedEditAndEditSource(wikicode)', () => {
+	test( '[editar]', () => {
+		const wikicode = '=== The travel[editar] ===';
+		const output = '=== The travel ===';
+		expect( dc.deleteCopyPastedEditAndEditSource( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('trimEveryLine(wikicode)', () => {
-	test('', () => {
-		let wikicode =
+describe( 'trimEveryLine(wikicode)', () => {
+	test( '', () => {
+		const wikicode =
 `  test  
  TEST 
 `;
-		let output = 
+		const output =
 `test
 TEST
 `;
-		expect(dc.trimEveryLine(wikicode)).toBe(output);
-	});
+		expect( dc.trimEveryLine( wikicode ) ).toBe( output );
+	} );
 
-	test(`Don't trim lines inside of templates`, () => {
-		let wikicode =
+	test( 'Don\'t trim lines inside of templates', () => {
+		const wikicode =
 `* {{cite book
   | last = Jane's Information Group
   | year = 1989
@@ -293,7 +293,7 @@ TEST
   | location = London
   | isbn = 978-1-85170-194-0
   }}`;
-		let output =
+		const output =
 `* {{cite book
   | last = Jane's Information Group
   | year = 1989
@@ -303,63 +303,63 @@ TEST
   | location = London
   | isbn = 978-1-85170-194-0
   }}`;
-		expect(dc.trimEveryLine(wikicode)).toBe(output);
-	});
-});
+		expect( dc.trimEveryLine( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('convertSmartQuotesToRegularQuotes(wikicode)', () => {
-	test("Normal", () => {
-		let wikicode = 'The Wang’s hybrid EDL model and the “two-step” processes about its formation';
-		let output = `The Wang's hybrid EDL model and the "two-step" processes about its formation`;
-		expect(dc.convertSmartQuotesToRegularQuotes(wikicode)).toBe(output);
-	});
+describe( 'convertSmartQuotesToRegularQuotes(wikicode)', () => {
+	test( 'Normal', () => {
+		const wikicode = 'The Wang’s hybrid EDL model and the “two-step” processes about its formation';
+		const output = 'The Wang\'s hybrid EDL model and the "two-step" processes about its formation';
+		expect( dc.convertSmartQuotesToRegularQuotes( wikicode ) ).toBe( output );
+	} );
 
-	test("Don't convert inside [[File:]] links (images)", () => {
-		let wikicode = '[[File:The Wang’s hybrid EDL model and the “two-step” processes about its formation.jpg|thumb|Figure 1.]]';
-		let output = '[[File:The Wang’s hybrid EDL model and the “two-step” processes about its formation.jpg|thumb|Figure 1.]]';
-		expect(dc.convertSmartQuotesToRegularQuotes(wikicode)).toBe(output);
-	});
-});
+	test( "Don't convert inside [[File:]] links (images)", () => {
+		const wikicode = '[[File:The Wang’s hybrid EDL model and the “two-step” processes about its formation.jpg|thumb|Figure 1.]]';
+		const output = '[[File:The Wang’s hybrid EDL model and the “two-step” processes about its formation.jpg|thumb|Figure 1.]]';
+		expect( dc.convertSmartQuotesToRegularQuotes( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('convertVeryLongHeadingToParagraph(wikicode)', () => {
-	test("Normal heading", () => {
-		let wikicode =
+describe( 'convertVeryLongHeadingToParagraph(wikicode)', () => {
+	test( 'Normal heading', () => {
+		const wikicode =
 `Test
 
 == Hello how are you ==
 
 Test2`;
-		let output =
+		const output =
 `Test
 
 == Hello how are you ==
 
-Test2`;;
-		expect(dc.convertVeryLongHeadingToParagraph(wikicode)).toBe(output);
-	});
+Test2`;
+		expect( dc.convertVeryLongHeadingToParagraph( wikicode ) ).toBe( output );
+	} );
 
-	test("Heading is too long", () => {
-		let wikicode = `=== '''Dakkata Jaya Prakash Reddy''' (Born on April 13 1985) Is Andhra Pradesh Based Indian NRI Politician from Hindu Community Living in Singapore for the past 15 years .. Himself an down to earth , passional of social service through various helping & Charity activities for people in his regions he particularly focused to light...He's been Prominent  leader from well known political organization  Yuvajana sramika Raithu Congress party (YSRCP) from india .. ===`;
-		let output = `'''Dakkata Jaya Prakash Reddy''' (Born on April 13 1985) Is Andhra Pradesh Based Indian NRI Politician from Hindu Community Living in Singapore for the past 15 years .. Himself an down to earth , passional of social service through various helping & Charity activities for people in his regions he particularly focused to light...He's been Prominent  leader from well known political organization  Yuvajana sramika Raithu Congress party (YSRCP) from india ..`;
-		expect(dc.convertVeryLongHeadingToParagraph(wikicode)).toBe(output);
-	});
+	test( 'Heading is too long', () => {
+		const wikicode = '=== \'\'\'Dakkata Jaya Prakash Reddy\'\'\' (Born on April 13 1985) Is Andhra Pradesh Based Indian NRI Politician from Hindu Community Living in Singapore for the past 15 years .. Himself an down to earth , passional of social service through various helping & Charity activities for people in his regions he particularly focused to light...He\'s been Prominent  leader from well known political organization  Yuvajana sramika Raithu Congress party (YSRCP) from india .. ===';
+		const output = '\'\'\'Dakkata Jaya Prakash Reddy\'\'\' (Born on April 13 1985) Is Andhra Pradesh Based Indian NRI Politician from Hindu Community Living in Singapore for the past 15 years .. Himself an down to earth , passional of social service through various helping & Charity activities for people in his regions he particularly focused to light...He\'s been Prominent  leader from well known political organization  Yuvajana sramika Raithu Congress party (YSRCP) from india ..';
+		expect( dc.convertVeryLongHeadingToParagraph( wikicode ) ).toBe( output );
+	} );
 
-	test("Skip long heading if it has <ref>", () => {
-		let wikicode = `==== Special Administrative Measures for Foreign Investment Access to Hainan Free Trade Port (Negative List) (2020 Edition)<ref>{{Cite web|title=Special Administrative Measures for Foreign Investment Access to Hainan Free Trade Port (Negative List) -- Investment -- HAINAN FREE TRADE PORT|url=http://en.hnftp.gov.cn/policies/Investment/202102/t20210226_3314716.html|access-date=2021-12-06|website=Made-in-China.com}}</ref> ====`;
-		let output = `==== Special Administrative Measures for Foreign Investment Access to Hainan Free Trade Port (Negative List) (2020 Edition)<ref>{{Cite web|title=Special Administrative Measures for Foreign Investment Access to Hainan Free Trade Port (Negative List) -- Investment -- HAINAN FREE TRADE PORT|url=http://en.hnftp.gov.cn/policies/Investment/202102/t20210226_3314716.html|access-date=2021-12-06|website=Made-in-China.com}}</ref> ====`;
-		expect(dc.convertVeryLongHeadingToParagraph(wikicode)).toBe(output);
-	});
+	test( 'Skip long heading if it has <ref>', () => {
+		const wikicode = '==== Special Administrative Measures for Foreign Investment Access to Hainan Free Trade Port (Negative List) (2020 Edition)<ref>{{Cite web|title=Special Administrative Measures for Foreign Investment Access to Hainan Free Trade Port (Negative List) -- Investment -- HAINAN FREE TRADE PORT|url=http://en.hnftp.gov.cn/policies/Investment/202102/t20210226_3314716.html|access-date=2021-12-06|website=Made-in-China.com}}</ref> ====';
+		const output = '==== Special Administrative Measures for Foreign Investment Access to Hainan Free Trade Port (Negative List) (2020 Edition)<ref>{{Cite web|title=Special Administrative Measures for Foreign Investment Access to Hainan Free Trade Port (Negative List) -- Investment -- HAINAN FREE TRADE PORT|url=http://en.hnftp.gov.cn/policies/Investment/202102/t20210226_3314716.html|access-date=2021-12-06|website=Made-in-China.com}}</ref> ====';
+		expect( dc.convertVeryLongHeadingToParagraph( wikicode ) ).toBe( output );
+	} );
 
-	test("Skip long heading if it has <ref> 2", () => {
-		let wikicode = `=== Counterculture<ref>{{Cite journal|last=Khabuliani|first=Khatuna|date=2016|title=ვიზუალური ნიშნების ტრანსფორმაცია: მხატვრული ფორმები და კონცეფციები პოსტმოდერნისტული ხელოვნების ქართულ ვერსიაში|url=http://eprints.iliauni.edu.ge/6601/1/%E1%83%AE%E1%83%90%E1%83%97%E1%83%A3%E1%83%9C%E1%83%90%20%E1%83%AE%E1%83%90%E1%83%91%E1%83%A3%E1%83%9A%E1%83%98%E1%83%90%E1%83%9C%E1%83%98.pdf|journal=http://eprints.iliauni.edu.ge/6601/1/%E1%83%AE%E1%83%90%E1%83%97%E1%83%A3%E1%83%9C%E1%83%90%20%E1%83%AE%E1%83%90%E1%83%91%E1%83%A3%E1%83%9A%E1%83%98%E1%83%90%E1%83%9C%E1%83%98.pdf}}</ref> ===`;
-		let output = `=== Counterculture<ref>{{Cite journal|last=Khabuliani|first=Khatuna|date=2016|title=ვიზუალური ნიშნების ტრანსფორმაცია: მხატვრული ფორმები და კონცეფციები პოსტმოდერნისტული ხელოვნების ქართულ ვერსიაში|url=http://eprints.iliauni.edu.ge/6601/1/%E1%83%AE%E1%83%90%E1%83%97%E1%83%A3%E1%83%9C%E1%83%90%20%E1%83%AE%E1%83%90%E1%83%91%E1%83%A3%E1%83%9A%E1%83%98%E1%83%90%E1%83%9C%E1%83%98.pdf|journal=http://eprints.iliauni.edu.ge/6601/1/%E1%83%AE%E1%83%90%E1%83%97%E1%83%A3%E1%83%9C%E1%83%90%20%E1%83%AE%E1%83%90%E1%83%91%E1%83%A3%E1%83%9A%E1%83%98%E1%83%90%E1%83%9C%E1%83%98.pdf}}</ref> ===`;
-		expect(dc.convertVeryLongHeadingToParagraph(wikicode)).toBe(output);
-	});
-});
+	test( 'Skip long heading if it has <ref> 2', () => {
+		const wikicode = '=== Counterculture<ref>{{Cite journal|last=Khabuliani|first=Khatuna|date=2016|title=ვიზუალური ნიშნების ტრანსფორმაცია: მხატვრული ფორმები და კონცეფციები პოსტმოდერნისტული ხელოვნების ქართულ ვერსიაში|url=http://eprints.iliauni.edu.ge/6601/1/%E1%83%AE%E1%83%90%E1%83%97%E1%83%A3%E1%83%9C%E1%83%90%20%E1%83%AE%E1%83%90%E1%83%91%E1%83%A3%E1%83%9A%E1%83%98%E1%83%90%E1%83%9C%E1%83%98.pdf|journal=http://eprints.iliauni.edu.ge/6601/1/%E1%83%AE%E1%83%90%E1%83%97%E1%83%A3%E1%83%9C%E1%83%90%20%E1%83%AE%E1%83%90%E1%83%91%E1%83%A3%E1%83%9A%E1%83%98%E1%83%90%E1%83%9C%E1%83%98.pdf}}</ref> ===';
+		const output = '=== Counterculture<ref>{{Cite journal|last=Khabuliani|first=Khatuna|date=2016|title=ვიზუალური ნიშნების ტრანსფორმაცია: მხატვრული ფორმები და კონცეფციები პოსტმოდერნისტული ხელოვნების ქართულ ვერსიაში|url=http://eprints.iliauni.edu.ge/6601/1/%E1%83%AE%E1%83%90%E1%83%97%E1%83%A3%E1%83%9C%E1%83%90%20%E1%83%AE%E1%83%90%E1%83%91%E1%83%A3%E1%83%9A%E1%83%98%E1%83%90%E1%83%9C%E1%83%98.pdf|journal=http://eprints.iliauni.edu.ge/6601/1/%E1%83%AE%E1%83%90%E1%83%97%E1%83%A3%E1%83%9C%E1%83%90%20%E1%83%AE%E1%83%90%E1%83%91%E1%83%A3%E1%83%9A%E1%83%98%E1%83%90%E1%83%9C%E1%83%98.pdf}}</ref> ===';
+		expect( dc.convertVeryLongHeadingToParagraph( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('ifNoLeadSectionDeleteFirstHeading(wikicode)', () => {
-	test('No change', () => {
-		let wikicode =
+describe( 'ifNoLeadSectionDeleteFirstHeading(wikicode)', () => {
+	test( 'No change', () => {
+		const wikicode =
 `{{AfC submission|t||ts=20211206092825|u=MherSaribekyan|ns=118|demo=}}<!-- Important, do not remove this line before article has been created. -->
 
 The United Nations have promoted human
@@ -367,7 +367,7 @@ The United Nations have promoted human
 == ''Introduction. What are Human Rights?'' ==
 
 The United Nations have promoted human`;
-		let output =
+		const output =
 `{{AfC submission|t||ts=20211206092825|u=MherSaribekyan|ns=118|demo=}}<!-- Important, do not remove this line before article has been created. -->
 
 The United Nations have promoted human
@@ -375,24 +375,24 @@ The United Nations have promoted human
 == ''Introduction. What are Human Rights?'' ==
 
 The United Nations have promoted human`;
-		expect(dc.ifNoLeadSectionDeleteFirstHeading(wikicode)).toBe(output);
-	});
+		expect( dc.ifNoLeadSectionDeleteFirstHeading( wikicode ) ).toBe( output );
+	} );
 
-	test('One template', () => {
-		let wikicode =
+	test( 'One template', () => {
+		const wikicode =
 `{{AfC submission|t||ts=20211206092825|u=MherSaribekyan|ns=118|demo=}}<!-- Important, do not remove this line before article has been created. -->
 
 == ''Introduction. What are Human Rights?'' ==
 The United Nations have promoted human`;
-		let output =
+		const output =
 `{{AfC submission|t||ts=20211206092825|u=MherSaribekyan|ns=118|demo=}}<!-- Important, do not remove this line before article has been created. -->
 
 The United Nations have promoted human`;
-		expect(dc.ifNoLeadSectionDeleteFirstHeading(wikicode)).toBe(output);
-	});
+		expect( dc.ifNoLeadSectionDeleteFirstHeading( wikicode ) ).toBe( output );
+	} );
 
-	test('5 templates', () => {
-		let wikicode =
+	test( '5 templates', () => {
+		const wikicode =
 `{{Short description|Artsakh War Crimes}}
 {{Draft topics|politics-and-government}}
 {{AfC topic|soc}}
@@ -401,7 +401,7 @@ The United Nations have promoted human`;
 
 == ''Introduction. What are Human Rights?'' ==
 The United Nations have promoted human`;
-		let output =
+		const output =
 `{{Short description|Artsakh War Crimes}}
 {{Draft topics|politics-and-government}}
 {{AfC topic|soc}}
@@ -409,34 +409,32 @@ The United Nations have promoted human`;
 {{AfC submission|t||ts=20211206092825|u=MherSaribekyan|ns=118|demo=}}<!-- Important, do not remove this line before article has been created. -->
 
 The United Nations have promoted human`;
-		expect(dc.ifNoLeadSectionDeleteFirstHeading(wikicode)).toBe(output);
-	});
+		expect( dc.ifNoLeadSectionDeleteFirstHeading( wikicode ) ).toBe( output );
+	} );
 
-	test('Image', () => {
-		let wikicode =
+	test( 'Image', () => {
+		const wikicode =
 `[[File:Doppler Broadening.gif|thumb|Example of Doppler shifting due to source motion.]]
 == ''Introduction. What are Human Rights?'' ==
 The United Nations have promoted human`;
-		let output =
+		const output =
 `[[File:Doppler Broadening.gif|thumb|Example of Doppler shifting due to source motion.]]
 The United Nations have promoted human`;
-		expect(dc.ifNoLeadSectionDeleteFirstHeading(wikicode)).toBe(output);
-	});
+		expect( dc.ifNoLeadSectionDeleteFirstHeading( wikicode ) ).toBe( output );
+	} );
 
-	test('Two headings, should delete both', () => {
-		let namespaceNumber = 118;
-		let titleWithNamespaceAndSpaces = 'Compile-Back Programming Language';
-		let wikicode =
+	test( 'Two headings, should delete both', () => {
+		const wikicode =
 `== Compile-Back Programming Languages ==
 
 === '''What is a 'Compile-Back' Programming Language?''' ===
 A 'Compile-Back' programming language`;
-		let output =
+		const output =
 `
 A 'Compile-Back' programming language`;
-		expect(dc.ifNoLeadSectionDeleteFirstHeading(wikicode)).toBe(output);
-	});
-});
+		expect( dc.ifNoLeadSectionDeleteFirstHeading( wikicode ) ).toBe( output );
+	} );
+} );
 
 /*
 describe('fixWordEmphasizedWithSingleQuotes(wikicode)', () => {
@@ -454,51 +452,51 @@ describe('fixWordEmphasizedWithSingleQuotes(wikicode)', () => {
 });
 */
 
-describe('inlineExternalLinksToRefs(wikicode)', () => {
-	test('Normal', () => {
-		let wikicode = `In 2016, [http://www.tamayo.com/ Tamayo] participated in a 'hackathon' meeting`;
-		let output = `In 2016, Tamayo<ref>http://www.tamayo.com/</ref> participated in a 'hackathon' meeting`;
-		expect(dc.inlineExternalLinksToRefs(wikicode)).toBe(output);
-	});
+describe( 'inlineExternalLinksToRefs(wikicode)', () => {
+	test( 'Normal', () => {
+		const wikicode = 'In 2016, [http://www.tamayo.com/ Tamayo] participated in a \'hackathon\' meeting';
+		const output = 'In 2016, Tamayo<ref>http://www.tamayo.com/</ref> participated in a \'hackathon\' meeting';
+		expect( dc.inlineExternalLinksToRefs( wikicode ) ).toBe( output );
+	} );
 
-	test('Skip external links inside <ref>s', () => {
-		let wikicode = `<ref> World Cat [https://www.worldcat.org/title/they-all-played-ragtime/oclc/593173 "They All Played Ragtime"]. Accessed, July, 2021. </ref>`;
-		let output = `<ref> World Cat [https://www.worldcat.org/title/they-all-played-ragtime/oclc/593173 "They All Played Ragtime"]. Accessed, July, 2021. </ref>`;
-		expect(dc.inlineExternalLinksToRefs(wikicode)).toBe(output);
-	});
+	test( 'Skip external links inside <ref>s', () => {
+		const wikicode = '<ref> World Cat [https://www.worldcat.org/title/they-all-played-ragtime/oclc/593173 "They All Played Ragtime"]. Accessed, July, 2021. </ref>';
+		const output = '<ref> World Cat [https://www.worldcat.org/title/they-all-played-ragtime/oclc/593173 "They All Played Ragtime"]. Accessed, July, 2021. </ref>';
+		expect( dc.inlineExternalLinksToRefs( wikicode ) ).toBe( output );
+	} );
 
-	test('Skip external links inside templates 1', () => {
-		let wikicode = `{{efn|name=SahrOSU1871InflationCalculation|This inflation adjustment calculation uses data from [http://oregonstate.edu/cla/polisci/sahr/sahr "Inflation Conversion Factors for years 1774 to estimated 2023, in dollars of recent years"].}}`;
-		let output = `{{efn|name=SahrOSU1871InflationCalculation|This inflation adjustment calculation uses data from [http://oregonstate.edu/cla/polisci/sahr/sahr "Inflation Conversion Factors for years 1774 to estimated 2023, in dollars of recent years"].}}`;
-		expect(dc.inlineExternalLinksToRefs(wikicode)).toBe(output);
-	});
+	test( 'Skip external links inside templates 1', () => {
+		const wikicode = '{{efn|name=SahrOSU1871InflationCalculation|This inflation adjustment calculation uses data from [http://oregonstate.edu/cla/polisci/sahr/sahr "Inflation Conversion Factors for years 1774 to estimated 2023, in dollars of recent years"].}}';
+		const output = '{{efn|name=SahrOSU1871InflationCalculation|This inflation adjustment calculation uses data from [http://oregonstate.edu/cla/polisci/sahr/sahr "Inflation Conversion Factors for years 1774 to estimated 2023, in dollars of recent years"].}}';
+		expect( dc.inlineExternalLinksToRefs( wikicode ) ).toBe( output );
+	} );
 
-	test('Skip external links inside templates 2', () => {
-		let wikicode = `{{external media| float = right| video1 = [https://www.c-span.org/video/?462049-4/confederate-general-james-longstreet-gettysburg Presentation by Cory M. Pfarr, "Confederate General James Longstreet at Gettysburg", June 30, 2019], [[C-SPAN]]}}`;
-		let output = `{{external media| float = right| video1 = [https://www.c-span.org/video/?462049-4/confederate-general-james-longstreet-gettysburg Presentation by Cory M. Pfarr, "Confederate General James Longstreet at Gettysburg", June 30, 2019], [[C-SPAN]]}}`;
-		expect(dc.inlineExternalLinksToRefs(wikicode)).toBe(output);
-	});
+	test( 'Skip external links inside templates 2', () => {
+		const wikicode = '{{external media| float = right| video1 = [https://www.c-span.org/video/?462049-4/confederate-general-james-longstreet-gettysburg Presentation by Cory M. Pfarr, "Confederate General James Longstreet at Gettysburg", June 30, 2019], [[C-SPAN]]}}';
+		const output = '{{external media| float = right| video1 = [https://www.c-span.org/video/?462049-4/confederate-general-james-longstreet-gettysburg Presentation by Cory M. Pfarr, "Confederate General James Longstreet at Gettysburg", June 30, 2019], [[C-SPAN]]}}';
+		expect( dc.inlineExternalLinksToRefs( wikicode ) ).toBe( output );
+	} );
 
-	test('Skip external links inside templates 3', () => {
-		let wikicode = `{{AFC comment|1=This [https://test.com/ article] uses jargon and is hard for a non-expert to read. –[[User:Novem Linguae|<span style="color:limegreen">'''Novem Linguae'''</span>]] <small>([[User talk:Novem Linguae|talk]])</small> 11:39, 14 December 2021 (UTC)}}`;
-		let output = `{{AFC comment|1=This [https://test.com/ article] uses jargon and is hard for a non-expert to read. –[[User:Novem Linguae|<span style="color:limegreen">'''Novem Linguae'''</span>]] <small>([[User talk:Novem Linguae|talk]])</small> 11:39, 14 December 2021 (UTC)}}`;
-		expect(dc.inlineExternalLinksToRefs(wikicode)).toBe(output);
-	});
+	test( 'Skip external links inside templates 3', () => {
+		const wikicode = '{{AFC comment|1=This [https://test.com/ article] uses jargon and is hard for a non-expert to read. –[[User:Novem Linguae|<span style="color:limegreen">\'\'\'Novem Linguae\'\'\'</span>]] <small>([[User talk:Novem Linguae|talk]])</small> 11:39, 14 December 2021 (UTC)}}';
+		const output = '{{AFC comment|1=This [https://test.com/ article] uses jargon and is hard for a non-expert to read. –[[User:Novem Linguae|<span style="color:limegreen">\'\'\'Novem Linguae\'\'\'</span>]] <small>([[User talk:Novem Linguae|talk]])</small> 11:39, 14 December 2021 (UTC)}}';
+		expect( dc.inlineExternalLinksToRefs( wikicode ) ).toBe( output );
+	} );
 
-	test('Skip official websites', () => {
-		let wikicode = `{{infobox | website           = [http://www.kcgcollege.ac.in/ Official Website] }}`;
-		let output = `{{infobox | website           = [http://www.kcgcollege.ac.in/ Official Website] }}`;
-		expect(dc.inlineExternalLinksToRefs(wikicode)).toBe(output);
-	});
+	test( 'Skip official websites', () => {
+		const wikicode = '{{infobox | website           = [http://www.kcgcollege.ac.in/ Official Website] }}';
+		const output = '{{infobox | website           = [http://www.kcgcollege.ac.in/ Official Website] }}';
+		expect( dc.inlineExternalLinksToRefs( wikicode ) ).toBe( output );
+	} );
 
-	test('Skip official websites 2', () => {
-		let wikicode = `{{infobox | homepage = [https://wisebim.fr/ https://wisebim.fr] }}`;
-		let output = `{{infobox | homepage = [https://wisebim.fr/ https://wisebim.fr] }}`;
-		expect(dc.inlineExternalLinksToRefs(wikicode)).toBe(output);
-	});
+	test( 'Skip official websites 2', () => {
+		const wikicode = '{{infobox | homepage = [https://wisebim.fr/ https://wisebim.fr] }}';
+		const output = '{{infobox | homepage = [https://wisebim.fr/ https://wisebim.fr] }}';
+		expect( dc.inlineExternalLinksToRefs( wikicode ) ).toBe( output );
+	} );
 
-	test('Skip section titled Websites', () => {
-		let wikicode = `== Websites ==
+	test( 'Skip section titled Websites', () => {
+		const wikicode = `== Websites ==
 https://art-innovation.org
 
 https://social-art-award.org
@@ -506,7 +504,7 @@ https://social-art-award.org
 https://universal-sea.org/press
 
 https://plastic-revolution.org`;
-		let output = `== Websites ==
+		const output = `== Websites ==
 https://art-innovation.org
 
 https://social-art-award.org
@@ -514,174 +512,174 @@ https://social-art-award.org
 https://universal-sea.org/press
 
 https://plastic-revolution.org`;
-		expect(dc.inlineExternalLinksToRefs(wikicode)).toBe(output);
-	});
+		expect( dc.inlineExternalLinksToRefs( wikicode ) ).toBe( output );
+	} );
 
-	test('Skip section titled Links', () => {
-		let wikicode =
+	test( 'Skip section titled Links', () => {
+		const wikicode =
 `== Links ==
 
 * {{official|gulkina.ru|Natalia Gulkina}}
 * [http://7days.ru/Video/privatelife/natalya-gulkina-ya-s-muzhyami-ne-propadu "I will not be lost with my husbands!" Video interview <url>]
 * [http://www.m24.ru/videos/88892 Natalia Gulkina - about the release of an autobiographical book (the author's program of Evgeny Dodolev "Pravda-24", 2015)]
 * https://www.instagram.com/gulkina_natalia/`;
-		let output =
+		const output =
 `== Links ==
 
 * {{official|gulkina.ru|Natalia Gulkina}}
 * [http://7days.ru/Video/privatelife/natalya-gulkina-ya-s-muzhyami-ne-propadu "I will not be lost with my husbands!" Video interview <url>]
 * [http://www.m24.ru/videos/88892 Natalia Gulkina - about the release of an autobiographical book (the author's program of Evgeny Dodolev "Pravda-24", 2015)]
 * https://www.instagram.com/gulkina_natalia/`;
-		expect(dc.inlineExternalLinksToRefs(wikicode)).toBe(output);
-	});
-});
+		expect( dc.inlineExternalLinksToRefs( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('moveRefsOutsideOfItalics(wikicode)', () => {
-	test('Ref goes outside italics, not inside', () => {
-		let wikicode =
-`The White House's [[Office of Science and Technology Policy]] released a draft ''Guidance for Regulation of Artificial Intelligence Applications<ref>https://www.whitehouse.gov/wp-content/uploads/2020/01/Draft-OMB-Memo-on-Regulation-of-AI-1-7-19.pdf</ref>''.`;
-		let output =
-`The White House's [[Office of Science and Technology Policy]] released a draft ''Guidance for Regulation of Artificial Intelligence Applications''<ref>https://www.whitehouse.gov/wp-content/uploads/2020/01/Draft-OMB-Memo-on-Regulation-of-AI-1-7-19.pdf</ref>.`;
-		expect(dc.moveRefsOutsideOfItalics(wikicode)).toBe(output);
-	});
-});
+describe( 'moveRefsOutsideOfItalics(wikicode)', () => {
+	test( 'Ref goes outside italics, not inside', () => {
+		const wikicode =
+'The White House\'s [[Office of Science and Technology Policy]] released a draft \'\'Guidance for Regulation of Artificial Intelligence Applications<ref>https://www.whitehouse.gov/wp-content/uploads/2020/01/Draft-OMB-Memo-on-Regulation-of-AI-1-7-19.pdf</ref>\'\'.';
+		const output =
+'The White House\'s [[Office of Science and Technology Policy]] released a draft \'\'Guidance for Regulation of Artificial Intelligence Applications\'\'<ref>https://www.whitehouse.gov/wp-content/uploads/2020/01/Draft-OMB-Memo-on-Regulation-of-AI-1-7-19.pdf</ref>.';
+		expect( dc.moveRefsOutsideOfItalics( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('deleteHeadingsWithTitle(wikicode, titleWithNamespaceAndSpaces)', () => {
-	test('Exact matches only', () => {
-		let titleWithNamespaceAndSpaces = 'Albatross';
-		let wikicode =
+describe( 'deleteHeadingsWithTitle(wikicode, titleWithNamespaceAndSpaces)', () => {
+	test( 'Exact matches only', () => {
+		const titleWithNamespaceAndSpaces = 'Albatross';
+		const wikicode =
 `Test
 
 == Albatrosses and humans ==
 Test2`;
-		let output =
+		const output =
 `Test
 
 == Albatrosses and humans ==
 Test2`;
-		expect(dc.deleteHeadingsWithTitle(wikicode, titleWithNamespaceAndSpaces)).toBe(output);
-	});
+		expect( dc.deleteHeadingsWithTitle( wikicode, titleWithNamespaceAndSpaces ) ).toBe( output );
+	} );
 
-	test('Normal', () => {
-		let titleWithNamespaceAndSpaces = 'Albatross';
-		let wikicode =
+	test( 'Normal', () => {
+		const titleWithNamespaceAndSpaces = 'Albatross';
+		const wikicode =
 `Test
 
 == Albatross ==
 Test2`;
-		let output =
+		const output =
 `Test
 
 Test2`;
-		expect(dc.deleteHeadingsWithTitle(wikicode, titleWithNamespaceAndSpaces)).toBe(output);
-	});
+		expect( dc.deleteHeadingsWithTitle( wikicode, titleWithNamespaceAndSpaces ) ).toBe( output );
+	} );
 
-	test('Case insensitive', () => {
-		let titleWithNamespaceAndSpaces = 'Albatross';
-		let wikicode =
+	test( 'Case insensitive', () => {
+		const titleWithNamespaceAndSpaces = 'Albatross';
+		const wikicode =
 `Test
 
 == albatross ==
 Test2`;
-		let output =
+		const output =
 `Test
 
 Test2`;
-		expect(dc.deleteHeadingsWithTitle(wikicode, titleWithNamespaceAndSpaces)).toBe(output);
-	});
-});
+		expect( dc.deleteHeadingsWithTitle( wikicode, titleWithNamespaceAndSpaces ) ).toBe( output );
+	} );
+} );
 
-describe('changeYearRangeDashToNDash(wikicode)', () => {
-	test('Normal', () => {
-		let wikicode = `George Hammell Cook (1818-1889) circa 1880`;
-		let output = `George Hammell Cook (1818–1889) circa 1880`;
-		expect(dc.changeYearRangeDashToNDash(wikicode)).toBe(output);
-	});
+describe( 'changeYearRangeDashToNDash(wikicode)', () => {
+	test( 'Normal', () => {
+		const wikicode = 'George Hammell Cook (1818-1889) circa 1880';
+		const output = 'George Hammell Cook (1818–1889) circa 1880';
+		expect( dc.changeYearRangeDashToNDash( wikicode ) ).toBe( output );
+	} );
 
-	test('Skip dashes inside file names', () => {
-		let wikicode = `[[File:George Hammell Cook (1818-1889) circa 1880.jpg|thumb|upright|left]]`;
-		let output = `[[File:George Hammell Cook (1818-1889) circa 1880.jpg|thumb|upright|left]]`;
-		expect(dc.changeYearRangeDashToNDash(wikicode)).toBe(output);
-	});
-});
+	test( 'Skip dashes inside file names', () => {
+		const wikicode = '[[File:George Hammell Cook (1818-1889) circa 1880.jpg|thumb|upright|left]]';
+		const output = '[[File:George Hammell Cook (1818-1889) circa 1880.jpg|thumb|upright|left]]';
+		expect( dc.changeYearRangeDashToNDash( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('deleteSpacesInFrontOfRefs(wikicode)', () => {
-	test('Normal', () => {
-		let wikicode = `Testing <ref name="test">.`;
-		let output = `Testing<ref name="test">.`;
-		expect(dc.deleteSpacesInFrontOfRefs(wikicode)).toBe(output);
-	});
+describe( 'deleteSpacesInFrontOfRefs(wikicode)', () => {
+	test( 'Normal', () => {
+		const wikicode = 'Testing <ref name="test">.';
+		const output = 'Testing<ref name="test">.';
+		expect( dc.deleteSpacesInFrontOfRefs( wikicode ) ).toBe( output );
+	} );
 
-	test('Skip if at the start of a template cell', () => {
-		let wikicode = `| style="text-align:center;" | <ref name="vgs" />`;
-		let output = `| style="text-align:center;" | <ref name="vgs" />`;
-		expect(dc.deleteSpacesInFrontOfRefs(wikicode)).toBe(output);
-	});
+	test( 'Skip if at the start of a template cell', () => {
+		const wikicode = '| style="text-align:center;" | <ref name="vgs" />';
+		const output = '| style="text-align:center;" | <ref name="vgs" />';
+		expect( dc.deleteSpacesInFrontOfRefs( wikicode ) ).toBe( output );
+	} );
 
-	test('Skip if equals sign nearby', () => {
-		let wikicode = `| status_ref = <ref name=IUCN>abc</ref>`;
-		let output = `| status_ref = <ref name=IUCN>abc</ref>`;
-		expect(dc.deleteSpacesInFrontOfRefs(wikicode)).toBe(output);
-	});
-});
+	test( 'Skip if equals sign nearby', () => {
+		const wikicode = '| status_ref = <ref name=IUCN>abc</ref>';
+		const output = '| status_ref = <ref name=IUCN>abc</ref>';
+		expect( dc.deleteSpacesInFrontOfRefs( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('fixDoublePeriod(wikicode)', () => {
-	test('Two periods at end of sentence, before <ref>.', () => {
-		let wikicode = `Hello..<ref name="test" /> How are you?`;
-		let output = `Hello.<ref name="test" /> How are you?`;
-		expect(dc.fixDoublePeriod(wikicode)).toBe(output);
-	});
+describe( 'fixDoublePeriod(wikicode)', () => {
+	test( 'Two periods at end of sentence, before <ref>.', () => {
+		const wikicode = 'Hello..<ref name="test" /> How are you?';
+		const output = 'Hello.<ref name="test" /> How are you?';
+		expect( dc.fixDoublePeriod( wikicode ) ).toBe( output );
+	} );
 
-	test('Two periods at end of sentence.', () => {
-		let wikicode = `Hello.. How are you?`;
-		let output = `Hello. How are you?`;
-		expect(dc.fixDoublePeriod(wikicode)).toBe(output);
-	});
+	test( 'Two periods at end of sentence.', () => {
+		const wikicode = 'Hello.. How are you?';
+		const output = 'Hello. How are you?';
+		expect( dc.fixDoublePeriod( wikicode ) ).toBe( output );
+	} );
 
-	test('Two periods between words.', () => {
-		let wikicode = `Test..test2`;
-		let output = `Test..test2`;
-		expect(dc.fixDoublePeriod(wikicode)).toBe(output);
-	});
+	test( 'Two periods between words.', () => {
+		const wikicode = 'Test..test2';
+		const output = 'Test..test2';
+		expect( dc.fixDoublePeriod( wikicode ) ).toBe( output );
+	} );
 
-	test('Three periods.', () => {
-		let wikicode = `Test... can you hear me?`;
-		let output = `Test... can you hear me?`;
-		expect(dc.fixDoublePeriod(wikicode)).toBe(output);
-	});
+	test( 'Three periods.', () => {
+		const wikicode = 'Test... can you hear me?';
+		const output = 'Test... can you hear me?';
+		expect( dc.fixDoublePeriod( wikicode ) ).toBe( output );
+	} );
 
-	test('One period.', () => {
-		let wikicode = `Test. Test.`;
-		let output = `Test. Test.`;
-		expect(dc.fixDoublePeriod(wikicode)).toBe(output);
-	});
+	test( 'One period.', () => {
+		const wikicode = 'Test. Test.';
+		const output = 'Test. Test.';
+		expect( dc.fixDoublePeriod( wikicode ) ).toBe( output );
+	} );
 
-	test('No periods.', () => {
-		let wikicode = `Test`;
-		let output = `Test`;
-		expect(dc.fixDoublePeriod(wikicode)).toBe(output);
-	});
+	test( 'No periods.', () => {
+		const wikicode = 'Test';
+		const output = 'Test';
+		expect( dc.fixDoublePeriod( wikicode ) ).toBe( output );
+	} );
 
-	test('Wikilink', () => {
-		let wikicode = `[[Test]].. Hello.`;
-		let output = `[[Test]]. Hello.`;
-		expect(dc.fixDoublePeriod(wikicode)).toBe(output);
-	});
+	test( 'Wikilink', () => {
+		const wikicode = '[[Test]].. Hello.';
+		const output = '[[Test]]. Hello.';
+		expect( dc.fixDoublePeriod( wikicode ) ).toBe( output );
+	} );
 
-	test('Enter', () => {
-		let wikicode =
+	test( 'Enter', () => {
+		const wikicode =
 `Test..
 Hello`;
-		let output =
+		const output =
 `Test.
 Hello`;
-		expect(dc.fixDoublePeriod(wikicode)).toBe(output);
-	});
-});
+		expect( dc.fixDoublePeriod( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('deleteEmptySections(wikicode)', () => {
-	test.skip('Big footer', () => {
-		let wikicode =
+describe( 'deleteEmptySections(wikicode)', () => {
+	test.skip( 'Big footer', () => {
+		const wikicode =
 `Test
 
 ==External links==
@@ -696,7 +694,7 @@ describe('deleteEmptySections(wikicode)', () => {
 [[Category:21st-century Australian women artists]]
 [[Category:21st-century Australian artists]]
 [[Category:Indigenous Australian artists]]`;
-		let output =
+		const output =
 `Test
 
 {{Authority control}}
@@ -709,53 +707,53 @@ describe('deleteEmptySections(wikicode)', () => {
 [[Category:21st-century Australian women artists]]
 [[Category:21st-century Australian artists]]
 [[Category:Indigenous Australian artists]]`;
-		expect(dc.deleteEmptySections(wikicode)).toBe(output);
-	});
+		expect( dc.deleteEmptySections( wikicode ) ).toBe( output );
+	} );
 
-	test('Empty external links', () => {
-		let wikicode =
+	test( 'Empty external links', () => {
+		const wikicode =
 `Test
 
 == External links ==
 `;
-		let output = `Test`;
-		expect(dc.deleteEmptySections(wikicode)).toBe(output);
-	});
+		const output = 'Test';
+		expect( dc.deleteEmptySections( wikicode ) ).toBe( output );
+	} );
 
-	test('Empty see also', () => {
-		let wikicode =
+	test( 'Empty see also', () => {
+		const wikicode =
 `Test
 
 == See also ==
 `;
-		let output = `Test`;
-		expect(dc.deleteEmptySections(wikicode)).toBe(output);
-	});
-});
+		const output = 'Test';
+		expect( dc.deleteEmptySections( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('fixHeadingsInAllCaps(wikicode)', () => {
-	test('Normal', () => {
-		let wikicode = `== Normal ==`;
-		let output = `== Normal ==`;
-		expect(dc.fixHeadingsInAllCaps(wikicode)).toBe(output);
-	});
+describe( 'fixHeadingsInAllCaps(wikicode)', () => {
+	test( 'Normal', () => {
+		const wikicode = '== Normal ==';
+		const output = '== Normal ==';
+		expect( dc.fixHeadingsInAllCaps( wikicode ) ).toBe( output );
+	} );
 
-	test('Headings with all caps', () => {
-		let wikicode = `== EVERY HEADING IS IN ALL CAPS ==`;
-		let output = `== Every heading is in all caps ==`;
-		expect(dc.fixHeadingsInAllCaps(wikicode)).toBe(output);
-	});
+	test( 'Headings with all caps', () => {
+		const wikicode = '== EVERY HEADING IS IN ALL CAPS ==';
+		const output = '== Every heading is in all caps ==';
+		expect( dc.fixHeadingsInAllCaps( wikicode ) ).toBe( output );
+	} );
 
-	test(`Extra spaces in heading`, () => {
-		let wikicode = `== CAREER  ==`;
-		let output = `== Career ==`;
-		expect(dc.fixHeadingsInAllCaps(wikicode)).toBe(output);
-	});
-});
+	test( 'Extra spaces in heading', () => {
+		const wikicode = '== CAREER  ==';
+		const output = '== Career ==';
+		expect( dc.fixHeadingsInAllCaps( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('deleteDuplicateReferencesSection(wikicode)', () => {
-	test('Normal', () => {
-		let wikicode =
+describe( 'deleteDuplicateReferencesSection(wikicode)', () => {
+	test( 'Normal', () => {
+		const wikicode =
 `'''Test article''' is a test.
 
 == Heading ==
@@ -764,7 +762,7 @@ Test
 
 == References ==
 {{Reflist}}`;
-		let output =
+		const output =
 `'''Test article''' is a test.
 
 == Heading ==
@@ -773,17 +771,17 @@ Test
 
 == References ==
 {{Reflist}}`;
-		expect(dc.deleteDuplicateReferencesSection(wikicode)).toBe(output);
-	});
+		expect( dc.deleteDuplicateReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test('No reference section', () => {
-		let wikicode = ``;
-		let output = ``;
-		expect(dc.deleteDuplicateReferencesSection(wikicode)).toBe(output);
-	});
+	test( 'No reference section', () => {
+		const wikicode = '';
+		const output = '';
+		expect( dc.deleteDuplicateReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test('Two reference sections', () => {
-		let wikicode =
+	test( 'Two reference sections', () => {
+		const wikicode =
 `== References ==
 
 <references />
@@ -791,15 +789,15 @@ Test
 == References ==
 <!-- Inline citations added to your article will automatically display here. See en.wikipedia.org/wiki/WP:REFB for instructions on how to add citations. -->
 {{reflist}}`;
-		let output =
+		const output =
 `== References ==
 
 <references />`;
-		expect(dc.deleteDuplicateReferencesSection(wikicode)).toBe(output);
-	});
+		expect( dc.deleteDuplicateReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test('Two reference sections 2', () => {
-		let wikicode =
+	test( 'Two reference sections 2', () => {
+		const wikicode =
 `==References==
 {{reflist}}
 {{DEFAULTSORT:Krishen, Bal}}
@@ -812,7 +810,7 @@ Test
 == References ==
 <!-- Inline citations added to your article will automatically display here. See en.wikipedia.org/wiki/WP:REFB for instructions on how to add citations. -->
 {{reflist}}`;
-		let output =
+		const output =
 `== References ==
 {{reflist}}
 {{DEFAULTSORT:Krishen, Bal}}
@@ -821,11 +819,11 @@ Test
 :[[Category:21st-century Indian businesspeople]]
 :[[Category:Indian businesspeople]]
 :[[Category:Indian emigrants to the United Arab Emirates]]`;
-		expect(dc.deleteDuplicateReferencesSection(wikicode)).toBe(output);
-	});
+		expect( dc.deleteDuplicateReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test('Two reference sections 3', () => {
-		let wikicode =
+	test( 'Two reference sections 3', () => {
+		const wikicode =
 `== References ==
 {{Reflist}}
 
@@ -837,7 +835,7 @@ Test
 == References ==
 <!-- Inline citations added to your article will automatically display here. See en.wikipedia.org/wiki/WP:REFB for instructions on how to add citations. -->
 {{reflist}}`;
-		let output =
+		const output =
 `== References ==
 {{Reflist}}
 
@@ -845,11 +843,11 @@ Test
 
 * [http://www.kcgcollege.ac.in/ kcg college of technology]
 * [http://www.kcgconnect.in/ kcg college alumnies]`;
-		expect(dc.deleteDuplicateReferencesSection(wikicode)).toBe(output);
-	});
+		expect( dc.deleteDuplicateReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test('Two reference sections 4', () => {
-		let wikicode =
+	test( 'Two reference sections 4', () => {
+		const wikicode =
 `== References ==
 <references responsive="" />
 
@@ -857,14 +855,14 @@ Test
 <!-- Inline citations added to your article will automatically display here. See en.wikipedia.org/wiki/WP:REFB for instructions on how to add citations. -->
 {{reflist}}
 `;
-		let output =
+		const output =
 `== References ==
 <references responsive="" />`;
-		expect(dc.deleteDuplicateReferencesSection(wikicode)).toBe(output);
-	});
+		expect( dc.deleteDuplicateReferencesSection( wikicode ) ).toBe( output );
+	} );
 
-	test('Two reference sections 5', () => {
-		let wikicode =
+	test( 'Two reference sections 5', () => {
+		const wikicode =
 `
 == References                            ==
 <references />
@@ -875,50 +873,50 @@ Test
 <!-- Inline citations added to your article will automatically display here. See en.wikipedia.org/wiki/WP:REFB for instructions on how to add citations. -->
 {{reflist}}
 `;
-		let output =
+		const output =
 `== References ==
 <references />`;
-		expect(dc.deleteDuplicateReferencesSection(wikicode)).toBe(output);
-	});
-});
+		expect( dc.deleteDuplicateReferencesSection( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('boldArticleTitle(wikicode, titleWithNamespaceAndSpaces)', () => {
-	test('Normal', () => {
-		let titleWithNamespaceAndSpaces = 'Draft:Outback Queensland Masters';
-		let wikicode =
+describe( 'boldArticleTitle(wikicode, titleWithNamespaceAndSpaces)', () => {
+	test( 'Normal', () => {
+		const titleWithNamespaceAndSpaces = 'Draft:Outback Queensland Masters';
+		const wikicode =
 `Outback Queensland Masters, also ...
 
 Outback Queensland Masters series ...`;
-		let output =
+		const output =
 `'''Outback Queensland Masters''', also ...
 
 Outback Queensland Masters series ...`;
-		expect(dc.boldArticleTitle(wikicode, titleWithNamespaceAndSpaces)).toBe(output);
-	});
+		expect( dc.boldArticleTitle( wikicode, titleWithNamespaceAndSpaces ) ).toBe( output );
+	} );
 
-	test('Title then punctuation', () => {
-		let titleWithNamespaceAndSpaces = 'Draft:Amrah Namig oglu Huseynli';
-		let wikicode = `Amrah Namig oglu Huseynli (October 12, 1994`;
-		let output = `'''Amrah Namig oglu Huseynli''' (October 12, 1994`;
-		expect(dc.boldArticleTitle(wikicode, titleWithNamespaceAndSpaces)).toBe(output);
-	});
+	test( 'Title then punctuation', () => {
+		const titleWithNamespaceAndSpaces = 'Draft:Amrah Namig oglu Huseynli';
+		const wikicode = 'Amrah Namig oglu Huseynli (October 12, 1994';
+		const output = '\'\'\'Amrah Namig oglu Huseynli\'\'\' (October 12, 1994';
+		expect( dc.boldArticleTitle( wikicode, titleWithNamespaceAndSpaces ) ).toBe( output );
+	} );
 
-	test(`Don't bold anything if title is already bolded`, () => {
-		let titleWithNamespaceAndSpaces = 'Draft:Rebekah Cilia';
-		let wikicode =
+	test( 'Don\'t bold anything if title is already bolded', () => {
+		const titleWithNamespaceAndSpaces = 'Draft:Rebekah Cilia';
+		const wikicode =
 `'''Rebekah Cilia''' (born 25 September, 1987)
 
 Rebekah Cilia also ...`;
-		let output =
+		const output =
 `'''Rebekah Cilia''' (born 25 September, 1987)
 
 Rebekah Cilia also ...`;
-		expect(dc.boldArticleTitle(wikicode, titleWithNamespaceAndSpaces)).toBe(output);
-	});
+		expect( dc.boldArticleTitle( wikicode, titleWithNamespaceAndSpaces ) ).toBe( output );
+	} );
 
-	test('Templates and ---- before first paragraph', () => {
-		let titleWithNamespaceAndSpaces = 'Draft:Amrah Namig oglu Huseynli';
-		let wikicode =
+	test( 'Templates and ---- before first paragraph', () => {
+		const titleWithNamespaceAndSpaces = 'Draft:Amrah Namig oglu Huseynli';
+		const wikicode =
 `{{AFC submission|d|v|u=Orxanqurbanli|ns=118|decliner=Novem Linguae|declinets=20211214152247|ts=20211214151730}} <!-- Do not remove this line! -->
 
 {{AFC comment|1=Please also split this into multiple paragraphs, for readability. –[[User:Novem Linguae|<span style="color:limegreen">'''Novem Linguae'''</span>]] <small>([[User talk:Novem Linguae|talk]])</small> 15:22, 14 December 2021 (UTC)}}
@@ -951,7 +949,7 @@ Rewards
 <!-- Inline citations added to your article will automatically display here. See en.wikipedia.org/wiki/WP:REFB for instructions on how to add citations. -->
 {{reflist}}
 `;
-		let output =
+		const output =
 `{{AFC submission|d|v|u=Orxanqurbanli|ns=118|decliner=Novem Linguae|declinets=20211214152247|ts=20211214151730}} <!-- Do not remove this line! -->
 
 {{AFC comment|1=Please also split this into multiple paragraphs, for readability. –[[User:Novem Linguae|<span style="color:limegreen">'''Novem Linguae'''</span>]] <small>([[User talk:Novem Linguae|talk]])</small> 15:22, 14 December 2021 (UTC)}}
@@ -984,12 +982,12 @@ Rewards
 <!-- Inline citations added to your article will automatically display here. See en.wikipedia.org/wiki/WP:REFB for instructions on how to add citations. -->
 {{reflist}}
 `;
-		expect(dc.boldArticleTitle(wikicode, titleWithNamespaceAndSpaces)).toBe(output);
-	});
+		expect( dc.boldArticleTitle( wikicode, titleWithNamespaceAndSpaces ) ).toBe( output );
+	} );
 
-	test('Edge case 3', () => {
-		let titleWithNamespaceAndSpaces = 'Draft:MICIMATT';
-		let wikicode =
+	test( 'Edge case 3', () => {
+		const titleWithNamespaceAndSpaces = 'Draft:MICIMATT';
+		const wikicode =
 `{{AFC submission|d|v|u=Fallingdowncataclysm|ns=118|decliner=Novem Linguae|declinets=20211215131440|reason2=nn|ts=20211215131103}} <!-- Do not remove this line! -->
 
 {{AFC comment|1=Consortium News is not a reliable source. [[WP:NPPSG]]. –[[User:Novem Linguae|<span style="color:limegreen">'''Novem Linguae'''</span>]] <small>([[User talk:Novem Linguae|talk]])</small> 13:14, 15 December 2021 (UTC)}}
@@ -1007,7 +1005,7 @@ The acronym expands to "Military-Industrial-Congressional-Intelligence-Media-Aca
 <!-- Inline citations added to your article will automatically display here. See en.wikipedia.org/wiki/WP:REFB for instructions on how to add citations. -->
 {{reflist}}
 `;
-		let output =
+		const output =
 `{{AFC submission|d|v|u=Fallingdowncataclysm|ns=118|decliner=Novem Linguae|declinets=20211215131440|reason2=nn|ts=20211215131103}} <!-- Do not remove this line! -->
 
 {{AFC comment|1=Consortium News is not a reliable source. [[WP:NPPSG]]. –[[User:Novem Linguae|<span style="color:limegreen">'''Novem Linguae'''</span>]] <small>([[User talk:Novem Linguae|talk]])</small> 13:14, 15 December 2021 (UTC)}}
@@ -1025,12 +1023,12 @@ The acronym expands to "Military-Industrial-Congressional-Intelligence-Media-Aca
 <!-- Inline citations added to your article will automatically display here. See en.wikipedia.org/wiki/WP:REFB for instructions on how to add citations. -->
 {{reflist}}
 `;
-		expect(dc.boldArticleTitle(wikicode, titleWithNamespaceAndSpaces)).toBe(output);
-	});
+		expect( dc.boldArticleTitle( wikicode, titleWithNamespaceAndSpaces ) ).toBe( output );
+	} );
 
-	test(`Don't bold twice`, () => {
-		let titleWithNamespaceAndSpaces = 'Draft:Kenichi Nagai';
-		let wikicode =
+	test( 'Don\'t bold twice', () => {
+		const titleWithNamespaceAndSpaces = 'Draft:Kenichi Nagai';
+		const wikicode =
 `== Kenichi Nagai (永井 賢一) ==
 
 '''Kenichi Nagai''' (1942-1966) was a Japanese racing car driver, infamously known as the first fatality of [[Fuji Speedway|Fuji Speedway.]] 
@@ -1038,7 +1036,7 @@ The acronym expands to "Military-Industrial-Congressional-Intelligence-Media-Aca
 == Early life ==
 
 Kenichi Nagai was born in 1942. While attending university, he picked up the hobby of motorsports in the early 60s.`;
-		let output =
+		const output =
 `== Kenichi Nagai (永井 賢一) ==
 
 '''Kenichi Nagai''' (1942-1966) was a Japanese racing car driver, infamously known as the first fatality of [[Fuji Speedway|Fuji Speedway.]] 
@@ -1046,133 +1044,133 @@ Kenichi Nagai was born in 1942. While attending university, he picked up the hob
 == Early life ==
 
 Kenichi Nagai was born in 1942. While attending university, he picked up the hobby of motorsports in the early 60s.`;
-		expect(dc.boldArticleTitle(wikicode, titleWithNamespaceAndSpaces)).toBe(output);
-	});
+		expect( dc.boldArticleTitle( wikicode, titleWithNamespaceAndSpaces ) ).toBe( output );
+	} );
 
-	test.skip(`Only bold titles located in first paragraph`, () => {
-		let titleWithNamespaceAndSpaces = 'Draft:Matthew Beachy';
-		let wikicode =
+	test.skip( 'Only bold titles located in first paragraph', () => {
+		const titleWithNamespaceAndSpaces = 'Draft:Matthew Beachy';
+		const wikicode =
 `Blah blah.
 
 Matthew Beachy considers`;
-		let output =
+		const output =
 `Blah blah.
 
 Matthew Beachy considers`;
-		expect(dc.boldArticleTitle(wikicode, titleWithNamespaceAndSpaces)).toBe(output);
-	});
-});
+		expect( dc.boldArticleTitle( wikicode, titleWithNamespaceAndSpaces ) ).toBe( output );
+	} );
+} );
 
-describe('disableCategoriesInDraftspace(wikicode, namespace)', () => {
-	test('Normal', () => {
-		let namespace = 118;
-		let wikicode =
+describe( 'disableCategoriesInDraftspace(wikicode, namespace)', () => {
+	test( 'Normal', () => {
+		const namespace = 118;
+		const wikicode =
 `[[Category:Living people]]
 [[Category:21st-century Indian businesspeople]]
 [[Category:Indian businesspeople]]
 [[Category:Indian emigrants to the United Arab Emirates]]`;
-		let output =
+		const output =
 `[[:Category:Living people]]
 [[:Category:21st-century Indian businesspeople]]
 [[:Category:Indian businesspeople]]
 [[:Category:Indian emigrants to the United Arab Emirates]]`;
-		expect(dc.disableCategoriesInDraftspace(wikicode, namespace)).toBe(output);
-	});
+		expect( dc.disableCategoriesInDraftspace( wikicode, namespace ) ).toBe( output );
+	} );
 
-	test('Colon before category', () => {
-		let namespace = 118;
-		let wikicode =
+	test( 'Colon before category', () => {
+		const namespace = 118;
+		const wikicode =
 `:[[Category:Living people]]
 :[[Category:21st-century Indian businesspeople]]
 :[[Category:Indian businesspeople]]
 :[[Category:Indian emigrants to the United Arab Emirates]]`;
-		let output =
+		const output =
 `[[:Category:Living people]]
 [[:Category:21st-century Indian businesspeople]]
 [[:Category:Indian businesspeople]]
 [[:Category:Indian emigrants to the United Arab Emirates]]`;
-		expect(dc.disableCategoriesInDraftspace(wikicode, namespace)).toBe(output);
-	});
+		expect( dc.disableCategoriesInDraftspace( wikicode, namespace ) ).toBe( output );
+	} );
 
-	test(`Don't disable [[Category:Created with preloaddraft]]`, () => {
-		let namespace = 118;
-		let wikicode =
+	test( 'Don\'t disable [[Category:Created with preloaddraft]]', () => {
+		const namespace = 118;
+		const wikicode =
 `[[Category:Test]]
 [[Category:Created via preloaddraft]]
 [[Category:Test2]]`;
-		let output =
+		const output =
 `[[:Category:Test]]
 [[Category:Created via preloaddraft]]
 [[:Category:Test2]]`;
-		expect(dc.disableCategoriesInDraftspace(wikicode, namespace)).toBe(output);
-	});
-});
+		expect( dc.disableCategoriesInDraftspace( wikicode, namespace ) ).toBe( output );
+	} );
+} );
 
-describe('deleteSomeHTMLTags(wikicode)', () => {
-	test('<nowiki>', () => {
-		let wikicode = `1.     <nowiki>https://nation.com.pk/24-Jul-2019/dr-athar-mehboob-appointed-as-iub-vice-chancellor</nowiki>`;
-		let output = `1.     https://nation.com.pk/24-Jul-2019/dr-athar-mehboob-appointed-as-iub-vice-chancellor`;
-		expect(dc.deleteSomeHTMLTags(wikicode)).toBe(output);
-	});
+describe( 'deleteSomeHTMLTags(wikicode)', () => {
+	test( '<nowiki>', () => {
+		const wikicode = '1.     <nowiki>https://nation.com.pk/24-Jul-2019/dr-athar-mehboob-appointed-as-iub-vice-chancellor</nowiki>';
+		const output = '1.     https://nation.com.pk/24-Jul-2019/dr-athar-mehboob-appointed-as-iub-vice-chancellor';
+		expect( dc.deleteSomeHTMLTags( wikicode ) ).toBe( output );
+	} );
 
-	test('<nowiki/>', () => {
-		let wikicode = `1.     <nowiki/>`;
-		let output = `1.     `;
-		expect(dc.deleteSomeHTMLTags(wikicode)).toBe(output);
-	});
+	test( '<nowiki/>', () => {
+		const wikicode = '1.     <nowiki/>';
+		const output = '1.     ';
+		expect( dc.deleteSomeHTMLTags( wikicode ) ).toBe( output );
+	} );
 
-	test('<p><strong><em>', () => {
-		let wikicode = `{{Reflist|
+	test( '<p><strong><em>', () => {
+		const wikicode = `{{Reflist|
 			<ref name = "phytotaxa_putaiguneung">{{Cite journal|last=METUSALA|first=DESTARIO|last2=AL FARISHY|first2=DEE DEE|last3=JEBB|first3=MATTHEW|date=2020-08-04|title=<p><strong><em>Nepenthes putaiguneung</em></strong><strong> (Nepenthaceae), a new species from highland of Sumatra, Indonesia</strong></p>|url=https://doi.org/10.11646/phytotaxa.454.4.6|journal=Phytotaxa|volume=454|issue=4|pages=285–292|doi=10.11646/phytotaxa.454.4.6|issn=1179-3163}}</ref>
 			}}`;
-		let output = `{{Reflist|
+		const output = `{{Reflist|
 			<ref name = "phytotaxa_putaiguneung">{{Cite journal|last=METUSALA|first=DESTARIO|last2=AL FARISHY|first2=DEE DEE|last3=JEBB|first3=MATTHEW|date=2020-08-04|title=Nepenthes putaiguneung (Nepenthaceae), a new species from highland of Sumatra, Indonesia|url=https://doi.org/10.11646/phytotaxa.454.4.6|journal=Phytotaxa|volume=454|issue=4|pages=285–292|doi=10.11646/phytotaxa.454.4.6|issn=1179-3163}}</ref>
 			}}`;
-		expect(dc.deleteSomeHTMLTags(wikicode)).toBe(output);
-	});
+		expect( dc.deleteSomeHTMLTags( wikicode ) ).toBe( output );
+	} );
 
-	test('<p>Test</p>', () => {
-		let wikicode = `Test <p>Test</p> test`;
-		let output = `Test Test test`;
-		expect(dc.deleteSomeHTMLTags(wikicode)).toBe(output);
-	});
+	test( '<p>Test</p>', () => {
+		const wikicode = 'Test <p>Test</p> test';
+		const output = 'Test Test test';
+		expect( dc.deleteSomeHTMLTags( wikicode ) ).toBe( output );
+	} );
 
-	test('<p style="Font family: Sans-Serif">', () => {
-		let wikicode = `Test <p style="Font family: Sans-Serif"> test`;
-		let output = `Test  test`;
-		expect(dc.deleteSomeHTMLTags(wikicode)).toBe(output);
-	});
+	test( '<p style="Font family: Sans-Serif">', () => {
+		const wikicode = 'Test <p style="Font family: Sans-Serif"> test';
+		const output = 'Test  test';
+		expect( dc.deleteSomeHTMLTags( wikicode ) ).toBe( output );
+	} );
 
-	test('<u>', () => {
-		let wikicode = `Test <u> test`;
-		let output = `Test  test`;
-		expect(dc.deleteSomeHTMLTags(wikicode)).toBe(output);
-	});
+	test( '<u>', () => {
+		const wikicode = 'Test <u> test';
+		const output = 'Test  test';
+		expect( dc.deleteSomeHTMLTags( wikicode ) ).toBe( output );
+	} );
 
-	test(`don't mess with <utest>`, () => {
-		let wikicode = `Test <utest> test`;
-		let output = `Test <utest> test`;
-		expect(dc.deleteSomeHTMLTags(wikicode)).toBe(output);
-	});
+	test( 'don\'t mess with <utest>', () => {
+		const wikicode = 'Test <utest> test';
+		const output = 'Test <utest> test';
+		expect( dc.deleteSomeHTMLTags( wikicode ) ).toBe( output );
+	} );
 
-	test('<big>', () => {
-		let wikicode = `<big><big>See also</big></big><br>`;
-		let output = `See also<br>`;
-		expect(dc.deleteSomeHTMLTags(wikicode)).toBe(output);
-	});
-});
+	test( '<big>', () => {
+		const wikicode = '<big><big>See also</big></big><br>';
+		const output = 'See also<br>';
+		expect( dc.deleteSomeHTMLTags( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('deleteWeirdUnicodeCharacters(wikicode)', () => {
-	test('U+0096 start of guarded area', () => {
-		let wikicode = `* Recipient of the 2021 Honorable Mention of the Deputy Prime Minister of Uzbekistan.`;
-		let output = `* Recipient of the 2021 Honorable Mention of the Deputy Prime Minister of Uzbekistan.`;
-		expect(dc.deleteWeirdUnicodeCharacters(wikicode)).toBe(output);
-	});
-});
+describe( 'deleteWeirdUnicodeCharacters(wikicode)', () => {
+	test( 'U+0096 start of guarded area', () => {
+		const wikicode = '* Recipient of the 2021 Honorable Mention of the Deputy Prime Minister of Uzbekistan.';
+		const output = '* Recipient of the 2021 Honorable Mention of the Deputy Prime Minister of Uzbekistan.';
+		expect( dc.deleteWeirdUnicodeCharacters( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('deleteBlankLinesBetweenBullets(wikicode)', () => {
-	test('U+0096 start of guarded area', () => {
-		let wikicode =
+describe( 'deleteBlankLinesBetweenBullets(wikicode)', () => {
+	test( 'U+0096 start of guarded area', () => {
+		const wikicode =
 `== Cast ==
 *Brett Blackmore: [[Eli Brown]]
 
@@ -1181,277 +1179,276 @@ describe('deleteBlankLinesBetweenBullets(wikicode)', () => {
 *Jeffrey Blackmore (father): [[Jerry O'Connell]]
 
 *Kristen Blackmore (mother): [[Natalie Zea]]`;
-		let output =
+		const output =
 `== Cast ==
 *Brett Blackmore: [[Eli Brown]]
 *Kayla Pierce: [[Madison Iseman]]
 *Jeffrey Blackmore (father): [[Jerry O'Connell]]
 *Kristen Blackmore (mother): [[Natalie Zea]]`;
-		expect(dc.deleteBlankLinesBetweenBullets(wikicode)).toBe(output);
-	});
-});
+		expect( dc.deleteBlankLinesBetweenBullets( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('capitalizeCOVID19(wikicode)', () => {
-	test('Normal', () => {
-		let wikicode = `Test Covid-19 test.`;
-		let output = `Test COVID-19 test.`;
-		expect(dc.capitalizeCOVID19(wikicode)).toBe(output);
-	});
+describe( 'capitalizeCOVID19(wikicode)', () => {
+	test( 'Normal', () => {
+		const wikicode = 'Test Covid-19 test.';
+		const output = 'Test COVID-19 test.';
+		expect( dc.capitalizeCOVID19( wikicode ) ).toBe( output );
+	} );
 
-	test(`Don't capitalize COVID-19 in URLs`, () => {
-		let wikicode = `https://test.com/covid-19 test`;
-		let output = `https://test.com/covid-19 test`;
-		expect(dc.capitalizeCOVID19(wikicode)).toBe(output);
-	});
+	test( 'Don\'t capitalize COVID-19 in URLs', () => {
+		const wikicode = 'https://test.com/covid-19 test';
+		const output = 'https://test.com/covid-19 test';
+		expect( dc.capitalizeCOVID19( wikicode ) ).toBe( output );
+	} );
 
-	test(`Don't mess with image names`, () => {
-		let wikicode = `{{Infobox | image           = Covid-19_SP_-_UTI_V._Nova_Cachoeirinha.jpg<!-- PLEASE DISCUSS POTENTIAL CHANGES TO THIS PHOTO AT THE TALK PAGE BEFORE MAKING THEM. --> }}`;
-		let output = `{{Infobox | image           = Covid-19_SP_-_UTI_V._Nova_Cachoeirinha.jpg<!-- PLEASE DISCUSS POTENTIAL CHANGES TO THIS PHOTO AT THE TALK PAGE BEFORE MAKING THEM. --> }}`;
-		expect(dc.capitalizeCOVID19(wikicode)).toBe(output);
-	});
+	test( 'Don\'t mess with image names', () => {
+		const wikicode = '{{Infobox | image           = Covid-19_SP_-_UTI_V._Nova_Cachoeirinha.jpg<!-- PLEASE DISCUSS POTENTIAL CHANGES TO THIS PHOTO AT THE TALK PAGE BEFORE MAKING THEM. --> }}';
+		const output = '{{Infobox | image           = Covid-19_SP_-_UTI_V._Nova_Cachoeirinha.jpg<!-- PLEASE DISCUSS POTENTIAL CHANGES TO THIS PHOTO AT THE TALK PAGE BEFORE MAKING THEM. --> }}';
+		expect( dc.capitalizeCOVID19( wikicode ) ).toBe( output );
+	} );
 
-	test(`Don't mess with image names 2`, () => {
-		let wikicode = `[[File:Covid-19_SP_-_UTI_V._Nova_Cachoeirinha.jpg|caption goes here]]`;
-		let output = `[[File:Covid-19_SP_-_UTI_V._Nova_Cachoeirinha.jpg|caption goes here]]`;
-		expect(dc.capitalizeCOVID19(wikicode)).toBe(output);
-	});
-});
+	test( 'Don\'t mess with image names 2', () => {
+		const wikicode = '[[File:Covid-19_SP_-_UTI_V._Nova_Cachoeirinha.jpg|caption goes here]]';
+		const output = '[[File:Covid-19_SP_-_UTI_V._Nova_Cachoeirinha.jpg|caption goes here]]';
+		expect( dc.capitalizeCOVID19( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('fixWikilinksContainingURL(wikicode)', () => {
-	test('Non-piped wikilink', () => {
-		let wikicode = `talented [[https://en.wikipedia.org/wiki/Rhythm_and_blues]] singer-songwriter`;
-		let output = `talented [[Rhythm_and_blues]] singer-songwriter`;
-		expect(dc.fixWikilinksContainingURL(wikicode)).toBe(output);
-	});
+describe( 'fixWikilinksContainingURL(wikicode)', () => {
+	test( 'Non-piped wikilink', () => {
+		const wikicode = 'talented [[https://en.wikipedia.org/wiki/Rhythm_and_blues]] singer-songwriter';
+		const output = 'talented [[Rhythm_and_blues]] singer-songwriter';
+		expect( dc.fixWikilinksContainingURL( wikicode ) ).toBe( output );
+	} );
 
-	test('m.wikipedia.org domain', () => {
-		let wikicode = `talented [[https://en.m.wikipedia.org/wiki/Rhythm_and_blues]] singer-songwriter`;
-		let output = `talented [[Rhythm_and_blues]] singer-songwriter`;
-		expect(dc.fixWikilinksContainingURL(wikicode)).toBe(output);
-	});
+	test( 'm.wikipedia.org domain', () => {
+		const wikicode = 'talented [[https://en.m.wikipedia.org/wiki/Rhythm_and_blues]] singer-songwriter';
+		const output = 'talented [[Rhythm_and_blues]] singer-songwriter';
+		expect( dc.fixWikilinksContainingURL( wikicode ) ).toBe( output );
+	} );
 
-	test('Piped wikilink', () => {
-		let wikicode = `talented [[https://en.wikipedia.org/wiki/Rhythm_and_blues|R&B-soul]] singer-songwriter`;
-		let output = `talented [[Rhythm_and_blues|R&B-soul]] singer-songwriter`;
-		expect(dc.fixWikilinksContainingURL(wikicode)).toBe(output);
-	});
+	test( 'Piped wikilink', () => {
+		const wikicode = 'talented [[https://en.wikipedia.org/wiki/Rhythm_and_blues|R&B-soul]] singer-songwriter';
+		const output = 'talented [[Rhythm_and_blues|R&B-soul]] singer-songwriter';
+		expect( dc.fixWikilinksContainingURL( wikicode ) ).toBe( output );
+	} );
 
-	test('Non-piped link', () => {
-		let wikicode = `talented [[https://test.com]] singer-songwriter`;
-		let output = `talented [https://test.com] singer-songwriter`;
-		expect(dc.fixWikilinksContainingURL(wikicode)).toBe(output);
-	});
+	test( 'Non-piped link', () => {
+		const wikicode = 'talented [[https://test.com]] singer-songwriter';
+		const output = 'talented [https://test.com] singer-songwriter';
+		expect( dc.fixWikilinksContainingURL( wikicode ) ).toBe( output );
+	} );
 
-	test('Piped link', () => {
-		let wikicode = `talented [[https://test.com|R&B-soul]] singer-songwriter`;
-		let output = `talented [https://test.com R&B-soul] singer-songwriter`;
-		expect(dc.fixWikilinksContainingURL(wikicode)).toBe(output);
-	});
-});
+	test( 'Piped link', () => {
+		const wikicode = 'talented [[https://test.com|R&B-soul]] singer-songwriter';
+		const output = 'talented [https://test.com R&B-soul] singer-songwriter';
+		expect( dc.fixWikilinksContainingURL( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('fixExternalLinksToWikipediaArticles(wikicode)', () => {
-	test('[https://en.wikipedia.org/wiki/Article]', () => {
-		let wikicode = `[https://en.wikipedia.org/wiki/Black]`;
-		let output = `[[Black]]`;
-		expect(dc.fixExternalLinksToWikipediaArticles(wikicode)).toBe(output);
-	});
+describe( 'fixExternalLinksToWikipediaArticles(wikicode)', () => {
+	test( '[https://en.wikipedia.org/wiki/Article]', () => {
+		const wikicode = '[https://en.wikipedia.org/wiki/Black]';
+		const output = '[[Black]]';
+		expect( dc.fixExternalLinksToWikipediaArticles( wikicode ) ).toBe( output );
+	} );
 
-	test('[https://en.wikipedia.org/wiki/Article Article name]', () => {
-		let wikicode = `[https://en.wikipedia.org/wiki/Black Black]`;
-		let output = `[[Black]]`;
-		expect(dc.fixExternalLinksToWikipediaArticles(wikicode)).toBe(output);
-	});
+	test( '[https://en.wikipedia.org/wiki/Article Article name]', () => {
+		const wikicode = '[https://en.wikipedia.org/wiki/Black Black]';
+		const output = '[[Black]]';
+		expect( dc.fixExternalLinksToWikipediaArticles( wikicode ) ).toBe( output );
+	} );
 
-	test('urldecode %20', () => {
-		let wikicode = `[https://en.wikipedia.org/wiki/Black%20Star%20of%20Queensland]`;
-		let output = `[[Black Star of Queensland]]`;
-		expect(dc.fixExternalLinksToWikipediaArticles(wikicode)).toBe(output);
-	});
+	test( 'urldecode %20', () => {
+		const wikicode = '[https://en.wikipedia.org/wiki/Black%20Star%20of%20Queensland]';
+		const output = '[[Black Star of Queensland]]';
+		expect( dc.fixExternalLinksToWikipediaArticles( wikicode ) ).toBe( output );
+	} );
 
-	test('urldecode _', () => {
-		let wikicode = `[https://en.wikipedia.org/wiki/Black_Star_of_Queensland]`;
-		let output = `[[Black Star of Queensland]]`;
-		expect(dc.fixExternalLinksToWikipediaArticles(wikicode)).toBe(output);
-	});
+	test( 'urldecode _', () => {
+		const wikicode = '[https://en.wikipedia.org/wiki/Black_Star_of_Queensland]';
+		const output = '[[Black Star of Queensland]]';
+		expect( dc.fixExternalLinksToWikipediaArticles( wikicode ) ).toBe( output );
+	} );
 
-	test('urldecode %7B {', () => {
-		let wikicode = `[https://en.wikipedia.org/wiki/%7B]`;
-		let output = `[[{]]`;
-		expect(dc.fixExternalLinksToWikipediaArticles(wikicode)).toBe(output);
-	});
-});
+	test( 'urldecode %7B {', () => {
+		const wikicode = '[https://en.wikipedia.org/wiki/%7B]';
+		const output = '[[{]]';
+		expect( dc.fixExternalLinksToWikipediaArticles( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('removeUnderscoresFromWikilinks(wikicode)', () => {
-	test('Normal', () => {
-		let wikicode = `Hello_friend [[Distributed_computing]] Goodbye_friend`;
-		let output = `Hello_friend [[Distributed computing]] Goodbye_friend`;
-		expect(dc.removeUnderscoresFromWikilinks(wikicode)).toBe(output);
-	});
-});
+describe( 'removeUnderscoresFromWikilinks(wikicode)', () => {
+	test( 'Normal', () => {
+		const wikicode = 'Hello_friend [[Distributed_computing]] Goodbye_friend';
+		const output = 'Hello_friend [[Distributed computing]] Goodbye_friend';
+		expect( dc.removeUnderscoresFromWikilinks( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('refShortLinkToLongLink(wikicode)', () => {
-	test('Normal', () => {
-		let wikicode = `<ref>[https://test.com Test]</ref>`;
-		let output = `<ref>https://test.com Test</ref>`;
-		expect(dc.refShortLinkToLongLink(wikicode)).toBe(output);
-	});
+describe( 'refShortLinkToLongLink(wikicode)', () => {
+	test( 'Normal', () => {
+		const wikicode = '<ref>[https://test.com Test]</ref>';
+		const output = '<ref>https://test.com Test</ref>';
+		expect( dc.refShortLinkToLongLink( wikicode ) ).toBe( output );
+	} );
 
-	test('Italic and touching hyperlink', () => {
-		let wikicode = `<ref>[https://www.iufrance.fr/les-membres-de-liuf/membre/1246-remi-abgrall.html''Institut Universitaire de France'']</ref>`;
-		let output = `<ref>https://www.iufrance.fr/les-membres-de-liuf/membre/1246-remi-abgrall.html ''Institut Universitaire de France''</ref>`;
-		expect(dc.refShortLinkToLongLink(wikicode)).toBe(output);
-	});
-});
+	test( 'Italic and touching hyperlink', () => {
+		const wikicode = '<ref>[https://www.iufrance.fr/les-membres-de-liuf/membre/1246-remi-abgrall.html\'\'Institut Universitaire de France\'\']</ref>';
+		const output = '<ref>https://www.iufrance.fr/les-membres-de-liuf/membre/1246-remi-abgrall.html \'\'Institut Universitaire de France\'\'</ref>';
+		expect( dc.refShortLinkToLongLink( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('deleteMoreThanTwoEntersInARow(wikicode)', () => {
-	test('Normal', () => {
-		let wikicode =
+describe( 'deleteMoreThanTwoEntersInARow(wikicode)', () => {
+	test( 'Normal', () => {
+		const wikicode =
 `Test
 
 
 Test`;
-		let output =
+		const output =
 `Test
 
 Test`;
-		expect(dc.deleteMoreThanTwoEntersInARow(wikicode)).toBe(output);
-	});
+		expect( dc.deleteMoreThanTwoEntersInARow( wikicode ) ).toBe( output );
+	} );
 
-	test('Change 3 enters to 2 enters in front of a stub tag', () => {
-		let wikicode =
+	test( 'Change 3 enters to 2 enters in front of a stub tag', () => {
+		const wikicode =
 `Test
 
 
 
 {{Stub}}`;
-		let output =
+		const output =
 `Test
 
 
 {{Stub}}`;
-		expect(dc.deleteMoreThanTwoEntersInARow(wikicode)).toBe(output);
-	});
+		expect( dc.deleteMoreThanTwoEntersInARow( wikicode ) ).toBe( output );
+	} );
 
-	test('Change 1 enters to 2 enters in front of a stub tag', () => {
-		let wikicode =
+	test( 'Change 1 enters to 2 enters in front of a stub tag', () => {
+		const wikicode =
 `Test
 
 {{Stub}}`;
-		let output =
+		const output =
 `Test
 
 
 {{Stub}}`;
-		expect(dc.deleteMoreThanTwoEntersInARow(wikicode)).toBe(output);
-	});
-});
+		expect( dc.deleteMoreThanTwoEntersInARow( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe(`convertH1ToH2(wikicode2)`, () => {
-	test(`Don't change`, () => {
-		let wikicode2 = `== Heading ==`;
-		let output = '== Heading ==';
-		expect(dc.convertH1ToH2(wikicode2)).toBe(output);
-	});
+describe( 'convertH1ToH2(wikicode2)', () => {
+	test( 'Don\'t change', () => {
+		const wikicode2 = '== Heading ==';
+		const output = '== Heading ==';
+		expect( dc.convertH1ToH2( wikicode2 ) ).toBe( output );
+	} );
 
-	test(`Change`, () => {
-		let wikicode2 = `= Heading =`;
-		let output = '== Heading ==';
-		expect(dc.convertH1ToH2(wikicode2)).toBe(output);
-	});
-});
+	test( 'Change', () => {
+		const wikicode2 = '= Heading =';
+		const output = '== Heading ==';
+		expect( dc.convertH1ToH2( wikicode2 ) ).toBe( output );
+	} );
+} );
 
-describe(`swapRefPeriodWithPeriodRef(wikicode2)`, () => {
-	test(`Single`, () => {
-		let wikicode2 = `[[WMO]]<ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>.\n`;
-		let output = '[[WMO]].<ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>\n';
-		expect(dc.swapRefPeriodWithPeriodRef(wikicode2)).toBe(output);
-	});
+describe( 'swapRefPeriodWithPeriodRef(wikicode2)', () => {
+	test( 'Single', () => {
+		const wikicode2 = '[[WMO]]<ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>.\n';
+		const output = '[[WMO]].<ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>\n';
+		expect( dc.swapRefPeriodWithPeriodRef( wikicode2 ) ).toBe( output );
+	} );
 
-	test(`Double`, () => {
-		let wikicode2 = `[[WMO]]<ref>Test</ref><ref>Test2</ref>.\n`;
-		let output = '[[WMO]].<ref>Test</ref><ref>Test2</ref>\n';
-		expect(dc.swapRefPeriodWithPeriodRef(wikicode2)).toBe(output);
-	});
+	test( 'Double', () => {
+		const wikicode2 = '[[WMO]]<ref>Test</ref><ref>Test2</ref>.\n';
+		const output = '[[WMO]].<ref>Test</ref><ref>Test2</ref>\n';
+		expect( dc.swapRefPeriodWithPeriodRef( wikicode2 ) ).toBe( output );
+	} );
 
-	test.skip(`<ref name="test" /> style refs`, () => {
-		let wikicode2 = `[[WMO]]<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>.\n`;
-		let output = '[[WMO]].<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>\n';
-		expect(dc.swapRefPeriodWithPeriodRef(wikicode2)).toBe(output);
-	});
-});
+	test.skip( '<ref name="test" /> style refs', () => {
+		const wikicode2 = '[[WMO]]<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>.\n';
+		const output = '[[WMO]].<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>\n';
+		expect( dc.swapRefPeriodWithPeriodRef( wikicode2 ) ).toBe( output );
+	} );
+} );
 
+describe( 'swapRefCommaWithCommaRef(wikicode2)', () => {
+	test( 'Single', () => {
+		const wikicode2 = '[[WMO]]<ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>,\n';
+		const output = '[[WMO]],<ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>\n';
+		expect( dc.swapRefCommaWithCommaRef( wikicode2 ) ).toBe( output );
+	} );
 
-describe(`swapRefCommaWithCommaRef(wikicode2)`, () => {
-	test(`Single`, () => {
-		let wikicode2 = `[[WMO]]<ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>,\n`;
-		let output = '[[WMO]],<ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>\n';
-		expect(dc.swapRefCommaWithCommaRef(wikicode2)).toBe(output);
-	});
+	test( 'Double', () => {
+		const wikicode2 = '[[WMO]]<ref>Test</ref><ref>Test2</ref>,\n';
+		const output = '[[WMO]],<ref>Test</ref><ref>Test2</ref>\n';
+		expect( dc.swapRefCommaWithCommaRef( wikicode2 ) ).toBe( output );
+	} );
 
-	test(`Double`, () => {
-		let wikicode2 = `[[WMO]]<ref>Test</ref><ref>Test2</ref>,\n`;
-		let output = '[[WMO]],<ref>Test</ref><ref>Test2</ref>\n';
-		expect(dc.swapRefCommaWithCommaRef(wikicode2)).toBe(output);
-	});
+	test.skip( '<ref name="test" /> style refs', () => {
+		const wikicode2 = '[[WMO]]<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>,\n';
+		const output = '[[WMO]],<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>\n';
+		expect( dc.swapRefCommaWithCommaRef( wikicode2 ) ).toBe( output );
+	} );
+} );
 
-	test.skip(`<ref name="test" /> style refs`, () => {
-		let wikicode2 = `[[WMO]]<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>,\n`;
-		let output = '[[WMO]],<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>\n';
-		expect(dc.swapRefCommaWithCommaRef(wikicode2)).toBe(output);
-	});
-});
-
-describe(`removeBorderFromImagesInInfoboxes(wikicode2)`, () => {
-	test(`Don't change`, () => {
-		let wikicode2 =
+describe( 'removeBorderFromImagesInInfoboxes(wikicode2)', () => {
+	test( 'Don\'t change', () => {
+		const wikicode2 =
 `{{Infobox company
 |name               = ZITRO 
 |logo               = LogoZitro.jpg
 |foundation         = 2007
 }}`;
-		let output =
+		const output =
 `{{Infobox company
 |name               = ZITRO 
 |logo               = LogoZitro.jpg
 |foundation         = 2007
 }}`;
-		expect(dc.removeBorderFromImagesInInfoboxes(wikicode2)).toBe(output);
-	});
+		expect( dc.removeBorderFromImagesInInfoboxes( wikicode2 ) ).toBe( output );
+	} );
 
-	test(`No pipe`, () => {
-		let wikicode2 =
+	test( 'No pipe', () => {
+		const wikicode2 =
 `{{Infobox company
 |name               = ZITRO 
 |logo               = [[File:LogoZitro.jpg]]
 |foundation         = 2007
 }}`;
-		let output =
+		const output =
 `{{Infobox company
 |name               = ZITRO 
 |logo               = LogoZitro.jpg
 |foundation         = 2007
 }}`;
-		expect(dc.removeBorderFromImagesInInfoboxes(wikicode2)).toBe(output);
-	});
+		expect( dc.removeBorderFromImagesInInfoboxes( wikicode2 ) ).toBe( output );
+	} );
 
-	test(`Piped`, () => {
-		let wikicode2 =
+	test( 'Piped', () => {
+		const wikicode2 =
 `{{Infobox company
 |name               = ZITRO 
 |logo               = [[File:LogoZitro.jpg|thumb|Logo Zitro Games]]
 |foundation         = 2007
 }}`;
-		let output =
+		const output =
 `{{Infobox company
 |name               = ZITRO 
 |logo               = LogoZitro.jpg
 |foundation         = 2007
 }}`;
-		expect(dc.removeBorderFromImagesInInfoboxes(wikicode2)).toBe(output);
-	});
+		expect( dc.removeBorderFromImagesInInfoboxes( wikicode2 ) ).toBe( output );
+	} );
 
-	test(`Album cover`, () => {
-		let wikicode2 =
+	test( 'Album cover', () => {
+		const wikicode2 =
 `{{Infobox album
 | name         = অনিকেত প্রান্তর
 | type         = Studio
@@ -1459,7 +1456,7 @@ describe(`removeBorderFromImagesInInfoboxes(wikicode2)`, () => {
 | cover        = [[File:Artcell - Oniket Prantor.jpg|thumb|Artcell - Oniket Prantor]]
 | alt          = 
 }}`;
-		let output =
+		const output =
 `{{Infobox album
 | name         = অনিকেত প্রান্তর
 | type         = Studio
@@ -1467,13 +1464,13 @@ describe(`removeBorderFromImagesInInfoboxes(wikicode2)`, () => {
 | cover        = Artcell - Oniket Prantor.jpg
 | alt          = 
 }}`;
-		expect(dc.removeBorderFromImagesInInfoboxes(wikicode2)).toBe(output);
-	});
-});
+		expect( dc.removeBorderFromImagesInInfoboxes( wikicode2 ) ).toBe( output );
+	} );
+} );
 
-describe(`removeExtraAFCSubmissionTemplates(wikicode2)`, () => {
-	test(`Normal`, () => {
-		let wikicode2 =
+describe( 'removeExtraAFCSubmissionTemplates(wikicode2)', () => {
+	test( 'Normal', () => {
+		const wikicode2 =
 `{{AfC topic|blp}}
 {{AfC submission|||ts=20220310234758|u=Sallgoodman|ns=118}}
 
@@ -1482,7 +1479,7 @@ Test
 {{AfC submission|t||ts=20220310234532|u=Sallgoodman|ns=118|demo=}}
 
 == References ==`;
-		let output =
+		const output =
 `{{AfC topic|blp}}
 {{AfC submission|||ts=20220310234758|u=Sallgoodman|ns=118}}
 
@@ -1490,68 +1487,68 @@ Test
 
 
 == References ==`;
-		expect(dc.removeExtraAFCSubmissionTemplates(wikicode2)).toBe(output);
-	});
+		expect( dc.removeExtraAFCSubmissionTemplates( wikicode2 ) ).toBe( output );
+	} );
 
-	test(`Comment after template`, () => {
-		let wikicode2 =
+	test( 'Comment after template', () => {
+		const wikicode2 =
 `{{AfC topic|org}}
 {{AfC submission|||ts=20220311205124|u=Moemady|ns=118}}
 {{AfC submission|t||ts=20220310204146|u=Moemady|ns=118|demo=}}<!-- Important, do not remove this line before article has been created. -->
 
 {{Orphan|date=January 2006}}`;
-		let output =
+		const output =
 `{{AfC topic|org}}
 {{AfC submission|||ts=20220311205124|u=Moemady|ns=118}}
 <!-- Important, do not remove this line before article has been created. -->
 
 {{Orphan|date=January 2006}}`;
-		expect(dc.removeExtraAFCSubmissionTemplates(wikicode2)).toBe(output);
-	});
+		expect( dc.removeExtraAFCSubmissionTemplates( wikicode2 ) ).toBe( output );
+	} );
 
-});
+} );
 
-describe(`deleteMultipleReferenceTags(wikicode)`, () => {
-	test(`Normal`, () => {
-		let wikicode =
+describe( 'deleteMultipleReferenceTags(wikicode)', () => {
+	test( 'Normal', () => {
+		const wikicode =
 `== References ==
 {{Reflist}}
 `;
-		let output =
+		const output =
 `== References ==
 {{Reflist}}
 `;
-		expect(dc.deleteMultipleReferenceTags(wikicode)).toBe(output);
-	});
+		expect( dc.deleteMultipleReferenceTags( wikicode ) ).toBe( output );
+	} );
 
-	test(`1 {{Reflist}}, 1 <references />`, () => {
-		let wikicode =
+	test( '1 {{Reflist}}, 1 <references />', () => {
+		const wikicode =
 `== References ==
 {{reflist}}
 <references />
 `;
-		let output =
+		const output =
 `== References ==
 {{reflist}}
 `;
-		expect(dc.deleteMultipleReferenceTags(wikicode)).toBe(output);
-	});
-});
+		expect( dc.deleteMultipleReferenceTags( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe(`deleteNonAFCDraftTags(wikicode)`, () => {
-	test(`{{Draft}}`, () => {
-		let wikicode =
+describe( 'deleteNonAFCDraftTags(wikicode)', () => {
+	test( '{{Draft}}', () => {
+		const wikicode =
 `{{AfC submission|||ts=20230111111105|u=Memezmoj|ns=118}}
 {{draft}}
 {{Infobox settlement`;
-		let output =
+		const output =
 `{{AfC submission|||ts=20230111111105|u=Memezmoj|ns=118}}
 {{Infobox settlement`;
-		expect(dc.deleteNonAFCDraftTags(wikicode)).toBe(output);
-	});
+		expect( dc.deleteNonAFCDraftTags( wikicode ) ).toBe( output );
+	} );
 
-	test(`{{Preloaddraft submit}}`, () => {
-		let wikicode =
+	test( '{{Preloaddraft submit}}', () => {
+		const wikicode =
 `{{Preloaddraft submit}}
 
 <!-- When you move this draft into article space, please link it to the Wikidata entry and remove the QID in the infobox code. -->
@@ -1564,7 +1561,7 @@ describe(`deleteNonAFCDraftTags(wikicode)`, () => {
 }}
 
 '''Alice Phillips Withrow'''`;
-		let output =
+		const output =
 `{{Infobox person/Wikidata
    |qid=Q110155583
    |fetchwikidata=ALL
@@ -1573,13 +1570,13 @@ describe(`deleteNonAFCDraftTags(wikicode)`, () => {
 }}
 
 '''Alice Phillips Withrow'''`;
-		expect(dc.deleteNonAFCDraftTags(wikicode)).toBe(output);
-	});
-});
+		expect( dc.deleteNonAFCDraftTags( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe(`moveAFCSubmissionTemplatesToTop(wikicode)`, () => {
-	test(`{{Draft}}`, () => {
-		let wikicode =
+describe( 'moveAFCSubmissionTemplatesToTop(wikicode)', () => {
+	test( '{{Draft}}', () => {
+		const wikicode =
 `== References ==
 {{reflist}}
 
@@ -1589,7 +1586,7 @@ describe(`moveAFCSubmissionTemplatesToTop(wikicode)`, () => {
 
 {{AfC submission|||ts=20230109235951|u=Meghaninmotion|ns=118}}
 `;
-		let output =
+		const output =
 `{{AfC submission|||ts=20230109235951|u=Meghaninmotion|ns=118}}
 ----
 
@@ -1601,38 +1598,36 @@ describe(`moveAFCSubmissionTemplatesToTop(wikicode)`, () => {
 [[Category:Created via preloaddraft]]
 
 `;
-		expect(dc.moveAFCSubmissionTemplatesToTop(wikicode)).toBe(output);
-	});
-});
+		expect( dc.moveAFCSubmissionTemplatesToTop( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe(`_replaceAll(haystack, needle, replacement)`, () => {
-	test(`Normal`, () => {
-		let haystack = `Testing. 123.`;
-		let needle = `.`;
-		let replacement = `!`;
-		let output = `Testing! 123!`;
-		expect(dc._replaceAll(haystack, needle, replacement)).toBe(output);
-	});
-});
+describe( '_replaceAll(haystack, needle, replacement)', () => {
+	test( 'Normal', () => {
+		const haystack = 'Testing. 123.';
+		const needle = '.';
+		const replacement = '!';
+		const output = 'Testing! 123!';
+		expect( dc._replaceAll( haystack, needle, replacement ) ).toBe( output );
+	} );
+} );
 
-describe(`fixPipedWikilinksWithIdenticalParameters(wikicode)`, () => {
-	test(`Normal`, () => {
-		let wikicode =
+describe( 'fixPipedWikilinksWithIdenticalParameters(wikicode)', () => {
+	test( 'Normal', () => {
+		const wikicode =
 `[[Test 1]]
 [[Test 2|Test 2]]
 [[Test_3|Test 3]]
 [[Test 4 (different)|Test 4]]`;
-		let output =
+		const output =
 `[[Test 1]]
 [[Test 2]]
 [[Test_3|Test 3]]
 [[Test 4 (different)|Test 4]]`;
 
-		expect(dc.fixPipedWikilinksWithIdenticalParameters(wikicode)).toBe(output);
-	});
-});
-
-
+		expect( dc.fixPipedWikilinksWithIdenticalParameters( wikicode ) ).toBe( output );
+	} );
+} );
 
 // TODO: inlineExternalLinksToRefs() - false positive involving external links in bibliography sections
 // TODO: run DraftCleaner on big articles and FAs, write tests for false positives
