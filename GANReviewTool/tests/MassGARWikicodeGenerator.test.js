@@ -1,105 +1,105 @@
-const { MassGARWikicodeGenerator } = require("../modules/MassGARWikicodeGenerator.js");
+const { MassGARWikicodeGenerator } = require( '../modules/MassGARWikicodeGenerator.js' );
 
 let wg;
-beforeEach(() => {
+beforeEach( () => {
 	wg = new MassGARWikicodeGenerator();
-});
+} );
 
-describe('hasGoodArticleTemplate(mainArticleWikicode)', () => {
-	it(`Should return false if no good article templates found`, () => {
-		let wikicode =
+describe( 'hasGoodArticleTemplate(mainArticleWikicode)', () => {
+	it( 'Should return false if no good article templates found', () => {
+		const wikicode =
 `{{Short description|None}}
 {{USmusicgenres}}
 == Test==
 Test
 `;
-		let output = false;
-		expect(wg.hasGoodArticleTemplate(wikicode)).toBe(output);
-	});
+		const output = false;
+		expect( wg.hasGoodArticleTemplate( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should detect {{Good article}} 1`, () => {
-		let wikicode =
+	it( 'Should detect {{Good article}} 1', () => {
+		const wikicode =
 `{{Short description|None}}
 {{Good article}}
 {{USmusicgenres}}`;
-		let output = true;
-		expect(wg.hasGoodArticleTemplate(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.hasGoodArticleTemplate( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should handle template being at top of wikicode`, () => {
-		let wikicode =
+	it( 'Should handle template being at top of wikicode', () => {
+		const wikicode =
 `{{Good article}}
 {{USmusicgenres}}`;
-		let output = true;
-		expect(wg.hasGoodArticleTemplate(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.hasGoodArticleTemplate( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should handle template being at bottom of wikicode`, () => {
-		let wikicode =
+	it( 'Should handle template being at bottom of wikicode', () => {
+		const wikicode =
 `{{USmusicgenres}}
 {{Good article}}`;
-		let output = true;
-		expect(wg.hasGoodArticleTemplate(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.hasGoodArticleTemplate( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should detect {{good article}}`, () => {
-		let wikicode =
+	it( 'Should detect {{good article}}', () => {
+		const wikicode =
 `{{Short description|None}}
 {{good article}}
 {{USmusicgenres}}`;
-		let output = true;
-		expect(wg.hasGoodArticleTemplate(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.hasGoodArticleTemplate( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should detect {{Good Article}} 2`, () => {
-		let wikicode =
+	it( 'Should detect {{Good Article}} 2', () => {
+		const wikicode =
 `{{Short description|None}}
 {{Good Article}}
 {{USmusicgenres}}`;
-		let output = true;
-		expect(wg.hasGoodArticleTemplate(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.hasGoodArticleTemplate( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should detect {{GA article}}`, () => {
-		let wikicode =
+	it( 'Should detect {{GA article}}', () => {
+		const wikicode =
 `{{Short description|None}}
 {{GA article}}
 {{USmusicgenres}}`;
-		let output = true;
-		expect(wg.hasGoodArticleTemplate(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.hasGoodArticleTemplate( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should detect {{ga article}}`, () => {
-		let wikicode =
+	it( 'Should detect {{ga article}}', () => {
+		const wikicode =
 `{{Short description|None}}
 {{ga article}}
 {{USmusicgenres}}`;
-		let output = true;
-		expect(wg.hasGoodArticleTemplate(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.hasGoodArticleTemplate( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should detect {{GA icon}}`, () => {
-		let wikicode =
+	it( 'Should detect {{GA icon}}', () => {
+		const wikicode =
 `{{Short description|None}}
 {{GA icon}}
 {{USmusicgenres}}`;
-		let output = true;
-		expect(wg.hasGoodArticleTemplate(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.hasGoodArticleTemplate( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should detect {{ga icon}}`, () => {
-		let wikicode =
+	it( 'Should detect {{ga icon}}', () => {
+		const wikicode =
 `{{Short description|None}}
 {{ga icon}}
 {{USmusicgenres}}`;
-		let output = true;
-		expect(wg.hasGoodArticleTemplate(wikicode)).toBe(output);
-	});
-});
+		const output = true;
+		expect( wg.hasGoodArticleTemplate( wikicode ) ).toBe( output );
+	} );
+} );
 
-describe('talkPageIndicatesGA(talkPageWikicode)', () => {
-	it(`Should return false if not good article`, () => {
-		let wikicode =
+describe( 'talkPageIndicatesGA(talkPageWikicode)', () => {
+	it( 'Should return false if not good article', () => {
+		const wikicode =
 `{{Talk header}}
 {{Article history
 |status = DGA
@@ -108,48 +108,48 @@ describe('talkPageIndicatesGA(talkPageWikicode)', () => {
 == Section ==
 Test
 `;
-		let output = false;
-		expect(wg.talkPageIndicatesGA(wikicode)).toBe(output);
-	});
+		const output = false;
+		expect( wg.talkPageIndicatesGA( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should return true if {{GA}} template present`, () => {
-		let wikicode =
+	it( 'Should return true if {{GA}} template present', () => {
+		const wikicode =
 `{{Talk header}}
 {{GA|06:16, 24 March 2016 (UTC)|topic=Transport|page=2|oldid=711685892}}
 
 == Section ==
 Test
 `;
-		let output = true;
-		expect(wg.talkPageIndicatesGA(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.talkPageIndicatesGA( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should not get confused by case insensitive, e.g. {{Ga}}`, () => {
-		let wikicode =
+	it( 'Should not get confused by case insensitive, e.g. {{Ga}}', () => {
+		const wikicode =
 `{{Talk header}}
 {{Ga|06:16, 24 March 2016 (UTC)|topic=Transport|page=2|oldid=711685892}}
 
 == Section ==
 Test
 `;
-		let output = true;
-		expect(wg.talkPageIndicatesGA(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.talkPageIndicatesGA( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should not detect templates starting with {{Ga as {{GA}}`, () => {
-		let wikicode =
+	it( 'Should not detect templates starting with {{Ga as {{GA}}', () => {
+		const wikicode =
 `{{Talk header}}
 {{Game rationale}}
 
 == Section ==
 Test
 `;
-		let output = false;
-		expect(wg.talkPageIndicatesGA(wikicode)).toBe(output);
-	});
+		const output = false;
+		expect( wg.talkPageIndicatesGA( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should return true if {{Article history}} present and contains |currentstatus=GA`, () => {
-		let wikicode =
+	it( 'Should return true if {{Article history}} present and contains |currentstatus=GA', () => {
+		const wikicode =
 `{{Talk header}}
 {{ArticleHistory
 |action1=GAN
@@ -165,12 +165,12 @@ Test
 == Section ==
 Test
 `;
-		let output = true;
-		expect(wg.talkPageIndicatesGA(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.talkPageIndicatesGA( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should not get confused by whitespace in |currentstatus=GA`, () => {
-		let wikicode =
+	it( 'Should not get confused by whitespace in |currentstatus=GA', () => {
+		const wikicode =
 `{{Talk header}}
 {{ArticleHistory
 | currentstatus = GA
@@ -179,40 +179,40 @@ Test
 == Section ==
 Test
 `;
-		let output = true;
-		expect(wg.talkPageIndicatesGA(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.talkPageIndicatesGA( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should not get confused by |currentstatus=GA|`, () => {
-		let wikicode =
+	it( 'Should not get confused by |currentstatus=GA|', () => {
+		const wikicode =
 `{{Talk header}}
 {{ArticleHistory|currentstatus=GA|topic=television}}
 
 == Section ==
 Test
 `;
-		let output = true;
-		expect(wg.talkPageIndicatesGA(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.talkPageIndicatesGA( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should not get confused by |currentstatus=GA}}`, () => {
-		let wikicode =
+	it( 'Should not get confused by |currentstatus=GA}}', () => {
+		const wikicode =
 `{{Talk header}}
 {{ArticleHistory|currentstatus=GA}}
 
 == Section ==
 Test
 `;
-		let output = true;
-		expect(wg.talkPageIndicatesGA(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.talkPageIndicatesGA( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should detect article history's aliases`, () => {
-		let aliases = ['Articlehistory', 'Article milestones', 'Articlemilestones', 'Article History', 'ArticleHistory'];
-		for ( let template of aliases ) {
-			let wikicode =
+	it( 'Should detect article history\'s aliases', () => {
+		const aliases = [ 'Articlehistory', 'Article milestones', 'Articlemilestones', 'Article History', 'ArticleHistory' ];
+		for ( const template of aliases ) {
+			const wikicode =
 `{{Talk header}}
-{{${template}
+{{${ template }
 | currentstatus = GA
 | other stuff   = blah
 }}
@@ -220,15 +220,15 @@ Test
 == Section ==
 Test
 `;
-			let output = true;
-			expect(wg.talkPageIndicatesGA(wikicode)).toBe(output);
+			const output = true;
+			expect( wg.talkPageIndicatesGA( wikicode ) ).toBe( output );
 		}
-	});
-});
+	} );
+} );
 
-describe('hasOpenGAR(talkPageWikicode)', () => {
-	it(`Should return false if no GAR template present`, () => {
-		let wikicode =
+describe( 'hasOpenGAR(talkPageWikicode)', () => {
+	it( 'Should return false if no GAR template present', () => {
+		const wikicode =
 `{{Talk header}}
 {{Article history
 |status = DGA
@@ -237,31 +237,31 @@ describe('hasOpenGAR(talkPageWikicode)', () => {
 == Section ==
 Test
 `;
-		let output = false;
-		expect(wg.hasOpenGAR(wikicode)).toBe(output);
-	});
+		const output = false;
+		expect( wg.hasOpenGAR( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should return true if {{GAR/link}} template present`, () => {
-		let wikicode =
+	it( 'Should return true if {{GAR/link}} template present', () => {
+		const wikicode =
 `{{Talk header}}
 {{GAR/link|15:34, 17 February 2023 (UTC)|page=2|GARpage=1|status= }}
 
 == Section ==
 Test
 `;
-		let output = true;
-		expect(wg.hasOpenGAR(wikicode)).toBe(output);
-	});
+		const output = true;
+		expect( wg.hasOpenGAR( wikicode ) ).toBe( output );
+	} );
 
-	it(`Should be case insensitive`, () => {
-		let wikicode =
+	it( 'Should be case insensitive', () => {
+		const wikicode =
 `{{Talk header}}
 {{gar/link|15:34, 17 February 2023 (UTC)|page=2|GARpage=1|status= }}
 
 == Section ==
 Test
 `;
-		let output = true;
-		expect(wg.hasOpenGAR(wikicode)).toBe(output);
-	});
-});
+		const output = true;
+		expect( wg.hasOpenGAR( wikicode ) ).toBe( output );
+	} );
+} );

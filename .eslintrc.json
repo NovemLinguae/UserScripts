@@ -4,6 +4,9 @@
 		"wikimedia/jquery",
 		"wikimedia/mediawiki"
 	],
+	"env": {
+		"jest": true
+	},
 	"globals": {
 		"mw": "readonly"
 	},

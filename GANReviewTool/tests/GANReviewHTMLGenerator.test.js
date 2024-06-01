@@ -1,73 +1,76 @@
-const { GANReviewHTMLGenerator } = require("../modules/GANReviewHTMLGenerator");
+const { GANReviewHTMLGenerator } = require( '../modules/GANReviewHTMLGenerator.js' );
 
 // Babel is required to use ES6 module syntax
 // Copy package.json and .babelrc from a project that already has this working
 // Babel tutorial: https://www.sitepoint.com/babel-beginners-guide/
 
-let hg = new GANReviewHTMLGenerator();
+// Eslint is detecting tabs inside of strings for some reason.
+/* eslint-disable no-tabs */
 
-describe('getHTML(gaTitle)', () => {
-	it(`Should inject $gaTitle into the form's HTML`, () => {
-		let gaTitle = `UnqiueString~~~Test`;
-		let output = 'UnqiueString~~~Test';
-		expect(hg.getHTML(gaTitle)).toMatch(output); // don't forget, toMatch() checks using regex. it is not the same as toEqual()
-	});
+const hg = new GANReviewHTMLGenerator();
 
-	it(`Should html escape $gaTitle before injecting it`, () => {
-		let gaTitle = `UnqiueString~~~"&<>`;
-		let output = 'UnqiueString~~~&quot;&amp;&lt;&gt;';
-		expect(hg.getHTML(gaTitle)).toMatch(output); // don't forget, toMatch() checks using regex. it is not the same as toEqual()
-	});
-});
+describe( 'getHTML(gaTitle)', () => {
+	it( 'Should inject $gaTitle into the form\'s HTML', () => {
+		const gaTitle = 'UnqiueString~~~Test';
+		const output = 'UnqiueString~~~Test';
+		expect( hg.getHTML( gaTitle ) ).toMatch( output ); // don't forget, toMatch() checks using regex. it is not the same as toEqual()
+	} );
 
-describe('getDefaultDisplayText(gaTitle)', () => {
-	it(`Should handle no parentheses`, () => {
-		let gaTitle = `Test`;
-		let output = 'Test';
-		expect(hg.getDefaultDisplayText(gaTitle)).toEqual(output);
-	});
+	it( 'Should html escape $gaTitle before injecting it', () => {
+		const gaTitle = 'UnqiueString~~~"&<>';
+		const output = 'UnqiueString~~~&quot;&amp;&lt;&gt;';
+		expect( hg.getHTML( gaTitle ) ).toMatch( output ); // don't forget, toMatch() checks using regex. it is not the same as toEqual()
+	} );
+} );
 
-	it(`Should handle parentheses not in dictionary`, () => {
-		let gaTitle = `Test (123)`;
-		let output = 'Test (123)';
-		expect(hg.getDefaultDisplayText(gaTitle)).toEqual(output);
-	});
+describe( 'getDefaultDisplayText(gaTitle)', () => {
+	it( 'Should handle no parentheses', () => {
+		const gaTitle = 'Test';
+		const output = 'Test';
+		expect( hg.getDefaultDisplayText( gaTitle ) ).toEqual( output );
+	} );
 
-	it(`Should handle parentheses in dictionary suffixesThatTriggerItalics`, () => {
-		let gaTitle = `Test (album)`;
-		let output = `''Test'' (album)`;
-		expect(hg.getDefaultDisplayText(gaTitle)).toEqual(output);
-	});
+	it( 'Should handle parentheses not in dictionary', () => {
+		const gaTitle = 'Test (123)';
+		const output = 'Test (123)';
+		expect( hg.getDefaultDisplayText( gaTitle ) ).toEqual( output );
+	} );
 
-	it(`Should handle parentheses in dictionary suffixesThatTriggerDoubleQuotes`, () => {
-		let gaTitle = `Test (song)`;
-		let output = '"Test" (song)';
-		expect(hg.getDefaultDisplayText(gaTitle)).toEqual(output);
-	});
+	it( 'Should handle parentheses in dictionary suffixesThatTriggerItalics', () => {
+		const gaTitle = 'Test (album)';
+		const output = '\'\'Test\'\' (album)';
+		expect( hg.getDefaultDisplayText( gaTitle ) ).toEqual( output );
+	} );
 
-	it(`Should handle parentheses in dictionary suffixesThatTriggerDoubleQuotesAndItalics`, () => {
-		let gaTitle = `Test (30 Rock)`;
-		let output = `"Test" (''30 Rock'')`;
-		expect(hg.getDefaultDisplayText(gaTitle)).toEqual(output);
-	});
+	it( 'Should handle parentheses in dictionary suffixesThatTriggerDoubleQuotes', () => {
+		const gaTitle = 'Test (song)';
+		const output = '"Test" (song)';
+		expect( hg.getDefaultDisplayText( gaTitle ) ).toEqual( output );
+	} );
 
-	it(`Should handle long parentheses in dictionary suffixesThatTriggerDoubleQuotesAndItalics`, () => {
-		let gaTitle = `Test (Test2 30 Rock)`;
-		let output = `"Test" (''Test2 30 Rock'')`;
-		expect(hg.getDefaultDisplayText(gaTitle)).toEqual(output);
-	});
+	it( 'Should handle parentheses in dictionary suffixesThatTriggerDoubleQuotesAndItalics', () => {
+		const gaTitle = 'Test (30 Rock)';
+		const output = '"Test" (\'\'30 Rock\'\')';
+		expect( hg.getDefaultDisplayText( gaTitle ) ).toEqual( output );
+	} );
 
-	it(`Should handle Llegar a Ti (song)`, () => {
-		let gaTitle = `Llegar a Ti (song)`;
-		let output = `"Llegar a Ti" (song)`;
-		expect(hg.getDefaultDisplayText(gaTitle)).toEqual(output);
-	});
-});
+	it( 'Should handle long parentheses in dictionary suffixesThatTriggerDoubleQuotesAndItalics', () => {
+		const gaTitle = 'Test (Test2 30 Rock)';
+		const output = '"Test" (\'\'Test2 30 Rock\'\')';
+		expect( hg.getDefaultDisplayText( gaTitle ) ).toEqual( output );
+	} );
 
-describe('makeTopicComboBoxOptionGroup(wikicode, category)', () => {
-	it(`Normal`, () => {
-		let topic = 'Art and architecture';
-		let wikicode =
+	it( 'Should handle Llegar a Ti (song)', () => {
+		const gaTitle = 'Llegar a Ti (song)';
+		const output = '"Llegar a Ti" (song)';
+		expect( hg.getDefaultDisplayText( gaTitle ) ).toEqual( output );
+	} );
+} );
+
+describe( 'makeTopicComboBoxOptionGroup(wikicode, category)', () => {
+	it( 'Normal', () => {
+		const topic = 'Art and architecture';
+		const wikicode =
 `<noinclude>
 {{hatnote|[[#Art and architecture|'''↓  Skip to lists  ↓''']]}}
 {{Wikipedia:Good article nominations/Tab header}}
@@ -1728,7 +1731,7 @@ __NOTOC__
 [[Category:Lists of good articles|Art and architecture]]
 </noinclude>
 `;
-		let output =
+		const output =
 `							<option value="Art and architecture" disabled>==Art and architecture==</option>
 							<option value="Art and architecture" disabled>===Art===</option>
 							<option value="Art and architecture">====Art====</option>
@@ -1751,61 +1754,61 @@ __NOTOC__
 							<option value="Art and architecture">====Architects====</option>
 
 `;
-		expect(hg.makeTopicComboBoxOptionGroup(wikicode, topic)).toEqual(output);
-	});
+		expect( hg.makeTopicComboBoxOptionGroup( wikicode, topic ) ).toEqual( output );
+	} );
 
-	it(`Should not get confused by HTML comments when deciding whether or not to disable`, () => {
-		let topic = 'Warfare';
-		let wikicode =
+	it( 'Should not get confused by HTML comments when deciding whether or not to disable', () => {
+		const topic = 'Warfare';
+		const wikicode =
 `=====Warships of Yugoslavia=====
 <!-- Ship names are italicized per the MOS -->
 {{#invoke:Good Articles|subsection|
 `;
-		let output =
+		const output =
 `							<option value="Warfare">=====Warships of Yugoslavia=====</option>
 
 `;
-		expect(hg.makeTopicComboBoxOptionGroup(wikicode, topic)).toEqual(output);
-	});
+		expect( hg.makeTopicComboBoxOptionGroup( wikicode, topic ) ).toEqual( output );
+	} );
 
-	it(`Should not get confused by whitespace when deciding whether or not to disable`, () => {
-		let topic = 'History';
-		let wikicode =
+	it( 'Should not get confused by whitespace when deciding whether or not to disable', () => {
+		const topic = 'History';
+		const wikicode =
 `=====Historical figures: politicians=====
 <!--For historical politicians that were never heads of state or heads of government. Royalty and nobility belong under their own section. For living politicians, see its own section under Politics and Government--> 
 {{#invoke:Good Articles|subsection|
 `; // note the extra space after -->
-		let output =
+		const output =
 `							<option value="History">=====Historical figures: politicians=====</option>
 
 `;
-		expect(hg.makeTopicComboBoxOptionGroup(wikicode, topic)).toEqual(output);
-	});
+		expect( hg.makeTopicComboBoxOptionGroup( wikicode, topic ) ).toEqual( output );
+	} );
 
-	it(`Should convert === This === to ===This=== (should delete spaces)`, () => {
-		let topic = 'Warfare';
-		let wikicode =
+	it( 'Should convert === This === to ===This=== (should delete spaces)', () => {
+		const topic = 'Warfare';
+		const wikicode =
 `===== Warships of Yugoslavia =====
 {{#invoke:Good Articles|subsection|
 `;
-		let output =
+		const output =
 `							<option value="Warfare">=====Warships of Yugoslavia=====</option>
 
 `;
-		expect(hg.makeTopicComboBoxOptionGroup(wikicode, topic)).toEqual(output);
-	});
+		expect( hg.makeTopicComboBoxOptionGroup( wikicode, topic ) ).toEqual( output );
+	} );
 
-	it(`Should not get confused by templates when deciding whether or not to disable`, () => {
-		let topic = 'Warfare';
-		let wikicode =
+	it( 'Should not get confused by templates when deciding whether or not to disable', () => {
+		const topic = 'Warfare';
+		const wikicode =
 `===== Warships of Yugoslavia =====
 {{anchor|Constitutional and international law}}
 {{#invoke:Good Articles|subsection|
 `;
-		let output =
+		const output =
 `							<option value="Warfare">=====Warships of Yugoslavia=====</option>
 
 `;
-		expect(hg.makeTopicComboBoxOptionGroup(wikicode, topic)).toEqual(output);
-	});
-});
+		expect( hg.makeTopicComboBoxOptionGroup( wikicode, topic ) ).toEqual( output );
+	} );
+} );

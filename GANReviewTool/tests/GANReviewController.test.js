@@ -1,199 +1,197 @@
-const { GANReviewController } = require("../modules/GANReviewController");
-import { when } from 'jest-when';
+const { GANReviewController } = require( '../modules/GANReviewController.js' );
 
 let controller;
-beforeEach(() => {
+beforeEach( () => {
 	controller = new GANReviewController();
-});
+} );
 
 // Private methods
 
-describe('isGASubPage(title)', () => {
-	test('capitalized, single digit', () => {
-		let title = `Talk:Sora Amamiya/GA2`;
-		let output = true;
-		expect(controller.isGASubPage(title)).toBe(output);
-	});
+describe( 'isGASubPage(title)', () => {
+	test( 'capitalized, single digit', () => {
+		const title = 'Talk:Sora Amamiya/GA2';
+		const output = true;
+		expect( controller.isGASubPage( title ) ).toBe( output );
+	} );
 
-	test('capitalized, double digits', () => {
-		let title = `Talk:Sora Amamiya/GA21`;
-		let output = true;
-		expect(controller.isGASubPage(title)).toBe(output);
-	});
+	test( 'capitalized, double digits', () => {
+		const title = 'Talk:Sora Amamiya/GA21';
+		const output = true;
+		expect( controller.isGASubPage( title ) ).toBe( output );
+	} );
 
-	test('subpage of GA page', () => {
-		let title = `Talk:Sora Amamiya/GA2/test`;
-		let output = false;
-		expect(controller.isGASubPage(title)).toBe(output);
-	});
+	test( 'subpage of GA page', () => {
+		const title = 'Talk:Sora Amamiya/GA2/test';
+		const output = false;
+		expect( controller.isGASubPage( title ) ).toBe( output );
+	} );
 
-	test('talk page', () => {
-		let title = `Talk:Sora Amamiya`;
-		let output = false;
-		expect(controller.isGASubPage(title)).toBe(output);
-	});
+	test( 'talk page', () => {
+		const title = 'Talk:Sora Amamiya';
+		const output = false;
+		expect( controller.isGASubPage( title ) ).toBe( output );
+	} );
 
-	test('main article', () => {
-		let title = `Sora Amamiya`;
-		let output = false;
-		expect(controller.isGASubPage(title)).toBe(output);
-	});
+	test( 'main article', () => {
+		const title = 'Sora Amamiya';
+		const output = false;
+		expect( controller.isGASubPage( title ) ).toBe( output );
+	} );
 
-	test('lowercase', () => {
-		let title = `Talk:Sora Amamiya/ga2`;
-		let output = false;
-		expect(controller.isGASubPage(title)).toBe(output);
-	});
-});
+	test( 'lowercase', () => {
+		const title = 'Talk:Sora Amamiya/ga2';
+		const output = false;
+		expect( controller.isGASubPage( title ) ).toBe( output );
+	} );
+} );
 
-describe('getGATitle(title)', () => {
-	test('talk and subpage', () => {
-		let title = `Talk:Sora_Amamiya/GA2`;
-		let output = 'Sora Amamiya';
-		expect(controller.getGATitle(title)).toBe(output);
-	});
+describe( 'getGATitle(title)', () => {
+	test( 'talk and subpage', () => {
+		const title = 'Talk:Sora_Amamiya/GA2';
+		const output = 'Sora Amamiya';
+		expect( controller.getGATitle( title ) ).toBe( output );
+	} );
 
-	test('talk page', () => {
-		let title = `Talk:Sora_Amamiya`;
-		let output = 'Sora Amamiya';
-		expect(controller.getGATitle(title)).toBe(output);
-	});
+	test( 'talk page', () => {
+		const title = 'Talk:Sora_Amamiya';
+		const output = 'Sora Amamiya';
+		expect( controller.getGATitle( title ) ).toBe( output );
+	} );
 
-	test('user page', () => {
-		let title = `User:Novem_Linguae/sandbox`;
-		let output = 'User:Novem Linguae';
-		expect(controller.getGATitle(title)).toBe(output);
-	});
+	test( 'user page', () => {
+		const title = 'User:Novem_Linguae/sandbox';
+		const output = 'User:Novem Linguae';
+		expect( controller.getGATitle( title ) ).toBe( output );
+	} );
 
-	test('article itself', () => {
-		let title = `Sora_Amamiya`;
-		let output = 'Sora Amamiya';
-		expect(controller.getGATitle(title)).toBe(output);
-	});
+	test( 'article itself', () => {
+		const title = 'Sora_Amamiya';
+		const output = 'Sora Amamiya';
+		expect( controller.getGATitle( title ) ).toBe( output );
+	} );
 
-	test('no underscores', () => {
-		let title = `Sora_Amamiya`;
-		let output = 'Sora Amamiya';
-		expect(controller.getGATitle(title)).toBe(output);
-	});
+	test( 'no underscores', () => {
+		const title = 'Sora_Amamiya';
+		const output = 'Sora Amamiya';
+		expect( controller.getGATitle( title ) ).toBe( output );
+	} );
 
-	test('no underscores for multi-word titles', () => {
-		let title = `2021_French_Grand_Prix`;
-		let output = '2021 French Grand Prix';
-		expect(controller.getGATitle(title)).toBe(output);
-	});
+	test( 'no underscores for multi-word titles', () => {
+		const title = '2021_French_Grand_Prix';
+		const output = '2021 French Grand Prix';
+		expect( controller.getGATitle( title ) ).toBe( output );
+	} );
 
-	test('should handle title with slash in it', () => {
-		let title = `Talk:Forge Park/495 station/GA1`;
-		let output = 'Forge Park/495 station';
-		expect(controller.getGATitle(title)).toBe(output);
-	});
-});
+	test( 'should handle title with slash in it', () => {
+		const title = 'Talk:Forge Park/495 station/GA1';
+		const output = 'Forge Park/495 station';
+		expect( controller.getGATitle( title ) ).toBe( output );
+	} );
+} );
 
-describe('getGATalkTitle(gaTitle)', () => {
-	test('mainspace', () => {
-		let gaTitle = `Sora Amamiya`;
-		let output = 'Talk:Sora Amamiya';
-		expect(controller.getGATalkTitle(gaTitle)).toBe(output);
-	});
+describe( 'getGATalkTitle(gaTitle)', () => {
+	test( 'mainspace', () => {
+		const gaTitle = 'Sora Amamiya';
+		const output = 'Talk:Sora Amamiya';
+		expect( controller.getGATalkTitle( gaTitle ) ).toBe( output );
+	} );
 
-	test('two colons', () => {
-		let gaTitle = `Magic: The Gathering rules`;
-		let output = 'Talk:Magic: The Gathering rules';
-		expect(controller.getGATalkTitle(gaTitle)).toBe(output);
-	});
+	test( 'two colons', () => {
+		const gaTitle = 'Magic: The Gathering rules';
+		const output = 'Talk:Magic: The Gathering rules';
+		expect( controller.getGATalkTitle( gaTitle ) ).toBe( output );
+	} );
 
-	test('should handle title with slash in it', () => {
-		let gaTitle = `Forge Park/495 station`;
-		let output = 'Talk:Forge Park/495 station';
-		expect(controller.getGATalkTitle(gaTitle)).toBe(output);
-	});
-});
+	test( 'should handle title with slash in it', () => {
+		const gaTitle = 'Forge Park/495 station';
+		const output = 'Talk:Forge Park/495 station';
+		expect( controller.getGATalkTitle( gaTitle ) ).toBe( output );
+	} );
+} );
 
-describe('getGASubPageEditSummary(editSummary, detailedTopic)', () => {
-	test('should handle an h5 that contains no extra spaces', () => {
-		let editSummary = `promote [[Atari Games Corp. v. Oman]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])`;
-		let detailedTopic = `=====Video game history and development=====`;
-		let output = '/* Video game history and development */ promote [[Atari Games Corp. v. Oman]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
-		expect(controller.getGASubPageEditSummary(editSummary, detailedTopic)).toBe(output);
-	});
+describe( 'getGASubPageEditSummary(editSummary, detailedTopic)', () => {
+	test( 'should handle an h5 that contains no extra spaces', () => {
+		const editSummary = 'promote [[Atari Games Corp. v. Oman]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
+		const detailedTopic = '=====Video game history and development=====';
+		const output = '/* Video game history and development */ promote [[Atari Games Corp. v. Oman]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
+		expect( controller.getGASubPageEditSummary( editSummary, detailedTopic ) ).toBe( output );
+	} );
 
-	test('should handle an h5 that contains extra spaces', () => {
-		let editSummary = `promote [[Atari Games Corp. v. Oman]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])`;
-		let detailedTopic = `===== Video game history and development =====`;
-		let output = '/* Video game history and development */ promote [[Atari Games Corp. v. Oman]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
-		expect(controller.getGASubPageEditSummary(editSummary, detailedTopic)).toBe(output);
-	});
+	test( 'should handle an h5 that contains extra spaces', () => {
+		const editSummary = 'promote [[Atari Games Corp. v. Oman]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
+		const detailedTopic = '===== Video game history and development =====';
+		const output = '/* Video game history and development */ promote [[Atari Games Corp. v. Oman]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
+		expect( controller.getGASubPageEditSummary( editSummary, detailedTopic ) ).toBe( output );
+	} );
 
-	test('should strip out italics', () => {
-		let editSummary = `promote [[Rock and Hard Place]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])`;
-		let detailedTopic = `=====''Better Call Saul''=====`;
-		let output = '/* Better Call Saul */ promote [[Rock and Hard Place]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
-		expect(controller.getGASubPageEditSummary(editSummary, detailedTopic)).toBe(output);
-	});
-});
+	test( 'should strip out italics', () => {
+		const editSummary = 'promote [[Rock and Hard Place]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
+		const detailedTopic = '=====\'\'Better Call Saul\'\'=====';
+		const output = '/* Better Call Saul */ promote [[Rock and Hard Place]] to good article ([[User:Novem Linguae/Scripts/GANReviewTool|GANReviewTool]])';
+		expect( controller.getGASubPageEditSummary( editSummary, detailedTopic ) ).toBe( output );
+	} );
+} );
 
-
-describe('simplifyQueryRevisionsObject(queryRevisionsObject)', () => {
-	test('Normal', () => {
-		let queryRevisionsObject = {
-			"batchcomplete": true,
-			"warnings": {
-				"main": {
-					"warnings": "Subscribe to the mediawiki-api-announce mailing list at <https://lists.wikimedia.org/postorius/lists/mediawiki-api-announce.lists.wikimedia.org/> for notice of API deprecations and breaking changes. Use [[Special:ApiFeatureUsage]] to see usage of deprecated features by your application."
+describe( 'simplifyQueryRevisionsObject(queryRevisionsObject)', () => {
+	test( 'Normal', () => {
+		const queryRevisionsObject = {
+			batchcomplete: true,
+			warnings: {
+				main: {
+					warnings: 'Subscribe to the mediawiki-api-announce mailing list at <https://lists.wikimedia.org/postorius/lists/mediawiki-api-announce.lists.wikimedia.org/> for notice of API deprecations and breaking changes. Use [[Special:ApiFeatureUsage]] to see usage of deprecated features by your application.'
 				},
-				"revisions": {
-					"warnings": "Because \"rvslots\" was not specified, a legacy format has been used for the output. This format is deprecated, and in the future the new format will always be used."
+				revisions: {
+					warnings: 'Because "rvslots" was not specified, a legacy format has been used for the output. This format is deprecated, and in the future the new format will always be used.'
 				}
 			},
-			"query": {
-				"normalized": [
+			query: {
+				normalized: [
 					{
-						"fromencoded": false,
-						"from": "Main_page",
-						"to": "Main page"
+						fromencoded: false,
+						from: 'Main_page',
+						to: 'Main page'
 					},
 					{
-						"fromencoded": false,
-						"from": "User:Novem_Linguae",
-						"to": "User:Novem Linguae"
+						fromencoded: false,
+						from: 'User:Novem_Linguae',
+						to: 'User:Novem Linguae'
 					}
 				],
-				"pages": [
+				pages: [
 					{
-						"pageid": 217225,
-						"ns": 0,
-						"title": "Main page",
-						"revisions": [
+						pageid: 217225,
+						ns: 0,
+						title: 'Main page',
+						revisions: [
 							{
-								"contentformat": "text/x-wiki",
-								"contentmodel": "wikitext",
-								"content": "#REDIRECT [[Main Page]]\n\n\n{{Redirect shell |\n  {{R from other capitalisation}}\n}}\n[[Category:Main Page| ]]\n[[Category:Protected pages associated with Main Page articles]]"
+								contentformat: 'text/x-wiki',
+								contentmodel: 'wikitext',
+								content: '#REDIRECT [[Main Page]]\n\n\n{{Redirect shell |\n  {{R from other capitalisation}}\n}}\n[[Category:Main Page| ]]\n[[Category:Protected pages associated with Main Page articles]]'
 							}
 						]
 					},
 					{
-						"pageid": 67192006,
-						"ns": 2,
-						"title": "User:Novem Linguae",
-						"revisions": [
+						pageid: 67192006,
+						ns: 2,
+						title: 'User:Novem Linguae',
+						revisions: [
 							{
-								"contentformat": "text/x-wiki",
-								"contentmodel": "wikitext",
-								"content": "__NOTOC__"
+								contentformat: 'text/x-wiki',
+								contentmodel: 'wikitext',
+								content: '__NOTOC__'
 							}
 						]
 					}
 				]
 			}
 		};
-		let output = {
-			"Main page": "#REDIRECT [[Main Page]]\n\n\n{{Redirect shell |\n  {{R from other capitalisation}}\n}}\n[[Category:Main Page| ]]\n[[Category:Protected pages associated with Main Page articles]]",
-			"User:Novem Linguae": "__NOTOC__"
+		const output = {
+			'Main page': '#REDIRECT [[Main Page]]\n\n\n{{Redirect shell |\n  {{R from other capitalisation}}\n}}\n[[Category:Main Page| ]]\n[[Category:Protected pages associated with Main Page articles]]',
+			'User:Novem Linguae': '__NOTOC__'
 		};
-		expect(controller.simplifyQueryRevisionsObject(queryRevisionsObject)).toStrictEqual(output);
-	});
-});
+		expect( controller.simplifyQueryRevisionsObject( queryRevisionsObject ) ).toStrictEqual( output );
+	} );
+} );
 
 /*
 
