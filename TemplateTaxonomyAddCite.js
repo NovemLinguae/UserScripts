@@ -129,9 +129,9 @@ class TemplateTaxonomyAddCite {
 
 		// Listeners have to be added after the elements are placed on the page
 		for ( const website of websites ) {
-			this.$( '#' + website.id ).on( 'click', function () {
+			this.$( '#' + website.id ).on( 'click', () => {
 				this.addCite( website.id );
-			}.bind( this ) );
+			} );
 		}
 	}
 
@@ -177,7 +177,7 @@ class TemplateTaxonomyAddCite {
 	}
 }
 
-$( async function () {
+$( async () => {
 	await ( new TemplateTaxonomyAddCite( mw, $ ) ).addLinksAndListeners();
 } );
 

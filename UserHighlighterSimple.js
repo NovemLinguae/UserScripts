@@ -19,7 +19,7 @@ class UserHighlighterSimple {
 			this.setHighlightColors();
 		}
 		const $links = this.$( '#article a, #bodyContent a, #mw_contentholder a' );
-		$links.each( function ( index, element ) {
+		$links.each( ( index, element ) => {
 			this.$link = this.$( element );
 			if ( !this.linksToAUser() ) {
 				return;
@@ -35,7 +35,7 @@ class UserHighlighterSimple {
 			if ( this.hasAdvancedPermissions ) {
 				this.$link.addClass( this.$link.attr( 'class' ) + ' UHS-override-signature-colors' );
 			}
-		}.bind( this ) );
+		} );
 	}
 
 	addCSS( htmlClass, cssDeclaration ) {
@@ -68,7 +68,7 @@ class UserHighlighterSimple {
 			uselang: 'content', // needed for caching
 			smaxage: '86400', // cache for 1 day
 			maxage: '86400' // cache for 1 day
-		} ).then( function ( data ) {
+		} ).then( ( data ) => {
 			wikitext = data.query.pages[ 0 ].revisions[ 0 ].slots.main.content;
 		} );
 		return wikitext;
@@ -119,6 +119,7 @@ class UserHighlighterSimple {
 
 	/**
 	 * Figure out the wikipedia article title of the link
+	 *
 	 * @param {string} url
 	 * @param {mw.Uri} urlHelper
 	 * @return {string}
@@ -200,6 +201,7 @@ class UserHighlighterSimple {
 
 	/**
 	 * mw.Uri(url) expects a complete URL. If we get something like /wiki/User:Test, convert it to https://en.wikipedia.org/wiki/User:Test. Without this, UserHighlighterSimple doesn't work on metawiki.
+	 *
 	 * @param {string} url
 	 * @return {string} url
 	 */
@@ -286,15 +288,15 @@ class UserHighlighterSimple {
 }
 
 // Fire after wiki content is added to the DOM, such as when first loading a page, or when a gadget such as the XTools gadget loads.
-mw.hook( 'wikipage.content' ).add( async function () {
-	await mw.loader.using( [ 'mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title' ], async function () {
+mw.hook( 'wikipage.content' ).add( async () => {
+	await mw.loader.using( [ 'mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title' ], async () => {
 		await ( new UserHighlighterSimple( $, mw, window ) ).execute();
 	} );
 } );
 
 // Fire after an edit is successfully saved via JavaScript, such as edits by the Visual Editor and HotCat.
-mw.hook( 'postEdit' ).add( async function () {
-	await mw.loader.using( [ 'mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title' ], async function () {
+mw.hook( 'postEdit' ).add( async () => {
+	await mw.loader.using( [ 'mediawiki.util', 'mediawiki.Uri', 'mediawiki.Title' ], async () => {
 		await ( new UserHighlighterSimple( $, mw, window ) ).execute();
 	} );
 } );

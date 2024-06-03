@@ -1,6 +1,6 @@
 // <nowiki>
 
-$( function () {
+$( () => {
 	const skin = mw.config.get( 'skin' );
 	if ( skin === 'vector-2022' ) {
 		mw.util.addCSS( `

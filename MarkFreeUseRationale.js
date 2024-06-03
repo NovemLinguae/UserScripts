@@ -48,10 +48,10 @@ class MarkFreeUseRationale {
 		this.$( '.licensetpl .imbox-notice .mbox-text' ).prepend( $div );
 
 		// add listener
-		$button.on( 'click', async function () {
+		$button.on( 'click', async () => {
 			$button.remove();
 			await this.addRationale();
-		}.bind( this ) );
+		} );
 	}
 
 	async addRationale() {
@@ -148,8 +148,8 @@ class MarkFreeUseRationale {
 	}
 }
 
-$( async function () {
-	await mw.loader.using( [ 'mediawiki.api' ], async function () {
+$( async () => {
+	await mw.loader.using( [ 'mediawiki.api' ], async () => {
 		await ( new MarkFreeUseRationale( mw, $ ) ).execute();
 	} );
 } );

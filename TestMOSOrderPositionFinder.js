@@ -9,44 +9,52 @@
 	- https://en.wikipedia.org/w/index.php?title=Rohingya_genocide
 */
 
-$(async function() {
-	async function getWikicodeOfDiff(diffID) {
-		if ( ! mw.config.get('wgCurRevisionId') ) return ''; // if page is deleted, return blank
-		var wikicode = '';
-		diffID = encodeURIComponent(diffID);
-		await $.ajax({
-			url: 'https://en.wikipedia.org/w/api.php?action=parse&oldid='+diffID+'&prop=wikitext&formatversion=2&format=json',
-			success: function (result) {
-				wikicode = result['parse']['wikitext'];
+$( async () => {
+	async function getWikicodeOfDiff( diffID ) {
+		if ( !mw.config.get( 'wgCurRevisionId' ) ) {
+			return '';
+		} // if page is deleted, return blank
+		let wikicode = '';
+		diffID = encodeURIComponent( diffID );
+		await $.ajax( {
+			url: 'https://en.wikipedia.org/w/api.php?action=parse&oldid=' + diffID + '&prop=wikitext&formatversion=2&format=json',
+			success: function ( result ) {
+				wikicode = result.parse.wikitext;
 			},
-			dataType: "json",
-		});
+			dataType: 'json'
+		} );
 		return wikicode;
 	}
-	
-	function shouldRunOnThisPage(title) {
+
+	function shouldRunOnThisPage( title ) {
 		// don't run when not viewing articles
-		let action = mw.config.get('wgAction');
-		if ( action != 'view' ) return false;
-		
+		const action = mw.config.get( 'wgAction' );
+		if ( action != 'view' ) {
+			return false;
+		}
+
 		// don't run when viewing diffs
-		//let isDiff = mw.config.get('wgDiffNewId');
-		//if ( isDiff ) return false;
-		
-		let isDeletedPage = ( ! mw.config.get('wgCurRevisionId') );
-		if ( isDeletedPage ) return false;
-		
+		// let isDiff = mw.config.get('wgDiffNewId');
+		// if ( isDiff ) return false;
+
+		const isDeletedPage = ( !mw.config.get( 'wgCurRevisionId' ) );
+		if ( isDeletedPage ) {
+			return false;
+		}
+
 		// Only run in mainspace or draftspace
-		let namespace = mw.config.get('wgNamespaceNumber');
-		let isMainspaceOrDraftspace = ( [0, 118].includes(namespace) );
-		if ( ! isMainspaceOrDraftspace && title != 'User:Novem_Linguae/sandbox' ) return false;
+		const namespace = mw.config.get( 'wgNamespaceNumber' );
+		const isMainspaceOrDraftspace = ( [ 0, 118 ].includes( namespace ) );
+		if ( !isMainspaceOrDraftspace && title != 'User:Novem_Linguae/sandbox' ) {
+			return false;
+		}
 
 		return true;
 	}
 
 	// Making this more complex than needed for this program. There are some other things I can use this for and I want to start developing it.
 	class MOSOrderPositionFinder {
-		constructor(wikitext, debug = false) {
+		constructor( wikitext, debug = false ) {
 			this.debug = debug;
 			this.wikitext = wikitext;
 			this._recalculate();
@@ -82,7 +90,7 @@ $(async function() {
 				'defaultSort',
 				'categories',
 				'stubTemplates',
-				'bottom',
+				'bottom'
 			];
 
 			this.sectionStartPositions = {
@@ -114,25 +122,25 @@ $(async function() {
 				defaultSort: -1,
 				categories: -1,
 				stubTemplates: -1,
-				bottom: this.wikitext.length,
+				bottom: this.wikitext.length
 			};
 
 			// https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Short_description&hidelinks=1&hidetrans=1
-			this.sectionStartPositions.shortDescription = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.shortDescription = this._lookForTemplates( this.wikitext, [
 				'Short description',
 				'Shortdesc',
 				'Shortdescription',
 				'Short desc'
-			]);
+			] );
 
-			this.sectionStartPositions.displayTitle = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.displayTitle = this._lookForTemplates( this.wikitext, [
 				'DISPLAYTITLE',
 				'Lowercase title',
 				'Italic title'
-			]);
-			
+			] );
+
 			// https://en.wikipedia.org/wiki/Wikipedia:Hatnote
-			this.sectionStartPositions.hatnotes = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.hatnotes = this._lookForTemplates( this.wikitext, [
 				'About-distinguish',
 				'About',
 				'About other people',
@@ -156,18 +164,18 @@ $(async function() {
 				'Self reference',
 				'Similar names',
 				'Technical reasons',
-				'Malay name', // TODO: add more {{X name}} type templates.
-			]);
+				'Malay name' // TODO: add more {{X name}} type templates.
+			] );
 
-			this.sectionStartPositions.featured = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.featured = this._lookForTemplates( this.wikitext, [
 				'Featured list',
 				'Featured article',
-				'Good article',
-			]);
+				'Good article'
+			] );
 
 			// https://en.wikipedia.org/wiki/Wikipedia:Criteria_for_speedy_deletion
 			// https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Proposed_deletion&hidelinks=1&hidetrans=1
-			this.sectionStartPositions.deletionAndProtection = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.deletionAndProtection = this._lookForTemplates( this.wikitext, [
 				'Db-a1', // CSD
 				'Db-a10',
 				'Db-a11',
@@ -278,11 +286,11 @@ $(async function() {
 				'Propose deletion',
 				'Draft-prod',
 				'Article for deletion', // AFD
-				'Pp', // page protection padlocks, includes {{Pp}} and {{Pp-*}}
-			]);
+				'Pp' // page protection padlocks, includes {{Pp}} and {{Pp-*}}
+			] );
 
 			// Source: Twinkle
-			this.sectionStartPositions.maintenanceTags = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.maintenanceTags = this._lookForTemplates( this.wikitext, [
 				'Cleanup',
 				'Cleanup rewrite',
 				'Copy edit',
@@ -367,11 +375,11 @@ $(async function() {
 				'Merge to',
 				'GOCEinuse',
 				'In use',
-				'Under construction',
-			]);
+				'Under construction'
+			] );
 
 			// https://en.wikipedia.org/wiki/Template:Use_X_English
-			this.sectionStartPositions.engvar = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.engvar = this._lookForTemplates( this.wikitext, [
 				'Engvar', // engvar
 				'EngvarA',
 				'EngvarB',
@@ -396,10 +404,10 @@ $(async function() {
 				'Use South African English',
 				'Use Trinidad and Tobago English',
 				'Use dmy dates', // dates
-				'Use mdy dates',
-			]);
+				'Use mdy dates'
+			] );
 
-			this.sectionStartPositions.infoboxes = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.infoboxes = this._lookForTemplates( this.wikitext, [
 				'Infobox',
 				'Speciesbox',
 				'Automatic taxobox',
@@ -407,11 +415,11 @@ $(async function() {
 				'Subspeciesbox',
 				'Infraspeciesbox',
 				'Hybridbox',
-				'Virusbox',
-			]);
+				'Virusbox'
+			] );
 
 			// https://en.wikipedia.org/wiki/Category:Language_maintenance_templates
-			this.sectionStartPositions.languageScriptNeeded = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.languageScriptNeeded = this._lookForTemplates( this.wikitext, [
 				'Arabic script needed',
 				'Armenian script needed',
 				'Berber script needed',
@@ -451,35 +459,35 @@ $(async function() {
 				'User programming subcategory',
 				'Verify spelling',
 				'Vietnamese script needed',
-				'Yiddish script needed',
-			]);
+				'Yiddish script needed'
+			] );
 
 			// No reliable way to search for these. Some end in sidebar, many don't. Example of ones that don't: [[Rohingya genocide]] -> {{Rohingya conflict}}, {{Genocide}}.
 			// TODO: Will need to return the position of any template between top and first sentence that isn't in one of the lists above.
 			this.sectionStartPositions.sidebars = -1;
 
 			// Return first text that isn't whitespace, a template, or inside a template. This is the article's first sentence.
-			this.sectionStartPositions.lead = this._getFirstNonTemplateNonWhitespace(this.wikitext);
+			this.sectionStartPositions.lead = this._getFirstNonTemplateNonWhitespace( this.wikitext );
 
 			// https://en.wikipedia.org/wiki/Help:Magic_words#Behavior_switches
-			this.sectionStartPositions.tableOfContents = this._lookForStrings(this.wikitext, [
-				'__TOC__',
-			]);
+			this.sectionStartPositions.tableOfContents = this._lookForStrings( this.wikitext, [
+				'__TOC__'
+			] );
 
-			this.sectionStartPositions.body = this._lookForRegEx(this.wikitext, /(?<=\n)==/i);
+			this.sectionStartPositions.body = this._lookForRegEx( this.wikitext, /(?<=\n)==/i );
 
-			this.sectionStartPositions.worksOrPublications = this._lookForHeadings(this.wikitext, [
+			this.sectionStartPositions.worksOrPublications = this._lookForHeadings( this.wikitext, [
 				'Works\\s*==',
 				'Publications',
 				'Discography',
-				'Filmography',
-			]);
+				'Filmography'
+			] );
 
-			this.sectionStartPositions.seeAlso = this._lookForHeadings(this.wikitext, [
-				'See also',
-			]);
+			this.sectionStartPositions.seeAlso = this._lookForHeadings( this.wikitext, [
+				'See also'
+			] );
 
-			this.sectionStartPositions.notesAndReferences = this._lookForHeadings(this.wikitext, [
+			this.sectionStartPositions.notesAndReferences = this._lookForHeadings( this.wikitext, [
 				'Bibliography',
 				'Citations',
 				'Endnotes',
@@ -487,27 +495,27 @@ $(async function() {
 				'Notes',
 				'References',
 				'Sources',
-				'Works cited',
-			]);
+				'Works cited'
+			] );
 
-			this.sectionStartPositions.furtherReading = this._lookForHeadings(this.wikitext, [
-				'Further reading',
-			]);
+			this.sectionStartPositions.furtherReading = this._lookForHeadings( this.wikitext, [
+				'Further reading'
+			] );
 
-			this.sectionStartPositions.externalLinks = this._lookForHeadings(this.wikitext, [
-				'External links',
-			]);
+			this.sectionStartPositions.externalLinks = this._lookForHeadings( this.wikitext, [
+				'External links'
+			] );
 
 			// https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Succession_Box_Standardization/Templates
 			// TODO: figure out what "geography boxes" are, add them
-			this.sectionStartPositions.successionAndGeographyBoxes = this._lookForTemplates(this.wikitext, [
-				'S-', // they all are of the format {{S-*}}
-			]);
+			this.sectionStartPositions.successionAndGeographyBoxes = this._lookForTemplates( this.wikitext, [
+				'S-' // they all are of the format {{S-*}}
+			] );
 
 			// Hard to figure these out, unless they are contained in the {{Navbox}} wrapper
 			// TODO: assume any templates in this area that aren't on other lists are navboxes
 			// https://en.wikipedia.org/w/index.php?title=Special%3AWhatLinksHere&hidetrans=1&hidelinks=1&target=Template%3ANavbox&namespace=
-			this.sectionStartPositions.navboxes = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.navboxes = this._lookForTemplates( this.wikitext, [
 				'Navbox',
 				'Dynamic navigation box',
 				'Navigation',
@@ -516,26 +524,26 @@ $(async function() {
 				'VG navigation',
 				'CVG navigation',
 				'TransNB',
-				'Navtable',
-			]);
+				'Navtable'
+			] );
 
 			// https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Portal_bar&hidetrans=1&hidelinks=1
-			this.sectionStartPositions.portalBar = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.portalBar = this._lookForTemplates( this.wikitext, [
 				'Portal bar',
-				'Prb',
-			]);
+				'Prb'
+			] );
 
 			// https://en.wikipedia.org/w/index.php?title=Special%3AWhatLinksHere&hidetrans=1&hidelinks=1&target=Template%3ATaxonbar&namespace=
-			this.sectionStartPositions.taxonBar = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.taxonBar = this._lookForTemplates( this.wikitext, [
 				'Taxonbar',
 				'Taxon-bar',
 				'Taxobar',
 				'TaxonIDs',
-				'Taxon identifiers',
-			]);
+				'Taxon identifiers'
+			] );
 
 			// https://en.wikipedia.org/w/index.php?title=Special%3AWhatLinksHere&hidetrans=1&hidelinks=1&target=Template%3AAuthority+control&namespace=
-			this.sectionStartPositions.authorityControl = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.authorityControl = this._lookForTemplates( this.wikitext, [
 				'Authority control',
 				'Normdaten',
 				'Authoritycontrol',
@@ -543,13 +551,13 @@ $(async function() {
 				'Autorité',
 				'Control de autoridades',
 				'전거 통제',
-				'Normativna kontrola',
-			]);
+				'Normativna kontrola'
+			] );
 
 			// https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Coord&hidetrans=1&hidelinks=1
 			// https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Coord_missing&hidetrans=1&hidelinks=1
 			// using _findStringNotInsideTemplate because {{Coord}} inside infobox doesn't count
-			this.sectionStartPositions.geographicalCoordinates =  this._findTemplateNotInsideTemplate(this.wikitext, [
+			this.sectionStartPositions.geographicalCoordinates = this._findTemplateNotInsideTemplate( this.wikitext, [
 				'Coord', // coord
 				'Coor',
 				'Location',
@@ -561,70 +569,70 @@ $(async function() {
 				'Missing coord',
 				'Coords missing',
 				'Locate me',
-				'Needs coordinates',
-			]);
+				'Needs coordinates'
+			] );
 
 			// https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:DEFAULTSORT&hidetrans=1&hidelinks=1
-			this.sectionStartPositions.defaultSort = this._lookForTemplates(this.wikitext, [
+			this.sectionStartPositions.defaultSort = this._lookForTemplates( this.wikitext, [
 				'DEFAULTSORT',
 				'Default sort',
-				'SORTIERUNG',
-			]);
+				'SORTIERUNG'
+			] );
 
-			this.sectionStartPositions.categories = this._lookForRegEx(this.wikitext, /\[\[:?Category:/i);
+			this.sectionStartPositions.categories = this._lookForRegEx( this.wikitext, /\[\[:?Category:/i );
 
-			this.sectionStartPositions.stubTemplates = this._lookForRegEx(this.wikitext, /\{\{[^\}]*-stub\}\}/i);
+			this.sectionStartPositions.stubTemplates = this._lookForRegEx( this.wikitext, /\{\{[^}]*-stub\}\}/i );
 
 			// If the body is the same position as any of the appendices, set body to -1, since there isn't really a body, just appendices.
-			let appendices = [
+			const appendices = [
 				this.sectionStartPositions.worksOrPublications,
 				this.sectionStartPositions.seeAlso,
 				this.sectionStartPositions.notesAndReferences,
 				this.sectionStartPositions.furtherReading,
-				this.sectionStartPositions.externalLinks,
+				this.sectionStartPositions.externalLinks
 			];
-			if ( this.sectionStartPositions.body !== -1 && appendices.includes(this.sectionStartPositions.body) ) {
+			if ( this.sectionStartPositions.body !== -1 && appendices.includes( this.sectionStartPositions.body ) ) {
 				this.sectionStartPositions.body = -1;
 			}
 
 			if ( this.debug ) {
-				for ( let section of this.sectionOrder ) {
-					let position = this.sectionStartPositions[section];
-					let chunkPreview = this.wikitext.slice(position, position + 50);
-					console.log(`${section}: ${position}: ${chunkPreview}`);
+				for ( const section of this.sectionOrder ) {
+					const position = this.sectionStartPositions[ section ];
+					const chunkPreview = this.wikitext.slice( position, position + 50 );
+					console.log( `${ section }: ${ position }: ${ chunkPreview }` );
 				}
 			}
 		}
 
-		_getFirstNonTemplateNonWhitespace(wikicode) {
-			let length = wikicode.length;
+		_getFirstNonTemplateNonWhitespace( wikicode ) {
+			const length = wikicode.length;
 			let nesting = 0;
 			for ( let i = 0; i < length; i++ ) {
-				let chunk = wikicode.slice(i);
-				if ( chunk.startsWith('{{') ) {
+				const chunk = wikicode.slice( i );
+				if ( chunk.startsWith( '{{' ) ) {
 					nesting++;
-				} else if ( chunk.startsWith('}}') ) {
+				} else if ( chunk.startsWith( '}}' ) ) {
 					nesting--;
 					i++; // skip 2nd }
-				} else if ( nesting === 0 && ! chunk.match(/^\s/) ) {
+				} else if ( nesting === 0 && !chunk.match( /^\s/ ) ) {
 					return i;
 				}
 			}
 			return -1;
 		}
 
-		_findTemplateNotInsideTemplate(wikicode, arrayOfStrings) {
-			let length = wikicode.length;
-			for ( let string of arrayOfStrings ) {
+		_findTemplateNotInsideTemplate( wikicode, arrayOfStrings ) {
+			const length = wikicode.length;
+			for ( const string of arrayOfStrings ) {
 				let nesting = 0;
 				for ( let i = 0; i < length; i++ ) {
-					let chunk = wikicode.slice(i, i+20);
-					let match = chunk.match(new RegExp('^\\{\\{' + string, 'i'));
+					const chunk = wikicode.slice( i, i + 20 );
+					const match = chunk.match( new RegExp( '^\\{\\{' + string, 'i' ) );
 					if ( nesting === 0 && match ) {
 						return i;
-					} else if ( chunk.startsWith('{{') ) {
+					} else if ( chunk.startsWith( '{{' ) ) {
 						nesting++;
-					} else if ( chunk.startsWith('}}') ) {
+					} else if ( chunk.startsWith( '}}' ) ) {
 						nesting--;
 						i++; // skip 2nd }
 					}
@@ -634,57 +642,57 @@ $(async function() {
 		}
 
 		/** Template names are not RegEx escaped. */
-		_lookForTemplates(haystack, arrayOfTemplateNames) {
+		_lookForTemplates( haystack, arrayOfTemplateNames ) {
 			let regExString = '\\{\\{(?:';
 			for ( let name of arrayOfTemplateNames ) {
 				// space or underscore, same thing
-				name = name.replace('_', ' ');
-				name = name.replace(' ', '[ _]');
+				name = name.replace( '_', ' ' );
+				name = name.replace( ' ', '[ _]' );
 				regExString += name + '|';
 			}
-			regExString = regExString.slice(0, -1); // delete last character |
+			regExString = regExString.slice( 0, -1 ); // delete last character |
 			regExString += ')(?![ -\\|]section)'; // don't match section maintenance tags, e.g. {{More citations needed section}} and {{More citations needed|section}}
-			let matches = haystack.match(new RegExp(regExString, 'i'));
+			const matches = haystack.match( new RegExp( regExString, 'i' ) );
 			return matches ? matches.index : -1;
 		}
 
 		/** Heading names are not RegEx escaped. */
-		_lookForHeadings(haystack, arrayOfHeadingNames) {
+		_lookForHeadings( haystack, arrayOfHeadingNames ) {
 			let regExString = '={2,}\\s*(?:';
-			for ( let name of arrayOfHeadingNames ) {
+			for ( const name of arrayOfHeadingNames ) {
 				regExString += name + '|';
 			}
-			regExString = regExString.slice(0, -1); // delete last character |
+			regExString = regExString.slice( 0, -1 ); // delete last character |
 			regExString += ')';
-			let matches = haystack.match(new RegExp(regExString, 'i'));
+			const matches = haystack.match( new RegExp( regExString, 'i' ) );
 			return matches ? matches.index : -1;
 		}
 
-		_lookForStrings(haystack, arrayOfRegExStrings) {
+		_lookForStrings( haystack, arrayOfRegExStrings ) {
 			let regExString = '(?:';
-			for ( let name of arrayOfRegExStrings ) {
+			for ( const name of arrayOfRegExStrings ) {
 				regExString += name + '|';
 			}
-			regExString = regExString.slice(0, -1); // delete last character |
+			regExString = regExString.slice( 0, -1 ); // delete last character |
 			regExString += ')';
-			let matches = haystack.match(new RegExp(regExString, 'i'));
+			const matches = haystack.match( new RegExp( regExString, 'i' ) );
 			return matches ? matches.index : -1;
 		}
 
-		_lookForRegEx(haystack, regEx) {
-			let matches = haystack.match(regEx);
+		_lookForRegEx( haystack, regEx ) {
+			const matches = haystack.match( regEx );
 			return matches ? matches.index : -1;
 		}
 
-		hasSection(section) {
-			return this.sectionStartPositions[section] !== -1;
+		hasSection( section ) {
+			return this.sectionStartPositions[ section ] !== -1;
 		}
 
 		/** @return {number} sectionPosition: -1 if no section, integer if section */
-		getSectionPosition(section) {
-			let position = this.sectionStartPositions[section];
+		getSectionPosition( section ) {
+			let position = this.sectionStartPositions[ section ];
 			if ( position === -1 ) {
-				position = this._getPositionOfClosestSection(section);
+				position = this._getPositionOfClosestSection( section );
 			}
 			return position;
 		}
@@ -694,22 +702,22 @@ $(async function() {
 		}
 
 		/** If section is absent, we will guess where the section should go. Do not add whitespace, we will figure it out for you. */
-		insertAtSection(needle, section) {
-			let position = this.sectionStartPositions[section];
+		insertAtSection( needle, section ) {
+			let position = this.sectionStartPositions[ section ];
 			if ( position === -1 ) {
-				position = this._getPositionOfClosestSection(section);
+				position = this._getPositionOfClosestSection( section );
 			}
 
-			let topHalf = this.wikitext.slice(0, position);
-			let bottomHalf = this.wikitext.slice(position);
+			let topHalf = this.wikitext.slice( 0, position );
+			let bottomHalf = this.wikitext.slice( position );
 
-			if ( topHalf.endsWith('\n') && ! topHalf.endsWith('\n\n') ) {
+			if ( topHalf.endsWith( '\n' ) && !topHalf.endsWith( '\n\n' ) ) {
 				topHalf += '\n';
 			} else {
 				topHalf += '\n\n';
 			}
 
-			if ( ! bottomHalf.startsWith('\n') ) {
+			if ( !bottomHalf.startsWith( '\n' ) ) {
 				bottomHalf = '\n' + bottomHalf;
 			}
 
@@ -720,23 +728,23 @@ $(async function() {
 		}
 
 		// https://stackoverflow.com/a/13109786/3480193
-		_arraySearch(arr, val) {
-			for ( var i = 0; i < arr.length; i++ ) {
-				if ( arr[i] === val ) {
+		_arraySearch( arr, val ) {
+			for ( let i = 0; i < arr.length; i++ ) {
+				if ( arr[ i ] === val ) {
 					return i;
 				}
 			}
 			return false;
 		}
 
-		_getPositionOfClosestSection(section) {
-			let sectionKey = this._arraySearch(this.sectionOrder, section);
+		_getPositionOfClosestSection( section ) {
+			const sectionKey = this._arraySearch( this.sectionOrder, section );
 
 			// scan until you find a section that is not -1
 			// can scan in either direction. I chose to scan down.
 			for ( let i = sectionKey; i < this.sectionOrder.length; i++ ) {
-				let sectionKey2 = this.sectionOrder[i];
-				let sectionPosition = this.sectionStartPositions[sectionKey2];
+				const sectionKey2 = this.sectionOrder[ i ];
+				const sectionPosition = this.sectionStartPositions[ sectionKey2 ];
 				if ( sectionPosition !== -1 ) {
 					return sectionPosition;
 				}
@@ -744,13 +752,15 @@ $(async function() {
 		}
 	}
 
-	let title = mw.config.get('wgPageName'); // includes namespace, underscores instead of spaces
-	if ( ! shouldRunOnThisPage(title) ) return;
+	const title = mw.config.get( 'wgPageName' ); // includes namespace, underscores instead of spaces
+	if ( !shouldRunOnThisPage( title ) ) {
+		return;
+	}
 
-	let diffID = mw.config.get('wgRevisionId');
-	let wikicode = await getWikicodeOfDiff(diffID);
+	const diffID = mw.config.get( 'wgRevisionId' );
+	const wikicode = await getWikicodeOfDiff( diffID );
 
-	let pf = new MOSOrderPositionFinder(wikicode, true);
-});
+	const pf = new MOSOrderPositionFinder( wikicode, true );
+} );
 
 // </nowiki>

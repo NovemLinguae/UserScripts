@@ -8,7 +8,7 @@
 - Bonus featured: Adds "Watchlist RFA" and "Watchlist SPI" to user pages.
 */
 
-$( function () {
+$( () => {
 	async function addToWatchlist( title, watchForever = false ) {
 		const apiObject = {
 			url: mw.util.wikiScript( 'api' ),
@@ -68,18 +68,18 @@ $( function () {
 	}
 
 	// listen for More menu clicks
-	$( '#WatchlistAFD' ).on( 'click', async function () {
+	$( '#WatchlistAFD' ).on( 'click', async () => {
 		const title = getTitleWithoutNamespace();
 		await addToWatchlist( 'Wikipedia:Articles for deletion/' + title );
 		mw.notify( 'Added AFD to watchlist.' );
 	} );
-	$( '#WatchlistRFA' ).on( 'click', async function () {
+	$( '#WatchlistRFA' ).on( 'click', async () => {
 		let title = getTitleWithoutNamespace();
 		title = getTitleWithoutSubpages( title );
 		await addToWatchlist( 'Wikipedia:Requests for adminship/' + title, true );
 		mw.notify( 'Added RFA to watchlist.' );
 	} );
-	$( '#WatchlistSPI' ).on( 'click', async function () {
+	$( '#WatchlistSPI' ).on( 'click', async () => {
 		let title = getTitleWithoutNamespace();
 		title = getTitleWithoutSubpages( title );
 		await addToWatchlist( 'Wikipedia:Sockpuppet investigations/' + title, true );
@@ -87,8 +87,8 @@ $( function () {
 	} );
 
 	// listen for AFC accept
-	$( 'body' ).on( 'DOMNodeInserted', '.accept #afchSubmitForm', function () {
-		$( '.accept #afchSubmitForm' ).on( 'click', function () {
+	$( 'body' ).on( 'DOMNodeInserted', '.accept #afchSubmitForm', () => {
+		$( '.accept #afchSubmitForm' ).on( 'click', () => {
 			let title = mw.config.get( 'wgPageName' );
 			title = title.replace( /^Draft:/, '' );
 			addToWatchlist( 'Wikipedia:Articles for deletion/' + title );
@@ -96,8 +96,8 @@ $( function () {
 	} );
 
 	// listen for NPP mark as reviewed
-	$( 'body' ).on( 'DOMNodeInserted', '#mwe-pt-mark-as-reviewed-button', function () {
-		$( '#mwe-pt-mark-as-reviewed-button' ).on( 'click', function () {
+	$( 'body' ).on( 'DOMNodeInserted', '#mwe-pt-mark-as-reviewed-button', () => {
+		$( '#mwe-pt-mark-as-reviewed-button' ).on( 'click', () => {
 			const title = mw.config.get( 'wgPageName' );
 			addToWatchlist( 'Wikipedia:Articles for deletion/' + title );
 		} );

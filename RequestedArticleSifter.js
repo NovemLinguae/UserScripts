@@ -113,13 +113,13 @@ if ( isCompanyPage && isEditPage ) {
 	<textarea id="wp-ra-log" style="display: none; height: 15em;"></textarea>
 	` );
 
-	$( '.wp-ra-button' ).on( 'click', function () {
+	$( '.wp-ra-button' ).on( 'click', () => {
 		const cu = new CleanUp();
 
 		// execute script
 		// replaces value of edit textarea with our modified wikicode
-		const code = $( '#wpTextbox1' );
-		code.val( cu.deleteTooFewReferences( code.val() ) );
+		const $code = $( '#wpTextbox1' );
+		$code.val( cu.deleteTooFewReferences( $code.val() ) );
 
 		// display debug log
 		$( '#wp-ra-log' ).val( cu.getLog() ).show();

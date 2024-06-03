@@ -143,8 +143,8 @@ class Links {
 	}
 }
 
-$( async function () {
-	await mw.loader.using( [ 'mediawiki.api' ], async function () {
+$( async () => {
+	await mw.loader.using( [ 'mediawiki.api' ], async () => {
 		await ( new Links( mw ) ).execute();
 	} );
 } );

@@ -119,14 +119,14 @@ class VisualEditorEverywhere {
 	}
 }
 
-$( function () {
+$( () => {
 	// TODO: this should in theory fix the race condition bug. instead, it breaks the whole script (displays nothing). why? debug.
 	// mw.hook( 've.activationComplete' ).add( function() {
 	( new VisualEditorEverywhere() ).execute();
 	// } );
 
 	// when VE saves, the veSectionLinks should be put back
-	mw.hook( 've.deactivationComplete' ).add( function () {
+	mw.hook( 've.deactivationComplete' ).add( () => {
 		( new VisualEditorEverywhere() ).execute();
 	} );
 } );

@@ -4,7 +4,7 @@
 - Adds Watchlist tab and Topic Subscriptions tab to your watchlist and topic subscriptions pages.
 */
 
-$( async function () {
+$( async () => {
 	// could also use mw.config.get('wgCanonicalSpecialPageName')
 	const title = mw.config.get( 'wgPageName' ); // includes namespace, underscores instead of spaces
 	if ( title === 'Special:Watchlist' || title === 'Special:TopicSubscriptions' ) {

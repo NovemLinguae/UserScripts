@@ -338,7 +338,7 @@ class NPPLinks {
 	}
 }
 
-$( function () {
+$( () => {
 	( new NPPLinks() ).execute();
 } );
 

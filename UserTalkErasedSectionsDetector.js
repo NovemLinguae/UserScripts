@@ -37,7 +37,7 @@ class ErasedSectionsDetector {
 	 * Add a message to blank edit summaries. This is so the hyperlink can be clicked.
 	 */
 	expandBlankEditSummaries() {
-		this.revisions = this.revisions.map( function ( revision ) {
+		this.revisions = this.revisions.map( ( revision ) => {
 			if ( revision.comment === '' ) {
 				revision.comment = '[no edit summary]';
 			}
@@ -46,9 +46,9 @@ class ErasedSectionsDetector {
 	}
 
 	listenForShowDiffsClick() {
-		this.$( '#ErasedSectionsDetector-SeeDiffs' ).on( 'click', function () {
+		this.$( '#ErasedSectionsDetector-SeeDiffs' ).on( 'click', () => {
 			this.$( '#ErasedSectionsDetector-Diffs' ).toggle();
-		}.bind( this ) );
+		} );
 	}
 
 	addHtml( negativeDiffCount, totalRevisionCount ) {
@@ -98,7 +98,7 @@ class ErasedSectionsDetector {
 			'newsletter'
 		];
 		for ( let keyword of keywordsToIgnore ) {
-			this.revisions = this.revisions.filter( function ( revision ) {
+			this.revisions = this.revisions.filter( ( revision ) => {
 				keyword = keyword.toLowerCase();
 				const editSummary = revision.comment.toLowerCase();
 				return !editSummary.includes( keyword );
@@ -167,7 +167,7 @@ class ErasedSectionsDetector {
 	}
 }
 
-$( async function () {
+$( async () => {
 	await mw.loader.using( [ 'mediawiki.api' ], async () => {
 		await ( new ErasedSectionsDetector( mw, $ ) ).execute();
 	} );

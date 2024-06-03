@@ -209,11 +209,9 @@
 	 */
 	Import.prototype.uninstall = function () {
 		const that = this;
-		return getWikitext( getFullTarget( this.target ) ).then( function ( wikitext ) {
+		return getWikitext( getFullTarget( this.target ) ).then( ( wikitext ) => {
 			const lineNums = that.getLineNums( wikitext ),
-				newWikitext = wikitext.split( '\n' ).filter( function ( _, idx ) {
-					return lineNums.indexOf( idx ) < 0;
-				} ).join( '\n' );
+				newWikitext = wikitext.split( '\n' ).filter( ( _, idx ) => lineNums.indexOf( idx ) < 0 ).join( '\n' );
 			return api.postWithEditToken( {
 				action: 'edit',
 				title: getFullTarget( that.target ),
@@ -230,18 +228,18 @@
 	Import.prototype.setDisabled = function ( disabled ) {
 		const that = this;
 		this.disabled = disabled;
-		return getWikitext( getFullTarget( this.target ) ).then( function ( wikitext ) {
+		return getWikitext( getFullTarget( this.target ) ).then( ( wikitext ) => {
 			const lineNums = that.getLineNums( wikitext ),
 				newWikitextLines = wikitext.split( '\n' );
 
 			if ( disabled ) {
-				lineNums.forEach( function ( lineNum ) {
+				lineNums.forEach( ( lineNum ) => {
 					if ( newWikitextLines[ lineNum ].trim().indexOf( '//' ) !== 0 ) {
 						newWikitextLines[ lineNum ] = '//' + newWikitextLines[ lineNum ].trim();
 					}
 				} );
 			} else {
-				lineNums.forEach( function ( lineNum ) {
+				lineNums.forEach( ( lineNum ) => {
 					if ( newWikitextLines[ lineNum ].trim().indexOf( '//' ) === 0 ) {
 						newWikitextLines[ lineNum ] = newWikitextLines[ lineNum ].replace( /^\s*\/\/\s*/, '' );
 					}
@@ -287,10 +285,10 @@
 				rvslots: 'main',
 				titles: SKINS.map( getFullTarget ).join( '|' )
 			}
-		).then( function ( data ) {
+		).then( ( data ) => {
 			if ( data && data.query && data.query.pages ) {
 				const result = {};
-				Object.values( data.query.pages ).forEach( function ( moreData ) {
+				Object.values( data.query.pages ).forEach( ( moreData ) => {
 					const nameWithoutExtension = new mw.Title( moreData.title ).getNameText();
 					const targetName = nameWithoutExtension.substring( nameWithoutExtension.indexOf( '/' ) + 1 );
 					result[ targetName ] = moreData.revisions ? moreData.revisions[ 0 ].slots.main[ '*' ] : null;
@@ -301,8 +299,8 @@
 	}
 
 	function buildImportList() {
-		return getAllTargetWikitexts().then( function ( wikitexts ) {
-			Object.keys( wikitexts ).forEach( function ( targetName ) {
+		return getAllTargetWikitexts().then( ( wikitexts ) => {
+			Object.keys( wikitexts ).forEach( ( targetName ) => {
 				const targetImports = [];
 				if ( wikitexts[ targetName ] ) {
 					const lines = wikitexts[ targetName ].split( '\n' );
@@ -331,7 +329,7 @@
 	 * config page.
 	 */
 	function normalize( target ) {
-		return getWikitext( getFullTarget( target ) ).then( function ( wikitext ) {
+		return getWikitext( getFullTarget( target ) ).then( ( wikitext ) => {
 			const lines = wikitext.split( '\n' ),
 				newLines = Array( lines.length );
 			let currImport;
@@ -377,7 +375,7 @@
 			.append(
 				$( '<input>' )
 					.attr( { id: 'siNormalize', type: 'checkbox' } )
-					.on( 'click', function () {
+					.on( 'click', () => {
 						$( '.normalize-wrapper' ).toggle( 0 );
 					} ),
 				$( '<label>' )
@@ -385,7 +383,7 @@
 					.text( STRINGS.showNormalizeLinks ),
 				$( '<input>' )
 					.attr( { id: 'siMove', type: 'checkbox' } )
-					.on( 'click', function () {
+					.on( 'click', () => {
 						$( '.move-wrapper' ).toggle( 0 );
 					} ),
 				$( '<label>' )
@@ -417,7 +415,7 @@
 			$container.find( '.checkbox-container' )
 				.css( 'float', 'right' );
 		}
-		$.each( imports, function ( targetName, targetImports ) {
+		$.each( imports, ( targetName, targetImports ) => {
 			const fmtTargetName = ( targetName === 'common' ?
 				STRINGS.skinCommon :
 				targetName );
@@ -431,67 +429,65 @@
 								' (',
 								$( '<a>' )
 									.text( STRINGS.normalize )
-									.on( 'click', function () {
-										normalize( targetName ).done( function () {
+									.on( 'click', () => {
+										normalize( targetName ).done( () => {
 											conditionalReload( true );
 										} );
 									} ),
 								')' )
 							.hide() ),
 					$( '<ul>' ).append(
-						targetImports.map( function ( anImport ) {
-							return $( '<li>' )
-								.addClass( 'script' )
-								.attr( 'name', anImport.getDescription() )
-								.append(
-									$( '<a>' )
-										.text( anImport.getDescription() )
-										.addClass( 'script' )
-										.attr( 'href', anImport.getHumanUrl() ),
-									' (',
-									$( '<a>' )
-										.text( STRINGS.uninstallLinkText )
-										.on( 'click', function () {
-											$( this ).text( STRINGS.uninstallProgressMsg );
-											anImport.uninstall().done( function () {
-												conditionalReload( true );
-											} );
-										} ),
-									' | ',
-									$( '<a>' )
-										.text( anImport.disabled ? STRINGS.enableLinkText : STRINGS.disableLinkText )
-										.on( 'click', function () {
-											$( this ).text( anImport.disabled ? STRINGS.enableProgressMsg : STRINGS.disableProgressMsg );
-											anImport.toggleDisabled().done( function () {
-												$( this ).toggleClass( 'disabled' );
-												conditionalReload( true );
-											} );
-										} ),
-									$( '<span>' )
-										.addClass( 'move-wrapper' )
-										.append(
-											' | ',
-											$( '<a>' )
-												.text( STRINGS.moveLinkText )
-												.on( 'click', function () {
-													let dest = null;
-													const PROMPT = STRINGS.movePrompt + ' ' + SKINS.join( ', ' );
-													do {
-														dest = ( window.prompt( PROMPT ) || '' ).toLowerCase();
-													} while ( dest && SKINS.indexOf( dest ) < 0 );
-													if ( !dest ) {
-														return;
-													}
-													$( this ).text( STRINGS.moveProgressMsg );
-													anImport.move( dest ).done( function () {
-														conditionalReload( true );
-													} );
-												} )
-										)
-										.hide(),
-									')' )
-								.toggleClass( 'disabled', anImport.disabled );
-						} ) ) );
+						targetImports.map( ( anImport ) => $( '<li>' )
+							.addClass( 'script' )
+							.attr( 'name', anImport.getDescription() )
+							.append(
+								$( '<a>' )
+									.text( anImport.getDescription() )
+									.addClass( 'script' )
+									.attr( 'href', anImport.getHumanUrl() ),
+								' (',
+								$( '<a>' )
+									.text( STRINGS.uninstallLinkText )
+									.on( 'click', function () {
+										$( this ).text( STRINGS.uninstallProgressMsg );
+										anImport.uninstall().done( () => {
+											conditionalReload( true );
+										} );
+									} ),
+								' | ',
+								$( '<a>' )
+									.text( anImport.disabled ? STRINGS.enableLinkText : STRINGS.disableLinkText )
+									.on( 'click', function () {
+										$( this ).text( anImport.disabled ? STRINGS.enableProgressMsg : STRINGS.disableProgressMsg );
+										anImport.toggleDisabled().done( function () {
+											$( this ).toggleClass( 'disabled' );
+											conditionalReload( true );
+										} );
+									} ),
+								$( '<span>' )
+									.addClass( 'move-wrapper' )
+									.append(
+										' | ',
+										$( '<a>' )
+											.text( STRINGS.moveLinkText )
+											.on( 'click', function () {
+												let dest = null;
+												const PROMPT = STRINGS.movePrompt + ' ' + SKINS.join( ', ' );
+												do {
+													dest = ( window.prompt( PROMPT ) || '' ).toLowerCase();
+												} while ( dest && SKINS.indexOf( dest ) < 0 );
+												if ( !dest ) {
+													return;
+												}
+												$( this ).text( STRINGS.moveProgressMsg );
+												anImport.move( dest ).done( () => {
+													conditionalReload( true );
+												} );
+											} )
+									)
+									.hide(),
+								')' )
+							.toggleClass( 'disabled', anImport.disabled ) ) ) );
 			}
 		} );
 		return $list;
@@ -551,9 +547,7 @@
 
 			// If the script is installed but disabled, allow the user to enable it
 			const allScriptsInTarget = imports[ localScriptsByName[ fixedPageName ] ];
-			const importObj = allScriptsInTarget && allScriptsInTarget.find( function ( anImport ) {
-				return anImport.page === fixedPageName;
-			} );
+			const importObj = allScriptsInTarget && allScriptsInTarget.find( ( anImport ) => anImport.page === fixedPageName );
 			if ( importObj && importObj.disabled ) {
 				$installElement.append( ' | ',
 					$( '<a>' )
@@ -561,7 +555,7 @@
 						.text( STRINGS.enableLinkText )
 						.on( 'click', function () {
 							$( this ).text( STRINGS.enableProgressMsg );
-							importObj.setDisabled( false ).done( function () {
+							importObj.setDisabled( false ).done( () => {
 								conditionalReload( false );
 							} );
 						} ) );
@@ -580,7 +574,7 @@
 				buildCurrentPageInstallElement(),
 				' | ',
 				$( '<a>' )
-					.text( STRINGS.manageUserScripts ).on( 'click', function () {
+					.text( STRINGS.manageUserScripts ).on( 'click', () => {
 						if ( !document.getElementById( 'script-installer-panel' ) ) {
 							$( '#mw-content-text' ).before( makePanel() );
 						} else {
@@ -632,21 +626,19 @@
 						STRINGS.securityWarningSection.replace( '$1', scriptName ) ) );
 				if ( okay ) {
 					$( this ).text( STRINGS.installProgressMsg );
-					Import.ofLocal( scriptName, window.scriptInstallerInstallTarget ).install().done( function () {
+					Import.ofLocal( scriptName, window.scriptInstallerInstallTarget ).install().done( () => {
 						$( this ).text( STRINGS.uninstallLinkText );
 						conditionalReload( false );
-					}.bind( this ) );
+					} );
 				}
 			} else {
 				$( this ).text( STRINGS.uninstallProgressMsg );
 				const uninstalls = uniques( localScriptsByName[ scriptName ] )
-					.map( function ( target ) {
-						return Import.ofLocal( scriptName, target ).uninstall();
-					} );
-				$.when.apply( $, uninstalls ).then( function () {
+					.map( ( target ) => Import.ofLocal( scriptName, target ).uninstall() );
+				$.when.apply( $, uninstalls ).then( () => {
 					$( this ).text( STRINGS.installLinkText );
 					conditionalReload( false );
-				}.bind( this ) );
+				} );
 			}
 		};
 	}
@@ -672,7 +664,7 @@
 				rvlimit: 1,
 				titles: title
 			}
-		).then( function ( data ) {
+		).then( ( data ) => {
 			const pageId = Object.keys( data.query.pages )[ 0 ];
 			if ( data.query.pages[ pageId ].revisions ) {
 				return data.query.pages[ pageId ].revisions[ 0 ].slots.main[ '*' ];
@@ -692,7 +684,7 @@
 	 * (released under the MIT licence).
 	 */
 	function escapeForJsString( s ) {
-		return s.replace( /["'\\\n\r\u2028\u2029]/g, function ( character ) {
+		return s.replace( /["'\\\n\r\u2028\u2029]/g, ( character ) => {
 			// Escape all characters not included in SingleStringCharacters and
 			// DoubleStringCharacters on
 			// http://www.ecma-international.org/ecma-262/5.1/#sec-7.8.4
@@ -722,7 +714,7 @@
 	 * (released under the MIT licence).
 	 */
 	function escapeForJsComment( s ) {
-		return s.replace( /[\n\r\u2028\u2029]/g, function ( character ) {
+		return s.replace( /[\n\r\u2028\u2029]/g, ( character ) => {
 			switch ( character ) {
 				// Escape possible LineTerminator characters
 				case '\n':
@@ -743,7 +735,7 @@
 	 * This is the inverse of escapeForJsString.
 	 */
 	function unescapeForJsString( s ) {
-		return s.replace( /\\"|\\'|\\\\|\\n|\\r|\\u2028|\\u2029/g, function ( substring ) {
+		return s.replace( /\\"|\\'|\\\\|\\n|\\r|\\u2028|\\u2029/g, ( substring ) => {
 			switch ( substring ) {
 				case '\\"':
 					return '"';
@@ -770,9 +762,7 @@
 
 	// From https://stackoverflow.com/a/10192255
 	function uniques( array ) {
-		return array.filter( function ( el, index, arr ) {
-			return index === arr.indexOf( el );
-		} );
+		return array.filter( ( el, index, arr ) => index === arr.indexOf( el ) );
 	}
 
 	if ( window.scriptInstallerAutoReload === undefined ) {
@@ -788,9 +778,9 @@
 	$.when(
 		$.ready,
 		mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] )
-	).then( function () {
+	).then( () => {
 		api = new mw.Api();
-		buildImportList().then( function () {
+		buildImportList().then( () => {
 			attachInstallLinks();
 			if ( jsPage ) {
 				showUi();
