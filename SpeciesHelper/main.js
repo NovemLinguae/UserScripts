@@ -18,7 +18,7 @@ This page was assembled from 5 files using my publish.php script. I also have an
 /* eslint-disable no-undef, no-alert */
 
 // Wrapping this in a function so my linter doesn't throw a syntax error for "return not inside a function". Can remove this wrapper if I find a better way to do it. Or better yet, convert to a class.
-$( async function () {
+$( async () => {
 	const title = mw.config.get( 'wgPageName' ); // includes namespace, underscores instead of spaces
 	if ( !shouldRunOnThisPage( title ) ) {
 		return;
@@ -33,11 +33,9 @@ $( async function () {
 		'[Alt+A]'
 	);
 
-	$( '#SpeciesHelper' ).on( 'click', async function () {
-		return await speciesHelper( title );
-	} );
+	$( '#SpeciesHelper' ).on( 'click', async () => await speciesHelper( title ) );
 
-	document.addEventListener( 'keydown', async function ( event ) {
+	document.addEventListener( 'keydown', async ( event ) => {
 		if ( event.altKey /* && event.shiftKey */ && event.key === 'a' ) {
 			return await speciesHelper( title );
 		}
@@ -337,11 +335,11 @@ $( async function () {
 			const categoriesInArticle = getListOfCategoriesFromWikitext( wikicode2 );
 
 			// check categories in the article as a batch, see if their taxonomy templates exist
-			let categoriesWithTaxonomy = categoriesInArticle ? await doPagesExist( categoriesInArticle.map( function ( v ) {
+			let categoriesWithTaxonomy = categoriesInArticle ? await doPagesExist( categoriesInArticle.map( ( v ) => {
 				v = v.replace( 'Category:', '' );
 				return 'Template:Taxonomy/' + v;
 			} ) ) : [];
-			categoriesWithTaxonomy = categoriesWithTaxonomy.map( function ( v ) {
+			categoriesWithTaxonomy = categoriesWithTaxonomy.map( ( v ) => {
 				v = v.replace( 'Template:Taxonomy/', '' );
 				return 'Category:' + v;
 			} );

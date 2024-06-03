@@ -306,7 +306,7 @@ zero to hero
 	}
 }
 
-$( async function () {
+$( async () => {
 	await mw.loader.using( [ 'mediawiki.api' ], async () => {
 		await ( new DetectPromo( mw, $ ) ).execute();
 	} );

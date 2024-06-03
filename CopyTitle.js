@@ -11,7 +11,7 @@ function writeToClipboard( input ) {
 
 $( '#firstHeading' ).append( '<button id="copyTitle" style="margin-left: 1em;">Copy</button>' );
 
-$( '#copyTitle' ).on( 'click', function () {
+$( '#copyTitle' ).on( 'click', () => {
 	// get title from API (easier than getting it from .html() and taking the tags out)
 	const title = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
 

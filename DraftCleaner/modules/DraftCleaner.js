@@ -454,7 +454,7 @@ export class DraftCleaner {
 
 	fixExternalLinksToWikipediaArticles( wikicode ) {
 		// [https://en.wikipedia.org/wiki/Article] and [https://en.wikipedia.org/wiki/Article Article name]
-		return wikicode.replace( /(?<!\[)\[https?:\/\/en\.wikipedia\.org\/wiki\/([^ \]]*)( [^\]]*)?\]/gs, function ( match, p1 ) {
+		return wikicode.replace( /(?<!\[)\[https?:\/\/en\.wikipedia\.org\/wiki\/([^ \]]*)( [^\]]*)?\]/gs, ( match, p1 ) => {
 			p1 = decodeURIComponent( p1 );
 			p1 = p1.replace( /_/g, ' ' );
 			return `[[${ p1 }]]`;

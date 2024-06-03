@@ -1667,7 +1667,7 @@ Paralympics
 	}
 }
 
-$( async function () {
+$( async () => {
 	await mw.loader.using( [ 'mediawiki.api' ], async () => {
 		await ( new DetectSNG() ).execute();
 	} );

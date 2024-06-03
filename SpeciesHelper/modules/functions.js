@@ -439,19 +439,13 @@ export function parseListOfPages( listOfPages, type ) {
 	// get rid of entries that aren't of the correct type
 	switch ( type ) {
 		case 'category':
-			listOfPages = listOfPages.filter( function ( str ) {
-				return str.match( /^Category:.*$/i );
-			} );
+			listOfPages = listOfPages.filter( ( str ) => str.match( /^Category:.*$/i ) );
 			break;
 		case 'navbox':
-			listOfPages = listOfPages.filter( function ( str ) {
-				return str.match( /^Template:.*(?<!-stub)$/i );
-			} );
+			listOfPages = listOfPages.filter( ( str ) => str.match( /^Template:.*(?<!-stub)$/i ) );
 			break;
 		case 'stub':
-			listOfPages = listOfPages.filter( function ( str ) {
-				return str.match( /^Template:.*-stub$/i );
-			} );
+			listOfPages = listOfPages.filter( ( str ) => str.match( /^Template:.*-stub$/i ) );
 			break;
 	}
 	// only return the deepest taxa that was found (the entry closest to the beginning of the list)
@@ -461,17 +455,13 @@ export function parseListOfPages( listOfPages, type ) {
 }
 
 export function getAllTaxaCategories( listOfPages ) {
-	listOfPages = listOfPages.filter( function ( str ) {
-		return str.match( /^Category:.*$/ );
-	} );
+	listOfPages = listOfPages.filter( ( str ) => str.match( /^Category:.*$/ ) );
 	return listOfPages;
 }
 
 /** Fixes the order of the array, which got scrambled when running the API query. The correctOrder array is bigger and in order, the incorrectOrder array is smaller and scrambled. The result will be smaller and in order. */
 export function fixArrayOrder( correctOrder, incorrectOrder ) {
-	return correctOrder.filter( function ( str ) {
-		return incorrectOrder.indexOf( str ) !== -1;
-	} );
+	return correctOrder.filter( ( str ) => incorrectOrder.indexOf( str ) !== -1 );
 }
 
 // TODO: write unit test for this function. maybe move it to a class
@@ -538,9 +528,7 @@ export function taxaStringToArray( taxa ) {
 	// convert to array
 	taxa = taxa.split( ', ' );
 	// get rid of both -Genus and /Plantae
-	taxa = taxa.map( function ( str ) {
-		return str.replace( /[-/].*?$/, '' );
-	} );
+	taxa = taxa.map( ( str ) => str.replace( /[-/].*?$/, '' ) );
 	return taxa;
 }
 

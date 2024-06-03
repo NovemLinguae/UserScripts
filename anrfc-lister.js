@@ -69,9 +69,9 @@ class ANRFC {
 		}
 
 		this.mw.util.addPortletLink( 'p-cactions', '#', 'ANRFC lister', 'ca-anrfc' );
-		this.$( '#ca-anrfc' ).on( 'click', function () {
+		this.$( '#ca-anrfc' ).on( 'click', () => {
 			this.toggle();
-		}.bind( this ) );
+		} );
 	}
 
 	toggle() {
@@ -200,9 +200,9 @@ class ANRFC {
 		} ) );
 		$anrfcBox.append( wrapper );
 
-		submitButton.on( 'click', function () {
+		submitButton.on( 'click', () => {
 			this.onSubmit( dropDown, messageInput, keyId );
-		}.bind( this ) );
+		} );
 
 		cancelButton.on( 'click', function () {
 			this.document.getElementById( keyId ).remove();
@@ -219,7 +219,7 @@ class ANRFC {
 	async onSubmit( dropDown, messageInput, keyId ) {
 		// Dropdown is required.
 		if ( dropDown.getMenu().findSelectedItem() === null ) {
-			return OO.ui.alert( 'Please select discussion section from dropdown menu!' ).then( function () {
+			return OO.ui.alert( 'Please select discussion section from dropdown menu!' ).then( () => {
 				dropDown.focus();
 			} );
 		}
@@ -335,6 +335,7 @@ class ANRFC {
 
 	/**
 	 * Convert MediaWiki:Gadget-CommentsInLocalTime.js date strings to regular date strings
+	 *
 	 * @param {string} dateString 10:55 am, 29 November 2016, Tuesday (7 years, 1 month, 13 days ago) (UTC−8)
 	 * @return {string} 18:55, 29 November 2016
 	 */
@@ -425,8 +426,8 @@ class ANRFC {
 	}
 }
 
-$( async function () {
-	await mw.loader.using( [ 'oojs-ui-widgets', 'oojs-ui-windows', 'mediawiki.util', 'mediawiki.api' ], async function () {
+$( async () => {
+	await mw.loader.using( [ 'oojs-ui-widgets', 'oojs-ui-windows', 'mediawiki.util', 'mediawiki.api' ], async () => {
 		await ( new ANRFC( document, mw, $ ) ).execute();
 	} );
 } );

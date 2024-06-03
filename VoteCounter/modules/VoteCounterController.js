@@ -1,3 +1,5 @@
+import { VoteCounterCounter } from './VoteCounterCounter';
+
 export class VoteCounterController {
 	async execute() {
 		if ( !await this._shouldRun() ) {

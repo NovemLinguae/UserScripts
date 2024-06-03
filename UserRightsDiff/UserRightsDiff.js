@@ -16,6 +16,7 @@ This script works in Special:UserRights, in watchlists, and when clicking "right
 
 class UserRightsDiff {
 	constructor( $ ) {
+		// eslint-disable-next-line no-jquery/variable-pattern
 		this.$ = $;
 	}
 
@@ -23,7 +24,7 @@ class UserRightsDiff {
 		const that = this;
 
 		// User:BradV/Scripts/SuperLinks.js
-		this.$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', function () {
+		this.$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', () => {
 			that.checkLog();
 		} );
 
@@ -50,7 +51,7 @@ class UserRightsDiff {
 		}
 
 		// turn listener back on
-		this.$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', function () {
+		this.$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', () => {
 			that.checkLog();
 		} );
 	}
@@ -110,7 +111,7 @@ class UserRightsDiff {
 		if ( string === '(none)' ) {
 			return [];
 		}
-		const array = string.split( ', ' ).map( function ( str ) {
+		const array = string.split( ', ' ).map( ( str ) => {
 			str = str.trim();
 			// remove fragments of punctuation. can result when trying to delete nested parentheses. will delete fragments such as " .)"
 			str = str.replace( /[\s.,/#!$%^&*;:{}=\-_`~()]{2,}/g, '' );
@@ -125,7 +126,7 @@ class UserRightsDiff {
 	}
 }
 
-$( function () {
+$( () => {
 	( new UserRightsDiff( $ ) ).execute();
 } );
 

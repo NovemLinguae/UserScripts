@@ -10,6 +10,7 @@ export class GARCloserController {
 	 * @param {GARCloserHTMLGenerator} hg
 	 */
 	async execute( $, mw, location, wg, hg ) {
+		// eslint-disable-next-line no-jquery/variable-pattern
 		this.$ = $;
 		this.mw = mw;
 		this.location = location;
@@ -117,6 +118,7 @@ export class GARCloserController {
 		this.editSummarySuffix = ` - ${ editSummarySuffix }`;
 		this.garPageTitle = reassessmentPageTitle;
 		this.message = message;
+		// eslint-disable-next-line no-jquery/variable-pattern
 		this.$ = $;
 		this.mw = mw;
 		this.wg = wg;
@@ -283,6 +285,7 @@ export class GARCloserController {
 
 	/**
 	 * CC BY-SA 4.0, Lorenz Lo Sauer, https://stackoverflow.com/a/10671743/3480193
+	 *
 	 * @param {RegExp} needleRegEx Make sure to set the /g parameter.
 	 */
 	countOccurrencesInString( needleRegEx, haystack ) {
@@ -441,6 +444,7 @@ export class GARCloserController {
 
 	/**
 	 * Lets you append without getting the Wikicode first. Saves an API query.
+	 *
 	 * @private
 	 */
 	async appendToPage( title, editSummary, wikicodeToAppend ) {
@@ -464,6 +468,7 @@ export class GARCloserController {
 
 	/**
 	 * Example: To get the latest archive of "Wikipedia:Good article reassessment/Archive ", use getHighestNumberedPage("Wikipedia:Good article reassessment/Archive "), which will return "Wikipedia:Good article reassessment/Archive 67"
+	 *
 	 * @private
 	 */
 	async getHighestNumberedPage( prefix ) {
@@ -527,7 +532,7 @@ export class GARCloserController {
 
 	async delay( seconds ) {
 		const milliseconds = seconds * 1000;
-		return new Promise( function ( res ) {
+		return new Promise( ( res ) => {
 			setTimeout( res, milliseconds );
 		} );
 	}

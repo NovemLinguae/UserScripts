@@ -3,6 +3,7 @@
 class CiteHighlighter {
 	constructor( window, $, mw ) {
 		this.window = window;
+		// eslint-disable-next-line no-jquery/variable-pattern
 		this.$ = $;
 		this.mw = mw;
 	}
@@ -98,6 +99,7 @@ class CiteHighlighter {
 
 	/**
 	 * Steve Harrison, CC BY-SA 4.0, https://stackoverflow.com/a/1026087/3480193
+	 *
 	 * @param {string} string
 	 * @return {string}
 	 */
@@ -306,6 +308,7 @@ class CiteHighlighter {
 
 	/**
 	 * CAREFUL. This is case sensitive.
+	 *
 	 * @param {Object} haystack
 	 * @param {...any} strings
 	 */
@@ -362,20 +365,20 @@ class CiteHighlighter {
 }
 
 // Fire after wiki content is added to the DOM, such as when first loading a page, or when a gadget such as the XTools gadget loads.
-mw.hook( 'wikipage.content' ).add( async function () {
+mw.hook( 'wikipage.content' ).add( async () => {
 	await mw.loader.using(
 		[ 'mediawiki.util', 'mediawiki.api' ],
-		async function () {
+		async () => {
 			await ( new CiteHighlighter( window, $, mw ) ).execute();
 		}
 	);
 } );
 
 // Fire after an edit is successfully saved via JavaScript, such as edits by the Visual Editor and HotCat.
-mw.hook( 'postEdit' ).add( async function () {
+mw.hook( 'postEdit' ).add( async () => {
 	await mw.loader.using(
 		[ 'mediawiki.util', 'mediawiki.api' ],
-		async function () {
+		async () => {
 			await ( new CiteHighlighter( window, $, mw ) ).execute();
 		}
 	);

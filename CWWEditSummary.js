@@ -6,7 +6,7 @@
 
 // See also User:Chlod/Scripts/Deputy/AttributionNoticeTemplateEditor
 
-$( async function () {
+$( async () => {
 	const action = mw.config.get( 'wgAction' );
 	let title = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
 	const wiki = mw.config.get( 'wgDBname' );
@@ -14,7 +14,7 @@ $( async function () {
 	if ( action === 'edit' ) {
 		$( '.editCheckboxes > .oo-ui-layout' ).append( '<div><a style="padding: 4px; text-decoration: underline;" id="CWWEditSummary-Edit">Provide attribution</a></div>' );
 
-		$( '#CWWEditSummary-Edit' ).on( 'click', function () {
+		$( '#CWWEditSummary-Edit' ).on( 'click', () => {
 			if ( wiki !== 'enwiki' ) {
 				title = 'w:' + title;
 			}
@@ -23,7 +23,7 @@ $( async function () {
 	} else if ( title === 'Special:Import' ) {
 		$( '#mw-input-wpintro' ).parent( 3 ).after( '<div style="margin-top: 0.7em;"><a style="background-color: rgba(255, 255, 0, 0.4); padding: 4px; text-decoration: underline;" id="CWWEditSummary-SpecialImport">Select defaults and provide attribution</a></div>' );
 
-		$( '#CWWEditSummary-SpecialImport' ).on( 'click', function () {
+		$( '#CWWEditSummary-SpecialImport' ).on( 'click', () => {
 			$( '[name="interwiki"]' ).val( 'en' );
 			$( '[name="interwiki"] + .oo-ui-dropdownWidget > span > .oo-ui-labelElement-label' ).html( 'en' );
 			$( '[name="interwikiTemplates"]' ).prop( 'checked', true );

@@ -26,12 +26,12 @@ class DontForgetG12 {
 		}
 
 		// or 2) article is not marked as reviewed by NPP
-		this.mw.hook( 'ext.pageTriage.toolbar.ready' ).add( async function () {
+		this.mw.hook( 'ext.pageTriage.toolbar.ready' ).add( async () => {
 			const pageID = this.mw.config.get( 'wgArticleId' );
 			if ( !( await this.isReviewed( pageID ) ) ) {
 				this.insertButton( this.title );
 			}
-		}.bind( this ) );
+		} );
 	}
 
 	async shouldRunOnThisPage() {
@@ -123,7 +123,7 @@ class DontForgetG12 {
 	}
 }
 
-$( async function () {
+$( async () => {
 	await mw.loader.using( [ 'mediawiki.api' ], async () => {
 		await ( new DontForgetG12( mw, $ ) ).execute();
 	} );

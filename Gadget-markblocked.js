@@ -19,7 +19,7 @@ function markBlocked( container ) {
 	const ipv6Regex = /^((?=.*::)(?!.*::.+::)(::)?([\dA-F]{1,4}:(:|\b)|){5}|([\dA-F]{1,4}:){6})((([\dA-F]{1,4}((?!\3)::|:\b|$))|(?!\2\3)){2}|(((2[0-4]|1\d|[1-9])?\d|25[0-5])\.?\b){4})$/i;
 
 	// Collect all the links in the page's content
-	const contentLinks = $( container ).find( 'a' );
+	const $contentLinks = $( container ).find( 'a' );
 
 	const tooltipStringPattern = window.mbTooltip || '; blocked ($1) by $2: $3 ($4 ago)';
 
@@ -47,7 +47,7 @@ function markBlocked( container ) {
 	let user, url, pageTitle;
 
 	// Find all "user" links and save them in userLinks : { 'users': [<link1>, <link2>, ...], 'user2': [<link3>, <link3>, ...], ... }
-	contentLinks.each( function ( i, link ) {
+	$contentLinks.each( ( i, link ) => {
 		if ( $( link ).hasClass( 'mw-changeslist-date' ) || $( link ).parent( 'span' ).hasClass( 'mw-history-undo' ) || $( link ).parent( 'span' ).hasClass( 'mw-rollback-link' ) ) {
 			return;
 		}
@@ -113,10 +113,12 @@ function markBlocked( container ) {
 
 	return; // the end
 
-	// Callback: receive data and mark links
+	/**
+	 * Callback: receive data and mark links
+	 */
 	function markLinks( resp, status, xhr ) {
 		serverTime = new Date( xhr.getResponseHeader( 'Date' ) );
-		let list, block, tooltipString, links, link;
+		let list, block, tooltipString, links, $link;
 		if ( !resp || !( list = resp.query ) || !( list = list.blocks ) ) {
 			return;
 		}
@@ -142,12 +144,12 @@ function markBlocked( container ) {
 				.replace( '$4', inHours( serverTime - parseTimestamp( block.timestamp ) ) );
 			links = userLinks[ block.user ];
 			for ( let k = 0; links && k < links.length; k++ ) {
-				link = $( links[ k ] );
-				link = link.addClass( htmlClass );
+				$link = $( links[ k ] );
+				$link = $link.addClass( htmlClass );
 				if ( window.mbTipBox ) {
-					$( '<span class=user-blocked-tipbox>#</span>' ).attr( 'title', tooltipString ).insertBefore( link );
+					$( '<span class=user-blocked-tipbox>#</span>' ).attr( 'title', tooltipString ).insertBefore( $link );
 				} else {
-					link.attr( 'title', link.attr( 'title' ) + tooltipString );
+					$link.attr( 'title', $link.attr( 'title' ) + tooltipString );
 				}
 			}
 		}
@@ -158,7 +160,9 @@ function markBlocked( container ) {
 		}
 	}
 
-	// 20081226220605  or  2008-01-26T06:34:19Z -> date
+	/**
+	 * 20081226220605  or  2008-01-26T06:34:19Z -> date
+	 */
 	function parseTimestamp( timestamp ) {
 		const matches = timestamp.replace( /\D/g, '' ).match( /(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/ );
 		return new Date( Date.UTC( matches[ 1 ], matches[ 2 ] - 1, matches[ 3 ], matches[ 4 ], matches[ 5 ], matches[ 6 ] ) );
@@ -197,7 +201,7 @@ switch ( mw.config.get( 'wgAction' ) ) {
 		maybeAutostart = $.Deferred();
 		if ( window.mbNoAutoStart ) {
 			const portletLink = mw.util.addPortletLink( 'p-cactions', '', 'XX', 'ca-showblocks' );
-			$( portletLink ).on( 'click', function ( e ) {
+			$( portletLink ).on( 'click', ( e ) => {
 				e.preventDefault();
 				maybeAutostart.resolve();
 			} );
@@ -205,10 +209,10 @@ switch ( mw.config.get( 'wgAction' ) ) {
 			maybeAutostart.resolve();
 		}
 
-		$.when( $.ready, mw.loader.using( [ 'mediawiki.util', 'mediawiki.api' ] ), maybeAutostart ).then( function () {
+		$.when( $.ready, mw.loader.using( [ 'mediawiki.util', 'mediawiki.api' ] ), maybeAutostart ).then( () => {
 			let firstTime = true;
 
-			mw.hook( 'wikipage.content' ).add( function ( container ) {
+			mw.hook( 'wikipage.content' ).add( ( container ) => {
 				// On the first call after initial page load, container is mw.util.$content
 
 				// Used to limit mainspace activity to just the diff definitions

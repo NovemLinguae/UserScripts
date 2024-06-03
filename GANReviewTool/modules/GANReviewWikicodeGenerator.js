@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+
 export class GANReviewWikicodeGenerator {
 	getPassWikicodeForGANPage( reviewWikicode ) {
 		return this.placeATOP( reviewWikicode, 'Passed. ~~~~', 'green' );
@@ -262,6 +264,7 @@ export class GANReviewWikicodeGenerator {
 
 	/**
 	 * Search algorithm looks for \n after the searched templates. If not present, it will not match.
+	 *
 	 * @param {string} wikicode
 	 * @param {string[]} templates
 	 * @param {string} codeToAdd

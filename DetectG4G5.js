@@ -169,8 +169,8 @@ class DetectG4G5 {
 	}
 }
 
-$( async function () {
-	await mw.loader.using( [ 'mediawiki.api' ], async function () {
+$( async () => {
+	await mw.loader.using( [ 'mediawiki.api' ], async () => {
 		await ( new DetectG4G5() ).execute();
 	} );
 } );

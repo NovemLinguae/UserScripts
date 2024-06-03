@@ -15,7 +15,7 @@
 // TODO: handle COI edit requests
 // TODO: ping requester
 
-$( function () {
+$( () => {
 	async function getWikicode( title ) {
 		// if page is deleted, return blank
 		if ( !mw.config.get( 'wgCurRevisionId' ) ) {

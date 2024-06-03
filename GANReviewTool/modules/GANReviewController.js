@@ -10,6 +10,7 @@ export class GANReviewController {
 	 * @param {GANReviewHTMLGenerator} hg
 	 */
 	async execute( $, mw, location, wg, hg ) {
+		// eslint-disable-next-line no-jquery/variable-pattern
 		this.$ = $;
 		this.mw = mw;
 		this.location = location;

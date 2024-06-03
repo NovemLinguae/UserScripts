@@ -1,3 +1,5 @@
+/* eslint-disable no-tabs */
+
 export class GANReviewHTMLGenerator {
 	getHTML( gaTitle, wikicodeOfGASubPages ) {
 		let defaultDisplayText = this.getDefaultDisplayText( gaTitle );
