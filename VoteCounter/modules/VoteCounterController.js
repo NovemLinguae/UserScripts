@@ -249,7 +249,9 @@ export class VoteCounterController {
 			'wait',
 			// AARV
 			'bad block',
-			'do not endorse'
+			'do not endorse',
+			// AN RFC challenge
+			'vacate'
 		];
 	}
 
