@@ -8,6 +8,7 @@
 		- global.js
 		- vector.js
 		- common.css
+		- global.css
 		- central auth (good for seeing what global permissions people have)
 		- rename log
 		- global lock log
@@ -64,6 +65,7 @@ class Links {
 		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/${ this.username }/global.js`, 'global.js' );
 		this.mw.util.addPortletLink( 'p-links', `/wiki/${ this.username }/vector.js`, 'vector.js' );
 		this.mw.util.addPortletLink( 'p-links', `/wiki/${ this.username }/common.css`, 'common.css' );
+		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/${ this.username }/global.css`, 'global.css' );
 		this.mw.util.addPortletLink( 'p-links', `/wiki/Special:CentralAuth?target=${ this.usernameURI }`, 'Central auth' );
 		this.mw.util.addPortletLink( 'p-links', `/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }`, 'User rights log' );
 		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }@enwiki`, 'User rights log (meta)' );
