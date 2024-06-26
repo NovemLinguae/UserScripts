@@ -7,7 +7,7 @@
 */
 
 class DontForgetG12 {
-	constructor() {
+	constructor( mw, $ ) {
 		this.mw = mw;
 		// eslint-disable-next-line no-jquery/variable-pattern
 		this.$ = $;
