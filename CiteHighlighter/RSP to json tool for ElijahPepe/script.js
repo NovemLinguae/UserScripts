@@ -1,58 +1,60 @@
-"use strict";
+'use strict';
 
 class Tool {
-	getOutput(input) {
-		let output = [];
-		let dicedUpWikicode = input.split("|-");
-		
-		for ( let row of dicedUpWikicode ) {
-			let buffer = {};
+	getOutput( input ) {
+		const output = [];
+		const dicedUpWikicode = input.split( '|-' );
 
-			let source = row.match(/^\| ((?!data)[^\n]+)\n/mi);
-			if ( source === null ) continue;
-			buffer.source = source[1];
+		for ( const row of dicedUpWikicode ) {
+			const buffer = {};
+
+			const source = row.match( /^\| ((?!data)[^\n]+)\n/mi );
+			if ( source === null ) {
+				continue;
+			}
+			buffer.source = source[ 1 ];
 			// TODO: strip out wikilinks, piped wikilinks, {{/Shortcut}}, etc.
 
-			let domains = row.match(/^\| \{\{\/Uses\|([^\}]*)\}/mi);
-			buffer.domains = domains === null ? [] : domains[1].split('|');
+			const domains = row.match( /^\| \{\{\/Uses\|([^}]*)\}/mi );
+			buffer.domains = domains === null ? [] : domains[ 1 ].split( '|' );
 
 			// TODO:
-			let reliability = '';
+			const reliability = '';
 
 			// TODO:
-			let blacklisted = '';
+			const blacklisted = '';
 
 			// TODO:
-			let summary = '';
+			const summary = '';
 
-			output.push(buffer);
+			output.push( buffer );
 		}
-		
-		return JSON.stringify(output, null, 4);
+
+		return JSON.stringify( output, null, 4 );
 	}
 }
 
-window.addEventListener('DOMContentLoaded', (e) => {
-	let input = document.getElementById('input');
-	let execute = document.getElementById('execute');
-	let output = document.getElementById('output');
-	
-	let Tool1 = new Tool();
-	
+window.addEventListener( 'DOMContentLoaded', () => {
+	const input = document.getElementById( 'input' );
+	const execute = document.getElementById( 'execute' );
+	const output = document.getElementById( 'output' );
+
+	const Tool1 = new Tool();
+
 	// load Tool.txt into input box
 	try {
-		let fileToLoad = './default.txt';
-		let xmlhttp = new XMLHttpRequest();
-		xmlhttp.open('GET', fileToLoad, false);
+		const fileToLoad = './default.txt';
+		const xmlhttp = new XMLHttpRequest();
+		xmlhttp.open( 'GET', fileToLoad, false );
 		xmlhttp.send();
 		input.innerHTML = xmlhttp.responseText;
-	} catch(DOMException) {
-		input.innerHTML = "Error loading file. Maybe related to filepath or CORS?";
+	} catch ( DOMException ) {
+		input.innerHTML = 'Error loading file. Maybe related to filepath or CORS?';
 	}
-	
-	execute.addEventListener('click', function(e) {
-		output.value = Tool1.getOutput(input.value);
-	});
-	
-	execute.dispatchEvent(new Event('click'));
-});
+
+	execute.addEventListener( 'click', () => {
+		output.value = Tool1.getOutput( input.value );
+	} );
+
+	execute.dispatchEvent( new Event( 'click' ) );
+} );

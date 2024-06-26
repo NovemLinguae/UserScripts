@@ -121,6 +121,7 @@ class SourceListWikitextToJson {
 
 	/**
 	 * case insensitive
+	 *
 	 * @param {Array} array
 	 * @return {Array}
 	 */
@@ -184,6 +185,7 @@ class SourceListWikitextToJson {
 
 	/**
 	 * CAREFUL. String is case sensitive.
+	 *
 	 * @param {...any} strings
 	 */
 	deleteAll( ...strings ) {
@@ -232,13 +234,13 @@ class SourceListWikitextToJson {
 	}
 }
 
-window.addEventListener( 'DOMContentLoaded', async function () {
+window.addEventListener( 'DOMContentLoaded', async () => {
 	// This input textarea already contains the wikitext source of both NPPSG and AllSourcesExceptNPPSG. See PHP file for the code that fetches that wikitext. Had to do it in PHP due to CORS policy.
 	const inputTextArea = document.getElementById( 'input' );
 	const executeButton = document.getElementById( 'execute' );
 	const outputTextArea = document.getElementById( 'output' );
 
-	executeButton.addEventListener( 'click', function () {
+	executeButton.addEventListener( 'click', () => {
 		outputTextArea.value = ( new SourceListWikitextToJson() ).getJson( inputTextArea.value );
 	} );
 
