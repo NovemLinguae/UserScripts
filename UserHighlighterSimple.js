@@ -191,6 +191,11 @@ class UserHighlighterSimple {
 			return false;
 		}
 
+		const isDiscussionToolsSectionLink = url.includes( '#' );
+		if ( isDiscussionToolsSectionLink ) {
+			return false;
+		}
+
 		return true;
 	}
 
