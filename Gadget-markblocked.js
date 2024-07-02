@@ -98,10 +98,12 @@ Configuration variables:
 			if ( $( link ).is( '.mw-changeslist-date, .ext-discussiontools-init-timestamplink, .mw-history-undo > a, .mw-rollback-link > a' ) ) {
 				return;
 			}
+
 			url = $( link ).attr( 'href' );
 			if ( !url ) {
 				return;
 			}
+
 			const articleMatch = articleRegex.exec( url ),
 				scriptMatch = scriptRegex.exec( url );
 			if ( articleMatch ) {
@@ -112,19 +114,24 @@ Configuration variables:
 				return;
 			}
 			pageTitle = decodeURIComponent( pageTitle ).replace( /_/g, ' ' );
+
 			user = userTitleRegex.exec( pageTitle );
 			if ( !user ) {
 				return;
 			}
+
 			const userTitle = mw.Title.newFromText( user[ 2 ] );
 			if ( !userTitle ) {
 				return;
 			}
+
 			user = userTitle.getMainText();
 			if ( ipv6Regex.test( user ) ) {
 				user = user.toUpperCase();
 			}
+
 			$( link ).addClass( 'userlink' );
+
 			if ( !userLinks[ user ] ) {
 				userLinks[ user ] = [];
 			}
