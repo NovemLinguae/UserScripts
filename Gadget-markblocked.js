@@ -17,6 +17,53 @@ Configuration variables:
 */
 
 ( () => {
+	function execute() {
+		if ( [ 'edit', 'submit' ].includes( mw.config.get( 'wgAction ' ) ) ) {
+			return;
+		}
+
+		const maybeAutostart = $.Deferred();
+		if ( window.mbNoAutoStart ) {
+			const portletLink = mw.util.addPortletLink( 'p-cactions', '', 'XX', 'ca-showblocks' );
+			$( portletLink ).on( 'click', ( e ) => {
+				e.preventDefault();
+				maybeAutostart.resolve();
+			} );
+		} else {
+			maybeAutostart.resolve();
+		}
+
+		$.when( $.ready, maybeAutostart ).then( () => {
+			let firstTime = true;
+
+			mw.hook( 'wikipage.content' ).add( ( $container ) => {
+				// On the first call after initial page load, container is mw.util.$content
+
+				// Limit mainspace activity to just the diff definitions
+				if ( mw.config.get( 'wgAction' ) === 'view' && mw.config.get( 'wgNamespaceNumber' ) === 0 ) {
+					$container = $container.find( '.diff-title' );
+				}
+
+				if ( firstTime ) {
+					firstTime = false;
+
+					// On page load, also update the namespace tab
+					$container = $container.add( '#ca-nstab-user' );
+
+					mw.util.addCSS( '\
+						.markblocked-loading a.userlink {opacity:' + ( window.mbLoadingOpacity || 0.85 ) + '}\
+						a.user-blocked-temp {' + ( window.mbTempStyle || 'opacity: 0.7; text-decoration: line-through' ) + '}\
+						a.user-blocked-indef {' + ( window.mbIndefStyle || 'opacity: 0.4; font-style: italic; text-decoration: line-through' ) + '}\
+						a.user-blocked-partial {' + ( window.mbPartialStyle || 'text-decoration: underline; text-decoration-style: dotted' ) + '}\
+						.user-blocked-tipbox {' + ( window.mbTipBoxStyle || 'font-size:smaller; background:#FFFFF0; border:1px solid #FEA; padding:0 0.3em; color:#AAA' ) + '}\
+					' );
+				}
+
+				markBlocked( $container );
+			} );
+		} );
+	}
+
 	function markBlocked( $container ) {
 		const ipv6Regex = /^((?=.*::)(?!.*::.+::)(::)?([\dA-F]{1,4}:(:|\b)|){5}|([\dA-F]{1,4}:){6})((([\dA-F]{1,4}((?!\3)::|:\b|$))|(?!\2\3)){2}|(((2[0-4]|1\d|[1-9])?\d|25[0-5])\.?\b){4})$/i;
 
@@ -114,8 +161,6 @@ Configuration variables:
 			);
 		}
 
-		return; // the end
-
 		/**
 		 * Callback: receive data and mark links
 		 */
@@ -162,84 +207,37 @@ Configuration variables:
 				$( '#ca-showblocks' ).parent().remove(); // remove added portlet link
 			}
 		}
-
-		/**
-		 * 20081226220605  or  2008-01-26T06:34:19Z -> date
-		 */
-		function parseTimestamp( timestamp ) {
-			const matches = timestamp.replace( /\D/g, '' ).match( /(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/ );
-			return new Date( Date.UTC( matches[ 1 ], matches[ 2 ] - 1, matches[ 3 ], matches[ 4 ], matches[ 5 ], matches[ 6 ] ) );
-		}
-
-		function inHours( milliseconds ) { // milliseconds -> "2:30" or 5,06d or 21d
-			let minutes = Math.floor( milliseconds / 60000 );
-			if ( !minutes ) {
-				return Math.floor( milliseconds / 1000 ) + 's';
-			}
-			let hours = Math.floor( minutes / 60 );
-			minutes = minutes % 60;
-			const days = Math.floor( hours / 24 );
-			hours = hours % 24;
-			if ( days ) {
-				return days + ( days < 10 ? '.' + addLeadingZeroIfNeeded( hours ) : '' ) + 'd';
-			}
-			return hours + ':' + addLeadingZeroIfNeeded( minutes );
-		}
-
-		function addLeadingZeroIfNeeded( v ) { // 6 -> '06'
-			if ( v <= 9 ) {
-				v = '0' + v;
-			}
-			return v;
-		}
 	}
 
-	// Start on some pages
-	let maybeAutostart;
-	switch ( mw.config.get( 'wgAction' ) ) {
-		case 'edit':
-		case 'submit':
-			break;
-		default: // 'view', 'history', 'purge', ...
-			maybeAutostart = $.Deferred();
-			if ( window.mbNoAutoStart ) {
-				const portletLink = mw.util.addPortletLink( 'p-cactions', '', 'XX', 'ca-showblocks' );
-				$( portletLink ).on( 'click', ( e ) => {
-					e.preventDefault();
-					maybeAutostart.resolve();
-				} );
-			} else {
-				maybeAutostart.resolve();
-			}
-
-			$.when( $.ready, maybeAutostart ).then( () => {
-				let firstTime = true;
-
-				mw.hook( 'wikipage.content' ).add( ( $container ) => {
-					// On the first call after initial page load, container is mw.util.$content
-
-					// Used to limit mainspace activity to just the diff definitions
-					if ( mw.config.get( 'wgAction' ) === 'view' && mw.config.get( 'wgNamespaceNumber' ) === 0 ) {
-						$container = $container.find( '.diff-title' );
-					}
-
-					if ( firstTime ) {
-						firstTime = false;
-
-						// On page load, also update the namespace tab
-						$container = $container.add( '#ca-nstab-user' );
-
-						mw.util.addCSS( '\
-							.markblocked-loading a.userlink {opacity:' + ( window.mbLoadingOpacity || 0.85 ) + '}\
-							a.user-blocked-temp {' + ( window.mbTempStyle || 'opacity: 0.7; text-decoration: line-through' ) + '}\
-							a.user-blocked-indef {' + ( window.mbIndefStyle || 'opacity: 0.4; font-style: italic; text-decoration: line-through' ) + '}\
-							a.user-blocked-partial {' + ( window.mbPartialStyle || 'text-decoration: underline; text-decoration-style: dotted' ) + '}\
-							.user-blocked-tipbox {' + ( window.mbTipBoxStyle || 'font-size:smaller; background:#FFFFF0; border:1px solid #FEA; padding:0 0.3em; color:#AAA' ) + '}\
-						' );
-					}
-
-					markBlocked( $container );
-				} );
-			} );
+	/**
+	 * 20081226220605  or  2008-01-26T06:34:19Z -> date
+	 */
+	function parseTimestamp( timestamp ) {
+		const matches = timestamp.replace( /\D/g, '' ).match( /(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/ );
+		return new Date( Date.UTC( matches[ 1 ], matches[ 2 ] - 1, matches[ 3 ], matches[ 4 ], matches[ 5 ], matches[ 6 ] ) );
 	}
+
+	function inHours( milliseconds ) { // milliseconds -> "2:30" or 5,06d or 21d
+		let minutes = Math.floor( milliseconds / 60000 );
+		if ( !minutes ) {
+			return Math.floor( milliseconds / 1000 ) + 's';
+		}
+		let hours = Math.floor( minutes / 60 );
+		minutes = minutes % 60;
+		const days = Math.floor( hours / 24 );
+		hours = hours % 24;
+		if ( days ) {
+			return days + ( days < 10 ? '.' + addLeadingZeroIfNeeded( hours ) : '' ) + 'd';
+		}
+		return hours + ':' + addLeadingZeroIfNeeded( minutes );
+	}
+
+	function addLeadingZeroIfNeeded( v ) { // 6 -> '06'
+		if ( v <= 9 ) {
+			v = '0' + v;
+		}
+		return v;
+	}
+
+	execute();
 } )();
