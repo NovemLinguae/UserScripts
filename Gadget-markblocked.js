@@ -70,8 +70,6 @@ Configuration variables:
 		// Collect all the links in the page's content
 		const $contentLinks = $container.find( 'a' );
 
-		const tooltipStringPattern = window.mbTooltip || '; blocked ($1) by $2: $3 ($4 ago)';
-
 		// Get all aliases for user: & user_talk:
 		const userNS = [];
 		for ( const ns in mw.config.get( 'wgNamespaceIds' ) ) {
@@ -143,7 +141,7 @@ Configuration variables:
 		}
 
 		// API request
-		let serverTime, apiRequests = 0;
+		let apiRequests = 0;
 		$container.addClass( 'markblocked-loading' );
 		while ( users.length > 0 ) {
 			apiRequests++;
@@ -165,7 +163,7 @@ Configuration variables:
 		 * Callback: receive data and mark links
 		 */
 		function markLinks( resp, status, xhr ) {
-			serverTime = new Date( xhr.getResponseHeader( 'Date' ) );
+			const serverTime = new Date( xhr.getResponseHeader( 'Date' ) );
 			let list, block, tooltipString, links, $link;
 			if ( !resp || !( list = resp.query ) || !( list = list.blocks ) ) {
 				return;
@@ -182,7 +180,7 @@ Configuration variables:
 					htmlClass = partial ? 'user-blocked-partial' : 'user-blocked-temp';
 					blockTime = inHours( parseTimestamp( block.expiry ) - parseTimestamp( block.timestamp ) );
 				}
-				tooltipString = tooltipStringPattern;
+				tooltipString = window.mbTooltip || '; blocked ($1) by $2: $3 ($4 ago)';
 				if ( partial ) {
 					tooltipString = tooltipString.replace( 'blocked', 'partially blocked' );
 				}
