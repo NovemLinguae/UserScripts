@@ -114,6 +114,8 @@ Configuration variables:
 
 		/**
 		 * Callback: receive data and mark links
+		 *
+		 * @todo un-nest this nested function
 		 */
 		function markLinks( resp, status, xhr ) {
 			const serverTime = new Date( xhr.getResponseHeader( 'Date' ) );
@@ -131,6 +133,8 @@ Configuration variables:
 					blockTime = block.expiry;
 				} else {
 					htmlClass = partial ? 'user-blocked-partial' : 'user-blocked-temp';
+					// Apparently you can subtract date objects in JavaScript. Some kind of
+					// magic happens and they are automatically converted to milliseconds.
 					blockTime = inHours( parseTimestamp( block.expiry ) - parseTimestamp( block.timestamp ) );
 				}
 				tooltipString = window.mbTooltip || '; blocked ($1) by $2: $3 ($4 ago)';
@@ -221,14 +225,19 @@ Configuration variables:
 	}
 
 	/**
-	 * 20081226220605  or  2008-01-26T06:34:19Z -> date
+	 * @param {string} timestamp 20081226220605 or 2008-01-26T06:34:19Z
+	 * @return {Date}
 	 */
 	function parseTimestamp( timestamp ) {
 		const matches = timestamp.replace( /\D/g, '' ).match( /(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/ );
 		return new Date( Date.UTC( matches[ 1 ], matches[ 2 ] - 1, matches[ 3 ], matches[ 4 ], matches[ 5 ], matches[ 6 ] ) );
 	}
 
-	function inHours( milliseconds ) { // milliseconds -> "2:30" or 5,06d or 21d
+	/**
+	 * @param {number} milliseconds 604800000
+	 * @return {string} "2:30" or "5.06d" or "21d"
+	 */
+	function inHours( milliseconds ) {
 		let minutes = Math.floor( milliseconds / 60000 );
 		if ( !minutes ) {
 			return Math.floor( milliseconds / 1000 ) + 's';
@@ -243,7 +252,11 @@ Configuration variables:
 		return hours + ':' + addLeadingZeroIfNeeded( minutes );
 	}
 
-	function addLeadingZeroIfNeeded( v ) { // 6 -> '06'
+	/**
+	 * @param {number} v 9
+	 * @return {string} 09
+	 */
+	function addLeadingZeroIfNeeded( v ) {
 		if ( v <= 9 ) {
 			v = '0' + v;
 		}
