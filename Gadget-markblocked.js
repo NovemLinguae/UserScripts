@@ -48,7 +48,7 @@ function markBlocked( container ) {
 
 	// Find all "user" links and save them in userLinks : { 'users': [<link1>, <link2>, ...], 'user2': [<link3>, <link3>, ...], ... }
 	$contentLinks.each( ( i, link ) => {
-		if ( $( link ).hasClass( 'mw-changeslist-date' ) || $( link ).parent( 'span' ).hasClass( 'mw-history-undo' ) || $( link ).parent( 'span' ).hasClass( 'mw-rollback-link' ) ) {
+		if ( $( link ).is( '.mw-changeslist-date, .ext-discussiontools-init-timestamplink, .mw-history-undo > a, .mw-rollback-link > a' ) ) {
 			return;
 		}
 		url = $( link ).attr( 'href' );
