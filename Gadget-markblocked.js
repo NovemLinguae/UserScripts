@@ -209,7 +209,7 @@ switch ( mw.config.get( 'wgAction' ) ) {
 			maybeAutostart.resolve();
 		}
 
-		$.when( $.ready, mw.loader.using( [ 'mediawiki.util', 'mediawiki.api' ] ), maybeAutostart ).then( () => {
+		$.when( $.ready, maybeAutostart ).then( () => {
 			let firstTime = true;
 
 			mw.hook( 'wikipage.content' ).add( ( container ) => {
