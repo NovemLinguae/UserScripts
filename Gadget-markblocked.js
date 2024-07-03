@@ -65,10 +65,6 @@ Configuration variables:
 	}
 
 	function markBlocked( $container ) {
-		// Collect all the links in the page's content
-		const $contentLinks = $container.find( 'a' )
-			.not( '.mw-changeslist-date, .ext-discussiontools-init-timestamplink, .mw-history-undo > a, .mw-rollback-link > a' );
-
 		// Get all aliases for user: & user_talk:
 		const userNS = [];
 		for ( const ns in mw.config.get( 'wgNamespaceIds' ) ) {
@@ -83,7 +79,7 @@ Configuration variables:
 		}
 
 		const userLinks = {};
-		getUserLinks( userLinks, $contentLinks, userNS );
+		getUserLinks( userLinks, $container, userNS );
 
 		// Convert users into array
 		const users = [];
@@ -168,7 +164,7 @@ Configuration variables:
 	/**
 	 * Find all "user" links and save them in userLinks : { 'users': [<link1>, <link2>, ...], 'user2': [<link3>, <link3>, ...], ... }
 	 */
-	function getUserLinks( userLinks, $contentLinks, userNS ) {
+	function getUserLinks( userLinks, $container, userNS ) {
 		// RegExp for all titles that are  User:| User_talk: | Special:Contributions/ (for userscripts)
 		const userTitleRegex = new RegExp( '^(' + userNS.join( '|' ) + '|' + window.markblocked_contributions + '\\/)+([^\\/#]+)$', 'i' );
 
@@ -179,48 +175,51 @@ Configuration variables:
 
 		const ipv6Regex = /^((?=.*::)(?!.*::.+::)(::)?([\dA-F]{1,4}:(:|\b)|){5}|([\dA-F]{1,4}:){6})((([\dA-F]{1,4}((?!\3)::|:\b|$))|(?!\2\3)){2}|(((2[0-4]|1\d|[1-9])?\d|25[0-5])\.?\b){4})$/i;
 
-		$contentLinks.each( ( i, link ) => {
-			const $link = $( link );
+		// Collect all the links in the page's content
+		$container.find( 'a' )
+			.not( '.mw-changeslist-date, .ext-discussiontools-init-timestamplink, .mw-history-undo > a, .mw-rollback-link > a' )
+			.each( ( i, link ) => {
+				const $link = $( link );
 
-			const url = $link.attr( 'href' );
-			if ( !url ) {
-				return;
-			}
+				const url = $link.attr( 'href' );
+				if ( !url ) {
+					return;
+				}
 
-			const articleMatch = articleRegex.exec( url ),
-				scriptMatch = scriptRegex.exec( url );
-			let pageTitle;
-			if ( articleMatch ) {
-				pageTitle = articleMatch[ 1 ];
-			} else if ( scriptMatch ) {
-				pageTitle = scriptMatch[ 1 ];
-			} else {
-				return;
-			}
-			pageTitle = decodeURIComponent( pageTitle ).replace( /_/g, ' ' );
+				const articleMatch = articleRegex.exec( url ),
+					scriptMatch = scriptRegex.exec( url );
+				let pageTitle;
+				if ( articleMatch ) {
+					pageTitle = articleMatch[ 1 ];
+				} else if ( scriptMatch ) {
+					pageTitle = scriptMatch[ 1 ];
+				} else {
+					return;
+				}
+				pageTitle = decodeURIComponent( pageTitle ).replace( /_/g, ' ' );
 
-			let user = userTitleRegex.exec( pageTitle );
-			if ( !user ) {
-				return;
-			}
+				let user = userTitleRegex.exec( pageTitle );
+				if ( !user ) {
+					return;
+				}
 
-			const userTitle = mw.Title.newFromText( user[ 2 ] );
-			if ( !userTitle ) {
-				return;
-			}
+				const userTitle = mw.Title.newFromText( user[ 2 ] );
+				if ( !userTitle ) {
+					return;
+				}
 
-			user = userTitle.getMainText();
-			if ( ipv6Regex.test( user ) ) {
-				user = user.toUpperCase();
-			}
+				user = userTitle.getMainText();
+				if ( ipv6Regex.test( user ) ) {
+					user = user.toUpperCase();
+				}
 
-			$link.addClass( 'userlink' );
+				$link.addClass( 'userlink' );
 
-			if ( !userLinks[ user ] ) {
-				userLinks[ user ] = [];
-			}
-			userLinks[ user ].push( link );
-		} );
+				if ( !userLinks[ user ] ) {
+					userLinks[ user ] = [];
+				}
+				userLinks[ user ].push( link );
+			} );
 	}
 
 	/**
