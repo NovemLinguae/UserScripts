@@ -35,7 +35,12 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 			maybeAutostart.resolve();
 		}
 
-		$.when( $.ready, maybeAutostart ).then( () => {
+		$.when(
+			$.ready,
+			// keep mw.loader.using in case folks are loading this as a user script
+			mw.loader.using( [ 'mediawiki.util', 'mediawiki.page.ready', 'mediawiki.Title' ],
+			maybeAutostart
+		).then( () => {
 			let firstTime = true;
 
 			mw.hook( 'wikipage.content' ).add( ( $container ) => {

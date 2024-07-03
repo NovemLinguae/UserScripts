@@ -1,0 +1,13 @@
+{
+	"rules": {
+		"es-x/no-array-prototype-includes": "warn",
+		"es-x/no-async-functions": "warn",
+		"es-x/no-class-fields": "warn",
+		"es-x/no-optional-catch-binding": "warn",
+		"es-x/no-regexp-lookbehind-assertions": "warn",
+		"es-x/no-regexp-s-flag": "warn",
+		"es-x/no-rest-spread-properties": "warn",
+		"es-x/no-string-prototype-matchall": "warn",
+		"es-x/no-string-prototype-replaceall": "warn"
+	}
+}
