@@ -107,7 +107,8 @@ Configuration variables:
 				}
 			).done( ( resp, status, xhr ) => {
 				markLinks( resp, xhr, userLinks );
-				if ( --apiRequests === 0 ) { // last response
+				apiRequests--;
+				if ( apiRequests === 0 ) { // last response
 					$container.removeClass( 'markblocked-loading' );
 					$( '#ca-showblocks' ).parent().remove(); // remove added portlet link
 				}
