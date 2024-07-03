@@ -14,6 +14,8 @@ Configuration variables:
 - window.mbTipBox - if set to true, loads a yellow box with a pound sign next to blocked usernames. upon hovering over it, displays a tooltip.
 - window.mbTipBoxStyle - custom CSS to override default CSS for the tip box (see above)
 - window.mbTooltip - custom pattern to use for tooltips. default is '; blocked ($1) by $2: $3 ($4 ago)'
+
+Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markblocked.js&oldid=77732587 on July 13, 2016
 */
 
 ( () => {
