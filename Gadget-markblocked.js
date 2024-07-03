@@ -179,6 +179,8 @@ Configuration variables:
 		$container.find( 'a' )
 			.not( '.mw-changeslist-date, .ext-discussiontools-init-timestamplink, .mw-history-undo > a, .mw-rollback-link > a' )
 			.each( ( i, link ) => {
+				// guard clauses and username extraction logic
+
 				const $link = $( link );
 
 				const url = $link.attr( 'href' );
@@ -212,6 +214,8 @@ Configuration variables:
 				if ( ipv6Regex.test( user ) ) {
 					user = user.toUpperCase();
 				}
+
+				// OK, let's finally do some stuff that has side effects
 
 				$link.addClass( 'userlink' );
 
