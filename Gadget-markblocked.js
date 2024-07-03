@@ -179,11 +179,13 @@ Configuration variables:
 		const ipv6Regex = /^((?=.*::)(?!.*::.+::)(::)?([\dA-F]{1,4}:(:|\b)|){5}|([\dA-F]{1,4}:){6})((([\dA-F]{1,4}((?!\3)::|:\b|$))|(?!\2\3)){2}|(((2[0-4]|1\d|[1-9])?\d|25[0-5])\.?\b){4})$/i;
 
 		$contentLinks.each( ( i, link ) => {
-			if ( $( link ).is( '.mw-changeslist-date, .ext-discussiontools-init-timestamplink, .mw-history-undo > a, .mw-rollback-link > a' ) ) {
+			const $link = $( link );
+
+			if ( $link.is( '.mw-changeslist-date, .ext-discussiontools-init-timestamplink, .mw-history-undo > a, .mw-rollback-link > a' ) ) {
 				return;
 			}
 
-			const url = $( link ).attr( 'href' );
+			const url = $link.attr( 'href' );
 			if ( !url ) {
 				return;
 			}
@@ -215,7 +217,7 @@ Configuration variables:
 				user = user.toUpperCase();
 			}
 
-			$( link ).addClass( 'userlink' );
+			$link.addClass( 'userlink' );
 
 			if ( !userLinks[ user ] ) {
 				userLinks[ user ] = [];
