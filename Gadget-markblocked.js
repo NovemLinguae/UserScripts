@@ -20,7 +20,7 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 
 ( () => {
 	function execute() {
-		if ( [ 'edit', 'submit' ].includes( mw.config.get( 'wgAction ' ) ) ) {
+		if ( [ 'edit', 'submit' ].indexOf( mw.config.get( 'wgAction ' ) ) !== -1 ) {
 			return;
 		}
 
