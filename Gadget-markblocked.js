@@ -66,7 +66,8 @@ Configuration variables:
 
 	function markBlocked( $container ) {
 		// Collect all the links in the page's content
-		const $contentLinks = $container.find( 'a' );
+		const $contentLinks = $container.find( 'a' )
+			.not( '.mw-changeslist-date, .ext-discussiontools-init-timestamplink, .mw-history-undo > a, .mw-rollback-link > a' );
 
 		// Get all aliases for user: & user_talk:
 		const userNS = [];
@@ -180,10 +181,6 @@ Configuration variables:
 
 		$contentLinks.each( ( i, link ) => {
 			const $link = $( link );
-
-			if ( $link.is( '.mw-changeslist-date, .ext-discussiontools-init-timestamplink, .mw-history-undo > a, .mw-rollback-link > a' ) ) {
-				return;
-			}
 
 			const url = $link.attr( 'href' );
 			if ( !url ) {
