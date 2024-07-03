@@ -104,59 +104,57 @@ Configuration variables:
 					bkusers: users.splice( 0, 50 ).join( '|' ),
 					bkprop: 'user|by|timestamp|expiry|reason|restrictions'
 					// no need for 'id|flags'
-				},
-				markLinks
-			);
+				}
+			).done( ( resp, status, xhr ) => {
+				markLinks( resp, xhr, userLinks );
+				if ( --apiRequests === 0 ) { // last response
+					$container.removeClass( 'markblocked-loading' );
+					$( '#ca-showblocks' ).parent().remove(); // remove added portlet link
+				}
+			} );
+		}
+	}
+
+	/**
+	 * Receive data and mark links
+	 */
+	function markLinks( resp, xhr, userLinks ) {
+		const serverTime = new Date( xhr.getResponseHeader( 'Date' ) );
+		let list, block, tooltipString, links, $link;
+		if ( !resp || !( list = resp.query ) || !( list = list.blocks ) ) {
+			return;
 		}
 
-		/**
-		 * Callback: receive data and mark links
-		 *
-		 * @todo un-nest this nested function
-		 */
-		function markLinks( resp, status, xhr ) {
-			const serverTime = new Date( xhr.getResponseHeader( 'Date' ) );
-			let list, block, tooltipString, links, $link;
-			if ( !resp || !( list = resp.query ) || !( list = list.blocks ) ) {
-				return;
+		for ( let i = 0; i < list.length; i++ ) {
+			block = list[ i ];
+			const partial = block.restrictions && !Array.isArray( block.restrictions ); // Partial block
+			let htmlClass, blockTime;
+			if ( /^in/.test( block.expiry ) ) {
+				htmlClass = partial ? 'user-blocked-partial' : 'user-blocked-indef';
+				blockTime = block.expiry;
+			} else {
+				htmlClass = partial ? 'user-blocked-partial' : 'user-blocked-temp';
+				// Apparently you can subtract date objects in JavaScript. Some kind of
+				// magic happens and they are automatically converted to milliseconds.
+				blockTime = inHours( parseTimestamp( block.expiry ) - parseTimestamp( block.timestamp ) );
 			}
-
-			for ( let i = 0; i < list.length; i++ ) {
-				block = list[ i ];
-				const partial = block.restrictions && !Array.isArray( block.restrictions ); // Partial block
-				let htmlClass, blockTime;
-				if ( /^in/.test( block.expiry ) ) {
-					htmlClass = partial ? 'user-blocked-partial' : 'user-blocked-indef';
-					blockTime = block.expiry;
+			tooltipString = window.mbTooltip || '; blocked ($1) by $2: $3 ($4 ago)';
+			if ( partial ) {
+				tooltipString = tooltipString.replace( 'blocked', 'partially blocked' );
+			}
+			tooltipString = tooltipString.replace( '$1', blockTime )
+				.replace( '$2', block.by )
+				.replace( '$3', block.reason )
+				.replace( '$4', inHours( serverTime - parseTimestamp( block.timestamp ) ) );
+			links = userLinks[ block.user ];
+			for ( let k = 0; links && k < links.length; k++ ) {
+				$link = $( links[ k ] );
+				$link = $link.addClass( htmlClass );
+				if ( window.mbTipBox ) {
+					$( '<span class=user-blocked-tipbox>#</span>' ).attr( 'title', tooltipString ).insertBefore( $link );
 				} else {
-					htmlClass = partial ? 'user-blocked-partial' : 'user-blocked-temp';
-					// Apparently you can subtract date objects in JavaScript. Some kind of
-					// magic happens and they are automatically converted to milliseconds.
-					blockTime = inHours( parseTimestamp( block.expiry ) - parseTimestamp( block.timestamp ) );
+					$link.attr( 'title', $link.attr( 'title' ) + tooltipString );
 				}
-				tooltipString = window.mbTooltip || '; blocked ($1) by $2: $3 ($4 ago)';
-				if ( partial ) {
-					tooltipString = tooltipString.replace( 'blocked', 'partially blocked' );
-				}
-				tooltipString = tooltipString.replace( '$1', blockTime )
-					.replace( '$2', block.by )
-					.replace( '$3', block.reason )
-					.replace( '$4', inHours( serverTime - parseTimestamp( block.timestamp ) ) );
-				links = userLinks[ block.user ];
-				for ( let k = 0; links && k < links.length; k++ ) {
-					$link = $( links[ k ] );
-					$link = $link.addClass( htmlClass );
-					if ( window.mbTipBox ) {
-						$( '<span class=user-blocked-tipbox>#</span>' ).attr( 'title', tooltipString ).insertBefore( $link );
-					} else {
-						$link.attr( 'title', $link.attr( 'title' ) + tooltipString );
-					}
-				}
-			}
-
-			if ( --apiRequests === 0 ) { // last response
-				$container.removeClass( 'markblocked-loading' );
-				$( '#ca-showblocks' ).parent().remove(); // remove added portlet link
 			}
 		}
 	}
