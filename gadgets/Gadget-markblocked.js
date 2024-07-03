@@ -38,7 +38,7 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 		$.when(
 			$.ready,
 			// keep mw.loader.using in case folks are loading this as a user script
-			mw.loader.using( [ 'mediawiki.util', 'mediawiki.page.ready', 'mediawiki.Title' ],
+			mw.loader.using( [ 'mediawiki.util', 'mediawiki.page.ready', 'mediawiki.Title' ] ),
 			maybeAutostart
 		).then( () => {
 			let firstTime = true;
