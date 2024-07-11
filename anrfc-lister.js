@@ -232,7 +232,10 @@ class ANRFC {
 		const pageName = this.mw.config.get( 'wgPageName' ).replaceAll( '_', ' ' );
 
 		// Grab section title
-		const sectionTitle = this.$( '#' + keyId ).prev().find( '.mw-headline' ).text();
+		const sectionTitle = this.$( '#' + keyId ).prev().find( 'h2, h3, h4, h5, h6' ).text();
+		if ( !sectionTitle ) {
+			return OO.ui.alert( 'Unable to find the section heading name. This is a bug. Please report the bug at User talk:Novem Linguae/Scripts/anrfc-lister.js.  Aborting.' );
+		}
 
 		// Grab RFC date by looking for user signature timestamps
 		const initDateMatches = this.getRFCDate( keyId );
