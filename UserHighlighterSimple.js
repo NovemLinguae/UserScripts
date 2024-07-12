@@ -93,7 +93,7 @@ class UserHighlighterSimple {
 		this.arbcom = dataJSON.arbcom;
 		this.bureaucrats = dataJSON.bureaucrat;
 		this.admins = dataJSON.sysop;
-		this.formeradmins = dataJSON.formeradmin;
+		this.formerAdmins = dataJSON.formeradmin;
 		this.newPageReviewers = dataJSON.patroller;
 		this.tenThousandEdits = dataJSON[ '10k' ];
 		this.extendedConfirmed = {
@@ -254,7 +254,7 @@ class UserHighlighterSimple {
 		this.checkForPermission( this.arbcom, 'UHS-arbitration-committee', 'Arbitration Committee member' );
 		this.checkForPermission( this.bureaucrats, 'UHS-bureaucrat', 'Bureaucrat' );
 		this.checkForPermission( this.admins, 'UHS-administrator', 'Admin' );
-		this.checkForPermission( this.formeradmins, 'UHS-former-administrator', 'Former Admin' );
+		this.checkForPermission( this.formerAdmins, 'UHS-former-administrator', 'Former Admin' );
 		this.checkForPermission( this.newPageReviewers, 'UHS-new-page-reviewer', 'New page reviewer' );
 		this.checkForPermission( this.tenThousandEdits, 'UHS-10000edits', 'More than 10,000 edits' );
 		this.checkForPermission( this.extendedConfirmed, 'UHS-500edits-bot-trustedIP', 'Extended confirmed' );
