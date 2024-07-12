@@ -66,12 +66,9 @@ class BlockedUserHistory {
 	 */
 	setUriParameters( url, paramsToChange ) {
 		const urlObj = new URL( url );
-
-		// Update query parameters based on the paramsToChange object
 		for ( const key in paramsToChange ) {
 			urlObj.searchParams.set( key, paramsToChange[ key ] );
 		}
-
 		return urlObj.toString();
 	}
 
