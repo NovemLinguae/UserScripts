@@ -38,6 +38,7 @@ class BlockedUserHistory {
 		} else {
 			// Note that the pager links at the bottom of the page will automatically include &onlyShowBlocked=1 once you visit this URL. Good job MediaWiki :)
 			// Some people are using a per page default as low as 50. Increase this to 1000 so we can see more blocked revisions on a single page.
+			// TODO: Nardog suggestion: maybe use sessionStorage or history.pushState() instead of adding &onlyShowBlocked=1 to the URL
 			const url = this.setUriParameters( this.window.location.href, {
 				onlyShowBlocked: 1,
 				limit: 1000
