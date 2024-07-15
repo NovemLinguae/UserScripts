@@ -220,7 +220,7 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	/**
-	 * CC BY-SA 4.0, coolaj86, https://stackoverflow.com/a/6969486/3480193
+	 * @copyright coolaj86, CC BY-SA 4.0, https://stackoverflow.com/a/6969486/3480193
 	 */
 	regExEscape( string ) {
 		return string.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ); // $& means the whole matched string
@@ -511,7 +511,7 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	/**
-	 * Jeroen Ooms, CC BY-SA 3.0, https://stackoverflow.com/a/18123985/3480193
+	 * @copyright Jeroen Ooms, CC BY-SA 3.0, https://stackoverflow.com/a/18123985/3480193
 	 */
 	removeDiacritics( str ) {
 		const defaultDiacriticsRemovalMap = [
@@ -638,7 +638,7 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	/**
-	 * CC BY-SA 4.0, jAndy, https://stackoverflow.com/a/4364902/3480193
+	 * @copyright jAndy, CC BY-SA 4.0, https://stackoverflow.com/a/4364902/3480193
 	 */
 	insertStringIntoStringAtPosition( bigString, insertString, position ) {
 		return [

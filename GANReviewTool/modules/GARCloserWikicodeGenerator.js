@@ -368,7 +368,7 @@ __TOC__`;
 	}
 
 	/**
-	 * CC BY-SA 4.0, coolaj86, https://stackoverflow.com/a/6969486/3480193
+	 * @copyright coolaj86, CC BY-SA 4.0, https://stackoverflow.com/a/6969486/3480193
 	 */
 	regExEscape( string ) {
 		return string.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ); // $& means the whole matched string

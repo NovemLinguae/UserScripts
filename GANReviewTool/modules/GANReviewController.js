@@ -382,7 +382,7 @@ export class GANReviewController {
 	}
 
 	/**
-	 * Mathias Bynens, CC BY-SA 4.0, https://stackoverflow.com/a/31102605/3480193
+	 * @copyright Mathias Bynens, CC BY-SA 4.0, https://stackoverflow.com/a/31102605/3480193
 	 */
 	alphabetizeObjectByKeys( unordered ) {
 		return Object.keys( unordered ).sort().reduce(

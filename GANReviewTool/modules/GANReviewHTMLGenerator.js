@@ -138,7 +138,7 @@ ${ gaTopicComboBoxOptionsHTML }
 	}
 
 	/**
-	 * CC BY-SA 4.0, bjornd, https://stackoverflow.com/a/6234804/3480193
+	 * @copyright bjornd, CC BY-SA 4.0, https://stackoverflow.com/a/6234804/3480193
 	 */
 	escapeHtml( unsafe ) {
 		return unsafe

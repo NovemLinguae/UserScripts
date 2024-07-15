@@ -284,8 +284,7 @@ export class GARCloserController {
 	}
 
 	/**
-	 * CC BY-SA 4.0, Lorenz Lo Sauer, https://stackoverflow.com/a/10671743/3480193
-	 *
+	 * @copyright Lorenz Lo Sauer, CC BY-SA 4.0, https://stackoverflow.com/a/10671743/3480193
 	 * @param {RegExp} needleRegEx Make sure to set the /g parameter.
 	 */
 	countOccurrencesInString( needleRegEx, haystack ) {

@@ -98,8 +98,7 @@ class CiteHighlighter {
 	}
 
 	/**
-	 * Steve Harrison, CC BY-SA 4.0, https://stackoverflow.com/a/1026087/3480193
-	 *
+	 * @copyright Steve Harrison, CC BY-SA 4.0, https://stackoverflow.com/a/1026087/3480193
 	 * @param {string} string
 	 * @return {string}
 	 */

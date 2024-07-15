@@ -199,7 +199,9 @@ class UserHighlighterSimple {
 		return true;
 	}
 
-	// Brandon Frohbieter, CC BY-SA 4.0, https://stackoverflow.com/a/4009771/3480193
+	/**
+	 * @copyright Brandon Frohbieter, CC BY-SA 4.0, https://stackoverflow.com/a/4009771/3480193
+	 */
 	countInstances( string, word ) {
 		return string.split( word ).length - 1;
 	}

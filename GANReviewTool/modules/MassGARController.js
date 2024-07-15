@@ -142,7 +142,7 @@ export class MassGARController {
 
 	/**
 	 * @param {Array} listOfNumbers
-	 * CC BY-SA 4.0, aks, https://stackoverflow.com/a/1063027/3480193
+	 * @copyright aks, CC BY-SA 4.0, https://stackoverflow.com/a/1063027/3480193
 	 */
 	sortNumerically( listOfNumbers ) {
 		return listOfNumbers.sort( ( a, b ) => a - b );
