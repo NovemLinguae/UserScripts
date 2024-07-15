@@ -241,8 +241,19 @@ class CiteHighlighter {
 		// [title="source" i]... the "i" part is not working in :has() for some reason
 		// use .toLowerCase() for now
 		// using .addClass() instead of .css() or .attr('style') because I'm having issues getting medrs to override arXiv/Wikidata/other red sources
-		this.$( 'li[id^="cite_note-"]' ).has( 'a[href*="/' + source.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
-		this.$( 'li[id^="cite_note-"]' ).has( 'a[href*=".' + source.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
+		this.$( 'li[id^="cite_note-"]' )
+			.has( 'a[href*="/' + source.toLowerCase() + '"]' )
+			.addClass( [
+				'cite-highlighter-' + color,
+				// in dark mode, make foreground text black instead of white
+				'notheme'
+			] );
+		this.$( 'li[id^="cite_note-"]' )
+			.has( 'a[href*=".' + source.toLowerCase() + '"]' )
+			.addClass( [
+				'cite-highlighter-' + color,
+				'notheme'
+			] );
 	}
 
 	highlightUnorderedListItem( source, color ) {
