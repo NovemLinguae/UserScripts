@@ -242,24 +242,25 @@ class CiteHighlighter {
 		// use .toLowerCase() for now
 		// using .addClass() instead of .css() or .attr('style') because I'm having issues getting medrs to override arXiv/Wikidata/other red sources
 		this.$( 'li[id^="cite_note-"]' )
-			.has( 'a[href*="/' + source.toLowerCase() + '"]' )
+			// select /domain.com and .domain.com
+			.has( 'a[href*="/' + source.toLowerCase() + '"], a[href*=".' + source.toLowerCase() + '"]' )
 			.addClass( [
 				'cite-highlighter-' + color,
 				// in dark mode, make foreground text black instead of white
-				'notheme'
-			] );
-		this.$( 'li[id^="cite_note-"]' )
-			.has( 'a[href*=".' + source.toLowerCase() + '"]' )
-			.addClass( [
-				'cite-highlighter-' + color,
 				'notheme'
 			] );
 	}
 
 	highlightUnorderedListItem( source, color ) {
 		// Also support any {{Cite}} template inside an unordered list. For example, a works cited section supporting a references section consisting of "Smith 1986, pp. 573-574" type citations. Example: https://en.wikipedia.org/wiki/C._J._Cregg#Articles_and_tweets
-		this.$( 'li' ).has( '.citation a[href*="/' + source.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
-		this.$( 'li' ).has( '.citation a[href*=".' + source.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
+		this.$( 'li' )
+			// select /domain.com and .domain.com
+			.has( '.citation a[href*="/' + source.toLowerCase() + '"], .citation a[href*=".' + source.toLowerCase() + '"]' )
+			.addClass( [
+				'cite-highlighter-' + color,
+				// in dark mode, make foreground text black instead of white
+				'notheme'
+			] );
 	}
 
 	highlightExternalLinks( source, color ) {
@@ -286,8 +287,22 @@ class CiteHighlighter {
 					for ( const source of this.sources[ color ] ) {
 						if ( this.wikicode.includes( source ) || source === 'nih.gov' || source === 'twitter.com' ) {
 							if ( source.includes( '.' ) && !source.includes( ' ' ) ) {
-								this.$( el ).has( `a[href*="${ source.toLowerCase() }"]` ).addClass( 'cite-highlighter-' + color );
-								this.$( el ).has( `a[href*="${ source.toLowerCase() }"]` ).children().first().addClass( 'cite-highlighter-' + color );
+								this.$( el )
+									.has( `a[href*="${ source.toLowerCase() }"]` )
+									.addClass( [
+										'cite-highlighter-' + color,
+										// in dark mode, make foreground text black instead of white
+										'notheme'
+									] );
+								this.$( el )
+									.has( `a[href*="${ source.toLowerCase() }"]` )
+									.children()
+									.first()
+									.addClass( [
+										'cite-highlighter-' + color,
+										// in dark mode, make foreground text black instead of white
+										'notheme'
+									] );
 							}
 						}
 					}
@@ -307,12 +322,13 @@ class CiteHighlighter {
 		for ( const word of this.unreliableWordsForOrangeHighlighting ) {
 			const color = 'unreliableWord';
 			if ( this.wikicode.includes( word ) ) {
-				this.$( 'li[id^="cite_note-"]' ).has( 'a[href*="' + word.toLowerCase() + '"]' ).addClass( 'cite-highlighter-' + color );
-				/* Too many false positives. Turning off for now. See https://github.com/NovemLinguae/UserScripts/issues/146 and https://github.com/NovemLinguae/UserScripts/issues/148
-				if ( this.config.highlightEverything ) {
-					this.mw.util.addCSS('#bodyContent a[href*="'+word+'" i] {background-color: '+this.colors[color]+' !important;}');
-				}
-				*/
+				this.$( 'li[id^="cite_note-"]' )
+					.has( 'a[href*="' + word.toLowerCase() + '"]' )
+					.addClass( [
+						'cite-highlighter-' + color,
+						// in dark mode, make foreground text black instead of white
+						'notheme'
+					] );
 			}
 		}
 	}
