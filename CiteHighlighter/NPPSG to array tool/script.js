@@ -181,6 +181,10 @@ class SourceListWikitextToJson {
 		// Kirkus is green at RSP, Kirkus Indie is red at NPPSG. Average it out to yellow.
 		this.deleteAll( 'kirkusreviews.com' );
 		this.sources.yellow.push( 'kirkusreviews.com' );
+
+		// https://www.namibian.com.na/ is yellow somewhere, green according to User:Pgallent. Make it green.
+		this.deleteAll( 'namibian.com.na' );
+		this.sources.green.push( 'namibian.com.na' );
 	}
 
 	/**
