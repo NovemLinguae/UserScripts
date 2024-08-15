@@ -223,11 +223,10 @@ $( async () => {
 
 		taxa = taxaStringToArray( taxa );
 
-		// Unusual edge case where the category and stub template exist, but aren't for a genus, they're for something not related to biology at all.
-		const genusToSkip = [ 'Appalachia' ];
-		if ( genusToSkip.includes( genusForAlert ) ) {
-			// remove the left-most element of the array (the genus). then SpeciesHelper should work normally
-			taxa.shift();
+		// Unusual edge case where the category and stub template exist, but their pages aren't for a taxa, they're for something not related to biology at all. The fix: just delete them from the taxa array.
+		const taxaToSkip = [ 'Appalachia' ];
+		for ( taxon of taxaToSkip ) {
+			taxa = taxa.filter( ( item ) => item !== taxon );
 		}
 
 		const mopf = new MOSOrderPositionFinder( wikicode );
