@@ -223,6 +223,13 @@ $( async () => {
 
 		taxa = taxaStringToArray( taxa );
 
+		// Unusual edge case where the category and stub template exist, but aren't for a genus, they're for something not related to biology at all.
+		const genusToSkip = [ 'Appalachia' ];
+		if ( genusToSkip.includes( genusForAlert ) ) {
+			// remove the left-most element of the array (the genus). then SpeciesHelper should work normally
+			taxa.shift();
+		}
+
 		const mopf = new MOSOrderPositionFinder( wikicode );
 
 		// SPECIESBOX ================================================================
