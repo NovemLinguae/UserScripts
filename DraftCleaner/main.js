@@ -44,104 +44,106 @@ Add one of the following to your User:yourName/common.js (at the top) to change 
 This page was assembled from 3 files using my publish.php script. I have an offline test suite with around 100 unit tests for the DraftCleaner and StringFilter classes.
 */
 
-async function getWikicode(title) {
-	let pageIsDeleted = ! mw.config.get('wgCurRevisionId');
-	if ( pageIsDeleted ) {
-		return '';
+( function () {
+	async function getWikicode( title ) {
+		const pageIsDeleted = !mw.config.get( 'wgCurRevisionId' );
+		if ( pageIsDeleted ) {
+			return '';
+		}
+
+		let wikicode = '';
+		title = encodeURIComponent( title );
+		await $.ajax( {
+			url: 'https://en.wikipedia.org/w/api.php?action=parse&page=' + title + '&prop=wikitext&formatversion=2&format=json',
+			success: function ( result ) {
+				wikicode = result.parse.wikitext;
+			},
+			dataType: 'json'
+		} );
+		return wikicode;
 	}
 
-	var wikicode = '';
-	title = encodeURIComponent(title);
-	await $.ajax({
-		url: 'https://en.wikipedia.org/w/api.php?action=parse&page='+title+'&prop=wikitext&formatversion=2&format=json',
-		success: function (result) {
-			wikicode = result['parse']['wikitext'];
-		},
-		dataType: "json",
-	});
-	return wikicode;
-}
+	function goToShowChangesScreen( titleWithNamespaceAndUnderscores, wikicode, editSummary ) {
+		const titleEncoded = encodeURIComponent( titleWithNamespaceAndUnderscores );
+		const wgServer = mw.config.get( 'wgServer' );
+		const wgScriptPath = mw.config.get( 'wgScriptPath' );
+		const baseURL = wgServer + wgScriptPath + '/';
+		// https://stackoverflow.com/a/12464290/3480193
+		$( `<form action="${ baseURL }index.php?title=${ titleEncoded }&action=submit" method="POST"/>` )
+			.append( $( '<input type="hidden" name="wpTextbox1">' ).val( wikicode ) )
+			.append( $( '<input type="hidden" name="wpSummary">' ).val( editSummary ) )
+			.append( $( '<input type="hidden" name="mode">' ).val( 'preview' ) )
+			.append( $( '<input type="hidden" name="wpDiff">' ).val( 'Show changes' ) )
+			.append( $( '<input type="hidden" name="wpUltimateParam">' ).val( '1' ) )
+			.appendTo( $( document.body ) ) // it has to be added somewhere into the <body>
+			.trigger( 'submit' );
+	}
 
-function goToShowChangesScreen(titleWithNamespaceAndUnderscores, wikicode, editSummary) {
-	let titleEncoded = encodeURIComponent(titleWithNamespaceAndUnderscores);
-	let wgServer = mw.config.get('wgServer');
-	let wgScriptPath = mw.config.get('wgScriptPath');
-	let baseURL = wgServer + wgScriptPath + '/';
-	// https://stackoverflow.com/a/12464290/3480193
-	$(`<form action="${baseURL}index.php?title=${titleEncoded}&action=submit" method="POST"/>`)
-		.append($('<input type="hidden" name="wpTextbox1">').val(wikicode))
-		.append($('<input type="hidden" name="wpSummary">').val(editSummary))
-		.append($('<input type="hidden" name="mode">').val('preview'))
-		.append($('<input type="hidden" name="wpDiff">').val('Show changes'))
-		.append($('<input type="hidden" name="wpUltimateParam">').val('1'))
-		.appendTo($(document.body)) //it has to be added somewhere into the <body>
-		.trigger('submit');
-}
+	/** returns the pagename, including the namespace name, but with spaces replaced by underscores */
+	function getArticleName() {
+		return mw.config.get( 'wgPageName' );
+	}
 
-/** returns the pagename, including the namespace name, but with spaces replaced by underscores */
-function getArticleName() {
-	return mw.config.get('wgPageName');
-}
+	// don't run when not viewing articles
+	const action = mw.config.get( 'wgAction' );
+	const isNotViewing = action != 'view';
+	if ( isNotViewing ) {
+		return;
+	}
 
-// don't run when not viewing articles
-let action = mw.config.get('wgAction');
-let isNotViewing = action != 'view';
-if ( isNotViewing ) {
-	return;
-}
+	// don't run when viewing diffs
+	const isDiff = mw.config.get( 'wgDiffNewId' );
+	if ( isDiff ) {
+		return;
+	}
 
-// don't run when viewing diffs
-let isDiff = mw.config.get('wgDiffNewId');
-if ( isDiff ) {
-	return;
-}
+	// Don't run in virtual namespaces
+	const isVirtualNamespace = mw.config.get( 'wgNamespaceNumber' ) < 0;
+	if ( isVirtualNamespace ) {
+		return;
+	}
 
-// Don't run in virtual namespaces
-let isVirtualNamespace = mw.config.get('wgNamespaceNumber') < 0;
-if ( isVirtualNamespace ) {
-	return;
-}
+	let menuID = 'p-navigation';
+	// @ts-ignore
+	if ( window.draftCleanerPutInToolsMenu ) {
+		menuID = 'p-tb';
+	// @ts-ignore
+	} else if ( window.draftCleanerPutInMoreMenu ) {
+		menuID = 'p-cactions';
+	}
 
-let menuID = 'p-navigation';
-// @ts-ignore
-if ( window.draftCleanerPutInToolsMenu ) {
-	menuID = 'p-tb';
-// @ts-ignore
-} else if ( window.draftCleanerPutInMoreMenu ) {
-	menuID = 'p-cactions';
-}
+	const titleWithNamespaceAndUnderscores = getArticleName();
+	const namespaceNumber = mw.config.get( 'wgNamespaceNumber' );
 
-let titleWithNamespaceAndUnderscores = getArticleName();
-let namespaceNumber = mw.config.get('wgNamespaceNumber');
+	let running = false;
 
-let running = false;
+	// Add DraftCleaner to the toolbar
+	mw.loader.using( [ 'mediawiki.util' ], () => {
+		mw.util.addPortletLink( menuID, '#', 'Run DraftCleaner', 'DraftCleanerLink' );
+		$( '#DraftCleanerLink' ).on( 'click', async () => {
+			// prevent running the script while script is already in progress
+			if ( running ) {
+				return;
+			}
+			running = true;
 
-// Add DraftCleaner to the toolbar
-mw.loader.using(['mediawiki.util'], function () {
-	mw.util.addPortletLink(menuID, '#', 'Run DraftCleaner', 'DraftCleanerLink');
-	$('#DraftCleanerLink').on('click', async function() {
-		// prevent running the script while script is already in progress
-		if ( running ) {
-			return;
-		}
-		running = true;
+			mw.notify( 'Parsing page content...' );
 
-		mw.notify('Parsing page content...');
-	
-		// get page wikicode
-		let titleWithNamespaceAndSpaces = titleWithNamespaceAndUnderscores.replace(/_/g, ' ');
-		let originalWikicode = await getWikicode(titleWithNamespaceAndUnderscores);
-		let wikicode = originalWikicode;
+			// get page wikicode
+			const titleWithNamespaceAndSpaces = titleWithNamespaceAndUnderscores.replace( /_/g, ' ' );
+			const originalWikicode = await getWikicode( titleWithNamespaceAndUnderscores );
+			let wikicode = originalWikicode;
 
-		let dc = new DraftCleaner();
-		wikicode = dc.cleanDraft(wikicode, namespaceNumber, titleWithNamespaceAndSpaces);
+			const dc = new DraftCleaner();
+			wikicode = dc.cleanDraft( wikicode, namespaceNumber, titleWithNamespaceAndSpaces );
 
-		let needsChanges = wikicode != originalWikicode;
-		if ( needsChanges ) {
-			let summary = 'clean up ([[User:Novem Linguae/Scripts/DraftCleaner.js|DraftCleaner]])';
-			await goToShowChangesScreen(titleWithNamespaceAndUnderscores, wikicode, summary);
-		} else {
-			mw.notify('No changes needed!');
-		}
-	});
-});
+			const needsChanges = wikicode != originalWikicode;
+			if ( needsChanges ) {
+				const summary = 'clean up ([[User:Novem Linguae/Scripts/DraftCleaner.js|DraftCleaner]])';
+				await goToShowChangesScreen( titleWithNamespaceAndUnderscores, wikicode, summary );
+			} else {
+				mw.notify( 'No changes needed!' );
+			}
+		} );
+	} );
+}() );
