@@ -117,7 +117,7 @@ class DetectSNG {
 
 		if ( !this.empty( searchResults ) ) {
 			let html = searchResults.join( ', ' );
-			html = '<div id="DetectSNG" style="background-color: #90EE90"><span style="font-weight: bold;">SNG keywords:</span> ' + html + '</div>';
+			html = '<div id="DetectSNG" style="background-color: #90EE90; margin-bottom: 5px;"><span style="font-weight: bold;">SNG keywords:</span> ' + html + '</div>';
 
 			$( '#contentSub' ).before( html );
 		}

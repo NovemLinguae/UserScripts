@@ -178,7 +178,7 @@ zero to hero
 
 	displayHtml( searchResultsString ) {
 		if ( searchResultsString ) {
-			const html = '<div id="DetectPromo" style="background-color: orange"><span style="font-weight: bold;">Promotional words:</span> ' + searchResultsString + '</div>';
+			const html = '<div id="DetectPromo" style="background-color: orange; margin-bottom: 5px;"><span style="font-weight: bold;">Promotional words:</span> ' + searchResultsString + '</div>';
 			this.$( '#contentSub' ).before( html );
 		}
 	}

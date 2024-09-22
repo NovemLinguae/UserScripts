@@ -59,7 +59,7 @@ class DetectG4G5 {
 	}
 
 	displayWarning( html ) {
-		$( '#contentSub' ).before( `<div class="DetectG4G5" style="background-color: red">${ html }</div>` );
+		$( '#contentSub' ).before( `<div class="DetectG4G5" style="background-color: red margin-bottom: 5px;">${ html }</div>` );
 	}
 
 	/**
