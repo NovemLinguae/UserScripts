@@ -27,7 +27,9 @@ class ErasedSectionsDetector {
 		this.expandBlankEditSummaries();
 		const negativeDiffCount = this.revisions.length;
 		const deletionPercent = negativeDiffCount / totalRevisionCount;
-		if ( deletionPercent > 0.03 ) {
+		// if 500 edits, this means the script will show an alert when 16 or more edits were deleted without archiving
+		const MINIMUM_DELETION_PERCENT = 0.03;
+		if ( deletionPercent > MINIMUM_DELETION_PERCENT ) {
 			this.addHtml( negativeDiffCount, totalRevisionCount );
 			this.listenForShowDiffsClick();
 		}
@@ -82,7 +84,8 @@ class ErasedSectionsDetector {
 	}
 
 	filterForContentRemoval() {
-		this.revisions = this.revisions.filter( ( revision ) => revision.diff < 0 );
+		const MINIMUM_DIFF_SIZE = -10;
+		this.revisions = this.revisions.filter( ( revision ) => revision.diff < MINIMUM_DIFF_SIZE );
 	}
 
 	filterForRevisionsByThisEditorOnly() {
@@ -95,7 +98,9 @@ class ErasedSectionsDetector {
 			'arc', // arc, arch, archive, archiving, OneClickArchiver
 			'bot mes', // mesg, message
 			'mass mes',
-			'newsletter'
+			'newsletter',
+			'wikibreak',
+			'out of town'
 		];
 		for ( let keyword of keywordsToIgnore ) {
 			this.revisions = this.revisions.filter( ( revision ) => {
