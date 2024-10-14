@@ -120,7 +120,8 @@ class CiteHighlighter {
 			this.articleTitle === 'Main_Page' ||
 			this.articleTitle === 'Wikipedia:Featured_articles' ||
 			this.articleTitle === 'Special:Watchlist' ||
-			this.articleTitle === 'Wikipedia:New_page_patrol_source_guide'
+			this.articleTitle === 'Wikipedia:New_page_patrol_source_guide' ||
+			this.articleTitle === 'Wikipedia:Redirects_for_discussion'
 		) {
 			return true;
 		}
