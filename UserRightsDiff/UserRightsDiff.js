@@ -25,7 +25,7 @@ class UserRightsDiff {
 		this.onDomNodeInserted( 'mw-logevent-loglines', this.checkLog, this );
 
 		// Special:UserRights, Special:Log, Special:Watchlist
-		this.checkLog();
+		this.checkLog( this );
 	}
 
 	onDomNodeInserted( htmlClassString, fn, that ) {
@@ -46,9 +46,6 @@ class UserRightsDiff {
 	}
 
 	checkLog( that ) {
-		// turn listener off (prevent infinite loop)
-		that.$( 'body' ).off( 'DOMNodeInserted' );
-
 		// don't run twice on the same page
 		if ( that.$( '.user-rights-diff' ).length === 0 ) {
 			// Special:UserRights, Special:Log, BradV SuperLinks
@@ -60,11 +57,6 @@ class UserRightsDiff {
 				that.checkLine( this );
 			} );
 		}
-
-		// turn listener back on
-		that.$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', () => {
-			that.checkLog();
-		} );
 	}
 
 	checkLine( el ) {
