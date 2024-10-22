@@ -21,37 +21,48 @@ class UserRightsDiff {
 	}
 
 	execute() {
-		const that = this;
-
 		// User:BradV/Scripts/SuperLinks.js
-		this.$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', () => {
-			that.checkLog();
-		} );
+		this.onDomNodeInserted( 'mw-logevent-loglines', this.checkLog, this );
 
 		// Special:UserRights, Special:Log, Special:Watchlist
 		this.checkLog();
 	}
 
-	checkLog() {
-		const that = this;
+	onDomNodeInserted( htmlClassString, fn, that ) {
+		const observer = new MutationObserver( ( mutations ) => {
+			mutations.forEach( ( mutation ) => {
+				const htmlWasAdded = mutation.addedNodes.length;
+				if ( htmlWasAdded ) {
+					mutation.addedNodes.forEach( ( node ) => {
+						if ( node.classList && node.classList.contains( htmlClassString ) ) {
+							fn( that );
+						}
+					} );
+				}
+			} );
+		} );
+		const config = { childList: true, subtree: true };
+		observer.observe( document.body, config );
+	}
 
+	checkLog( that ) {
 		// turn listener off (prevent infinite loop)
-		this.$( 'body' ).off( 'DOMNodeInserted' );
+		that.$( 'body' ).off( 'DOMNodeInserted' );
 
 		// don't run twice on the same page
-		if ( this.$( '.user-rights-diff' ).length === 0 ) {
+		if ( that.$( '.user-rights-diff' ).length === 0 ) {
 			// Special:UserRights, Special:Log, BradV SuperLinks
-			this.$( '.mw-logevent-loglines .mw-logline-rights' ).each( function () {
+			that.$( '.mw-logevent-loglines .mw-logline-rights' ).each( function () {
 				that.checkLine( this );
 			} );
 			// Special:Watchlist
-			this.$( '.mw-changeslist-log-rights .mw-changeslist-log-entry' ).each( function () {
+			that.$( '.mw-changeslist-log-rights .mw-changeslist-log-entry' ).each( function () {
 				that.checkLine( this );
 			} );
 		}
 
 		// turn listener back on
-		this.$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', () => {
+		that.$( 'body' ).on( 'DOMNodeInserted', '.mw-logevent-loglines', () => {
 			that.checkLog();
 		} );
 	}
