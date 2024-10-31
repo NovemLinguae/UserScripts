@@ -5,14 +5,102 @@ TODO:
 - get rid of goto jump (matchLoop label)
 
 */
-/* global importStylesheet */
 
+/* global importStylesheet */
 // <nowiki>
 ( function () {
 	const UNBLOCK_REQ_COLOR = 'rgb(235, 244, 255)';
 	const SIGNATURE = '~~~~';
 	const DECLINE_REASON_HERE = '{{subst:Decline reason here}}';
 	const ADVERT = ' ([[User:Novem Linguae/Scripts/UnblockReview.js|unblock-review]])';
+
+	function execute() {
+		const userTalkNamespace = 3;
+		if ( mw.config.get( 'wgNamespaceNumber' ) !== userTalkNamespace ) {
+			return;
+		}
+
+		$.when( $.ready, mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ) ).then( () => {
+			mw.util.addCSS(
+				'.unblock-review td { padding: 0 }' +
+				'td.reason-container { padding-right: 1em; width: 30em }' +
+				'.unblock-review-reason { height: 5em }' );
+			importStylesheet( 'User:Enterprisey/mw-ui-button.css' );
+			importStylesheet( 'User:Enterprisey/mw-ui-input.css' );
+			const userBlockBoxes = document.querySelectorAll( 'div.user-block' );
+			for ( let i = 0, n = userBlockBoxes.length; i < n; i++ ) {
+				if ( userBlockBoxes[ i ].style[ 'background-color' ] !== UNBLOCK_REQ_COLOR ) {
+					continue;
+				}
+
+				// We now have a pending unblock request - add UI
+				setUpUi( userBlockBoxes[ i ] );
+			}
+		} );
+	}
+
+	/**
+	 * Given the div of an unblock request, set up the UI and event listeners.
+	 */
+	function setUpUi( unblockDiv ) {
+		const container = document.createElement( 'table' );
+		container.className = 'unblock-review';
+		const hrEl = unblockDiv.querySelector( 'hr' );
+		container.innerHTML = "<tr><td class='reason-container' rowspan='2'>" +
+			"<textarea class='unblock-review-reason mw-ui-input'" +
+			" placeholder='Reason for accepting/declining here'>" + DECLINE_REASON_HERE + '</textarea></td>' +
+			"<td><button class='unblock-review-accept mw-ui-button mw-ui-progressive'>Accept</button></td></tr>" +
+			"<tr><td><button class='unblock-review-decline mw-ui-button mw-ui-destructive'>Decline</button></td></tr>";
+		unblockDiv.insertBefore( container, hrEl.previousElementSibling );
+		const reasonArea = container.querySelector( 'textarea' );
+		$( container ).find( 'button' ).on( 'click', function () {
+			const action = $( this ).text().toLowerCase();
+			const appealReason = hrEl.nextElementSibling.nextElementSibling.childNodes[ 0 ].textContent;
+			$.getJSON(
+				mw.util.wikiScript( 'api' ),
+				{
+					format: 'json',
+					action: 'query',
+					prop: 'revisions',
+					rvprop: 'content',
+					rvlimit: 1,
+					titles: mw.config.get( 'wgPageName' )
+				}
+			).done( ( data ) => {
+				// Extract wikitext from API response
+				const pageId = Object.keys( data.query.pages )[ 0 ];
+				let wikitext = data.query.pages[ pageId ].revisions[ 0 ][ '*' ];
+
+				const initialText = getInitialText( wikitext, appealReason );
+
+				// Build accept/decline reason
+				let reason = reasonArea.value;
+				if ( !reason.trim() ) {
+					reason = DECLINE_REASON_HERE + ' ' + SIGNATURE;
+				} else if ( !hasSig( reason ) ) {
+					reason = reason + ' ' + SIGNATURE;
+				}
+				wikitext = wikitext.replace( initialText + appealReason, '{' +
+					'{unblock reviewed|' + action + '=' + reason + '|1=' + appealReason );
+
+				const summary = ( action === 'accept' ? 'Accepting' : 'Declining' ) +
+					' unblock request' + ADVERT;
+
+				( new mw.Api() ).postWithToken( 'csrf', {
+					action: 'edit',
+					title: mw.config.get( 'wgPageName' ),
+					summary: summary,
+					text: wikitext
+				} ).done( ( data ) => {
+					if ( data && data.edit && data.edit.result && data.edit.result === 'Success' ) {
+						window.location.reload( true );
+					} else {
+						console.log( data );
+					}
+				} );
+			} );
+		} );
+	}
 
 	/**
 	 * Making this a function for unit test reasons.
@@ -124,90 +212,6 @@ TODO:
 		return false;
 	}
 
-	/**
-	 * Given the div of an unblock request, set up the UI and event listeners.
-	 */
-	function setUpUi( unblockDiv ) {
-		const container = document.createElement( 'table' );
-		container.className = 'unblock-review';
-		const hrEl = unblockDiv.querySelector( 'hr' );
-		container.innerHTML = "<tr><td class='reason-container' rowspan='2'>" +
-			"<textarea class='unblock-review-reason mw-ui-input'" +
-			" placeholder='Reason for accepting/declining here'>" + DECLINE_REASON_HERE + '</textarea></td>' +
-			"<td><button class='unblock-review-accept mw-ui-button mw-ui-progressive'>Accept</button></td></tr>" +
-			"<tr><td><button class='unblock-review-decline mw-ui-button mw-ui-destructive'>Decline</button></td></tr>";
-		unblockDiv.insertBefore( container, hrEl.previousElementSibling );
-		const reasonArea = container.querySelector( 'textarea' );
-		$( container ).find( 'button' ).on( 'click', function () {
-			const action = $( this ).text().toLowerCase();
-			const appealReason = hrEl.nextElementSibling.nextElementSibling.childNodes[ 0 ].textContent;
-			$.getJSON(
-				mw.util.wikiScript( 'api' ),
-				{
-					format: 'json',
-					action: 'query',
-					prop: 'revisions',
-					rvprop: 'content',
-					rvlimit: 1,
-					titles: mw.config.get( 'wgPageName' )
-				}
-			).done( ( data ) => {
-				// Extract wikitext from API response
-				const pageId = Object.keys( data.query.pages )[ 0 ];
-				let wikitext = data.query.pages[ pageId ].revisions[ 0 ][ '*' ];
-
-				const initialText = getInitialText( wikitext, appealReason );
-
-				// Build accept/decline reason
-				let reason = reasonArea.value;
-				if ( !reason.trim() ) {
-					reason = DECLINE_REASON_HERE + ' ' + SIGNATURE;
-				} else if ( !hasSig( reason ) ) {
-					reason = reason + ' ' + SIGNATURE;
-				}
-				wikitext = wikitext.replace( initialText + appealReason, '{' +
-					'{unblock reviewed|' + action + '=' + reason + '|1=' + appealReason );
-
-				const summary = ( action === 'accept' ? 'Accepting' : 'Declining' ) +
-					' unblock request' + ADVERT;
-
-				( new mw.Api() ).postWithToken( 'csrf', {
-					action: 'edit',
-					title: mw.config.get( 'wgPageName' ),
-					summary: summary,
-					text: wikitext
-				} ).done( ( data ) => {
-					if ( data && data.edit && data.edit.result && data.edit.result === 'Success' ) {
-						window.location.reload( true );
-					} else {
-						console.log( data );
-					}
-				} );
-			} );
-		} );
-	}
-
-	const userTalkNamespace = 3;
-	if ( mw.config.get( 'wgNamespaceNumber' ) !== userTalkNamespace ) {
-		return;
-	}
-
-	$.when( $.ready, mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ) ).then( () => {
-		mw.util.addCSS(
-			'.unblock-review td { padding: 0 }' +
-			'td.reason-container { padding-right: 1em; width: 30em }' +
-			'.unblock-review-reason { height: 5em }' );
-		importStylesheet( 'User:Enterprisey/mw-ui-button.css' );
-		importStylesheet( 'User:Enterprisey/mw-ui-input.css' );
-		const userBlockBoxes = document.querySelectorAll( 'div.user-block' );
-		for ( let i = 0, n = userBlockBoxes.length; i < n; i++ ) {
-			if ( userBlockBoxes[ i ].style[ 'background-color' ] !== UNBLOCK_REQ_COLOR ) {
-				continue;
-			}
-
-			// We now have a pending unblock request - add UI
-			setUpUi( userBlockBoxes[ i ] );
-		}
-	} );
+	execute();
 }() );
 // </nowiki>
