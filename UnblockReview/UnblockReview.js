@@ -3,7 +3,7 @@ Fork of https://en.wikipedia.org/w/index.php?title=User:Enterprisey/unblock-revi
 
 TODO:
 - get rid of goto jump (matchLoop label)
-
+- make tickets for the 3 issues that jpgordon mentioned here: https://en.wikipedia.org/wiki/Wikipedia:User_scripts/Requests#User%3AEnterprisey%2Funblock-review
 */
 
 /* global importStylesheet */
@@ -43,15 +43,34 @@ TODO:
 	 * Given the div of an unblock request, set up the UI and event listeners.
 	 */
 	function setUpUi( unblockDiv ) {
+		const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
+		listenForAcceptAndDecline( container, hrEl );
+	}
+
+	function addTextBoxAndButtons( unblockDiv ) {
 		const container = document.createElement( 'table' );
 		container.className = 'unblock-review';
+		// Note: The innerHtml of the button is sensitive. Is used to figure out which accept/decline wikitext to use. Don't add whitespace to it.
+		container.innerHTML = `
+			<tr>
+				<td class='reason-container' rowspan='2'>
+					<textarea class='unblock-review-reason mw-ui-input' placeholder='Reason for accepting/declining here'>${ DECLINE_REASON_HERE }</textarea>
+				</td>
+				<td>
+					<button class='unblock-review-accept mw-ui-button mw-ui-progressive'>Accept</button>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<button class='unblock-review-decline mw-ui-button mw-ui-destructive'>Decline</button>
+				</td>
+			</tr>`;
 		const hrEl = unblockDiv.querySelector( 'hr' );
-		container.innerHTML = "<tr><td class='reason-container' rowspan='2'>" +
-			"<textarea class='unblock-review-reason mw-ui-input'" +
-			" placeholder='Reason for accepting/declining here'>" + DECLINE_REASON_HERE + '</textarea></td>' +
-			"<td><button class='unblock-review-accept mw-ui-button mw-ui-progressive'>Accept</button></td></tr>" +
-			"<tr><td><button class='unblock-review-decline mw-ui-button mw-ui-destructive'>Decline</button></td></tr>";
 		unblockDiv.insertBefore( container, hrEl.previousElementSibling );
+		return [ container, hrEl ];
+	}
+
+	function listenForAcceptAndDecline( container, hrEl ) {
 		const reasonArea = container.querySelector( 'textarea' );
 		$( container ).find( 'button' ).on( 'click', function () {
 			const action = $( this ).text().toLowerCase();
@@ -197,7 +216,6 @@ TODO:
 							// Invalid sig
 							continue matchLoop;
 						} else {
-
 							// We'll never encounter this span again, since
 							// headers only get later and later in the wikitext
 							nowikiSpanStartIdx = nwIdx;
