@@ -30,6 +30,12 @@ jobs:
       run: npm test
       name: SpeciesHelper unit tests
     
+    - working-directory: ./unblock-review
+      run: npm install
+    - working-directory: ./unblock-review
+      run: npm test
+      name: unblock-review unit tests
+
     - working-directory: ./UserRightsDiff
       run: npm install
     - working-directory: ./UserRightsDiff
