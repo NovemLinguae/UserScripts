@@ -12,9 +12,11 @@ TODO:
 	const UNBLOCK_REQ_COLOR = 'rgb(235, 244, 255)';
 	const SIGNATURE = '~~~~';
 	const DECLINE_REASON_HERE = '{{subst:Decline reason here}}';
-	const ADVERT = ' ([[User:Enterprisey/unblock-review|unblock-review]])';
+	const ADVERT = ' ([[User:Novem Linguae/Scripts/UnblockReview.js|unblock-review]])';
 
-	// Making this a function for unit test reasons.
+	/**
+	 * Making this a function for unit test reasons.
+	 */
 	function getInitialText( wikitext, appealReason ) {
 		// https://stackoverflow.com/a/6969486/3480193
 		function escapeRegExp( string ) {
