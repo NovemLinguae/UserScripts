@@ -4,8 +4,8 @@
 - Requested by https://en.wikipedia.org/wiki/User:Elli on 2024-04-22
 - When it runs (all 3 conditions must be met):
 	1) In the file namespace,
-	2) on pages that have have a https://en.wikipedia.org/wiki/Category:Wikipedia_non-free_file_copyright_templates,
-	3) and the template does not have a paramter image_has_rationale=yes,
+	2) on pages that have one of these 100-ish templates that follow the format {{Non-free X}}: https://en.wikipedia.org/wiki/Category:Wikipedia_non-free_file_copyright_templates,
+	3) and the template does not have a parameter image_has_rationale=yes,
 - What it does:
 	- shows a button that allows adding this parameter in one click
 - Motivation:
@@ -24,7 +24,7 @@ class MarkFreeUseRationale {
 			return;
 		}
 
-		// Only run if there is a {{Non-free XYZABC}} template (https://en.wikipedia.org/wiki/Category:Wikipedia_non-free_file_copyright_templates) that isnt a rationale template ( {{Non-free use rationale ABCXYZ}} )
+		// Only run if there is a {{Non-free X}} template (https://en.wikipedia.org/wiki/Category:Wikipedia_non-free_file_copyright_templates) that isnt a rationale template ( {{Non-free use rationale X}} )
 		const pageName = this.mw.config.get( 'wgPageName' );
 		const wikicode = await this.getWikicode( pageName );
 		const hasCopyrightTemplate = wikicode.match( /\{\{Non-free (?!use)/gi );
@@ -60,7 +60,7 @@ class MarkFreeUseRationale {
 		const wikicode = await this.getWikicode( pageName );
 
 		// insert image_has_rationale=yes into wikicode somewhere (look at Elli's example diff)
-		const newWikicode = wikicode.replace( /({{Non-free (?!use)[^|}]+)(}})/i, '$1|image_has_rationale=yes$2' );
+		const newWikicode = this.insertImageHasRationaleYes( wikicode );
 		if ( newWikicode === wikicode ) {
 			this.mw.notify( this.wrapErrorText( 'ERROR: Unable to find a place to insert |image_has_rationale=yes' ) );
 			return;
@@ -76,6 +76,10 @@ class MarkFreeUseRationale {
 		}
 
 		this.mw.notify( 'Edit successful. Refresh to see changes.' );
+	}
+
+	insertImageHasRationaleYes( wikicode ) {
+		return wikicode.replace( /({{Non-free (?!use)[^|}]+)([|}])/i, '$1|image_has_rationale=yes$2' );
 	}
 
 	/**
