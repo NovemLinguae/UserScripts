@@ -24,6 +24,12 @@ jobs:
       run: npm test
       name: GANReviewTool unit tests
 
+    - working-directory: ./MarkFreeUseRationale
+      run: npm install
+    - working-directory: ./MarkFreeUseRationale
+      run: npm test
+      name: MarkFreeUseRationale unit tests
+
     - working-directory: ./SpeciesHelper
       run: npm install
     - working-directory: ./SpeciesHelper
