@@ -107,4 +107,22 @@ describe( 'processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, 
 		const expected = `Test {{unblock reviewed|decline=Insufficient. ~~~~|1=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}} Test`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
+
+	test( 'Colon in front of {{Unblock}}', () => {
+		const wikitext = `:{{unblock|reason=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}}`;
+		const appealReason = `Your reason here `;
+		const acceptDeclineReason = `Insufficient. ~~~~`;
+		const acceptOrDecline = `decline`;
+		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Bulleted list and colon in front of {{Unblock}}', () => {
+		const wikitext = `*:{{unblock|reason=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}}`;
+		const appealReason = `Your reason here `;
+		const acceptDeclineReason = `Insufficient. ~~~~`;
+		const acceptOrDecline = `decline`;
+		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
 } );

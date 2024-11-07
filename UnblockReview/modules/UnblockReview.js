@@ -17,6 +17,9 @@ export class UnblockReview {
 			'{{unblock reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + appealReason
 		);
 
+		// get rid of any [#*:] in front of {{unblock X}} templates. indentation messes up the background color and border of the unblock template.
+		wikitext = wikitext.replace( /^[#*:\s]{1,}(\{\{\s*unblock)/mi, '$1' );
+
 		return wikitext;
 	}
 

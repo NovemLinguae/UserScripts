@@ -99,9 +99,6 @@ TODO:
 				const acceptDeclineReason = reasonArea.value;
 				wikitext = unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline );
 
-				// get rid of any colons in front of {{unblock X}} templates. causes a bug.
-				// wikitext = wikitext.replace( /^:{1,}\s*(\{\{\s*unblock)/mi, '$1' );
-
 				// build edit summary
 				const acceptingOrDeclining = ( acceptOrDecline === 'accept' ? 'Accepting' : 'Declining' );
 				const summary = acceptingOrDeclining + ' unblock request' + ADVERT;
