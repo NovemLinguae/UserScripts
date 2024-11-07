@@ -15,7 +15,8 @@ export class UnblockReview {
 			acceptDeclineReason = acceptDeclineReason + ' ' + this.SIGNATURE;
 		}
 
-		const negativeLookbehinds = '(?<!<nowiki>)';
+		// eslint-disable-next-line no-useless-concat
+		const negativeLookbehinds = '(?<!<' + 'nowiki>)';
 		const regEx = new RegExp( negativeLookbehinds + this.escapeRegExp( initialText + appealReason ), 'g' );
 		wikitext = wikitext.replace(
 			regEx,
@@ -36,7 +37,8 @@ export class UnblockReview {
 	 * This can also handle 1=, and no parameter at all (just a pipe)
 	 */
 	getLeftHalfOfUnblockTemplate( wikitext, appealReason ) {
-		const negativeLookbehinds = '(?<!<nowiki>{{unblock\\|reason=)(?<!reviewed ?\\|1=)';
+		// eslint-disable-next-line no-useless-concat
+		const negativeLookbehinds = '(?<!<' + 'nowiki>{{unblock\\|reason=)(?<!reviewed ?\\|1=)';
 		const regEx = new RegExp( negativeLookbehinds + this.escapeRegExp( appealReason ), 'g' );
 		let matches = wikitext.matchAll( regEx );
 		matches = [ ...matches ];

@@ -1,16 +1,10 @@
 /*
 Fork of https://en.wikipedia.org/w/index.php?title=User:Enterprisey/unblock-review.js&oldid=1073685522
 
-CHANGELOG:
-- linted the code
-- refactored
-
 TODO:
-- get rid of goto jump (matchLoop label)
-- make tickets for the 4 issues that jpgordon and myself mentioned here: https://en.wikipedia.org/wiki/Wikipedia:User_scripts/Requests#User%3AEnterprisey%2Funblock-review
 - fix tickets at https://github.com/NovemLinguae/UserScripts/issues?q=is%3Aissue+is%3Aopen+label%3AUnblockReview
 - add to my user page list of scripts
-- mention that I forked it over at the Enterprisey user script page
+- mention that I forked it over at the Enterprisey user script page, and at WP:US/R
 */
 
 /* global importStylesheet */
