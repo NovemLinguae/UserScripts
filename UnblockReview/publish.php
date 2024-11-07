@@ -45,7 +45,7 @@ function deleteRequireFunctions($str) {
 
 function writeWikitextToWikipedia($ABSOLUTE_PATH_TO_TEMP_DIRECTORY, $WIKIPEDIA_API_URL, $WIKIPEDIA_USERNAME, $WIKIPEDIA_PASSWORD) {
 	// clear cookies from last session
-	$file = fopen($ABSOLUTE_PATH_TO_TEMP_DIRECTORY . '\\cookie.txt', 'w') or die ('Unable to open file!');
+	$file = fopen($ABSOLUTE_PATH_TO_TEMP_DIRECTORY . '\\cookie.txt', 'w') or die('Unable to open file!');
 	fwrite($file, '');
 	fclose($file);
 
@@ -73,7 +73,7 @@ function writeWikitextToWikipedia($ABSOLUTE_PATH_TO_TEMP_DIRECTORY, $WIKIPEDIA_A
 		'type' => 'csrf',
 	];
 	$csrfToken = apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $ABSOLUTE_PATH_TO_TEMP_DIRECTORY)['query']['tokens']['csrftoken'];
-	
+
 	// make edit
 	$apiData = [
 		'action' => 'edit',
@@ -95,8 +95,12 @@ function generateWikitext($MAIN_FILE_PATH, $CLASSES_FOLDER_PATH) {
 
 	$files = scandir($CLASSES_FOLDER_PATH);
 	foreach ( $files as $fileName ) {
-		if ( $fileName === '.' ) continue;
-		if ( $fileName === '..' ) continue;
+		if ( $fileName === '.' ) {
+			continue;
+		}
+		if ( $fileName === '..' ) {
+			continue;
+		}
 		$path = $CLASSES_FOLDER_PATH . $fileName;
 		$classText = file_get_contents($path);
 		$wikitext .= "\n\n// === $path ======================================================\n\n" . $classText;

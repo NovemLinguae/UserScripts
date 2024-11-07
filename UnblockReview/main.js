@@ -95,6 +95,7 @@ TODO:
 				let wikitext = data.query.pages[ pageId ].revisions[ 0 ][ '*' ];
 
 				// change wikitext
+				// eslint-disable-next-line no-undef
 				const unblockReview = new UnblockReview();
 				const acceptDeclineReason = reasonArea.value;
 				wikitext = unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline );
