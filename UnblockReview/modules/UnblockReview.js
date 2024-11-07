@@ -1,4 +1,25 @@
 export class UnblockReview {
+	constructor() {
+		this.SIGNATURE = '~~~~';
+	}
+
+	processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) {
+		const initialText = this.getLeftHalfOfUnblockTemplate( wikitext, appealReason );
+
+		if ( !acceptDeclineReason.trim() ) {
+			acceptDeclineReason = DEFAULT_DECLINE_REASON + ' ' + this.SIGNATURE;
+		} else if ( !this.hasSignature( acceptDeclineReason ) ) {
+			acceptDeclineReason = acceptDeclineReason + ' ' + this.SIGNATURE;
+		}
+
+		wikitext = wikitext.replace(
+			initialText + appealReason,
+			'{{unblock reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + appealReason
+		);
+
+		return wikitext;
+	}
+
 	/**
 	 * Given the wikitext of an entire page, and the |reason= parameter of one of the many unblock templates (e.g. {{Unblock}}, {{Unblock-un}}, {{Unblock-auto}}, {{Unblock-bot}}, etc.), return the wikitext of just the beginning of the template.
 	 *
@@ -7,13 +28,7 @@ export class UnblockReview {
 	 * This can also handle 1=, and no parameter at all (just a pipe)
 	 */
 	getLeftHalfOfUnblockTemplate( wikitext, appealReason ) {
-		// https://stackoverflow.com/a/6969486/3480193
-		function escapeRegExp( string ) {
-			// $& means the whole matched string
-			return string.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
-		}
-
-		const regEx = new RegExp( escapeRegExp( appealReason ), 'g' );
+		const regEx = new RegExp( this.escapeRegExp( appealReason ), 'g' );
 		let matches = wikitext.matchAll( regEx );
 		matches = [ ...matches ];
 		if ( matches.length === 0 ) {
@@ -47,5 +62,75 @@ export class UnblockReview {
 		}
 
 		throw new Error( 'Searching backwards failed!' );
+	}
+
+	/**
+	 * @copyright coolaj86, CC BY-SA 4.0, https://stackoverflow.com/a/6969486/3480193
+	 */
+	escapeRegExp( string ) {
+		// $& means the whole matched string
+		return string.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
+	}
+
+	/**
+	 * Is there a signature (four tildes) present in the given text, outside of a nowiki element?
+	 */
+	hasSignature( text ) {
+		// no literal signature?
+		if ( text.indexOf( this.SIGNATURE ) < 0 ) {
+			return false;
+		}
+
+		// if there's a literal signature and no nowiki elements,
+		// there must be a real signature
+		if ( text.indexOf( '<nowiki>' ) < 0 ) {
+			return true;
+		}
+
+		// Save all nowiki spans
+		const nowikiSpanStarts = []; // list of ignored span beginnings
+		const nowikiSpanLengths = []; // list of ignored span lengths
+		const NOWIKI_RE = /<nowiki>.*?<\/nowiki>/g;
+		let spanMatch;
+		do {
+			spanMatch = NOWIKI_RE.exec( text );
+			if ( spanMatch ) {
+				nowikiSpanStarts.push( spanMatch.index );
+				nowikiSpanLengths.push( spanMatch[ 0 ].length );
+			}
+		} while ( spanMatch );
+
+		// So that we don't check every ignore span every time
+		let nowikiSpanStartIdx = 0;
+
+		const SIG_RE = new RegExp( this.SIGNATURE, 'g' );
+		let sigMatch;
+
+		matchLoop:
+		do {
+			sigMatch = SIG_RE.exec( text );
+			if ( sigMatch ) {
+				// Check that we're not inside a nowiki
+				for ( let nwIdx = nowikiSpanStartIdx; nwIdx <
+					nowikiSpanStarts.length; nwIdx++ ) {
+					if ( sigMatch.index > nowikiSpanStarts[ nwIdx ] ) {
+						if ( sigMatch.index + sigMatch[ 0 ].length <=
+							nowikiSpanStarts[ nwIdx ] + nowikiSpanLengths[ nwIdx ] ) {
+
+							// Invalid sig
+							continue matchLoop;
+						} else {
+							// We'll never encounter this span again, since
+							// headers only get later and later in the wikitext
+							nowikiSpanStartIdx = nwIdx;
+						}
+					}
+				}
+
+				// We aren't inside a nowiki
+				return true;
+			}
+		} while ( sigMatch );
+		return false;
 	}
 }

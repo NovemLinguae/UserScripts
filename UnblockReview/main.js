@@ -17,8 +17,7 @@ TODO:
 // <nowiki>
 ( function () {
 	const UNBLOCK_REQ_COLOR = 'rgb(235, 244, 255)';
-	const SIGNATURE = '~~~~';
-	const DECLINE_REASON_HERE = '{{subst:Decline reason here}}';
+	const DEFAULT_DECLINE_REASON = '{{subst:Decline reason here}}';
 	const ADVERT = ' ([[User:Novem Linguae/Scripts/UnblockReview.js|unblock-review]])';
 
 	function execute() {
@@ -58,7 +57,7 @@ TODO:
 		container.innerHTML = `
 			<tr>
 				<td class='reason-container' rowspan='2'>
-					<textarea class='unblock-review-reason mw-ui-input' placeholder='Reason for accepting/declining here'>${ DECLINE_REASON_HERE }</textarea>
+					<textarea class='unblock-review-reason mw-ui-input' placeholder='Reason for accepting/declining here'>${ DEFAULT_DECLINE_REASON }</textarea>
 				</td>
 				<td>
 					<button class='unblock-review-accept mw-ui-button mw-ui-progressive'>Accept</button>
@@ -78,7 +77,7 @@ TODO:
 		const reasonArea = container.querySelector( 'textarea' );
 		$( container ).find( 'button' ).on( 'click', function () {
 			// look at the innerHtml of the button to see if it says "Accept" or "Decline"
-			const action = $( this ).text().toLowerCase();
+			const acceptOrDecline = $( this ).text().toLowerCase();
 			const appealReason = hrEl.nextElementSibling.nextElementSibling.childNodes[ 0 ].textContent;
 			$.getJSON(
 				mw.util.wikiScript( 'api' ),
@@ -95,27 +94,16 @@ TODO:
 				const pageId = Object.keys( data.query.pages )[ 0 ];
 				let wikitext = data.query.pages[ pageId ].revisions[ 0 ][ '*' ];
 
-				// build wikitext
+				// change wikitext
 				const unblockReview = new UnblockReview();
-				const initialText = unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );
-
-				let reason = reasonArea.value;
-				if ( !reason.trim() ) {
-					reason = DECLINE_REASON_HERE + ' ' + SIGNATURE;
-				} else if ( !hasSignature( reason ) ) {
-					reason = reason + ' ' + SIGNATURE;
-				}
-
-				wikitext = wikitext.replace(
-					initialText + appealReason,
-					'{{unblock reviewed|' + action + '=' + reason + '|1=' + appealReason
-				);
+				const acceptDeclineReason = reasonArea.value;
+				wikitext = unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline );
 
 				// get rid of any colons in front of {{unblock X}} templates. causes a bug.
 				// wikitext = wikitext.replace( /^:{1,}\s*(\{\{\s*unblock)/mi, '$1' );
 
 				// build edit summary
-				const acceptingOrDeclining = ( action === 'accept' ? 'Accepting' : 'Declining' );
+				const acceptingOrDeclining = ( acceptOrDecline === 'accept' ? 'Accepting' : 'Declining' );
 				const summary = acceptingOrDeclining + ' unblock request' + ADVERT;
 
 				// make edit
@@ -133,69 +121,6 @@ TODO:
 				} );
 			} );
 		} );
-	}
-
-	/**
-	 * Is there a signature (four tildes) present in the given text,
-	 * outside of a nowiki element?
-	 */
-	function hasSignature( text ) {
-		// no literal signature?
-		if ( text.indexOf( SIGNATURE ) < 0 ) {
-			return false;
-		}
-
-		// if there's a literal signature and no nowiki elements,
-		// there must be a real signature
-		if ( text.indexOf( '<nowiki>' ) < 0 ) {
-			return true;
-		}
-
-		// Save all nowiki spans
-		const nowikiSpanStarts = []; // list of ignored span beginnings
-		const nowikiSpanLengths = []; // list of ignored span lengths
-		const NOWIKI_RE = /<nowiki>.*?<\/nowiki>/g;
-		let spanMatch;
-		do {
-			spanMatch = NOWIKI_RE.exec( text );
-			if ( spanMatch ) {
-				nowikiSpanStarts.push( spanMatch.index );
-				nowikiSpanLengths.push( spanMatch[ 0 ].length );
-			}
-		} while ( spanMatch );
-
-		// So that we don't check every ignore span every time
-		let nowikiSpanStartIdx = 0;
-
-		const SIG_RE = new RegExp( SIGNATURE, 'g' );
-		let sigMatch;
-
-		matchLoop:
-		do {
-			sigMatch = SIG_RE.exec( text );
-			if ( sigMatch ) {
-				// Check that we're not inside a nowiki
-				for ( let nwIdx = nowikiSpanStartIdx; nwIdx <
-					nowikiSpanStarts.length; nwIdx++ ) {
-					if ( sigMatch.index > nowikiSpanStarts[ nwIdx ] ) {
-						if ( sigMatch.index + sigMatch[ 0 ].length <=
-							nowikiSpanStarts[ nwIdx ] + nowikiSpanLengths[ nwIdx ] ) {
-
-							// Invalid sig
-							continue matchLoop;
-						} else {
-							// We'll never encounter this span again, since
-							// headers only get later and later in the wikitext
-							nowikiSpanStartIdx = nwIdx;
-						}
-					}
-				}
-
-				// We aren't inside a nowiki
-				return true;
-			}
-		} while ( sigMatch );
-		return false;
 	}
 
 	execute();
