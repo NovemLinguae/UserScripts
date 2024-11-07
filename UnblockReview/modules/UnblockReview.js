@@ -24,7 +24,7 @@ export class UnblockReview {
 		);
 
 		// get rid of any [#*:] in front of {{unblock X}} templates. indentation messes up the background color and border of the unblock template.
-		wikitext = wikitext.replace( /^[#*:\s]{1,}(\{\{\s*unblock)/mi, '$1' );
+		wikitext = wikitext.replace( /^[#*: ]{1,}(\{\{\s*unblock)/mi, '$1' );
 
 		return wikitext;
 	}
