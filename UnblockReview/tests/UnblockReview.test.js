@@ -125,4 +125,26 @@ describe( 'processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, 
 		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}}`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
+
+	test( 'appealReason contains a line break', () => {
+		const wikitext =
+`==Unblock request==
+
+{{unblock|"Clearly not here to build an encyclopedia"
+
+I would somewhat disagree with you there sir. [[User:Jean Zboncak|Jean Zboncak]] ([[User talk:Jean Zboncak#top|talk]]) 22:54, 30 October 2024 (UTC)}}
+Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
+		const appealReason =
+`"Clearly not here to build an encyclopedia"
+I would somewhat disagree with you there sir. `;
+		const acceptDeclineReason = `Insufficient. ~~~~`;
+		const acceptOrDecline = `decline`;
+		const expected =
+`==Unblock request==
+{{unblock reviewed|decline=Insufficient. ~~~~|1="Clearly not here to build an encyclopedia"
+
+I would somewhat disagree with you there sir. [[User:Jean Zboncak|Jean Zboncak]] ([[User talk:Jean Zboncak#top|talk]]) 22:54, 30 October 2024 (UTC)}}
+Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
 } );

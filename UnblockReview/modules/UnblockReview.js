@@ -4,6 +4,9 @@ export class UnblockReview {
 	}
 
 	processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) {
+		// HTML does one line break and wikitext does 2ish. Cut off all text after the first line break to avoid breaking our search algorithm.
+		appealReason = appealReason.split( '\n' )[ 0 ];
+
 		const initialText = this.getLeftHalfOfUnblockTemplate( wikitext, appealReason );
 
 		if ( !acceptDeclineReason.trim() ) {
