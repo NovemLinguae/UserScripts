@@ -86,13 +86,16 @@ TODO:
 			).done( ( data ) => {
 				// Extract wikitext from API response
 				const pageId = Object.keys( data.query.pages )[ 0 ];
-				let wikitext = data.query.pages[ pageId ].revisions[ 0 ][ '*' ];
+				const wikitext = data.query.pages[ pageId ].revisions[ 0 ][ '*' ];
 
 				// change wikitext
 				// eslint-disable-next-line no-undef
 				const unblockReview = new UnblockReview();
 				const acceptDeclineReason = reasonArea.value;
-				wikitext = unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline );
+				const wikitext2 = unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline );
+				if ( wikitext === wikitext2 ) {
+					mw.notify( 'UnblockReview error: unable to determine write location.' );
+				}
 
 				// build edit summary
 				const acceptingOrDeclining = ( acceptOrDecline === 'accept' ? 'Accepting' : 'Declining' );
@@ -103,7 +106,7 @@ TODO:
 					action: 'edit',
 					title: mw.config.get( 'wgPageName' ),
 					summary: summary,
-					text: wikitext
+					text: wikitext2
 				} ).done( ( data ) => {
 					if ( data && data.edit && data.edit.result && data.edit.result === 'Success' ) {
 						window.location.reload( true );
