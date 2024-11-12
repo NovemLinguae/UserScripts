@@ -73,6 +73,11 @@ TODO:
 			// look at the innerHtml of the button to see if it says "Accept" or "Decline"
 			const acceptOrDecline = $( this ).text().toLowerCase();
 			const appealReason = hrEl.nextElementSibling.nextElementSibling.childNodes[ 0 ].textContent;
+			// FIXME: should handle this case (|reason=\nText, https://github.com/NovemLinguae/UserScripts/issues/240) instead of throwing an error
+			if ( appealReason === '\n' ) {
+				mw.notify( 'UnblockReview error 1: unable to find decline reason by scanning HTML', { type: 'error' } );
+				return;
+			}
 			$.getJSON(
 				mw.util.wikiScript( 'api' ),
 				{
@@ -94,7 +99,8 @@ TODO:
 				const acceptDeclineReason = reasonArea.value;
 				const wikitext2 = unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline );
 				if ( wikitext === wikitext2 ) {
-					mw.notify( 'UnblockReview error: unable to determine write location.' );
+					mw.notify( 'UnblockReview error 2: unable to determine write location.', { type: 'error' } );
+					return;
 				}
 
 				// build edit summary
