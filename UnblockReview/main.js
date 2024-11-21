@@ -1,10 +1,6 @@
 /*
-Fork of https://en.wikipedia.org/w/index.php?title=User:Enterprisey/unblock-review.js&oldid=1073685522
-
-TODO:
-- fix tickets at https://github.com/NovemLinguae/UserScripts/issues?q=is%3Aissue+is%3Aopen+label%3AUnblockReview
-- add to my user page list of scripts
-- mention that I forked it over at the Enterprisey user script page, and at WP:US/R
+Forked from [[User:Enterprisey/unblock-review.js]] on Oct 31, 2024.
+Many additional bugs fixed.
 */
 
 /* global importStylesheet */
