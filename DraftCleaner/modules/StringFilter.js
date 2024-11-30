@@ -55,7 +55,7 @@ export class StringFilter {
 		const result = [];
 		let positionOfLastMatch = 0;
 		for ( let i = 0; i < length; i++ ) {
-			const lookAhead = string.substring( i ); // the rest of the string after current position
+			const lookAhead = string.slice( i ); // the rest of the string after current position
 			let patternMatch = false;
 			for ( const pattern of patterns ) {
 				if ( lookAhead.startsWith( pattern ) ) {
@@ -74,7 +74,7 @@ export class StringFilter {
 			}
 		}
 		// Don't forget the last chunk.
-		result.push( string.substring( positionOfLastMatch ) );
+		result.push( string.slice( positionOfLastMatch ) );
 		return result;
 	}
 }

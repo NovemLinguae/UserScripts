@@ -81,7 +81,7 @@ export class UnblockReview {
 				i++;
 			}
 
-			// If the above scan couldn't find the beginning of the template within 50 characters of the match, then that wasn't it. Check the next match.
+			// If the above scan couldn't find the beginning of the template within 50 characters of the match, then that wasn't it. Even a long template like `{{Unblock-auto|reason=` isn't 50 characters long. Move on to the next match.
 			if ( i === 50 ) {
 				continue;
 			}

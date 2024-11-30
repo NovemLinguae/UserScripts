@@ -56,7 +56,7 @@ export class VoteCounterController {
 
 			const endPosition = this._calculateSectionEndPosition( i, numberOfHeadings, this.wikicode, listOfHeadingLocations );
 
-			let sectionWikicode = this.wikicode.slice( startPosition, endPosition ); // slice and substring (which both use (startPos, endPos)) are the same. substr(startPos, length) is deprecated.
+			let sectionWikicode = this.wikicode.slice( startPosition, endPosition );
 
 			if ( isXFD ) {
 				sectionWikicode = this._adjustVotesForEachHeading( sectionWikicode );
