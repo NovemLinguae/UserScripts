@@ -68,7 +68,8 @@ class Links {
 		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/${ this.username }/global.css`, 'global.css' );
 		this.mw.util.addPortletLink( 'p-links', `/wiki/Special:CentralAuth?target=${ this.usernameURI }`, 'Central auth' );
 		this.mw.util.addPortletLink( 'p-links', `/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }`, 'User rights log' );
-		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }@enwiki`, 'User rights log (meta)' );
+		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }@enwiki`, 'User rights log (meta 1)' );
+		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }`, 'User rights log (meta 2)' );
 
 		this.generateRenameLogLinks();
 
