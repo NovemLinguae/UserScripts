@@ -7,7 +7,15 @@ export class UnblockReview {
 		// HTML does one line break and wikitext does 2ish. Cut off all text after the first line break to avoid breaking our search algorithm.
 		appealReason = appealReason.split( '\n' )[ 0 ];
 
-		const initialText = this.getLeftHalfOfUnblockTemplate( wikitext, appealReason );
+		let initialText = '';
+		// Special case: If the user didn't provide a reason, the template will display "Please provide a reason as to why you should be unblocked", and this will be detected as the appealReason.
+		const reasonProvided = !appealReason.startsWith( 'Please provide a reason as to why you should be unblocked' );
+		if ( !reasonProvided ) {
+			initialText = wikitext.match( /(\{\{Unblock)\}\}/i )[ 1 ];
+			appealReason = '';
+		} else {
+			initialText = this.getLeftHalfOfUnblockTemplate( wikitext, appealReason );
+		}
 
 		if ( !acceptDeclineReason.trim() ) {
 			acceptDeclineReason = DEFAULT_DECLINE_REASON + ' ' + this.SIGNATURE;
@@ -18,15 +26,19 @@ export class UnblockReview {
 		// eslint-disable-next-line no-useless-concat
 		const negativeLookbehinds = '(?<!<' + 'nowiki>)';
 		const regEx = new RegExp( negativeLookbehinds + this.escapeRegExp( initialText + appealReason ), 'g' );
-		wikitext = wikitext.replace(
+		let wikitext2 = wikitext.replace(
 			regEx,
 			'{{unblock reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + appealReason
 		);
 
-		// get rid of any [#*:] in front of {{unblock X}} templates. indentation messes up the background color and border of the unblock template.
-		wikitext = wikitext.replace( /^[#*: ]{1,}(\{\{\s*unblock)/mi, '$1' );
+		if ( wikitext === wikitext2 ) {
+			throw new Error( 'Replacing text with unblock message failed!' );
+		}
 
-		return wikitext;
+		// get rid of any [#*:] in front of {{unblock X}} templates. indentation messes up the background color and border of the unblock template.
+		wikitext2 = wikitext2.replace( /^[#*: ]{1,}(\{\{\s*unblock)/mi, '$1' );
+
+		return wikitext2;
 	}
 
 	/**
@@ -37,38 +49,47 @@ export class UnblockReview {
 	 * This can also handle 1=, and no parameter at all (just a pipe)
 	 */
 	getLeftHalfOfUnblockTemplate( wikitext, appealReason ) {
+		// Isolate the reason, stripping out all template syntax. So `{{Unblock|reason=ABC}}` becomes matches = [ 'ABC ']
 		// eslint-disable-next-line no-useless-concat
 		const negativeLookbehinds = '(?<!<' + 'nowiki>{{unblock\\|reason=)(?<!reviewed ?\\|1=)';
 		const regEx = new RegExp( negativeLookbehinds + this.escapeRegExp( appealReason ), 'g' );
 		let matches = wikitext.matchAll( regEx );
 		matches = [ ...matches ];
+
 		if ( matches.length === 0 ) {
 			throw new Error( 'Searching for target text failed!' );
 		}
+
+		// Loop through all the potential matches, and peek at the characters in front of the match. Eliminate false positives ({{tlx|unblock}}, the same text not anywhere near an {{unblock}} template, etc.). If a true positive, return the beginning of the template.
 		for ( const match of matches ) {
-			const textIdx = match.index;
-			let startIdx = textIdx;
+			// The position of the match within the wikicode.
+			const MatchPos = match.index;
+			// The position of the unblock template of that match within the wikicode. Set them equal initially. Will be adjusted below.
+			let UnblockTemplateStartPos = MatchPos;
 
 			// check for {{tlx|unblock. if found, this isn't what we want, skip.
-			const startOfSplice = startIdx - 50 < 0 ? 0 : startIdx - 50;
-			const chunkFiftyCharactersWide = wikitext.substring( startOfSplice, startIdx );
+			const startOfSplice = UnblockTemplateStartPos - 50 < 0 ? 0 : UnblockTemplateStartPos - 50;
+			const chunkFiftyCharactersWide = wikitext.slice( startOfSplice, UnblockTemplateStartPos );
 			if ( /\{\{\s*tlx\s*\|\s*unblock/i.test( chunkFiftyCharactersWide ) ) {
 				continue;
 			}
 
+			// Scan backwards from the match until we find {{
 			let i = 0;
-			while ( wikitext[ startIdx ] !== '{' && i < 50 ) {
-				startIdx--;
+			while ( wikitext[ UnblockTemplateStartPos ] !== '{' && i < 50 ) {
+				UnblockTemplateStartPos--;
 				i++;
 			}
+
+			// If the above scan couldn't find the beginning of the template within 50 characters of the match, then that wasn't it. Check the next match.
 			if ( i === 50 ) {
 				continue;
 			}
 
-			// templates start with two opening curly braces
-			startIdx--;
+			// The above scan stopped at {Unblock. Subtract one so it's {{Unblock
+			UnblockTemplateStartPos--;
 
-			const initialText = wikitext.substring( startIdx, textIdx );
+			const initialText = wikitext.slice( UnblockTemplateStartPos, MatchPos );
 			return initialText;
 		}
 

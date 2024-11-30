@@ -189,4 +189,17 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 `;
 		expect( unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
+
+	test( 'Handle {{Unblock}} with no parameters', () => {
+		const wikitext =
+`{{unblock}} why
+`;
+		const appealReason = `Please provide a reason as to why you should be unblocked.`;
+		const acceptDeclineReason = `Insufficient. ~~~~`;
+		const acceptOrDecline = `decline`;
+		const expected =
+`{{unblock reviewed|decline=Insufficient. ~~~~|1=}} why
+`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
 } );
