@@ -1,5 +1,7 @@
 // <nowiki>
 
+// Test dark mode with ?vectornightmode=1&useskin=vector-2022
+
 class CiteHighlighter {
 	constructor( window, $, mw ) {
 		this.window = window;
