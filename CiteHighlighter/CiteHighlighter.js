@@ -203,7 +203,10 @@ class CiteHighlighter {
 
 	writeCSS() {
 		for ( const key in this.colors ) {
+			// background color of citations in reference section
 			this.mw.util.addCSS( '.cite-highlighter-' + key + ' {background-color: ' + this.colors[ key ] + ';}' );
+
+			// ???
 			this.mw.util.addCSS( '.rt-tooltipTail.cite-highlighter-' + key + '::after {background: ' + this.colors[ key ] + ';}' );
 		}
 	}
@@ -244,11 +247,14 @@ class CiteHighlighter {
 		this.$( 'li[id^="cite_note-"]' )
 			// select /domain.com and .domain.com
 			.has( 'a[href*="/' + source.toLowerCase() + '"], a[href*=".' + source.toLowerCase() + '"]' )
-			.addClass( [
-				'cite-highlighter-' + color,
-				// in dark mode, make foreground text black instead of white
-				'notheme'
-			] );
+			.addClass( 'cite-highlighter-' + color );
+
+		// in dark mode, make foreground text black instead of white, being careful not to notheme the bullet/number/marker, which needs to stay white because it is outside the background color
+		this.$( 'li[id^="cite_note-"]' )
+			// select /domain.com and .domain.com
+			.has( 'a[href*="/' + source.toLowerCase() + '"], a[href*=".' + source.toLowerCase() + '"]' )
+			.find( ' > .reference-text' )
+			.addClass( 'notheme' );
 	}
 
 	highlightUnorderedListItem( source, color ) {
@@ -256,11 +262,14 @@ class CiteHighlighter {
 		this.$( 'li' )
 			// select /domain.com and .domain.com
 			.has( '.citation a[href*="/' + source.toLowerCase() + '"], .citation a[href*=".' + source.toLowerCase() + '"]' )
-			.addClass( [
-				'cite-highlighter-' + color,
-				// in dark mode, make foreground text black instead of white
-				'notheme'
-			] );
+			.addClass( 'cite-highlighter-' + color );
+
+		// in dark mode, make foreground text black instead of white, being careful not to notheme the bullet/number/marker, which needs to stay white because it is outside the background color
+		this.$( 'li' )
+			// select /domain.com and .domain.com
+			.has( '.citation a[href*="/' + source.toLowerCase() + '"], .citation a[href*=".' + source.toLowerCase() + '"]' )
+			.find( ' > cite' )
+			.addClass( 'notheme' );
 	}
 
 	highlightExternalLinks( source, color ) {
