@@ -24,6 +24,7 @@ class CiteHighlighter {
 		this.colors = this.getColors();
 		this.writeCSS();
 		this.wikicode = await this.getWikicode( this.articleTitle );
+		// Note: Any wikicode containing a lot of domain names included in CiteHighlighter will be slow, unless added to isSlowPage(). This is because addHTMLClassesToRefs() checks the wikicode before trying to add classes to CSS.
 		this.addHTMLClassesToRefs();
 		this.addHTMLClassesForUnreliableWords();
 		this.observeAndAddClassesToTooltips();
@@ -114,21 +115,22 @@ class CiteHighlighter {
 	 * On pages with a lot of links (watchlist, WP:FA), highlighting EVERYTHING will double the
 	 * load time. e.g. watchlist 5 seconds -> 10 seconds.
 	 *
+	 * Pages with a lot of CiteHighlighter domain names in the wikitext will also be slow unless added to this function, since the wikitext is checked for domain names before deciding to apply CSS styling.
+	 *
 	 * @return {boolean}
 	 */
 	isSlowPage() {
-		if (
-			this.mw.config.get( 'wgAction' ) === 'history' ||
-			this.articleTitle === 'Main_Page' ||
-			this.articleTitle === 'Wikipedia:Featured_articles' ||
-			this.articleTitle === 'Special:Watchlist' ||
-			this.articleTitle === 'Wikipedia:New_page_patrol_source_guide' ||
-			this.articleTitle === 'Wikipedia:Redirects_for_discussion'
-		) {
-			return true;
-		}
-
-		return false;
+		const slowPages = [
+			'Main Page',
+			'Wikipedia:Featured articles',
+			'Special:Watchlist',
+			'Wikipedia:New page patrol source guide',
+			'Wikipedia:Redirects for discussion',
+			'User:Novem Linguae/Scripts/CiteHighlighter/SourcesJSON.js'
+		].map( ( title ) => title.replace( / /g, '_' ) );
+		const isHistory = this.mw.config.get( 'wgAction' ) === 'history';
+		const isDiff = this.mw.config.get( 'wgDiffNewId' );
+		return isHistory || isDiff || slowPages.includes( this.articleTitle );
 	}
 
 	/**
