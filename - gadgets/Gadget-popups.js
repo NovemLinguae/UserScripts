@@ -19,7 +19,7 @@
 // Fix later
 /* global log, errlog, popupStrings, wikEdUseWikEd, WikEdUpdateFrame */
 
-$(function () {
+$(() => {
 	//////////////////////////////////////////////////
 	// Globals
 	//
@@ -129,7 +129,7 @@ $(function () {
 			} while (--j);
 		}
 		if (finish < anchors.length) {
-			setTimeout(function () {
+			setTimeout(() => {
 				setupTooltipsLoop(anchors, finish, howmany, sleep, remove, popData);
 			}, sleep);
 		} else {
@@ -366,7 +366,7 @@ $(function () {
 			if (dragHandle && dragHandle != 'all') {
 				dragHandle += a.navpopup.idNumber;
 			}
-			setTimeout(function () {
+			setTimeout(() => {
 				a.navpopup.makeDraggable(dragHandle);
 			}, 150);
 		}
@@ -523,7 +523,7 @@ $(function () {
 		} else {
 			var id = download.owner.redir ? 'PREVIEW_REDIR_HOOK' : 'PREVIEW_HOOK';
 			download.owner.addHook(
-				function () {
+				() => {
 					insertPreviewNow(download);
 					return true;
 				},
@@ -1304,7 +1304,7 @@ $(function () {
 	}
 
 	function autoEdit() {
-		setupPopups(function () {
+		setupPopups(() => {
 			if (mw.util.getParamValue('autoimpl') !== popupString('autoedit_version')) {
 				return false;
 			}
@@ -2308,7 +2308,7 @@ $(function () {
 								'):[^|]*?)\\]\\](\\w*)',
 							'gi'
 						),
-						function ($0, $1, $2) {
+						($0, $1, $2) => {
 							return f(
 								"<a href='?'>?</a>",
 								Insta.conf.paths.articles + htmlescape_attr($1),
@@ -2340,7 +2340,7 @@ $(function () {
 								'):.*?)\\|([^\\]]+?)\\]\\](\\w*)',
 							'gi'
 						),
-						function ($0, $1, $2, $3) {
+						($0, $1, $2, $3) => {
 							return f(
 								"<a href='?'>?</a>",
 								Insta.conf.paths.articles + htmlescape_attr($1),
@@ -2349,7 +2349,7 @@ $(function () {
 						}
 					)
 					// [[/Relative links]]
-					.replace(/\[\[(\/[^|]*?)\]\]/g, function ($0, $1) {
+					.replace(/\[\[(\/[^|]*?)\]\]/g, ($0, $1) => {
 						return f(
 							"<a href='?'>?</a>",
 							Insta.conf.baseUrl + htmlescape_attr($1),
@@ -2357,7 +2357,7 @@ $(function () {
 						);
 					})
 					// [[/Replaced|Relative links]]
-					.replace(/\[\[(\/.*?)\|(.+?)\]\]/g, function ($0, $1, $2) {
+					.replace(/\[\[(\/.*?)\|(.+?)\]\]/g, ($0, $1, $2) => {
 						return f(
 							"<a href='?'>?</a>",
 							Insta.conf.baseUrl + htmlescape_attr($1),
@@ -2365,7 +2365,7 @@ $(function () {
 						);
 					})
 					// [[Common links]]
-					.replace(/\[\[([^[|]*?)\]\](\w*)/g, function ($0, $1, $2) {
+					.replace(/\[\[([^[|]*?)\]\](\w*)/g, ($0, $1, $2) => {
 						return f(
 							"<a href='?'>?</a>",
 							Insta.conf.paths.articles + htmlescape_attr($1),
@@ -2373,7 +2373,7 @@ $(function () {
 						);
 					})
 					// [[Replaced|Links]]
-					.replace(/\[\[([^[]*?)\|([^\]]+?)\]\](\w*)/g, function ($0, $1, $2, $3) {
+					.replace(/\[\[([^[]*?)\|([^\]]+?)\]\](\w*)/g, ($0, $1, $2, $3) => {
 						return f(
 							"<a href='?'>?</a>",
 							Insta.conf.paths.articles + htmlescape_attr($1),
@@ -2381,7 +2381,7 @@ $(function () {
 						);
 					})
 					// [[Stripped:Namespace|Namespace]]
-					.replace(/\[\[([^\]]*?:)?(.*?)( *\(.*?\))?\|\]\]/g, function ($0, $1, $2, $3) {
+					.replace(/\[\[([^\]]*?:)?(.*?)( *\(.*?\))?\|\]\]/g, ($0, $1, $2, $3) => {
 						return f(
 							"<a href='?'>?</a>",
 							Insta.conf.paths.articles +
@@ -2394,7 +2394,7 @@ $(function () {
 					// External links
 					.replace(
 						/\[(https?|news|ftp|mailto|gopher|irc):(\/*)([^\]]*?) (.*?)\]/g,
-						function ($0, $1, $2, $3, $4) {
+						($0, $1, $2, $3, $4) => {
 							return f(
 								"<a class='external' href='?:?'>?</a>",
 								htmlescape_attr($1),
@@ -2403,10 +2403,10 @@ $(function () {
 							);
 						}
 					)
-					.replace(/\[http:\/\/(.*?)\]/g, function ($0, $1) {
+					.replace(/\[http:\/\/(.*?)\]/g, ($0, $1) => {
 						return f("<a class='external' href='http://?'>[#]</a>", htmlescape_attr($1));
 					})
-					.replace(/\[(news|ftp|mailto|gopher|irc):(\/*)(.*?)\]/g, function ($0, $1, $2, $3) {
+					.replace(/\[(news|ftp|mailto|gopher|irc):(\/*)(.*?)\]/g, ($0, $1, $2, $3) => {
 						return f(
 							"<a class='external' href='?:?'>?:?</a>",
 							htmlescape_attr($1),
@@ -2417,7 +2417,7 @@ $(function () {
 					})
 					.replace(
 						/(^| )(https?|news|ftp|mailto|gopher|irc):(\/*)([^ $]*[^.,!?;: $])/g,
-						function ($0, $1, $2, $3, $4) {
+						($0, $1, $2, $3, $4) => {
 							return f(
 								"?<a class='external' href='?:?'>?:?</a>",
 								htmlescape_text($1),
@@ -3779,7 +3779,7 @@ $(function () {
 			return true;
 		} else {
 			// call this function again in a little while...
-			setTimeout(function () {
+			setTimeout(() => {
 				setPopupHTML(str, elementId, popupId, onSuccess);
 			}, 600);
 		}
@@ -4079,7 +4079,7 @@ $(function () {
 		if (!navpop.stopPopupTimer) {
 			navpop.stopPopupTimer = setInterval(posCheckerHook(navpop), 500);
 			navpop.addHook(
-				function () {
+				() => {
 					clearInterval(navpop.stopPopupTimer);
 				},
 				'hide',
@@ -4274,7 +4274,7 @@ $(function () {
 	 */
 	Previewmaker.prototype.killImages = function () {
 		var forbiddenNamespaceAliases = [];
-		$.each(mw.config.get('wgNamespaceIds'), function (_localizedNamespaceLc, _namespaceId) {
+		$.each(mw.config.get('wgNamespaceIds'), (_localizedNamespaceLc, _namespaceId) => {
 			if (_namespaceId != pg.nsImageId && _namespaceId != pg.nsCategoryId) {
 				return;
 			}
@@ -4782,7 +4782,7 @@ $(function () {
 			log('callback of API functions was hit');
 			if (queryType === 'userinfo') {
 				// We need to do another API request
-				fetchUserGroupNames(d.data).then(function () {
+				fetchUserGroupNames(d.data).then(() => {
 					showAPIPreview(queryType, htmlGenerator(article, d, navpop), navpop.idNumber, navpop, d);
 				});
 				return;
@@ -4802,7 +4802,7 @@ $(function () {
 	}
 
 	function linkList(list) {
-		list.sort(function (x, y) {
+		list.sort((x, y) => {
 			return x == y ? 0 : x < y ? -1 : 1;
 		});
 		var buf = [];
@@ -5131,14 +5131,14 @@ $(function () {
 		var user = anyChild(queryObj.users);
 		var messages = [];
 		if (user.groups) {
-			user.groups.forEach(function (groupName) {
+			user.groups.forEach((groupName) => {
 				if (['*', 'user', 'autoconfirmed', 'extendedconfirmed', 'named'].indexOf(groupName) === -1) {
 					messages.push('group-' + groupName + '-member');
 				}
 			});
 		}
 		if (queryObj.globaluserinfo && queryObj.globaluserinfo.groups) {
-			queryObj.globaluserinfo.groups.forEach(function (groupName) {
+			queryObj.globaluserinfo.groups.forEach((groupName) => {
 				messages.push('group-' + groupName + '-member');
 			});
 		}
@@ -5410,7 +5410,7 @@ $(function () {
 				}
 			}
 			if (user.groups) {
-				user.groups.forEach(function (groupName) {
+				user.groups.forEach((groupName) => {
 					if (['*', 'user', 'autoconfirmed', 'extendedconfirmed', 'named'].indexOf(groupName) === -1) {
 						ret.push(
 							pg.escapeQuotesHTML(mw.message('group-' + groupName + '-member', user.gender).text())
@@ -5419,7 +5419,7 @@ $(function () {
 				});
 			}
 			if (globaluserinfo && globaluserinfo.groups) {
-				globaluserinfo.groups.forEach(function (groupName) {
+				globaluserinfo.groups.forEach((groupName) => {
 					ret.push(
 						'<i>' +
 							pg.escapeQuotesHTML(
@@ -5758,7 +5758,7 @@ $(function () {
 	// return a regexp pattern matching all variants to write the given namespace
 	function nsRe(namespaceId) {
 		var imageNamespaceVariants = [];
-		$.each(mw.config.get('wgNamespaceIds'), function (_localizedNamespaceLc, _namespaceId) {
+		$.each(mw.config.get('wgNamespaceIds'), (_localizedNamespaceLc, _namespaceId) => {
 			if (_namespaceId != namespaceId) {
 				return;
 			}
@@ -5822,7 +5822,7 @@ $(function () {
 		mouseOverWikiLink2(a);
 		if (a.navpopup) {
 			a.navpopup.addHook(
-				function () {
+				() => {
 					runStopPopupTimer(a.navpopup);
 				},
 				'unhide',
@@ -6048,7 +6048,7 @@ $(function () {
 			savedThis.track.apply(savedThis, [e]);
 		};
 		if (this.loopDelay) {
-			this.timer = setInterval(function () {
+			this.timer = setInterval(() => {
 				//log('loop delay in mousetracker is working');
 				savedThis.runHooks();
 			}, this.loopDelay);
@@ -6839,7 +6839,7 @@ $(function () {
 		if (getValueOf('popupReview')) {
 			getMwApi()
 				.get(params)
-				.done(function (data) {
+				.done((data) => {
 					var rights = data.query.users[0].rights;
 					pg.user.canReview = rights.indexOf('review') !== -1; // TODO: Should it be a getValueOf('ReviewRight') ?
 				});
@@ -6858,7 +6858,7 @@ $(function () {
 		};
 		return getMwApi()
 			.get(params)
-			.then(function (data) {
+			.then((data) => {
 				pg.wiki.specialpagealiases = data.query.specialpagealiases;
 			});
 	}
@@ -6911,7 +6911,7 @@ $(function () {
 		var variants = [];
 		variants.push(mw.util.escapeRegExp(specialPageObj.realname));
 		variants.push(mw.util.escapeRegExp(encodeURI(specialPageObj.realname)));
-		specialPageObj.aliases.forEach(function (alias) {
+		specialPageObj.aliases.forEach((alias) => {
 			variants.push(mw.util.escapeRegExp(alias));
 			variants.push(mw.util.escapeRegExp(encodeURI(alias)));
 		});
@@ -6923,7 +6923,7 @@ $(function () {
 		var sp = nsRe(pg.nsSpecialId);
 		pg.re.urlNoPopup = RegExp('((title=|/)' + sp + '(?:%3A|:)|section=[0-9]|^#$)');
 
-		pg.wiki.specialpagealiases.forEach(function (specialpage) {
+		pg.wiki.specialpagealiases.forEach((specialpage) => {
 			if (specialpage.realname === 'Contributions') {
 				pg.re.contribs = RegExp(
 					'(title=|/)' +
@@ -7071,7 +7071,7 @@ $(function () {
 				'mediawiki.jqueryMsg',
 			])
 			.then(fetchSpecialPageNames)
-			.then(function () {
+			.then(() => {
 				// NB translatable strings should be set up first (strings.js)
 				// basics
 				setupDebugging();
@@ -7805,7 +7805,7 @@ $(function () {
 	 */
 	function loadDiff(article, oldid, diff, navpop) {
 		navpop.diffData = { oldRev: {}, newRev: {} };
-		mw.loader.using('mediawiki.api').then(function () {
+		mw.loader.using('mediawiki.api').then(() => {
 			var api = getMwApi();
 			var params = {
 				action: 'compare',
@@ -7845,7 +7845,7 @@ $(function () {
 					break;
 			}
 
-			api.get(params).then(function (data) {
+			api.get(params).then((data) => {
 				navpop.diffData.oldRev.revid = data.compare.fromrevid;
 				navpop.diffData.newRev.revid = data.compare.torevid;
 
@@ -7889,7 +7889,7 @@ $(function () {
 		};
 		getMwApi()
 			.get(params)
-			.then(function (data) {
+			.then((data) => {
 				var stable_revid =
 					(data.query.pages[0].flagged && data.query.pages[0].flagged.stable_revid) || 0;
 				// The diff can be reviewed if the old version is the last reviewed version
@@ -7911,11 +7911,11 @@ $(function () {
 						};
 						getMwApi()
 							.postWithToken('csrf', params)
-							.done(function () {
+							.done(() => {
 								a.style.display = 'none';
 								// TODO: Update current page and other already constructed popups
 							})
-							.fail(function () {
+							.fail(() => {
 								alert(popupString('Could not marked this edit as patrolled'));
 							});
 					};
@@ -8297,7 +8297,7 @@ $(function () {
 	}
 
 	pg.fn.getLastContrib = function getLastContrib(wikipage, newWin) {
-		getHistoryInfo(wikipage, function (x) {
+		getHistoryInfo(wikipage, (x) => {
 			processLastContribInfo(x, { page: wikipage, newWin: newWin });
 		});
 	};
@@ -8325,7 +8325,7 @@ $(function () {
 	}
 
 	pg.fn.getDiffSinceMyEdit = function getDiffSinceMyEdit(wikipage, newWin) {
-		getHistoryInfo(wikipage, function (x) {
+		getHistoryInfo(wikipage, (x) => {
 			processDiffSinceMyEdit(x, { page: wikipage, newWin: newWin });
 		});
 	};
@@ -8432,7 +8432,7 @@ $(function () {
 		$.when(
 			getMwApi().postWithToken('watch', reqData),
 			getMwApi().loadMessagesIfMissing([messageName])
-		).done(function () {
+		).done(() => {
 			mw.notify(mw.message(messageName, title).parseDom());
 		});
 	};
@@ -8877,7 +8877,7 @@ $(function () {
 		getHistory(
 			wikipage,
 			whatNext ?
-				function (d) {
+				(d) => {
 					whatNext(processHistory(d));
 				} :
 				processHistory
@@ -9488,7 +9488,7 @@ $(function () {
 		// This hook is also fired after page load.
 		mw.hook('wikipage.content').add(dynamicContentHandler);
 
-		mw.hook('ext.echo.overlay.beforeShowingOverlay').add(function ($overlay) {
+		mw.hook('ext.echo.overlay.beforeShowingOverlay').add(($overlay) => {
 			dynamicContentHandler($overlay.find('.mw-echo-state'));
 		});
 	}());
