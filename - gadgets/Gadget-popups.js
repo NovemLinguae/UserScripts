@@ -3104,7 +3104,7 @@ $(() => {
 		}
 
 		var ret = {};
-		if (url.indexOf('?') == -1) {
+		if (!url.includes('?')) {
 			return ret;
 		}
 		url = url.split('#')[0];
@@ -3186,7 +3186,7 @@ $(() => {
 
 	function isValidImageName(str) {
 		// extend as needed...
-		return str.indexOf('{') == -1;
+		return !str.includes('{');
 	}
 
 	function isInStrippableNamespace(article) {
@@ -3243,7 +3243,7 @@ $(() => {
 				pg.re.contribs.test(h) ||
 				pg.re.backlinks.test(h) ||
 				pg.re.specialdiff.test(h)) &&
-			h.indexOf('&limit=') == -1
+			!h.includes('&limit=')
 		);
 	}
 
@@ -3817,7 +3817,7 @@ $(() => {
 		var redirs = pg.misc.redirSpans;
 
 		for (var i = 0; i < numspans; ++i) {
-			var found = redirs && redirs.indexOf(spans[i]) !== -1;
+			var found = redirs && redirs.includes(spans[i]);
 			//log('redir='+redir+', found='+found+', spans[i]='+spans[i]);
 			if ((found && !redir) || (!found && redir)) {
 				//log('skipping this set of the loop');
@@ -4798,7 +4798,7 @@ $(() => {
 		var tz = mw.user.options.get('timecorrection');
 
 		if (tz) {
-			if (tz.indexOf('|') > -1) {
+			if (tz.includes('|')) {
 				// New format
 				return parseInt(tz.split('|')[1], 10);
 			}
@@ -4832,7 +4832,7 @@ $(() => {
 			return true;
 		}
 		var tz = mw.user.options.get('timecorrection');
-		if (tz && tz.indexOf('ZoneInfo|') === -1) {
+		if (tz && !tz.includes('ZoneInfo|')) {
 			// System| Default system time, default for users who didn't configure timezone
 			// Offset| Manual defined offset by user
 			return true;
@@ -5108,7 +5108,7 @@ $(() => {
 		var messages = [];
 		if (user.groups) {
 			user.groups.forEach((groupName) => {
-				if (['*', 'user', 'autoconfirmed', 'extendedconfirmed', 'named'].indexOf(groupName) === -1) {
+				if (!['*', 'user', 'autoconfirmed', 'extendedconfirmed', 'named'].includes(groupName)) {
 					messages.push('group-' + groupName + '-member');
 				}
 			});
@@ -5387,7 +5387,7 @@ $(() => {
 			}
 			if (user.groups) {
 				user.groups.forEach((groupName) => {
-					if (['*', 'user', 'autoconfirmed', 'extendedconfirmed', 'named'].indexOf(groupName) === -1) {
+					if (!['*', 'user', 'autoconfirmed', 'extendedconfirmed', 'named'].includes(groupName)) {
 						ret.push(
 							pg.escapeQuotesHTML(mw.message('group-' + groupName + '-member', user.gender).text())
 						);
@@ -5790,7 +5790,7 @@ $(() => {
 		if (getValueOf('popupOnEditSelection') == 'boxpreview') {
 			return doSeparateSelectionPopup(sel, article);
 		}
-		if (close > 0 && sel.substring(close + 2).indexOf('[[') >= 0) {
+		if (close > 0 && sel.substring(close + 2).includes('[[')) {
 			return;
 		}
 		var a = document.createElement('a');
@@ -6817,7 +6817,7 @@ $(() => {
 				.get(params)
 				.done((data) => {
 					var rights = data.query.users[0].rights;
-					pg.user.canReview = rights.indexOf('review') !== -1; // TODO: Should it be a getValueOf('ReviewRight') ?
+					pg.user.canReview = rights.includes('review'); // TODO: Should it be a getValueOf('ReviewRight') ?
 				});
 		}
 	}
