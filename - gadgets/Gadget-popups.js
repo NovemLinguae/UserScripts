@@ -2409,8 +2409,7 @@ $(() => {
 					.replace('__NOTOC__', '')
 					.replace('__NOINDEX__', '')
 					.replace('__INDEX__', '')
-					.replace('__NOEDITSECTION__', '')
-			;
+					.replace('__NOEDITSECTION__', '');
 			return parse_inline_formatting(str);
 		}
 
