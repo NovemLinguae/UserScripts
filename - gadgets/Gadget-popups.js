@@ -926,7 +926,7 @@ $(() => {
 	};
 	pg.structures.nostalgia.popupRedirTopLinks = pg.structures.nostalgia.popupTopLinks;
 
-	/** -- fancy -- **/
+	/** -- fancy -- */
 	copyStructure('original', 'fancy');
 	pg.structures.fancy.popupTitle = function (x) {
 		return navlinkStringToHTML('<font size=+0><<mainlink>></font>', x.article, x.params);
@@ -978,7 +978,7 @@ $(() => {
 	pg.structures.fancy.popupRedirTopLinks = pg.structures.fancy.popupTopLinks;
 	pg.structures.fancy.popupRedirOtherLinks = pg.structures.fancy.popupOtherLinks;
 
-	/** -- fancy2 -- **/
+	/** -- fancy2 -- */
 	// hack for [[User:MacGyverMagic]]
 	copyStructure('fancy', 'fancy2');
 	pg.structures.fancy2.popupTopLinks = function (x) {
@@ -1014,7 +1014,7 @@ $(() => {
 		];
 	};
 
-	/** -- menus -- **/
+	/** -- menus -- */
 	copyStructure('original', 'menus');
 	pg.structures.menus.popupLayout = function () {
 		return [
