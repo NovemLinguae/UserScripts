@@ -645,7 +645,7 @@ $(() => {
 	/**
 	 * @file
 	 * The {@link Drag} object, which enables objects to be dragged around.
-	 * 
+	 *
 	 * <pre>
 	 * *************************************************
 	 * dom-drag.js
@@ -656,7 +656,7 @@ $(() => {
 	 * sometimes fired off the handle, not the root.
 	 * *************************************************
 	 * Pared down, some hooks added by [[User:Lupin]]
-	 * 
+	 *
 	 * Copyright Aaron Boodman.
 	 * Saying stupid things daily since March 2001.
 	 * </pre>
