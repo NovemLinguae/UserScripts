@@ -6898,9 +6898,11 @@ $(function () {
 	function setMainRegex() {
 		var reStart = '[^:]*://';
 		var preTitles =
-			literalizeRegex(mw.config.get('wgScriptPath')) + '/(?:index[.]php|wiki[.]phtml)[?]title=';
-		preTitles += '|' + literalizeRegex(pg.wiki.articlePath + '/');
-
+			// Take customizable wgScript into account (it isn't guaranteed to be index.php)
+			'(?:' + literalizeRegex(mw.config.get('wgScript')) + '|' +
+			// handle index.php (likely to work even if different from wgScript) and legacy wiki.phtml
+			literalizeRegex(mw.config.get('wgScriptPath')) + '/(?:index[.]php|wiki[.]phtml))';
+		preTitles += '[?]title=|' + literalizeRegex(pg.wiki.articlePath + '/');
 		var reEnd = '(' + preTitles + ')([^&?#]*)[^#]*(?:#(.+))?';
 		pg.re.main = RegExp(reStart + literalizeRegex(pg.wiki.sitebase) + reEnd);
 	}
