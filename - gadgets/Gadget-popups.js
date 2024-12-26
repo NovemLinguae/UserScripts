@@ -2308,13 +2308,11 @@ $(() => {
 								'):[^|]*?)\\]\\](\\w*)',
 							'gi'
 						),
-						($0, $1, $2) => {
-							return f(
+						($0, $1, $2) => f(
 								"<a href='?'>?</a>",
 								Insta.conf.paths.articles + htmlescape_attr($1),
 								htmlescape_text($1) + htmlescape_text($2)
-							);
-						}
+							)
 					)
 					// remove straight category and interwiki tags
 					.replace(
@@ -2340,93 +2338,73 @@ $(() => {
 								'):.*?)\\|([^\\]]+?)\\]\\](\\w*)',
 							'gi'
 						),
-						($0, $1, $2, $3) => {
-							return f(
+						($0, $1, $2, $3) => f(
 								"<a href='?'>?</a>",
 								Insta.conf.paths.articles + htmlescape_attr($1),
 								htmlescape_text($2) + htmlescape_text($3)
-							);
-						}
+							)
 					)
 					// [[/Relative links]]
-					.replace(/\[\[(\/[^|]*?)\]\]/g, ($0, $1) => {
-						return f(
+					.replace(/\[\[(\/[^|]*?)\]\]/g, ($0, $1) => f(
 							"<a href='?'>?</a>",
 							Insta.conf.baseUrl + htmlescape_attr($1),
 							htmlescape_text($1)
-						);
-					})
+						))
 					// [[/Replaced|Relative links]]
-					.replace(/\[\[(\/.*?)\|(.+?)\]\]/g, ($0, $1, $2) => {
-						return f(
+					.replace(/\[\[(\/.*?)\|(.+?)\]\]/g, ($0, $1, $2) => f(
 							"<a href='?'>?</a>",
 							Insta.conf.baseUrl + htmlescape_attr($1),
 							htmlescape_text($2)
-						);
-					})
+						))
 					// [[Common links]]
-					.replace(/\[\[([^[|]*?)\]\](\w*)/g, ($0, $1, $2) => {
-						return f(
+					.replace(/\[\[([^[|]*?)\]\](\w*)/g, ($0, $1, $2) => f(
 							"<a href='?'>?</a>",
 							Insta.conf.paths.articles + htmlescape_attr($1),
 							htmlescape_text($1) + htmlescape_text($2)
-						);
-					})
+						))
 					// [[Replaced|Links]]
-					.replace(/\[\[([^[]*?)\|([^\]]+?)\]\](\w*)/g, ($0, $1, $2, $3) => {
-						return f(
+					.replace(/\[\[([^[]*?)\|([^\]]+?)\]\](\w*)/g, ($0, $1, $2, $3) => f(
 							"<a href='?'>?</a>",
 							Insta.conf.paths.articles + htmlescape_attr($1),
 							htmlescape_text($2) + htmlescape_text($3)
-						);
-					})
+						))
 					// [[Stripped:Namespace|Namespace]]
-					.replace(/\[\[([^\]]*?:)?(.*?)( *\(.*?\))?\|\]\]/g, ($0, $1, $2, $3) => {
-						return f(
+					.replace(/\[\[([^\]]*?:)?(.*?)( *\(.*?\))?\|\]\]/g, ($0, $1, $2, $3) => f(
 							"<a href='?'>?</a>",
 							Insta.conf.paths.articles +
 								htmlescape_attr($1) +
 								htmlescape_attr($2) +
 								htmlescape_attr($3),
 							htmlescape_text($2)
-						);
-					})
+						))
 					// External links
 					.replace(
 						/\[(https?|news|ftp|mailto|gopher|irc):(\/*)([^\]]*?) (.*?)\]/g,
-						($0, $1, $2, $3, $4) => {
-							return f(
+						($0, $1, $2, $3, $4) => f(
 								"<a class='external' href='?:?'>?</a>",
 								htmlescape_attr($1),
 								htmlescape_attr($2) + htmlescape_attr($3),
 								htmlescape_text($4)
-							);
-						}
+							)
 					)
-					.replace(/\[http:\/\/(.*?)\]/g, ($0, $1) => {
-						return f("<a class='external' href='http://?'>[#]</a>", htmlescape_attr($1));
-					})
-					.replace(/\[(news|ftp|mailto|gopher|irc):(\/*)(.*?)\]/g, ($0, $1, $2, $3) => {
-						return f(
+					.replace(/\[http:\/\/(.*?)\]/g, ($0, $1) => f("<a class='external' href='http://?'>[#]</a>", htmlescape_attr($1)))
+					.replace(/\[(news|ftp|mailto|gopher|irc):(\/*)(.*?)\]/g, ($0, $1, $2, $3) => f(
 							"<a class='external' href='?:?'>?:?</a>",
 							htmlescape_attr($1),
 							htmlescape_attr($2) + htmlescape_attr($3),
 							htmlescape_text($1),
 							htmlescape_text($2) + htmlescape_text($3)
-						);
-					})
+						))
 					.replace(
 						/(^| )(https?|news|ftp|mailto|gopher|irc):(\/*)([^ $]*[^.,!?;: $])/g,
-						($0, $1, $2, $3, $4) => {
-							return f(
+						($0, $1, $2, $3, $4) => f(
 								"?<a class='external' href='?:?'>?:?</a>",
 								htmlescape_text($1),
 								htmlescape_attr($2),
 								htmlescape_attr($3) + htmlescape_attr($4),
 								htmlescape_text($2),
 								htmlescape_text($3) + htmlescape_text($4)
-							);
-						}
+							)
 					)
 					.replace('__NOTOC__', '')
 					.replace('__NOINDEX__', '')
@@ -4802,9 +4780,7 @@ $(() => {
 	}
 
 	function linkList(list) {
-		list.sort((x, y) => {
-			return x == y ? 0 : x < y ? -1 : 1;
-		});
+		list.sort((x, y) => x == y ? 0 : x < y ? -1 : 1);
 		var buf = [];
 		for (var i = 0; i < list.length; ++i) {
 			buf.push(
