@@ -25,7 +25,7 @@ $(() => {
 	//
 
 	// Trying to shove as many of these as possible into the pg (popup globals) object
-	const pg = {
+	var pg = {
 		api: {}, // MediaWiki API requests
 		re: {}, // regexps
 		ns: {}, // namespaces
@@ -81,7 +81,7 @@ $(() => {
 		}
 		container.ranSetupTooltipsAlready = !remove;
 
-		let anchors;
+		var anchors;
 		anchors = container.getElementsByTagName('A');
 		setupTooltipsLoop(anchors, 0, 250, 100, remove, popData);
 	}
@@ -101,9 +101,9 @@ $(() => {
 
 	function setupTooltipsLoop(anchors, begin, howmany, sleep, remove, popData) {
 		log(simplePrintf('setupTooltipsLoop(%s,%s,%s,%s,%s)', arguments));
-		const finish = begin + howmany;
-		const loopend = Math.min(finish, anchors.length);
-		let j = loopend - begin;
+		var finish = begin + howmany;
+		var loopend = Math.min(finish, anchors.length);
+		var j = loopend - begin;
 		log(
 			'setupTooltips: anchors.length=' +
 				anchors.length +
@@ -116,11 +116,11 @@ $(() => {
 				', remove=' +
 				remove
 		);
-		const doTooltip = remove ? removeTooltip : addTooltip;
+		var doTooltip = remove ? removeTooltip : addTooltip;
 		// try a faster (?) loop construct
 		if (j > 0) {
 			do {
-				const a = anchors[loopend - j];
+				var a = anchors[loopend - j];
 				if (typeof a === 'undefined' || !a || !a.href) {
 					log('got null anchor at index ' + loopend - j);
 					continue;
@@ -143,11 +143,11 @@ $(() => {
 	// eliminate popups from the TOC
 	// This also kills any onclick stuff that used to be going on in the toc
 	function rmTocTooltips() {
-		const toc = document.getElementById('toc');
+		var toc = document.getElementById('toc');
 		if (toc) {
-			const tocLinks = toc.getElementsByTagName('A');
-			const tocLen = tocLinks.length;
-			for (let j = 0; j < tocLen; ++j) {
+			var tocLinks = toc.getElementsByTagName('A');
+			var tocLen = tocLinks.length;
+			for (var j = 0; j < tocLen; ++j) {
 				removeTooltip(tocLinks[j], true);
 			}
 		}
@@ -191,10 +191,10 @@ $(() => {
 	}
 
 	function registerHooks(np) {
-		const popupMaxWidth = getValueOf('popupMaxWidth');
+		var popupMaxWidth = getValueOf('popupMaxWidth');
 
 		if (typeof popupMaxWidth === 'number') {
-			const setMaxWidth = function () {
+			var setMaxWidth = function () {
 				np.mainDiv.style.maxWidth = popupMaxWidth + 'px';
 				np.maxWidth = popupMaxWidth;
 			};
@@ -220,9 +220,9 @@ $(() => {
 		if (getValueOf('popupModifier')) {
 			// if popupModifierAction = enable, we should popup when the modifier is pressed
 			// if popupModifierAction = disable, we should popup unless the modifier is pressed
-			const action = getValueOf('popupModifierAction');
-			const key = action == 'disable' ? 'keyup' : 'keydown';
-			const a = this;
+			var action = getValueOf('popupModifierAction');
+			var key = action == 'disable' ? 'keyup' : 'keydown';
+			var a = this;
 			a.modifierKeyHandler = function (evt) {
 				mouseOverWikiLink2(a, evt);
 			};
@@ -235,26 +235,25 @@ $(() => {
 	/**
 	 * Gets the references list item that the provided footnote link targets. This
 	 * is typically a li element within the ol.references element inside the reflist.
-	 *
 	 * @param {Element} a - A footnote link.
 	 * @return {Element|boolean} The targeted element, or false if one can't be found.
 	 */
 	function footnoteTarget(a) {
-		const aTitle = Title.fromAnchor(a);
+		var aTitle = Title.fromAnchor(a);
 		// We want ".3A" rather than "%3A" or "?" here, so use the anchor property directly
-		const anch = aTitle.anchor;
+		var anch = aTitle.anchor;
 		if (!/^(cite_note-|_note-|endnote)/.test(anch)) {
 			return false;
 		}
 
-		const lTitle = Title.fromURL(location.href);
+		var lTitle = Title.fromURL(location.href);
 		if (lTitle.toString(true) !== aTitle.toString(true)) {
 			return false;
 		}
 
-		let el = document.getElementById(anch);
+		var el = document.getElementById(anch);
 		while (el && typeof el.nodeName === 'string') {
-			const nt = el.nodeName.toLowerCase();
+			var nt = el.nodeName.toLowerCase();
 			if (nt === 'li') {
 				return el;
 			} else if (nt === 'body') {
@@ -273,7 +272,7 @@ $(() => {
 	}
 
 	function modifierPressed(evt) {
-		const mod = getValueOf('popupModifier');
+		var mod = getValueOf('popupModifier');
 		if (!mod) {
 			return false;
 		}
@@ -292,7 +291,7 @@ $(() => {
 		}
 		// if popupModifierAction = enable, we should popup when the modifier is pressed
 		// if popupModifierAction = disable, we should popup unless the modifier is pressed
-		const action = getValueOf('popupModifierAction');
+		var action = getValueOf('popupModifierAction');
 		return (
 			(action == 'enable' && modifierPressed(evt)) || (action == 'disable' && !modifierPressed(evt))
 		);
@@ -315,7 +314,7 @@ $(() => {
 			setDefault('popupStructure', 'original');
 		}
 
-		const article = new Title().fromAnchor(a);
+		var article = new Title().fromAnchor(a);
 		// set global variable (ugh) to hold article (wikipage)
 		pg.current.article = article;
 
@@ -335,9 +334,9 @@ $(() => {
 
 		if (getValueOf('simplePopups')) {
 			if (getValueOf('popupPreviewButton') && !a.simpleNoMore) {
-				const d = document.createElement('div');
+				var d = document.createElement('div');
 				d.className = 'popupPreviewButtonDiv';
-				const s = document.createElement('span');
+				var s = document.createElement('span');
 				d.appendChild(s);
 				s.className = 'popupPreviewButton';
 				s['on' + getValueOf('popupPreviewButtonEvent')] = function () {
@@ -363,7 +362,7 @@ $(() => {
 		fillEmptySpans({ navpopup: a.navpopup });
 
 		if (getValueOf('popupDraggable')) {
-			let dragHandle = getValueOf('popupDragHandle') || null;
+			var dragHandle = getValueOf('popupDragHandle') || null;
 			if (dragHandle && dragHandle != 'all') {
 				dragHandle += a.navpopup.idNumber;
 			}
@@ -388,7 +387,7 @@ $(() => {
 	}
 
 	function newNavpopup(a, article) {
-		const navpopup = new Navpopup();
+		var navpopup = new Navpopup();
 		navpopup.fuzz = 5;
 		navpopup.delay = getValueOf('popupDelay') * 1000;
 		// increment global counter now
@@ -419,10 +418,10 @@ $(() => {
 	}
 
 	function nonsimplePopupContent(a, article) {
-		let diff = null,
+		var diff = null,
 			history = null;
-		const params = parseParams(a.href);
-		const oldid = typeof params.oldid == 'undefined' ? null : params.oldid;
+		var params = parseParams(a.href);
+		var oldid = typeof params.oldid == 'undefined' ? null : params.oldid;
 		if (shouldShow(a, 'popupPreviewDiffs')) {
 			diff = params.diff;
 		}
@@ -430,7 +429,7 @@ $(() => {
 			history = params.action == 'history';
 		}
 		a.navpopup.pending = 0;
-		const referenceElement = footnoteTarget(a);
+		var referenceElement = footnoteTarget(a);
 		if (referenceElement) {
 			footnotePreview(referenceElement, a.navpopup);
 		} else if (diff || diff === 0) {
@@ -493,7 +492,7 @@ $(() => {
 
 	function loadPreviewFromRedir(redirMatch, navpop) {
 		// redirMatch is a regex match
-		const target = new Title().fromWikiText(redirMatch[2]);
+		var target = new Title().fromWikiText(redirMatch[2]);
 		// overwrite (or add) anchor from original target
 		// mediawiki does overwrite; eg [[User:Lupin/foo3#Done]]
 		if (navpop.article.anchor) {
@@ -501,7 +500,7 @@ $(() => {
 		}
 		navpop.redir++;
 		navpop.redirTarget = target;
-		const warnRedir = redirLink(target, navpop.article);
+		var warnRedir = redirLink(target, navpop.article);
 		setPopupHTML(warnRedir, 'popupWarnRedir', navpop.idNumber);
 		navpop.article = target;
 		fillEmptySpans({ redir: true, redirTarget: target, navpopup: navpop });
@@ -513,7 +512,7 @@ $(() => {
 			return;
 		}
 
-		const redirMatch = pg.re.redirect.exec(download.data);
+		var redirMatch = pg.re.redirect.exec(download.data);
 		if (download.owner.redir === 0 && redirMatch) {
 			loadPreviewFromRedir(redirMatch, download.owner);
 			return;
@@ -522,7 +521,7 @@ $(() => {
 		if (download.owner.visible || !getValueOf('popupLazyPreviews')) {
 			insertPreviewNow(download);
 		} else {
-			const id = download.owner.redir ? 'PREVIEW_REDIR_HOOK' : 'PREVIEW_HOOK';
+			var id = download.owner.redir ? 'PREVIEW_REDIR_HOOK' : 'PREVIEW_HOOK';
 			download.owner.addHook(
 				() => {
 					insertPreviewNow(download);
@@ -539,9 +538,9 @@ $(() => {
 		if (!download.owner) {
 			return;
 		}
-		const wikiText = download.data;
-		const navpop = download.owner;
-		const art = navpop.redirTarget || navpop.originalArticle;
+		var wikiText = download.data;
+		var navpop = download.owner;
+		var art = navpop.redirTarget || navpop.originalArticle;
 
 		makeFixDabs(wikiText, navpop);
 		if (getValueOf('popupSummaryData')) {
@@ -549,7 +548,7 @@ $(() => {
 			setPopupTrailer(getPageInfo(wikiText, download), navpop.idNumber);
 		}
 
-		let imagePage = '';
+		var imagePage = '';
 		if (art.namespaceId() == pg.nsImageId) {
 			imagePage = art.toString();
 		} else {
@@ -568,13 +567,13 @@ $(() => {
 		if (download && typeof download.data == typeof '') {
 			if (art.namespaceId() == pg.nsTemplateId && getValueOf('popupPreviewRawTemplates')) {
 				// FIXME compare/consolidate with diff escaping code for wikitext
-				const h =
+				var h =
 					'<hr /><span style="font-family: monospace;">' +
 					download.data.entify().split('\\n').join('<br />\\n') +
 					'</span>';
 				setPopupHTML(h, 'popupPreview', navpop.idNumber);
 			} else {
-				const p = prepPreviewmaker(download.data, art, navpop);
+				var p = prepPreviewmaker(download.data, art, navpop);
 				p.showPreview();
 			}
 		}
@@ -582,9 +581,9 @@ $(() => {
 
 	function prepPreviewmaker(data, article, navpop) {
 		// deal with tricksy anchors
-		const d = anchorize(data, article.anchorString());
-		const urlBase = joinPath([pg.wiki.articlebase, article.urlString()]);
-		const p = new Previewmaker(d, urlBase, navpop);
+		var d = anchorize(data, article.anchorString());
+		var urlBase = joinPath([pg.wiki.articlebase, article.urlString()]);
+		var p = new Previewmaker(d, urlBase, navpop);
 		return p;
 	}
 
@@ -593,7 +592,7 @@ $(() => {
 		if (!anch) {
 			return d;
 		}
-		const anchRe = RegExp(
+		var anchRe = RegExp(
 			'(?:=+\\s*' +
 				literalizeRegex(anch).replace(/[_ ]/g, '[_ ]') +
 				'\\s*=+|\\{\\{\\s*' +
@@ -602,14 +601,14 @@ $(() => {
 				literalizeRegex(anch) +
 				'\\s*(?:\\|[^}]*)?}})'
 		);
-		const match = d.match(anchRe);
+		var match = d.match(anchRe);
 		if (match && match.length > 0 && match[0]) {
 			return d.substring(d.indexOf(match[0]));
 		}
 
 		// now try to deal with == foo [[bar|baz]] boom == -> #foo_baz_boom
-		const lines = d.split('\n');
-		for (let i = 0; i < lines.length; ++i) {
+		var lines = d.split('\n');
+		for (var i = 0; i < lines.length; ++i) {
 			lines[i] = lines[i]
 				.replace(/[[]{2}([^|\]]*?[|])?(.*?)[\]]{2}/g, '$2')
 				.replace(/'''([^'])/g, '$1')
@@ -646,7 +645,7 @@ $(() => {
 	/**
 	 * @file
 	 * The {@link Drag} object, which enables objects to be dragged around.
-	 *
+	 * 
 	 * <pre>
 	 * *************************************************
 	 * dom-drag.js
@@ -657,7 +656,7 @@ $(() => {
 	 * sometimes fired off the handle, not the root.
 	 * *************************************************
 	 * Pared down, some hooks added by [[User:Lupin]]
-	 *
+	 * 
 	 * Copyright Aaron Boodman.
 	 * Saying stupid things daily since March 2001.
 	 * </pre>
@@ -665,14 +664,12 @@ $(() => {
 
 	/**
 	 * Creates a new Drag object. This is used to make various DOM elements draggable.
-	 *
 	 * @constructor
 	 */
 	function Drag() {
 		/**
 		 * Condition to determine whether or not to drag. This function should take one parameter,
 		 * an Event.  To disable this, set it to <code>null</code>.
-		 *
 		 * @type {Function}
 		 */
 		this.startCondition = null;
@@ -680,7 +677,6 @@ $(() => {
 		/**
 		 * Hook to be run when the drag finishes. This is passed the final coordinates of the
 		 * dragged object (two integers, x and y). To disables this, set it to <code>null</code>.
-		 *
 		 * @type {Function}
 		 */
 		this.endHook = null;
@@ -688,7 +684,6 @@ $(() => {
 
 	/**
 	 * Gets an event in a cross-browser manner.
-	 *
 	 * @param {Event} e
 	 * @private
 	 */
@@ -708,12 +703,11 @@ $(() => {
 	/**
 	 * Initialises the Drag instance by telling it which object you want to be draggable, and what
 	 * you want to drag it by.
-	 *
-	 * @param {HTMLElement} o The "handle" by which <code>oRoot</code> is dragged.
-	 * @param {HTMLElement} oRoot The object which moves when <code>o</code> is dragged, or <code>o</code> if omitted.
+	 * @param {DOMElement} o The "handle" by which <code>oRoot</code> is dragged.
+	 * @param {DOMElement} oRoot The object which moves when <code>o</code> is dragged, or <code>o</code> if omitted.
 	 */
 	Drag.prototype.init = function (o, oRoot) {
-		const dragObj = this;
+		var dragObj = this;
 		this.obj = o;
 		o.onmousedown = function (e) {
 			dragObj.start.apply(dragObj, [e]);
@@ -739,24 +733,23 @@ $(() => {
 
 	/**
 	 * Starts the drag.
-	 *
 	 * @private
 	 * @param {Event} e
 	 */
 	Drag.prototype.start = function (e) {
-		const o = this.obj; // = this;
+		var o = this.obj; // = this;
 		e = this.fixE(e);
 		if (this.startCondition && !this.startCondition(e)) {
 			return;
 		}
-		const y = parseInt(o.vmode ? o.root.style.top : o.root.style.bottom, 10);
-		const x = parseInt(o.hmode ? o.root.style.left : o.root.style.right, 10);
+		var y = parseInt(o.vmode ? o.root.style.top : o.root.style.bottom, 10);
+		var x = parseInt(o.hmode ? o.root.style.left : o.root.style.right, 10);
 		o.root.onthisStart(x, y);
 
 		o.lastMouseX = e.clientX;
 		o.lastMouseY = e.clientY;
 
-		const dragObj = this;
+		var dragObj = this;
 		o.onmousemoveDefault = document.onmousemove;
 		o.dragging = true;
 		document.onmousemove = function (e) {
@@ -770,19 +763,18 @@ $(() => {
 
 	/**
 	 * Does the drag.
-	 *
 	 * @param {Event} e
 	 * @private
 	 */
 	Drag.prototype.drag = function (e) {
 		e = this.fixE(e);
-		const o = this.obj;
+		var o = this.obj;
 
-		const ey = e.clientY;
-		const ex = e.clientX;
-		const y = parseInt(o.vmode ? o.root.style.top : o.root.style.bottom, 10);
-		const x = parseInt(o.hmode ? o.root.style.left : o.root.style.right, 10);
-		let nx, ny;
+		var ey = e.clientY;
+		var ex = e.clientX;
+		var y = parseInt(o.vmode ? o.root.style.top : o.root.style.bottom, 10);
+		var x = parseInt(o.hmode ? o.root.style.left : o.root.style.right, 10);
+		var nx, ny;
 
 		nx = x + (ex - o.lastMouseX) * (o.hmode ? 1 : -1);
 		ny = y + (ey - o.lastMouseY) * (o.vmode ? 1 : -1);
@@ -798,7 +790,6 @@ $(() => {
 
 	/**
 	 * Ends the drag.
-	 *
 	 * @private
 	 */
 	Drag.prototype.end = function () {
@@ -876,14 +867,14 @@ $(() => {
 
 	function copyStructure(oldStructure, newStructure) {
 		pg.structures[newStructure] = {};
-		for (const prop in pg.structures[oldStructure]) {
+		for (var prop in pg.structures[oldStructure]) {
 			pg.structures[newStructure][prop] = pg.structures[oldStructure][prop];
 		}
 	}
 
 	copyStructure('original', 'nostalgia');
 	pg.structures.nostalgia.popupTopLinks = function (x) {
-		let str = '';
+		var str = '';
 		str += '<b><<mainlink|shortcut= >></b>';
 
 		// user links
@@ -896,13 +887,13 @@ $(() => {
 		// editing links
 		// talkpage   -> edit|new - history - un|watch - article|edit
 		// other page -> edit - history - un|watch - talk|edit|new
-		const editstr = '<<edit|shortcut=e>>';
-		const editOldidStr =
+		var editstr = '<<edit|shortcut=e>>';
+		var editOldidStr =
 			'if(oldid){<<editOld|shortcut=e>>|<<revert|shortcut=v|rv>>|<<edit|cur>>}else{' +
 			editstr +
 			'}';
-		const historystr = '<<history|shortcut=h>>';
-		const watchstr = '<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>';
+		var historystr = '<<history|shortcut=h>>';
+		var watchstr = '<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>';
 
 		str +=
 			'<br>if(talk){' +
@@ -935,16 +926,16 @@ $(() => {
 	};
 	pg.structures.nostalgia.popupRedirTopLinks = pg.structures.nostalgia.popupTopLinks;
 
-	/** -- fancy -- */
+	/** -- fancy -- **/
 	copyStructure('original', 'fancy');
 	pg.structures.fancy.popupTitle = function (x) {
 		return navlinkStringToHTML('<font size=+0><<mainlink>></font>', x.article, x.params);
 	};
 	pg.structures.fancy.popupTopLinks = function (x) {
-		const hist =
+		var hist =
 			'<<history|shortcut=h|hist>>|<<lastEdit|shortcut=/|last>>|<<editors|shortcut=E|eds>>';
-		const watch = '<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>';
-		const move = '<<move|shortcut=m|move>>';
+		var watch = '<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>';
+		var move = '<<move|shortcut=m|move>>';
 		return navlinkStringToHTML(
 			'if(talk){' +
 				'<<edit|shortcut=e>>|<<new|shortcut=+|+>>*' +
@@ -968,15 +959,15 @@ $(() => {
 		);
 	};
 	pg.structures.fancy.popupOtherLinks = function (x) {
-		const admin =
+		var admin =
 			'<<unprotect|unprotectShort>>|<<protect|shortcut=p>>*<<undelete|undeleteShort>>|<<delete|shortcut=d|del>>';
-		let user = '<<contribs|shortcut=c>>if(wikimedia){|<<count|shortcut=#|#>>}';
+		var user = '<<contribs|shortcut=c>>if(wikimedia){|<<count|shortcut=#|#>>}';
 		user +=
 			'if(ipuser){|<<arin>>}else{*<<email|shortcut=E|' +
 			popupString('email') +
 			'>>}if(admin){*<<block|shortcut=b>>}';
 
-		const normal = '<<whatLinksHere|shortcut=l|links here>>*<<relatedChanges|shortcut=r|related>>';
+		var normal = '<<whatLinksHere|shortcut=l|links here>>*<<relatedChanges|shortcut=r|related>>';
 		return navlinkStringToHTML(
 			'<br>if(user){' + user + '*}if(admin){' + admin + 'if(user){<br>}else{*}}' + normal,
 			x.article,
@@ -987,7 +978,7 @@ $(() => {
 	pg.structures.fancy.popupRedirTopLinks = pg.structures.fancy.popupTopLinks;
 	pg.structures.fancy.popupRedirOtherLinks = pg.structures.fancy.popupOtherLinks;
 
-	/** -- fancy2 -- */
+	/** -- fancy2 -- **/
 	// hack for [[User:MacGyverMagic]]
 	copyStructure('fancy', 'fancy2');
 	pg.structures.fancy2.popupTopLinks = function (x) {
@@ -1023,7 +1014,7 @@ $(() => {
 		];
 	};
 
-	/** -- menus -- */
+	/** -- menus -- **/
 	copyStructure('original', 'menus');
 	pg.structures.menus.popupLayout = function () {
 		return [
@@ -1055,38 +1046,38 @@ $(() => {
 
 	pg.structures.menus.popupTopLinks = function (x, shorter) {
 		// FIXME maybe this stuff should be cached
-		const s = [];
-		const dropclass = 'popup_drop';
-		const enddiv = '</div>';
-		let hist = '<<history|shortcut=h>>';
+		var s = [];
+		var dropclass = 'popup_drop';
+		var enddiv = '</div>';
+		var hist = '<<history|shortcut=h>>';
 		if (!shorter) {
 			hist = '<menurow>' + hist + '|<<historyfeed|rss>>|<<editors|shortcut=E>></menurow>';
 		}
-		const lastedit = '<<lastEdit|shortcut=/|show last edit>>';
-		const thank = 'if(diff){<<thank|send thanks>>}';
-		const jsHistory = '<<lastContrib|last set of edits>><<sinceMe|changes since mine>>';
-		const linkshere = '<<whatLinksHere|shortcut=l|what links here>>';
-		const related = '<<relatedChanges|shortcut=r|related changes>>';
-		const search =
+		var lastedit = '<<lastEdit|shortcut=/|show last edit>>';
+		var thank = 'if(diff){<<thank|send thanks>>}';
+		var jsHistory = '<<lastContrib|last set of edits>><<sinceMe|changes since mine>>';
+		var linkshere = '<<whatLinksHere|shortcut=l|what links here>>';
+		var related = '<<relatedChanges|shortcut=r|related changes>>';
+		var search =
 			'<menurow><<search|shortcut=s>>if(wikimedia){|<<globalsearch|shortcut=g|global>>}' +
 			'|<<google|shortcut=G|web>></menurow>';
-		const watch = '<menurow><<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>></menurow>';
-		const protect =
+		var watch = '<menurow><<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>></menurow>';
+		var protect =
 			'<menurow><<unprotect|unprotectShort>>|' +
 			'<<protect|shortcut=p>>|<<protectlog|log>></menurow>';
-		const del =
+		var del =
 			'<menurow><<undelete|undeleteShort>>|<<delete|shortcut=d>>|<<deletelog|log>></menurow>';
-		const move = '<<move|shortcut=m|move page>>';
-		const nullPurge = '<menurow><<nullEdit|shortcut=n|null edit>>|<<purge|shortcut=P>></menurow>';
-		const viewOptions = '<menurow><<view|shortcut=v>>|<<render|shortcut=S>>|<<raw>></menurow>';
-		const editRow =
+		var move = '<<move|shortcut=m|move page>>';
+		var nullPurge = '<menurow><<nullEdit|shortcut=n|null edit>>|<<purge|shortcut=P>></menurow>';
+		var viewOptions = '<menurow><<view|shortcut=v>>|<<render|shortcut=S>>|<<raw>></menurow>';
+		var editRow =
 			'if(oldid){' +
 			'<menurow><<edit|shortcut=e>>|<<editOld|shortcut=e|this&nbsp;revision>></menurow>' +
 			'<menurow><<revert|shortcut=v>>|<<undo>></menurow>' +
 			'}else{<<edit|shortcut=e>>}';
-		const markPatrolled = 'if(rcid){<<markpatrolled|mark patrolled>>}';
-		const newTopic = 'if(talk){<<new|shortcut=+|new topic>>}';
-		const protectDelete = 'if(admin){' + protect + del + '}';
+		var markPatrolled = 'if(rcid){<<markpatrolled|mark patrolled>>}';
+		var newTopic = 'if(talk){<<new|shortcut=+|new topic>>}';
+		var protectDelete = 'if(admin){' + protect + del + '}';
 
 		if (getValueOf('popupActionsMenu')) {
 			s.push('<<mainlink>>*' + menuTitle(dropclass, 'actions'));
@@ -1115,8 +1106,8 @@ $(() => {
 		);
 
 		// user menu starts here
-		const email = '<<email|shortcut=E|email user>>';
-		const contribs =
+		var email = '<<email|shortcut=E|email user>>';
+		var contribs =
 			'if(wikimedia){<menurow>}<<contribs|shortcut=c|contributions>>if(wikimedia){</menurow>}' +
 			'if(admin){<menurow><<deletedContribs>></menurow>}';
 
@@ -1153,8 +1144,8 @@ $(() => {
 	};
 
 	function menuTitle(dropclass, s) {
-		const text = popupString(s); // i18n
-		const len = text.length;
+		var text = popupString(s); // i18n
+		var len = text.length;
 		return '<div class="' + dropclass + '" style="--navpop-m-len:' + len + 'ch"><a href="#" noPopup=1>' + text + '</a>';
 	}
 
@@ -1181,12 +1172,12 @@ $(() => {
 	// STARTFILE: autoedit.js
 	function substitute(data, cmdBody) {
 		// alert('sub\nfrom: '+cmdBody.from+'\nto: '+cmdBody.to+'\nflags: '+cmdBody.flags);
-		const fromRe = RegExp(cmdBody.from, cmdBody.flags);
+		var fromRe = RegExp(cmdBody.from, cmdBody.flags);
 		return data.replace(fromRe, cmdBody.to);
 	}
 
 	function execCmds(data, cmdList) {
-		for (let i = 0; i < cmdList.length; ++i) {
+		for (var i = 0; i < cmdList.length; ++i) {
 			data = cmdList[i].action(data, cmdList[i]);
 		}
 		return data;
@@ -1197,7 +1188,7 @@ $(() => {
 		if (!str.length) {
 			return [];
 		}
-		let p = false;
+		var p = false;
 		switch (str.charAt(0)) {
 			case 's':
 				p = parseSubstitute(str);
@@ -1226,12 +1217,12 @@ $(() => {
 	function parseSubstitute(str) {
 		// takes a string like s/a/b/flags;othercmds and parses it
 
-		let from, to, flags, tmp;
+		var from, to, flags, tmp;
 
 		if (str.length < 4) {
 			return false;
 		}
-		const sep = str.charAt(1);
+		var sep = str.charAt(1);
 		str = str.substring(2);
 
 		tmp = skipOver(str, sep);
@@ -1269,11 +1260,11 @@ $(() => {
 	}
 
 	function skipOver(str, sep) {
-		const endSegment = findNext(str, sep);
+		var endSegment = findNext(str, sep);
 		if (endSegment < 0) {
 			return false;
 		}
-		const segment = unEscape(str.substring(0, endSegment), sep);
+		var segment = unEscape(str.substring(0, endSegment), sep);
 		return { segment: segment, remainder: str.substring(endSegment + 1) };
 	}
 
@@ -1284,7 +1275,7 @@ $(() => {
 	/*eslint-enable */
 
 	function findNext(str, ch) {
-		for (let i = 0; i < str.length; ++i) {
+		for (var i = 0; i < str.length; ++i) {
 			if (str.charAt(i) == '\\') {
 				i += 2;
 			}
@@ -1296,7 +1287,7 @@ $(() => {
 	}
 
 	function setCheckbox(param, box) {
-		const val = mw.util.getParamValue(param);
+		var val = mw.util.getParamValue(param);
 		if (val) {
 			switch (val) {
 				case '1':
@@ -1330,13 +1321,13 @@ $(() => {
 				return false;
 			}
 			autoEdit.alreadyRan = true;
-			const cmdString = mw.util.getParamValue('autoedit');
+			var cmdString = mw.util.getParamValue('autoedit');
 			if (cmdString) {
 				try {
-					const editbox = document.editform.wpTextbox1;
-					const cmdList = parseCmd(cmdString);
-					const input = editbox.value;
-					const output = execCmds(input, cmdList);
+					var editbox = document.editform.wpTextbox1;
+					var cmdList = parseCmd(cmdString);
+					var input = editbox.value;
+					var output = execCmds(input, cmdList);
 					editbox.value = output;
 				} catch (dang) {
 					return;
@@ -1351,9 +1342,9 @@ $(() => {
 			setCheckbox('autominor', document.editform.wpMinoredit);
 			setCheckbox('autowatch', document.editform.wpWatchthis);
 
-			const rvid = mw.util.getParamValue('autorv');
+			var rvid = mw.util.getParamValue('autorv');
 			if (rvid) {
-				const url =
+				var url =
 					pg.wiki.apiwikibase +
 					'?action=query&format=json&formatversion=2&prop=revisions&revids=' +
 					rvid;
@@ -1365,11 +1356,11 @@ $(() => {
 	}
 
 	function autoEdit2(d) {
-		let summary = mw.util.getParamValue('autosummary');
-		let summaryprompt = mw.util.getParamValue('autosummaryprompt');
-		let summarynotice = '';
+		var summary = mw.util.getParamValue('autosummary');
+		var summaryprompt = mw.util.getParamValue('autosummaryprompt');
+		var summarynotice = '';
 		if (d && d.data && mw.util.getParamValue('autorv')) {
-			const s = getRvSummary(summary, d.data);
+			var s = getRvSummary(summary, d.data);
 			if (s === false) {
 				summaryprompt = true;
 				summarynotice = popupString(
@@ -1385,9 +1376,9 @@ $(() => {
 			}
 		}
 		if (summaryprompt) {
-			const txt =
+			var txt =
 				summarynotice + popupString('Enter a non-empty edit summary or press cancel to abort');
-			const response = prompt(txt, summary);
+			var response = prompt(txt, summary);
 			if (response) {
 				summary = response;
 			} else {
@@ -1411,11 +1402,11 @@ $(() => {
 			return;
 		}
 
-		const btn = mw.util.getParamValue('autoclick');
+		var btn = mw.util.getParamValue('autoclick');
 		if (btn) {
 			if (document.editform && document.editform[btn]) {
-				const button = document.editform[btn];
-				const msg = tprintf(
+				var button = document.editform[btn];
+				var msg = tprintf(
 					'The %s button has been automatically clicked. Please wait for the next page to load.',
 					[button.value]
 				);
@@ -1433,9 +1424,9 @@ $(() => {
 	}
 
 	function bannerMessage(s) {
-		const headings = document.getElementsByTagName('h1');
+		var headings = document.getElementsByTagName('h1');
 		if (headings) {
-			const div = document.createElement('div');
+			var div = document.createElement('div');
 			div.innerHTML = '<font size=+1><b>' + pg.escapeQuotesHTML(s) + '</b></font>';
 			headings[0].parentNode.insertBefore(div, headings[0]);
 		}
@@ -1443,9 +1434,9 @@ $(() => {
 
 	function getRvSummary(template, json) {
 		try {
-			const o = getJsObj(json);
-			const edit = anyChild(o.query.pages).revisions[0];
-			const timestamp = edit.timestamp
+			var o = getJsObj(json);
+			var edit = anyChild(o.query.pages).revisions[0];
+			var timestamp = edit.timestamp
 				.split(/[A-Z]/g)
 				.join(' ')
 				.replace(/^ *| *$/g, '');
@@ -1469,7 +1460,6 @@ $(() => {
 
 	/**
 	 * Creates a new Downloader
-	 *
 	 * @constructor
 	 * @class The Downloader class. Create a new instance of this class to download stuff.
 	 * @param {string} url The url to download. This can be omitted and supplied later.
@@ -1481,29 +1471,25 @@ $(() => {
 
 		/**
 		 * The url to download
-		 *
 		 * @type {string}
 		 */
 		this.url = url;
 
 		/**
 		 * A universally unique ID number
-		 *
 		 * @type {number}
 		 */
 		this.id = null;
 
 		/**
 		 * Modification date, to be culled from the incoming headers
-		 *
-		 * @type {Date}
+		 * @type Date
 		 * @private
 		 */
 		this.lastModified = null;
 
 		/**
 		 * What to do when the download completes successfully
-		 *
 		 * @type {Function}
 		 * @private
 		 */
@@ -1511,7 +1497,6 @@ $(() => {
 
 		/**
 		 * What to do on failure
-		 *
 		 * @type {Function}
 		 * @private
 		 */
@@ -1519,7 +1504,6 @@ $(() => {
 
 		/**
 		 * Flag set on <code>abort</code>
-		 *
 		 * @type {boolean}
 		 */
 		this.aborted = false;
@@ -1527,13 +1511,11 @@ $(() => {
 		/**
 		 * HTTP method. See https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html for
 		 * possibilities.
-		 *
 		 * @type {string}
 		 */
 		this.method = 'GET';
 		/**
 		 * Async flag.
-		 *
 		 * @type {boolean}
 		 */
 		this.async = true;
@@ -1601,14 +1583,13 @@ $(() => {
 	 * Gets the 'Last-Modified' date from the download headers.
 	 * Should be run after the download completes.
 	 * Returns <code>null</code> on failure.
-	 *
 	 * @return {Date}
 	 */
 	Downloader.prototype.getLastModifiedDate = function () {
 		if (!this.http) {
 			return null;
 		}
-		let lastmod = null;
+		var lastmod = null;
 		try {
 			lastmod = this.http.getResponseHeader('Last-Modified');
 		} catch (err) {}
@@ -1620,7 +1601,6 @@ $(() => {
 
 	/**
 	 * Sets the callback function.
-	 *
 	 * @param {Function} f callback function, called as <code>f(this)</code> on success
 	 */
 	Downloader.prototype.setCallback = function (f) {
@@ -1642,14 +1622,13 @@ $(() => {
 
 	/**
 	 * Creates a new {@link Downloader} and prepares it for action.
-	 *
 	 * @param {string} url The url to download
 	 * @param {number} id The ID of the {@link Downloader} object
 	 * @param {Function} callback The callback function invoked on success
 	 * @return {string|Downloader} the {@link Downloader} object created, or 'ohdear' if an unsupported browser
 	 */
 	function newDownload(url, id, callback, onfailure) {
-		const d = new Downloader(url);
+		var d = new Downloader(url);
 		if (!d.http) {
 			return 'ohdear';
 		}
@@ -1658,7 +1637,7 @@ $(() => {
 		if (!onfailure) {
 			onfailure = 2;
 		}
-		const f = function () {
+		var f = function () {
 			if (d.getReadyState() == 4) {
 				delete pg.misc.downloadsInProgress[this.id];
 				try {
@@ -1685,7 +1664,6 @@ $(() => {
 	/**
 	 * Simulates a download from cached data.
 	 * The supplied data is put into a {@link Downloader} as if it had downloaded it.
-	 *
 	 * @param {string} url The url.
 	 * @param {number} id The ID.
 	 * @param {Function} callback The callback, which is invoked immediately as <code>callback(d)</code>,
@@ -1694,7 +1672,7 @@ $(() => {
 	 * @param {Date} lastModified The (cached) last modified date.
 	 */
 	function fakeDownload(url, id, callback, data, lastModified, owner) {
-		const d = newDownload(url, callback);
+		var d = newDownload(url, callback);
 		d.owner = owner;
 		d.id = id;
 		d.data = data;
@@ -1704,14 +1682,13 @@ $(() => {
 
 	/**
 	 * Starts a download.
-	 *
 	 * @param {string} url The url to download
 	 * @param {number} id The ID of the {@link Downloader} object
 	 * @param {Function} callback The callback function invoked on success
 	 * @return {string|Downloader} the {@link Downloader} object created, or 'ohdear' if an unsupported browser
 	 */
 	function startDownload(url, id, callback) {
-		const d = newDownload(url, id, callback);
+		var d = newDownload(url, id, callback);
 		if (typeof d == typeof '') {
 			return d;
 		}
@@ -1723,7 +1700,7 @@ $(() => {
 	 * Aborts all downloads which have been started.
 	 */
 	function abortAllDownloads() {
-		for (const x in pg.misc.downloadsInProgress) {
+		for (var x in pg.misc.downloadsInProgress) {
 			try {
 				pg.misc.downloadsInProgress[x].aborted = true;
 				pg.misc.downloadsInProgress[x].abort();
@@ -1769,7 +1746,7 @@ $(() => {
 	 * - Support for coloured links (AJAX)
 	 */
 
-	const Insta = {};
+	var Insta = {};
 
 	function setupLivePreview() {
 		// options
@@ -1846,7 +1823,7 @@ $(() => {
 	};
 
 	Insta.convert = function (wiki) {
-		let ll = typeof wiki == 'string' ? wiki.replace(/\r/g, '').split(/\n/) : wiki, // lines of wikicode
+		var ll = typeof wiki == 'string' ? wiki.replace(/\r/g, '').split(/\n/) : wiki, // lines of wikicode
 			o = '', // output
 			p = 0, // para flag
 			r; // result of passing a regexp to compareLineStringOrReg()
@@ -1864,7 +1841,7 @@ $(() => {
 
 		// similar to C's printf, uses ? as placeholders, ?? to escape question marks
 		function f() {
-			let i = 1,
+			var i = 1,
 				a = arguments,
 				f = a[0],
 				o = '',
@@ -1937,18 +1914,18 @@ $(() => {
 		}
 
 		function parse_list() {
-			let prev = '';
+			var prev = '';
 
 			while (remain() && compareLineStringOrReg(/^([*#:;]+)(.*)$/)) {
-				const l_match = r;
+				var l_match = r;
 
 				sh();
 
-				const ipos = str_imatch(prev, l_match[1]);
+				var ipos = str_imatch(prev, l_match[1]);
 
 				// close uncontinued lists
-				for (let prevPos = prev.length - 1; prevPos >= ipos; prevPos--) {
-					const pi = prev.charAt(prevPos);
+				for (var prevPos = prev.length - 1; prevPos >= ipos; prevPos--) {
+					var pi = prev.charAt(prevPos);
 
 					if (pi == '*') {
 						ps('</ul>');
@@ -1962,8 +1939,8 @@ $(() => {
 				}
 
 				// open new lists
-				for (let matchPos = ipos; matchPos < l_match[1].length; matchPos++) {
-					const li = l_match[1].charAt(matchPos);
+				for (var matchPos = ipos; matchPos < l_match[1].length; matchPos++) {
+					var li = l_match[1].charAt(matchPos);
 
 					if (li == '*') {
 						ps('<ul>');
@@ -2004,7 +1981,7 @@ $(() => {
 			}
 
 			// close remaining lists
-			for (let i = prev.length - 1; i >= 0; i--) {
+			for (var i = prev.length - 1; i >= 0; i--) {
 				ps(f('</?>', prev.charAt(i) == '*' ? 'ul' : prev.charAt(i) == '#' ? 'ol' : 'dl'));
 			}
 		}
@@ -2033,13 +2010,13 @@ $(() => {
 		}
 
 		function parse_table_data() {
-			let td_line, match_i;
+			var td_line, match_i;
 
 			// 1: "|+", '|' or '+'
 			// 2: ??
 			// 3: attributes ??
 			// TODO: finish commenting this regexp
-			const td_match = sh().match(/^(\|\+|\||!)((?:([^[|]*?)\|(?!\|))?(.*))$/);
+			var td_match = sh().match(/^(\|\+|\||!)((?:([^[|]*?)\|(?!\|))?(.*))$/);
 
 			if (td_match[1] == '|+') {
 				ps('<caption');
@@ -2070,7 +2047,7 @@ $(() => {
 				ps(parse_inline_nowiki(td_match[match_i]));
 			}
 
-			let tc = 0,
+			var tc = 0,
 				td = [];
 
 			while (remain()) {
@@ -2109,21 +2086,21 @@ $(() => {
 
 		function parse_image(str) {
 			// get what's in between "[[Image:" and "]]"
-			let tag = str.substring(str.indexOf(':') + 1, str.length - 2);
-			let width;
-			let attr = [],
+			var tag = str.substring(str.indexOf(':') + 1, str.length - 2);
+			var width;
+			var attr = [],
 				filename,
 				caption = '';
-			let thumb = 0,
+			var thumb = 0,
 				frame = 0,
 				center = 0;
-			let align = '';
+			var align = '';
 
 			if (tag.match(/\|/)) {
 				// manage nested links
-				let nesting = 0;
-				let last_attr;
-				for (let i = tag.length - 1; i > 0; i--) {
+				var nesting = 0;
+				var last_attr;
+				for (var i = tag.length - 1; i > 0; i--) {
 					if (tag.charAt(i) == '|' && !nesting) {
 						last_attr = tag.substr(i + 1);
 						tag = tag.substring(0, i);
@@ -2145,7 +2122,7 @@ $(() => {
 				attr.push(last_attr);
 				filename = attr.shift();
 
-				let w_match;
+				var w_match;
 
 				for (; attr.length; attr.shift()) {
 					w_match = attr[0].match(/^(\d*)(?:[px]*\d*)?px$/);
@@ -2186,14 +2163,14 @@ $(() => {
 		}
 
 		function parse_inline_nowiki(str) {
-			let start,
+			var start,
 				lastend = 0;
-			let substart = 0,
+			var substart = 0,
 				nestlev = 0,
 				open,
 				close,
 				subloop;
-			let html = '';
+			var html = '';
 
 			while ((start = str.indexOf('<nowiki>', substart)) != -1) {
 				html += parse_inline_wiki(str.substring(lastend, start));
@@ -2226,10 +2203,10 @@ $(() => {
 		}
 
 		function parse_inline_images(str) {
-			let start,
+			var start,
 				substart = 0,
 				nestlev = 0;
-			let loop, close, open, wiki, html;
+			var loop, close, open, wiki, html;
 
 			while ((start = str.indexOf('[[', substart)) != -1) {
 				if (
@@ -2271,7 +2248,7 @@ $(() => {
 		// the output of this function doesn't respect the FILO structure of HTML
 		// but since most browsers can handle it I'll save myself the hassle
 		function parse_inline_formatting(str) {
-			let em,
+			var em,
 				st,
 				i,
 				li,
@@ -2298,8 +2275,8 @@ $(() => {
 			str = str.replace(/<(?:)math>(.*?)<\/math>/gi, '');
 
 			// Build a Mediawiki-formatted date string
-			let date = new Date();
-			let minutes = date.getUTCMinutes();
+			var date = new Date();
+			var minutes = date.getUTCMinutes();
 			if (minutes < 10) {
 				minutes = '0' + minutes;
 			}
@@ -2432,7 +2409,8 @@ $(() => {
 					.replace('__NOTOC__', '')
 					.replace('__NOINDEX__', '')
 					.replace('__INDEX__', '')
-					.replace('__NOEDITSECTION__', '');
+					.replace('__NOEDITSECTION__', '')
+			;
 			return parse_inline_formatting(str);
 		}
 
@@ -2490,26 +2468,26 @@ $(() => {
 	}
 
 	function popupFilterCountLinks(data) {
-		const num = countLinks(data);
+		var num = countLinks(data);
 		return String(num) + '&nbsp;' + (num != 1 ? popupString('wikiLinks') : popupString('wikiLink'));
 	}
 
 	function popupFilterCountImages(data) {
-		const num = countImages(data);
+		var num = countImages(data);
 		return String(num) + '&nbsp;' + (num != 1 ? popupString('images') : popupString('image'));
 	}
 
 	function popupFilterCountCategories(data) {
-		const num = countCategories(data);
+		var num = countCategories(data);
 		return (
 			String(num) + '&nbsp;' + (num != 1 ? popupString('categories') : popupString('category'))
 		);
 	}
 
 	function popupFilterLastModified(data, download) {
-		const lastmod = download.lastModified;
-		const now = new Date();
-		const age = now - lastmod;
+		var lastmod = download.lastModified;
+		var now = new Date();
+		var age = now - lastmod;
 		if (lastmod && getValueOf('popupLastModified')) {
 			return tprintf('%s old', [formatAge(age)]).replace(/ /g, '&nbsp;');
 		}
@@ -2527,30 +2505,30 @@ $(() => {
 
 	function formatAge(age) {
 		// coerce into a number
-		let a = 0 + age,
+		var a = 0 + age,
 			aa = a;
 
-		const seclen = 1000;
-		const minlen = 60 * seclen;
-		const hourlen = 60 * minlen;
-		const daylen = 24 * hourlen;
-		const weeklen = 7 * daylen;
+		var seclen = 1000;
+		var minlen = 60 * seclen;
+		var hourlen = 60 * minlen;
+		var daylen = 24 * hourlen;
+		var weeklen = 7 * daylen;
 
-		const numweeks = (a - (a % weeklen)) / weeklen;
+		var numweeks = (a - (a % weeklen)) / weeklen;
 		a = a - numweeks * weeklen;
-		const sweeks = addunit(numweeks, 'week');
-		const numdays = (a - (a % daylen)) / daylen;
+		var sweeks = addunit(numweeks, 'week');
+		var numdays = (a - (a % daylen)) / daylen;
 		a = a - numdays * daylen;
-		const sdays = addunit(numdays, 'day');
-		const numhours = (a - (a % hourlen)) / hourlen;
+		var sdays = addunit(numdays, 'day');
+		var numhours = (a - (a % hourlen)) / hourlen;
 		a = a - numhours * hourlen;
-		const shours = addunit(numhours, 'hour');
-		const nummins = (a - (a % minlen)) / minlen;
+		var shours = addunit(numhours, 'hour');
+		var nummins = (a - (a % minlen)) / minlen;
 		a = a - nummins * minlen;
-		const smins = addunit(nummins, 'minute');
-		const numsecs = (a - (a % seclen)) / seclen;
+		var smins = addunit(nummins, 'minute');
+		var numsecs = (a - (a % seclen)) / seclen;
 		a = a - numsecs * seclen;
-		const ssecs = addunit(numsecs, 'second');
+		var ssecs = addunit(numsecs, 'second');
 
 		if (aa > 4 * weeklen) {
 			return sweeks;
@@ -2581,10 +2559,10 @@ $(() => {
 	}
 
 	function runPopupFilters(list, data, download) {
-		const ret = [];
-		for (let i = 0; i < list.length; ++i) {
+		var ret = [];
+		for (var i = 0; i < list.length; ++i) {
 			if (list[i] && typeof list[i] == 'function') {
-				const s = list[i](data, download, download.owner.article);
+				var s = list[i](data, download, download.owner.article);
 				if (s) {
 					ret.push(s);
 				}
@@ -2598,11 +2576,11 @@ $(() => {
 			return popupString('Empty page');
 		}
 
-		const popupFilters = getValueOf('popupFilters') || [];
-		const extraPopupFilters = getValueOf('extraPopupFilters') || [];
-		const pageInfoArray = runPopupFilters(popupFilters.concat(extraPopupFilters), data, download);
+		var popupFilters = getValueOf('popupFilters') || [];
+		var extraPopupFilters = getValueOf('extraPopupFilters') || [];
+		var pageInfoArray = runPopupFilters(popupFilters.concat(extraPopupFilters), data, download);
 
-		let pageInfo = pageInfoArray.join(', ');
+		var pageInfo = pageInfoArray.join(', ');
 		if (pageInfo !== '') {
 			pageInfo = upcaseFirst(pageInfo);
 		}
@@ -2628,7 +2606,7 @@ $(() => {
 	}
 
 	function popupFilterStubDetect(data, download, article) {
-		const counts = stubCount(data, article);
+		var counts = stubCount(data, article);
 		if (counts.real) {
 			return popupString('stub');
 		}
@@ -2664,7 +2642,6 @@ $(() => {
 
 	/**
 	 * Creates a new Stringwrapper.
-	 *
 	 * @constructor
 	 *
 	 * @class the Stringwrapper class. This base class is not really
@@ -2673,7 +2650,6 @@ $(() => {
 	function Stringwrapper() {
 		/**
 		 * Wrapper for this.toString().indexOf()
-		 *
 		 * @param {string} x
 		 * @type {number}
 		 */
@@ -2682,7 +2658,6 @@ $(() => {
 		};
 		/**
 		 * Returns this.value.
-		 *
 		 * @type {string}
 		 */
 		this.toString = function () {
@@ -2690,7 +2665,6 @@ $(() => {
 		};
 		/**
 		 * Wrapper for {@link String#parenSplit} applied to this.toString()
-		 *
 		 * @param {RegExp} x
 		 * @type {Array}
 		 */
@@ -2699,7 +2673,6 @@ $(() => {
 		};
 		/**
 		 * Wrapper for this.toString().substring()
-		 *
 		 * @param {string} x
 		 * @param {string} y (optional)
 		 * @type {string}
@@ -2712,7 +2685,6 @@ $(() => {
 		};
 		/**
 		 * Wrapper for this.toString().split()
-		 *
 		 * @param {string} x
 		 * @type {Array}
 		 */
@@ -2721,7 +2693,6 @@ $(() => {
 		};
 		/**
 		 * Wrapper for this.toString().replace()
-		 *
 		 * @param {string} x
 		 * @param {string} y
 		 * @type {string}
@@ -2733,7 +2704,6 @@ $(() => {
 
 	/**
 	 * Creates a new <code>Title</code>.
-	 *
 	 * @constructor
 	 *
 	 * @class The Title class. Holds article titles and converts them into
@@ -2751,7 +2721,6 @@ $(() => {
 		 * The canonical article title. This must be in UTF-8 with no
 		 * entities, escaping or nasties. Also, underscores should be
 		 * replaced with spaces.
-		 *
 		 * @type {string}
 		 * @private
 		 */
@@ -2760,7 +2729,6 @@ $(() => {
 		/**
 		 * The canonical form of the anchor. This should be exactly as
 		 * it appears in the URL, i.e. with the .C3.0A bits in.
-		 *
 		 * @type {string}
 		 */
 		this.anchor = '';
@@ -2770,7 +2738,6 @@ $(() => {
 	Title.prototype = new Stringwrapper();
 	/**
 	 * Returns the canonical representation of the article title, optionally without anchor.
-	 *
 	 * @param {boolean} omitAnchor
 	 * @fixme Decide specs for anchor
 	 * @return String The article title and the anchor.
@@ -2782,10 +2749,10 @@ $(() => {
 		if (!this.anchor) {
 			return '';
 		}
-		const split = this.anchor.parenSplit(/((?:[.][0-9A-F]{2})+)/);
-		const len = split.length;
-		let value;
-		for (let j = 1; j < len; j += 2) {
+		var split = this.anchor.parenSplit(/((?:[.][0-9A-F]{2})+)/);
+		var len = split.length;
+		var value;
+		for (var j = 1; j < len; j += 2) {
 			// FIXME s/decodeURI/decodeURIComponent/g ?
 			value = split[j].split('.').join('%');
 			try {
@@ -2798,9 +2765,9 @@ $(() => {
 		return split.join('');
 	};
 	Title.prototype.urlAnchor = function () {
-		const split = this.anchor.parenSplit('/((?:[%][0-9A-F]{2})+)/');
-		const len = split.length;
-		for (let j = 1; j < len; j += 2) {
+		var split = this.anchor.parenSplit('/((?:[%][0-9A-F]{2})+)/');
+		var len = split.length;
+		for (var j = 1; j < len; j += 2) {
 			split[j] = split[j].split('%').join('.');
 		}
 		return split.join('');
@@ -2832,17 +2799,17 @@ $(() => {
 		// the query is treated as bona-fide utf8, but the first bit of the url is pissed around with
 
 		// we fix up & for all browsers, just in case.
-		const splitted = h.split('?');
+		var splitted = h.split('?');
 		splitted[0] = splitted[0].split('&').join('%26');
 
 		h = splitted.join('?');
 
-		const contribs = pg.re.contribs.exec(h);
+		var contribs = pg.re.contribs.exec(h);
 		if (contribs) {
 			if (contribs[1] == 'title=') {
 				contribs[3] = contribs[3].split('+').join(' ');
 			}
-			const u = new Title(contribs[3]);
+			var u = new Title(contribs[3]);
 			this.setUtf(
 				this.decodeNasties(
 					mw.config.get('wgFormattedNamespaces')[pg.nsUserId] + ':' + u.stripNamespace()
@@ -2851,7 +2818,7 @@ $(() => {
 			return this;
 		}
 
-		const email = pg.re.email.exec(h);
+		var email = pg.re.email.exec(h);
 		if (email) {
 			this.setUtf(
 				this.decodeNasties(
@@ -2863,14 +2830,14 @@ $(() => {
 			return this;
 		}
 
-		const backlinks = pg.re.backlinks.exec(h);
+		var backlinks = pg.re.backlinks.exec(h);
 		if (backlinks) {
 			this.setUtf(this.decodeNasties(new Title(backlinks[3])));
 			return this;
 		}
 
 		//A dummy title object for a Special:Diff link.
-		const specialdiff = pg.re.specialdiff.exec(h);
+		var specialdiff = pg.re.specialdiff.exec(h);
 		if (specialdiff) {
 			this.setUtf(
 				this.decodeNasties(
@@ -2883,15 +2850,15 @@ $(() => {
 		// no more special cases to check --
 		// hopefully it's not a disguised user-related or specially treated special page
 		// Includes references
-		const m = pg.re.main.exec(h);
+		var m = pg.re.main.exec(h);
 		if (m === null) {
 			this.value = null;
 		} else {
-			const fromBotInterface = /[?](.+[&])?title=/.test(h);
+			var fromBotInterface = /[?](.+[&])?title=/.test(h);
 			if (fromBotInterface) {
 				m[2] = m[2].split('+').join('_');
 			}
-			const extracted = m[2] + (m[3] ? '#' + m[3] : '');
+			var extracted = m[2] + (m[3] ? '#' + m[3] : '');
 			if (pg.flag.isSafari && /%25[0-9A-Fa-f]{2}/.test(extracted)) {
 				// Fix Safari issue
 				// Safari sometimes encodes % as %25 in UTF-8 encoded strings like %E5%A3 -> %25E5%25A3.
@@ -2906,7 +2873,7 @@ $(() => {
 		// myDecodeURI uses decodeExtras, which removes _,
 		// thus ruining citations previews, which are formated as "cite_note-1"
 		try {
-			let ret = decodeURI(this.decodeEscapes(txt));
+			var ret = decodeURI(this.decodeEscapes(txt));
 			ret = ret.replace(/[_ ]*$/, '');
 			return ret;
 		} catch (e) {
@@ -2915,13 +2882,13 @@ $(() => {
 	};
 	// Decode valid %-encodings, otherwise escape them
 	Title.prototype.decodeEscapes = function (txt) {
-		const split = txt.parenSplit(/((?:[%][0-9A-Fa-f]{2})+)/);
-		const len = split.length;
+		var split = txt.parenSplit(/((?:[%][0-9A-Fa-f]{2})+)/);
+		var len = split.length;
 		// No %-encoded items found, so replace the literal %
 		if (len === 1) {
 			return split[0].replace(/%(?![0-9a-fA-F][0-9a-fA-F])/g, '%25');
 		}
-		for (let i = 1; i < len; i = i + 2) {
+		for (var i = 1; i < len; i = i + 2) {
 			split[i] = decodeURIComponent(split[i]);
 		}
 		return split.join('');
@@ -2961,7 +2928,7 @@ $(() => {
 			this.stripNamespace().split('/')[0];
 	};
 	Title.prototype.userName = function (withNs) {
-		const t = new Title(this.value);
+		var t = new Title(this.value);
 		t.toUserName(withNs);
 		if (t.value) {
 			return t;
@@ -2980,10 +2947,10 @@ $(() => {
 			return null;
 		}
 
-		const namespaceId = this.namespaceId();
+		var namespaceId = this.namespaceId();
 		if (namespaceId >= 0 && namespaceId % 2 === 0) {
 			//non-special and subject namespace
-			const localizedNamespace = mw.config.get('wgFormattedNamespaces')[namespaceId + 1];
+			var localizedNamespace = mw.config.get('wgFormattedNamespaces')[namespaceId + 1];
 			if (typeof localizedNamespace !== 'undefined') {
 				if (localizedNamespace === '') {
 					this.value = this.stripNamespace();
@@ -3002,11 +2969,11 @@ $(() => {
 		return mw.config.get('wgFormattedNamespaces')[this.namespaceId()];
 	};
 	Title.prototype.namespaceId = function () {
-		const n = this.value.indexOf(':');
+		var n = this.value.indexOf(':');
 		if (n < 0) {
 			return 0;
 		} //mainspace
-		const namespaceId =
+		var namespaceId =
 			mw.config.get('wgNamespaceIds')[
 				this.value.substring(0, n).split(' ').join('_').toLowerCase()
 			];
@@ -3016,7 +2983,7 @@ $(() => {
 		return namespaceId;
 	};
 	Title.prototype.talkPage = function () {
-		const t = new Title(this.value);
+		var t = new Title(this.value);
 		t.toTalkPage();
 		if (t.value) {
 			return t;
@@ -3035,10 +3002,10 @@ $(() => {
 			return null;
 		}
 
-		const namespaceId = this.namespaceId();
+		var namespaceId = this.namespaceId();
 		if (namespaceId >= 0 && namespaceId % 2 == 1) {
 			//non-special and talk namespace
-			const localizedNamespace = mw.config.get('wgFormattedNamespaces')[namespaceId - 1];
+			var localizedNamespace = mw.config.get('wgFormattedNamespaces')[namespaceId - 1];
 			if (typeof localizedNamespace !== 'undefined') {
 				if (localizedNamespace === '') {
 					this.value = this.stripNamespace();
@@ -3053,7 +3020,7 @@ $(() => {
 		return null;
 	};
 	Title.prototype.articleFromTalkPage = function () {
-		const t = new Title(this.value);
+		var t = new Title(this.value);
 		t.toArticleFromTalkPage();
 		if (t.value) {
 			return t;
@@ -3061,7 +3028,7 @@ $(() => {
 		return null;
 	};
 	Title.prototype.articleFromTalkOrArticle = function () {
-		const t = new Title(this.value);
+		var t = new Title(this.value);
 		if (t.toArticleFromTalkPage()) {
 			return t;
 		}
@@ -3072,11 +3039,11 @@ $(() => {
 	};
 	Title.prototype.stripNamespace = function () {
 		// returns a string, not a Title
-		const n = this.value.indexOf(':');
+		var n = this.value.indexOf(':');
 		if (n < 0) {
 			return this.value;
 		}
-		const namespaceId = this.namespaceId();
+		var namespaceId = this.namespaceId();
 		if (namespaceId === pg.nsMainspaceId) {
 			return this.value;
 		}
@@ -3087,7 +3054,7 @@ $(() => {
 			this.value = '';
 			return;
 		}
-		const anch = value.indexOf('#');
+		var anch = value.indexOf('#');
 		if (anch < 0) {
 			this.value = value.split('_').join(' ');
 			this.anchor = '';
@@ -3098,7 +3065,7 @@ $(() => {
 		this.ns = null; // wait until namespace() is called
 	};
 	Title.prototype.setUrl = function (urlfrag) {
-		const anch = urlfrag.indexOf('#');
+		var anch = urlfrag.indexOf('#');
 		this.value = safeDecodeURI(urlfrag.substring(0, anch));
 		this.anchor = this.value.substring(anch + 1);
 	};
@@ -3109,7 +3076,7 @@ $(() => {
 		if (!x) {
 			x = {};
 		}
-		let v = this.toString(true);
+		var v = this.toString(true);
 		if (!x.omitAnchor && this.anchor) {
 			v += '#' + this.urlAnchor();
 		}
@@ -3126,9 +3093,9 @@ $(() => {
 	};
 
 	function parseParams(url) {
-		const specialDiff = pg.re.specialdiff.exec(url);
+		var specialDiff = pg.re.specialdiff.exec(url);
 		if (specialDiff) {
-			const split = specialDiff[1].split('/');
+			var split = specialDiff[1].split('/');
 			if (split.length == 1) {
 				return { oldid: split[0], diff: 'prev' };
 			} else if (split.length == 2) {
@@ -3136,15 +3103,15 @@ $(() => {
 			}
 		}
 
-		const ret = {};
-		if (!url.includes('?')) {
+		var ret = {};
+		if (url.indexOf('?') == -1) {
 			return ret;
 		}
 		url = url.split('#')[0];
-		const s = url.split('?').slice(1).join();
-		const t = s.split('&');
-		for (let i = 0; i < t.length; ++i) {
-			const z = t[i].split('=');
+		var s = url.split('?').slice(1).join();
+		var t = s.split('&');
+		for (var i = 0; i < t.length; ++i) {
+			var z = t[i].split('=');
 			z.push(null);
 			ret[z[0]] = z[1];
 		}
@@ -3155,7 +3122,7 @@ $(() => {
 		//Documentation seems to say something different, but oldid can also accept prev/next, and
 		//Echo is emitting such URLs. Simple fixup during parameter decoding:
 		if (ret.oldid && (ret.oldid === 'prev' || ret.oldid === 'next' || ret.oldid === 'cur')) {
-			const helper = ret.diff;
+			var helper = ret.diff;
 			ret.diff = ret.oldid;
 			ret.oldid = helper;
 		}
@@ -3167,23 +3134,23 @@ $(() => {
 	// (c) encodeURI (just the straight one, no pg.re.urlNoPopup)
 
 	function myDecodeURI(str) {
-		let ret;
+		var ret;
 		// FIXME decodeURIComponent??
 		try {
 			ret = decodeURI(str.toString());
 		} catch (summat) {
 			return str;
 		}
-		for (let i = 0; i < pg.misc.decodeExtras.length; ++i) {
-			const from = pg.misc.decodeExtras[i].from;
-			const to = pg.misc.decodeExtras[i].to;
+		for (var i = 0; i < pg.misc.decodeExtras.length; ++i) {
+			var from = pg.misc.decodeExtras[i].from;
+			var to = pg.misc.decodeExtras[i].to;
 			ret = ret.split(from).join(to);
 		}
 		return ret;
 	}
 
 	function safeDecodeURI(str) {
-		const ret = myDecodeURI(str);
+		var ret = myDecodeURI(str);
 		return ret || str;
 	}
 
@@ -3202,11 +3169,11 @@ $(() => {
 		if (!getValueOf('popupAllDabsStubs') && article.namespace()) {
 			return false;
 		}
-		let sectStub = 0;
-		let realStub = 0;
+		var sectStub = 0;
+		var realStub = 0;
 		if (pg.re.stub.test(data)) {
-			const s = data.parenSplit(pg.re.stub);
-			for (let i = 1; i < s.length; i = i + 2) {
+			var s = data.parenSplit(pg.re.stub);
+			for (var i = 1; i < s.length; i = i + 2) {
 				if (s[i]) {
 					++sectStub;
 				} else {
@@ -3219,7 +3186,7 @@ $(() => {
 
 	function isValidImageName(str) {
 		// extend as needed...
-		return !str.includes('{');
+		return str.indexOf('{') == -1;
 	}
 
 	function isInStrippableNamespace(article) {
@@ -3238,8 +3205,8 @@ $(() => {
 		if (a === null) {
 			return false;
 		}
-		const kids = a.childNodes;
-		for (let i = 0; i < kids.length; ++i) {
+		var kids = a.childNodes;
+		for (var i = 0; i < kids.length; ++i) {
 			if (kids[i].nodeName == 'IMG') {
 				return true;
 			}
@@ -3261,7 +3228,7 @@ $(() => {
 		if (a.onmousedown || a.getAttribute('nopopup')) {
 			return false;
 		}
-		const h = a.href;
+		var h = a.href;
 		if (h === document.location.href + '#') {
 			return false;
 		}
@@ -3276,7 +3243,7 @@ $(() => {
 				pg.re.contribs.test(h) ||
 				pg.re.backlinks.test(h) ||
 				pg.re.specialdiff.test(h)) &&
-			!h.includes('&limit=')
+			h.indexOf('&limit=') == -1
 		);
 	}
 
@@ -3285,10 +3252,10 @@ $(() => {
 			fixVectorMenuPopups();
 		}
 
-		const s = $('.nopopups').toArray();
-		for (let i = 0; i < s.length; ++i) {
-			const as = s[i].getElementsByTagName('a');
-			for (let j = 0; j < as.length; ++j) {
+		var s = $('.nopopups').toArray();
+		for (var i = 0; i < s.length; ++i) {
+			var as = s[i].getElementsByTagName('a');
+			for (var j = 0; j < as.length; ++j) {
 				as[j].inNopopupSpan = true;
 			}
 		}
@@ -3319,8 +3286,8 @@ $(() => {
 
 	function getPageWithCaching(url, onComplete, owner) {
 		log('getPageWithCaching, url=' + url);
-		const i = findInPageCache(url);
-		let d;
+		var i = findInPageCache(url);
+		var d;
 		if (i > -1) {
 			d = fakeDownload(
 				url,
@@ -3341,7 +3308,7 @@ $(() => {
 
 	function getPage(url, onComplete, owner) {
 		log('getPage');
-		const callback = function (d) {
+		var callback = function (d) {
 			if (!d.aborted) {
 				addPageToCache(d);
 				onComplete(d);
@@ -3351,7 +3318,7 @@ $(() => {
 	}
 
 	function findInPageCache(url) {
-		for (let i = 0; i < pg.cache.pages.length; ++i) {
+		for (var i = 0; i < pg.cache.pages.length; ++i) {
 			if (url == pg.cache.pages[i].url) {
 				return i;
 			}
@@ -3361,7 +3328,7 @@ $(() => {
 
 	function addPageToCache(download) {
 		log('addPageToCache ' + download.url);
-		const page = {
+		var page = {
 			url: download.url,
 			data: download.data,
 			lastModified: download.lastModified,
@@ -3382,13 +3349,13 @@ $(() => {
 		// broken String.split, e.g. konq, IE < 10
 		String.prototype.parenSplit = function (re) {
 			re = nonGlobalRegex(re);
-			let s = this;
-			let m = re.exec(s);
-			let ret = [];
+			var s = this;
+			var m = re.exec(s);
+			var ret = [];
 			while (m && s) {
 				// without the following loop, we have
 				// 'ab'.parenSplit(/a|(b)/) != 'ab'.split(/a|(b)/)
-				for (let i = 0; i < m.length; ++i) {
+				for (var i = 0; i < m.length; ++i) {
 					if (typeof m[i] == 'undefined') {
 						m[i] = '';
 					}
@@ -3409,14 +3376,14 @@ $(() => {
 	}
 
 	function nonGlobalRegex(re) {
-		const s = re.toString();
-		let flags = '';
+		var s = re.toString();
+		var flags = '';
 		for (var j = s.length; s.charAt(j) != '/'; --j) {
 			if (s.charAt(j) != 'g') {
 				flags += s.charAt(j);
 			}
 		}
-		const t = s.substring(1, j);
+		var t = s.substring(1, j);
 		return RegExp(t, flags);
 	}
 	// ENDFILE: parensplit.js
@@ -3446,9 +3413,9 @@ $(() => {
 
 	function getJsObj(json) {
 		try {
-			const json_ret = JSON.parse(json);
+			var json_ret = JSON.parse(json);
 			if (json_ret.warnings) {
-				for (let w = 0; w < json_ret.warnings.length; w++) {
+				for (var w = 0; w < json_ret.warnings.length; w++) {
 					if (json_ret.warnings[w]['*']) {
 						log(json_ret.warnings[w]['*']);
 					} else {
@@ -3466,7 +3433,7 @@ $(() => {
 	}
 
 	function anyChild(obj) {
-		for (const p in obj) {
+		for (var p in obj) {
 			return obj[p];
 		}
 		return null;
@@ -3483,8 +3450,8 @@ $(() => {
 		if (!arr || !arr.length) {
 			return -1;
 		}
-		const len = arr.length;
-		for (let i = 0; i < len; ++i) {
+		var len = arr.length;
+		for (var i = 0; i < len; ++i) {
 			if (arr[i] == foo) {
 				return i;
 			}
@@ -3496,7 +3463,7 @@ $(() => {
 	function nextOne(array, value) {
 		// NB if the array has two consecutive entries equal
 		//	then this will loop on successive calls
-		const i = findInArray(array, value);
+		var i = findInArray(array, value);
 		if (i < 0) {
 			return null;
 		}
@@ -3533,15 +3500,15 @@ $(() => {
 		if (!str || !subs) {
 			return str;
 		}
-		const ret = [];
-		const s = str.parenSplit(/(%s|\$[0-9]+)/);
-		let i = 0;
+		var ret = [];
+		var s = str.parenSplit(/(%s|\$[0-9]+)/);
+		var i = 0;
 		do {
 			ret.push(s.shift());
 			if (!s.length) {
 				break;
 			}
-			const cmd = s.shift();
+			var cmd = s.shift();
 			if (cmd == '%s') {
 				if (i < subs.length) {
 					ret.push(subs[i]);
@@ -3550,7 +3517,7 @@ $(() => {
 				}
 				++i;
 			} else {
-				const j = parseInt(cmd.replace('$', ''), 10) - 1;
+				var j = parseInt(cmd.replace('$', ''), 10) - 1;
 				if (j > -1 && j < subs.length) {
 					ret.push(subs[j]);
 				} else {
@@ -3588,8 +3555,8 @@ $(() => {
 	/* eslint-enable no-unused-vars */
 
 	function repeatString(s, mult) {
-		let ret = '';
-		for (let i = 0; i < mult; ++i) {
+		var ret = '';
+		for (var i = 0; i < mult; ++i) {
 			ret += s;
 		}
 		return ret;
@@ -3597,7 +3564,7 @@ $(() => {
 
 	function zeroFill(s, min) {
 		min = min || 2;
-		const t = s.toString();
+		var t = s.toString();
 		return repeatString('0', min - t.length) + t;
 	}
 
@@ -3608,15 +3575,15 @@ $(() => {
 		return map_object(f, o);
 	}
 	function map_array(f, o) {
-		const ret = [];
-		for (let i = 0; i < o.length; ++i) {
+		var ret = [];
+		for (var i = 0; i < o.length; ++i) {
 			ret.push(f(o[i]));
 		}
 		return ret;
 	}
 	function map_object(f, o) {
-		const ret = {};
-		for (const i in o) {
+		var ret = {};
+		for (var i in o) {
 			ret[o] = f(o[i]);
 		}
 		return ret;
@@ -3634,7 +3601,7 @@ $(() => {
 		// From https://stackoverflow.com/a/7394787
 		// This seems to be implemented correctly on all major browsers now, so we
 		// don't have to make our own function.
-		const txt = document.createElement('textarea');
+		var txt = document.createElement('textarea');
 		txt.innerHTML = html;
 		return txt.value;
 	};
@@ -3667,16 +3634,16 @@ $(() => {
 	function listLinks(wikitext, oldTarget, titleToEdit) {
 		// mediawiki strips trailing spaces, so we do the same
 		// testcase: https://en.wikipedia.org/w/index.php?title=Radial&oldid=97365633
-		const reg = /\[\[([^|]*?) *(\||\]\])/gi;
-		let ret = [];
-		const splitted = wikitext.parenSplit(reg);
+		var reg = /\[\[([^|]*?) *(\||\]\])/gi;
+		var ret = [];
+		var splitted = wikitext.parenSplit(reg);
 		// ^[a-z]+ should match interwiki links, hopefully (case-insensitive)
 		// and ^[a-z]* should match those and [[:Category...]] style links too
-		const omitRegex = /^[a-z]*:|^[Ss]pecial:|^[Ii]mage|^[Cc]ategory/;
-		const friendlyCurrentArticleName = oldTarget.toString();
-		const wikPos = getValueOf('popupDabWiktionary');
+		var omitRegex = /^[a-z]*:|^[Ss]pecial:|^[Ii]mage|^[Cc]ategory/;
+		var friendlyCurrentArticleName = oldTarget.toString();
+		var wikPos = getValueOf('popupDabWiktionary');
 
-		for (let i = 1; i < splitted.length; i = i + 3) {
+		for (var i = 1; i < splitted.length; i = i + 3) {
 			if (
 				typeof splitted[i] == typeof 'string' &&
 				splitted[i].length > 0 &&
@@ -3689,11 +3656,11 @@ $(() => {
 		ret = rmDupesFromSortedList(ret.sort());
 
 		if (wikPos) {
-			const wikTarget =
+			var wikTarget =
 				'wiktionary:' +
 				friendlyCurrentArticleName.replace(/^(.+)\s+[(][^)]+[)]\s*$/, '$1');
 
-			let meth;
+			var meth;
 			if (wikPos.toLowerCase() == 'first') {
 				meth = 'unshift';
 			} else {
@@ -3719,8 +3686,8 @@ $(() => {
 	}
 
 	function rmDupesFromSortedList(list) {
-		const ret = [];
-		for (let i = 0; i < list.length; ++i) {
+		var ret = [];
+		for (var i = 0; i < list.length; ++i) {
 			if (ret.length === 0 || list[i] != ret[ret.length - 1]) {
 				ret.push(list[i]);
 			}
@@ -3730,13 +3697,13 @@ $(() => {
 
 	function makeFixDab(data, navpop) {
 		// grab title from parent popup if there is one; default exists in changeLinkTargetLink
-		const titleToEdit = navpop.parentPopup && navpop.parentPopup.article.toString();
-		const list = listLinks(data, navpop.originalArticle, titleToEdit);
+		var titleToEdit = navpop.parentPopup && navpop.parentPopup.article.toString();
+		var list = listLinks(data, navpop.originalArticle, titleToEdit);
 		if (list.length === 0) {
 			log('listLinks returned empty list');
 			return null;
 		}
-		let html = '<hr />' + popupString('Click to disambiguate this link to:') + '<br>';
+		var html = '<hr />' + popupString('Click to disambiguate this link to:') + '<br>';
 		html += list.join(', ');
 		return html;
 	}
@@ -3773,7 +3740,7 @@ $(() => {
 			popupId = pg.idNumber;
 		}
 
-		const popupElement = document.getElementById(elementId + popupId);
+		var popupElement = document.getElementById(elementId + popupId);
 		if (popupElement) {
 			if (!append) {
 				popupElement.innerHTML = '';
@@ -3806,14 +3773,14 @@ $(() => {
 	// FIXME: ye gods, this is ugly stuff
 	function fillEmptySpans(args) {
 		// if redir is present and true then redirTarget is mandatory
-		let redir = true;
-		let rcid;
+		var redir = true;
+		var rcid;
 		if (typeof args != 'object' || typeof args.redir == 'undefined' || !args.redir) {
 			redir = false;
 		}
-		const a = args.navpopup.parentAnchor;
+		var a = args.navpopup.parentAnchor;
 
-		let article,
+		var article,
 			hint = null,
 			oldid = null,
 			params = {};
@@ -3827,7 +3794,7 @@ $(() => {
 			oldid = getValueOf('popupHistoricalLinks') ? params.oldid : null;
 			rcid = params.rcid;
 		}
-		const x = {
+		var x = {
 			article: article,
 			hint: hint,
 			oldid: oldid,
@@ -3836,7 +3803,7 @@ $(() => {
 			params: params,
 		};
 
-		const structure = pg.structures[getValueOf('popupStructure')];
+		var structure = pg.structures[getValueOf('popupStructure')];
 		if (typeof structure != 'object') {
 			setPopupHTML(
 				'popupError',
@@ -3845,23 +3812,23 @@ $(() => {
 			);
 			return;
 		}
-		const spans = flatten(pg.misc.layout);
-		const numspans = spans.length;
-		const redirs = pg.misc.redirSpans;
+		var spans = flatten(pg.misc.layout);
+		var numspans = spans.length;
+		var redirs = pg.misc.redirSpans;
 
-		for (let i = 0; i < numspans; ++i) {
-			const found = redirs && redirs.includes(spans[i]);
+		for (var i = 0; i < numspans; ++i) {
+			var found = redirs && redirs.indexOf(spans[i]) !== -1;
 			//log('redir='+redir+', found='+found+', spans[i]='+spans[i]);
 			if ((found && !redir) || (!found && redir)) {
 				//log('skipping this set of the loop');
 				continue;
 			}
-			const structurefn = structure[spans[i]];
+			var structurefn = structure[spans[i]];
 			if (structurefn === undefined) {
 				// nothing to do for this structure part
 				continue;
 			}
-			let setfn = setPopupHTML;
+			var setfn = setPopupHTML;
 			if (
 				getValueOf('popupActiveNavlinks') &&
 				(spans[i].indexOf('popupTopLinks') === 0 || spans[i].indexOf('popupRedirTopLinks') === 0)
@@ -3895,11 +3862,11 @@ $(() => {
 
 	// flatten an array
 	function flatten(list, start) {
-		const ret = [];
+		var ret = [];
 		if (typeof start == 'undefined') {
 			start = 0;
 		}
-		for (let i = start; i < list.length; ++i) {
+		for (var i = start; i < list.length; ++i) {
 			if (typeof list[i] == typeof []) {
 				return ret.concat(flatten(list[i])).concat(flatten(list, i + 1));
 			} else {
@@ -3912,7 +3879,7 @@ $(() => {
 	// Generate html for whole popup
 	function popupHTML(a) {
 		getValueOf('popupStructure');
-		const structure = pg.structures[pg.option.popupStructure];
+		var structure = pg.structures[pg.option.popupStructure];
 		if (typeof structure != 'object') {
 			//return 'Unknown structure: '+pg.option.popupStructure;
 			// override user choice
@@ -3932,8 +3899,8 @@ $(() => {
 	}
 
 	function makeEmptySpans(list, navpop) {
-		let ret = '';
-		for (let i = 0; i < list.length; ++i) {
+		var ret = '';
+		for (var i = 0; i < list.length; ++i) {
 			if (typeof list[i] == typeof '') {
 				ret += emptySpanHTML(list[i], navpop.idNumber, 'div');
 			} else if (typeof list[i] == typeof [] && list[i].length > 0) {
@@ -3974,7 +3941,7 @@ $(() => {
 		if (!when) {
 			when = 250;
 		}
-		const popTips = function () {
+		var popTips = function () {
 			setupTooltips(document.getElementById(id), false, true, popData);
 		};
 		return function () {
@@ -4000,8 +3967,8 @@ $(() => {
 		if (!parent) {
 			return null;
 		}
-		const uls = parent.getElementsByTagName('ul');
-		for (let i = 0; i < uls.length; ++i) {
+		var uls = parent.getElementsByTagName('ul');
+		for (var i = 0; i < uls.length; ++i) {
 			if (uls[i].className == 'popup_menu') {
 				if (uls[i].offsetWidth > 0) {
 					return false;
@@ -4021,7 +3988,7 @@ $(() => {
 
 	function mouseOutWikiLink() {
 		//console ('mouseOutWikiLink');
-		const a = this;
+		var a = this;
 
 		removeModifierKeyHandler(a);
 
@@ -4044,14 +4011,14 @@ $(() => {
 			if (Navpopup.tracker.dirty) {
 				return false;
 			}
-			const x = Navpopup.tracker.x,
+			var x = Navpopup.tracker.x,
 				y = Navpopup.tracker.y;
-			const mouseOverNavpop =
+			var mouseOverNavpop =
 				navpop.isWithin(x, y, navpop.fuzz, navpop.mainDiv) ||
 				!fuzzyCursorOffMenus(x, y, navpop.fuzz, navpop.mainDiv);
 
 			// FIXME it'd be prettier to do this internal to the Navpopup objects
-			let t = getValueOf('popupHideDelay');
+			var t = getValueOf('popupHideDelay');
 			if (t) {
 				t = t * 1000;
 			}
@@ -4066,7 +4033,7 @@ $(() => {
 				return false;
 			}
 			// we have a hide delay set
-			const d = Date.now();
+			var d = Date.now();
 			if (!navpop.mouseLeavingTime) {
 				navpop.mouseLeavingTime = d;
 				return false;
@@ -4108,7 +4075,6 @@ $(() => {
 
 	/**
 	 * Creates a new Previewmaker
-	 *
 	 * @constructor
 	 * @class The Previewmaker class. Use an instance of this to generate short previews from Wikitext.
 	 * @param {string} wikiText The Wikitext source of the page we wish to preview.
@@ -4128,13 +4094,12 @@ $(() => {
 	}
 
 	Previewmaker.prototype.setData = function () {
-		const maxSize = Math.max(10000, 2 * this.maxCharacters);
+		var maxSize = Math.max(10000, 2 * this.maxCharacters);
 		this.data = this.originalData.substring(0, maxSize);
 	};
 
 	/**
 	 * Remove HTML comments
-	 *
 	 * @private
 	 */
 	Previewmaker.prototype.killComments = function () {
@@ -4164,8 +4129,8 @@ $(() => {
 	 * @private
 	 */
 	Previewmaker.prototype.kill = function (opening, closing, subopening, subclosing, repl) {
-		let oldk = this.data;
-		let k = this.killStuff(this.data, opening, closing, subopening, subclosing, repl);
+		var oldk = this.data;
+		var k = this.killStuff(this.data, opening, closing, subopening, subclosing, repl);
 		while (k.length < oldk.length) {
 			oldk = k;
 			k = this.killStuff(k, opening, closing, subopening, subclosing, repl);
@@ -4184,10 +4149,10 @@ $(() => {
 		subclosing,
 		repl
 	) {
-		const op = this.makeRegexp(opening);
-		const cl = this.makeRegexp(closing, '^');
-		const sb = subopening ? this.makeRegexp(subopening, '^') : null;
-		const sc = subclosing ? this.makeRegexp(subclosing, '^') : cl;
+		var op = this.makeRegexp(opening);
+		var cl = this.makeRegexp(closing, '^');
+		var sb = subopening ? this.makeRegexp(subopening, '^') : null;
+		var sc = subclosing ? this.makeRegexp(subclosing, '^') : cl;
 		if (!op || !cl) {
 			alert('Navigation Popups error: op or cl is null! something is wrong.');
 			return;
@@ -4195,13 +4160,13 @@ $(() => {
 		if (!op.test(txt)) {
 			return txt;
 		}
-		let ret = '';
-		const opResult = op.exec(txt);
+		var ret = '';
+		var opResult = op.exec(txt);
 		ret = txt.substring(0, opResult.index);
 		txt = txt.substring(opResult.index + opResult[0].length);
-		let depth = 1;
+		var depth = 1;
 		while (txt.length > 0) {
-			let removal = 0;
+			var removal = 0;
 			if (depth == 1 && cl.test(txt)) {
 				depth--;
 				removal = cl.exec(txt)[0].length;
@@ -4229,13 +4194,13 @@ $(() => {
 	Previewmaker.prototype.makeRegexp = function (x, prefix, suffix) {
 		prefix = prefix || '';
 		suffix = suffix || '';
-		let reStr = '';
-		let flags = '';
+		var reStr = '';
+		var flags = '';
 		if (isString(x)) {
 			reStr = prefix + literalizeRegex(x) + suffix;
 		} else if (isRegExp(x)) {
-			let s = x.toString().substring(1);
-			const sp = s.split('/');
+			var s = x.toString().substring(1);
+			var sp = s.split('/');
 			flags = sp[sp.length - 1];
 			sp[sp.length - 1] = '';
 			s = sp.join('/');
@@ -4286,7 +4251,7 @@ $(() => {
 	 * @private
 	 */
 	Previewmaker.prototype.killImages = function () {
-		const forbiddenNamespaceAliases = [];
+		var forbiddenNamespaceAliases = [];
 		$.each(mw.config.get('wgNamespaceIds'), (_localizedNamespaceLc, _namespaceId) => {
 			if (_namespaceId != pg.nsImageId && _namespaceId != pg.nsCategoryId) {
 				return;
@@ -4314,9 +4279,9 @@ $(() => {
 		this.data = this.data.replace(/(^|\n) *<.*/g, '\n');
 
 		// and those pesky html tags, but not <nowiki> or <blockquote>
-		const splitted = this.data.parenSplit(/(<[\w\W]*?(?:>|$|(?=<)))/);
-		const len = splitted.length;
-		for (let i = 1; i < len; i = i + 2) {
+		var splitted = this.data.parenSplit(/(<[\w\W]*?(?:>|$|(?=<)))/);
+		var len = splitted.length;
+		for (var i = 1; i < len; i = i + 2) {
 			switch (splitted[i]) {
 				case '<nowiki>':
 				case '</nowiki>':
@@ -4336,7 +4301,7 @@ $(() => {
 	Previewmaker.prototype.killChunks = function () {
 		// heuristics alert
 		// chunks of italic text? you crazy, man?
-		const italicChunkRegex = /((^|\n)\s*:*\s*''[^']([^']|'''|'[^']){20}(.|\n[^\n])*''[.!?\s]*\n)+/g;
+		var italicChunkRegex = /((^|\n)\s*:*\s*''[^']([^']|'''|'[^']){20}(.|\n[^\n])*''[.!?\s]*\n)+/g;
 		// keep stuff separated, though, so stick in \n (fixes [[Union Jack]]?
 		this.data = this.data.replace(italicChunkRegex, '\n');
 	};
@@ -4362,7 +4327,7 @@ $(() => {
 	Previewmaker.prototype.firstBit = function () {
 		// dont't be givin' me no subsequent paragraphs, you hear me?
 		/// first we "normalize" section headings, removing whitespace after, adding before
-		let d = this.data;
+		var d = this.data;
 
 		if (getValueOf('popupPreviewCutHeadings')) {
 			this.data = this.data.replace(/\s*(==+[^=]*==+)\s*/g, '\n\n$1 ');
@@ -4370,7 +4335,7 @@ $(() => {
 			this.data = this.data.replace(/([:;]) *\n{2,}/g, '$1\n');
 
 			this.data = this.data.replace(/^[\s\n]*/, '');
-			const stuff = /^([^\n]|\n[^\n\s])*/.exec(this.data);
+			var stuff = /^([^\n]|\n[^\n\s])*/.exec(this.data);
 			if (stuff) {
 				d = stuff[0];
 			}
@@ -4388,12 +4353,12 @@ $(() => {
 		// leading space is bad, mmkay?
 		d[0] = d[0].replace(/^\s*/, '');
 
-		const notSentenceEnds = /([^.][a-z][.] *[a-z]|etc|sic|Dr|Mr|Mrs|Ms|St|no|op|cit|\[[^\]]*|\s[A-Zvclm])$/i;
+		var notSentenceEnds = /([^.][a-z][.] *[a-z]|etc|sic|Dr|Mr|Mrs|Ms|St|no|op|cit|\[[^\]]*|\s[A-Zvclm])$/i;
 		d = this.fixSentenceEnds(d, notSentenceEnds);
 
 		this.fullLength = d.join('').length;
-		let n = this.maxSentences;
-		let dd = this.firstSentences(d, n);
+		var n = this.maxSentences;
+		var dd = this.firstSentences(d, n);
 
 		do {
 			dd = this.firstSentences(d, n);
@@ -4410,10 +4375,10 @@ $(() => {
 		// take an array of strings, strs
 		// join strs[i] to strs[i+1] & strs[i+2] if strs[i] matches regex reg
 
-		for (let i = 0; i < strs.length - 2; ++i) {
+		for (var i = 0; i < strs.length - 2; ++i) {
 			if (reg.test(strs[i])) {
-				const a = [];
-				for (let j = 0; j < strs.length; ++j) {
+				var a = [];
+				for (var j = 0; j < strs.length; ++j) {
 					if (j < i) {
 						a[j] = strs[j];
 					}
@@ -4434,7 +4399,7 @@ $(() => {
 	 * @private
 	 */
 	Previewmaker.prototype.firstSentences = function (strs, howmany) {
-		const t = strs.slice(0, 2 * howmany);
+		var t = strs.slice(0, 2 * howmany);
 		return t.join('');
 	};
 
@@ -4449,7 +4414,6 @@ $(() => {
 	/**
 	 * Runs the various methods to generate the preview.
 	 * The preview is stored in the <code>html</html> field.
-	 *
 	 * @private
 	 */
 	Previewmaker.prototype.makePreview = function () {
@@ -4487,12 +4451,12 @@ $(() => {
 	 * @private
 	 */
 	Previewmaker.prototype.esWiki2HtmlPart = function (data) {
-		const reLinks = /(?:\[\[([^|\]]*)(?:\|([^|\]]*))*]]([a-z]*))/gi; //match a wikilink
+		var reLinks = /(?:\[\[([^|\]]*)(?:\|([^|\]]*))*]]([a-z]*))/gi; //match a wikilink
 		reLinks.lastIndex = 0; //reset regex
 
-		let match;
-		let result = '';
-		let postfixIndex = 0;
+		var match;
+		var result = '';
+		var postfixIndex = 0;
 		while ((match = reLinks.exec(data))) {
 			//match all wikilinks
 			//FIXME: the way that link is built here isn't perfect. It is clickable, but popups preview won't recognize it in some cases.
@@ -4512,20 +4476,20 @@ $(() => {
 		return result;
 	};
 	Previewmaker.prototype.editSummaryPreview = function () {
-		const reAes = /\/\* *(.*?) *\*\//g; //match the first section marker
+		var reAes = /\/\* *(.*?) *\*\//g; //match the first section marker
 		reAes.lastIndex = 0; //reset regex
 
-		let match;
+		var match;
 
 		match = reAes.exec(this.data);
 		if (match) {
 			//we have a section link. Split it, process it, combine it.
-			const prefix = this.data.substring(0, match.index - 1);
-			const section = match[1];
-			const postfix = this.data.substring(reAes.lastIndex);
+			var prefix = this.data.substring(0, match.index - 1);
+			var section = match[1];
+			var postfix = this.data.substring(reAes.lastIndex);
 
-			let start = "<span class='autocomment'>";
-			let end = '</span>';
+			var start = "<span class='autocomment'>";
+			var end = '</span>';
 			if (prefix.length > 0) {
 				start = this.esWiki2HtmlPart(prefix) + ' ' + start + '- ';
 			}
@@ -4533,9 +4497,9 @@ $(() => {
 				end = ': ' + end + this.esWiki2HtmlPart(postfix);
 			}
 
-			const t = new Title().fromURL(this.baseUrl);
+			var t = new Title().fromURL(this.baseUrl);
 			t.anchorFromUtf(section);
-			const sectionLink =
+			var sectionLink =
 				Insta.conf.paths.articles +
 				pg.escapeQuotesHTML(t.toString(true)) +
 				'#' +
@@ -4640,7 +4604,6 @@ $(() => {
 
 	/**
 	 * Works around livepreview bugs.
-	 *
 	 * @private
 	 */
 	Previewmaker.prototype.fixHTML = function () {
@@ -4648,7 +4611,7 @@ $(() => {
 			return;
 		}
 
-		let ret = this.html;
+		var ret = this.html;
 
 		// fix question marks in wiki links
 		// maybe this'll break some stuff :-(
@@ -4683,7 +4646,7 @@ $(() => {
 		setPopupTipsAndHTML(this.html, 'popupPreview', this.owner.idNumber, {
 			owner: this.owner,
 		});
-		const more = this.fullLength > this.data.length ? this.moreLink() : '';
+		var more = this.fullLength > this.data.length ? this.moreLink() : '';
 		setPopupHTML(more, 'popupPreviewMore', this.owner.idNumber);
 	};
 
@@ -4691,10 +4654,10 @@ $(() => {
 	 * @private
 	 */
 	Previewmaker.prototype.moreLink = function () {
-		const a = document.createElement('a');
+		var a = document.createElement('a');
 		a.className = 'popupMoreLink';
 		a.innerHTML = popupString('more...');
-		const savedThis = this;
+		var savedThis = this;
 		a.onclick = function () {
 			savedThis.maxCharacters += 2000;
 			savedThis.maxSentences += 20;
@@ -4728,12 +4691,12 @@ $(() => {
 
 	// STARTFILE: querypreview.js
 	function loadAPIPreview(queryType, article, navpop) {
-		const art = new Title(article).urlString();
-		let url = pg.wiki.apiwikibase + '?format=json&formatversion=2&action=query&';
-		let htmlGenerator = function (/*a, d*/) {
+		var art = new Title(article).urlString();
+		var url = pg.wiki.apiwikibase + '?format=json&formatversion=2&action=query&';
+		var htmlGenerator = function (/*a, d*/) {
 			alert('invalid html generator');
 		};
-		let usernameart = '';
+		var usernameart = '';
 		switch (queryType) {
 			case 'history':
 				url +=
@@ -4793,7 +4756,7 @@ $(() => {
 				break;
 		}
 		pendingNavpopTask(navpop);
-		const callback = function (d) {
+		var callback = function (d) {
 			log('callback of API functions was hit');
 			if (queryType === 'userinfo') {
 				// We need to do another API request
@@ -4804,7 +4767,7 @@ $(() => {
 			}
 			showAPIPreview(queryType, htmlGenerator(article, d, navpop), navpop.idNumber, navpop, d);
 		};
-		const go = function () {
+		var go = function () {
 			getPageWithCaching(url, callback, navpop);
 			return true;
 		};
@@ -4818,8 +4781,8 @@ $(() => {
 
 	function linkList(list) {
 		list.sort((x, y) => x == y ? 0 : x < y ? -1 : 1);
-		const buf = [];
-		for (let i = 0; i < list.length; ++i) {
+		var buf = [];
+		for (var i = 0; i < list.length; ++i) {
 			buf.push(
 				wikiLink({
 					article: new Title(list[i]),
@@ -4832,10 +4795,10 @@ $(() => {
 	}
 
 	function getTimeOffset() {
-		const tz = mw.user.options.get('timecorrection');
+		var tz = mw.user.options.get('timecorrection');
 
 		if (tz) {
-			if (tz.includes('|')) {
+			if (tz.indexOf('|') > -1) {
 				// New format
 				return parseInt(tz.split('|')[1], 10);
 			}
@@ -4845,11 +4808,11 @@ $(() => {
 
 	function getTimeZone() {
 		if (!pg.user.timeZone) {
-			const tz = mw.user.options.get('timecorrection');
+			var tz = mw.user.options.get('timecorrection');
 			pg.user.timeZone = 'UTC';
 
 			if (tz) {
-				const tzComponents = tz.split('|');
+				var tzComponents = tz.split('|');
 				if (tzComponents.length === 3 && tzComponents[0] === 'ZoneInfo') {
 					pg.user.timeZone = tzComponents[2];
 				} else {
@@ -4868,8 +4831,8 @@ $(() => {
 			// IE 11
 			return true;
 		}
-		const tz = mw.user.options.get('timecorrection');
-		if (tz && !tz.includes('ZoneInfo|')) {
+		var tz = mw.user.options.get('timecorrection');
+		if (tz && tz.indexOf('ZoneInfo|') === -1) {
 			// System| Default system time, default for users who didn't configure timezone
 			// Offset| Manual defined offset by user
 			return true;
@@ -4883,7 +4846,7 @@ $(() => {
 	 */
 	function getLocales() {
 		if (!pg.user.locales) {
-			let userLanguage = document.querySelector('html').getAttribute('lang'); // make sure we have HTML locale
+			var userLanguage = document.querySelector('html').getAttribute('lang'); // make sure we have HTML locale
 			if (getValueOf('popupLocale')) {
 				userLanguage = getValueOf('popupLocale');
 			} else if (userLanguage === 'en') {
@@ -4919,21 +4882,20 @@ $(() => {
 
 	/**
 	 * Creates a HTML table that's shown in the history and user-contribs popups.
-	 *
 	 * @param {Object[]} h - a list of revisions, returned from the API
 	 * @param {boolean} reallyContribs - true only if we're displaying user contributions
 	 */
 	function editPreviewTable(article, h, reallyContribs) {
-		let html = ['<table>'];
-		let day = null;
-		let curart = article;
-		let page = null;
+		var html = ['<table>'];
+		var day = null;
+		var curart = article;
+		var page = null;
 
-		let makeFirstColumnLinks;
+		var makeFirstColumnLinks;
 		if (reallyContribs) {
 			// We're showing user contributions, so make (diff | hist) links
 			makeFirstColumnLinks = function (currentRevision) {
-				let result = '(';
+				var result = '(';
 				result +=
 					'<a href="' +
 					pg.wiki.titlebase +
@@ -4957,9 +4919,9 @@ $(() => {
 			};
 		} else {
 			// It's a regular history page, so make (cur | last) links
-			const firstRevid = h[0].revid;
+			var firstRevid = h[0].revid;
 			makeFirstColumnLinks = function (currentRevision) {
-				let result = '(';
+				var result = '(';
 				result +=
 					'<a href="' +
 					pg.wiki.titlebase +
@@ -4986,15 +4948,15 @@ $(() => {
 			};
 		}
 
-		for (let i = 0; i < h.length; ++i) {
+		for (var i = 0; i < h.length; ++i) {
 			if (reallyContribs) {
 				page = h[i].title;
 				curart = new Title(page);
 			}
-			const minor = h[i].minor ? '<b>m </b>' : '';
-			const editDate = new Date(h[i].timestamp);
-			let thisDay = formattedDate(editDate);
-			const thisTime = formattedTime(editDate);
+			var minor = h[i].minor ? '<b>m </b>' : '';
+			var editDate = new Date(h[i].timestamp);
+			var thisDay = formattedDate(editDate);
+			var thisTime = formattedTime(editDate);
 			if (thisDay == day) {
 				thisDay = '';
 			} else {
@@ -5018,10 +4980,10 @@ $(() => {
 					thisTime +
 					'</a></td>'
 			);
-			let col3url = '',
+			var col3url = '',
 				col3txt = '';
 			if (!reallyContribs) {
-				const user = h[i].user;
+				var user = h[i].user;
 				if (!h[i].userhidden) {
 					if (pg.re.ipUser.test(user)) {
 						col3url =
@@ -5054,8 +5016,8 @@ $(() => {
 					col3txt +
 					'</a></td>'
 			);
-			let comment = '';
-			const c = h[i].comment || ( typeof h[i].slots !== 'undefined' ? h[i].slots.main.content : null );
+			var comment = '';
+			var c = h[i].comment || ( typeof h[i].slots !== 'undefined' ? h[i].slots.main.content : null );
 			if (c) {
 				comment = new Previewmaker(c, new Title(curart).toUrl()).editSummaryPreview();
 			} else if (h[i].commenthidden) {
@@ -5071,7 +5033,7 @@ $(() => {
 
 	function adjustDate(d, offset) {
 		// offset is in minutes
-		const o = offset * 60 * 1000;
+		var o = offset * 60 * 1000;
 		return new Date(Number(d) + o);
 	}
 
@@ -5090,7 +5052,7 @@ $(() => {
 		}
 
 		if (getMWDateFormat() === 'ISO 8601') {
-			const d2 = convertTimeZone(date, getTimeZone());
+			var d2 = convertTimeZone(date, getTimeZone());
 			return (
 				map(zeroFill, [d2.getFullYear(), d2.getMonth() + 1, d2.getDate()]).join('-') +
 				'T' +
@@ -5098,7 +5060,7 @@ $(() => {
 			);
 		}
 
-		const options = getValueOf('popupDateTimeFormatterOptions');
+		var options = getValueOf('popupDateTimeFormatterOptions');
 		options.timeZone = getTimeZone();
 		return date.toLocaleString(getLocales(), options);
 	}
@@ -5116,7 +5078,7 @@ $(() => {
 			return map(zeroFill, [d2.getFullYear(), d2.getMonth() + 1, d2.getDate()]).join('-');
 		}
 
-		const options = getValueOf('popupDateFormatterOptions');
+		var options = getValueOf('popupDateFormatterOptions');
 		options.timeZone = getTimeZone();
 		return date.toLocaleDateString(getLocales(), options);
 	}
@@ -5134,19 +5096,19 @@ $(() => {
 			return map(zeroFill, [d2.getHours(), d2.getMinutes(), d2.getSeconds()]).join(':');
 		}
 
-		const options = getValueOf('popupTimeFormatterOptions');
+		var options = getValueOf('popupTimeFormatterOptions');
 		options.timeZone = getTimeZone();
 		return date.toLocaleTimeString(getLocales(), options);
 	}
 
 	// Get the proper groupnames for the technicalgroups
 	function fetchUserGroupNames(userinfoResponse) {
-		const queryObj = getJsObj(userinfoResponse).query;
-		const user = anyChild(queryObj.users);
-		const messages = [];
+		var queryObj = getJsObj(userinfoResponse).query;
+		var user = anyChild(queryObj.users);
+		var messages = [];
 		if (user.groups) {
 			user.groups.forEach((groupName) => {
-				if (!['*', 'user', 'autoconfirmed', 'extendedconfirmed', 'named'].includes(groupName)) {
+				if (['*', 'user', 'autoconfirmed', 'extendedconfirmed', 'named'].indexOf(groupName) === -1) {
 					messages.push('group-' + groupName + '-member');
 				}
 			});
@@ -5161,7 +5123,7 @@ $(() => {
 
 	function showAPIPreview(queryType, html, id, navpop, download) {
 		// DJ: done
-		let target = 'popupPreview';
+		var target = 'popupPreview';
 		completedNavpopTask(navpop);
 
 		switch (queryType) {
@@ -5181,14 +5143,14 @@ $(() => {
 
 	function APIrevisionPreviewHTML(article, download) {
 		try {
-			const jsObj = getJsObj(download.data);
-			const page = anyChild(jsObj.query.pages);
+			var jsObj = getJsObj(download.data);
+			var page = anyChild(jsObj.query.pages);
 			if (page.missing) {
 				// TODO we need to fix this proper later on
 				download.owner = null;
 				return;
 			}
-			const content =
+			var content =
 				page && page.revisions && page.revisions[0] &&
 				page.revisions[0].slots && page.revisions[0].slots.main &&
 				page.revisions[0].slots.main.contentmodel === 'wikitext' ?
@@ -5210,15 +5172,15 @@ $(() => {
 
 	function APIbacklinksPreviewHTML(article, download /*, navpop*/) {
 		try {
-			const jsObj = getJsObj(download.data);
-			const list = jsObj.query.backlinks;
+			var jsObj = getJsObj(download.data);
+			var list = jsObj.query.backlinks;
 
-			let html = [];
+			var html = [];
 			if (!list) {
 				return popupString('No backlinks found');
 			}
-			for (let i = 0; i < list.length; i++) {
-				const t = new Title(list[i].title);
+			for (var i = 0; i < list.length; i++) {
+				var t = new Title(list[i].title);
 				html.push(
 					'<a href="' + pg.wiki.titlebase + t.urlString() + '">' + t.toString().entify() + '</a>'
 				);
@@ -5235,10 +5197,10 @@ $(() => {
 
 	pg.fn.APIsharedImagePagePreviewHTML = function APIsharedImagePagePreviewHTML(obj) {
 		log('APIsharedImagePagePreviewHTML');
-		const popupid = obj.requestid;
+		var popupid = obj.requestid;
 		if (obj.query && obj.query.pages) {
-			const page = anyChild(obj.query.pages);
-			const content =
+			var page = anyChild(obj.query.pages);
+			var content =
 				page && page.revisions && page.revisions[0] &&
 				page.revisions[0].slots && page.revisions[0].slots.main &&
 				page.revisions[0].slots.main.contentmodel === 'wikitext' ?
@@ -5252,7 +5214,7 @@ $(() => {
 				pg.current.link.navpopup
 			) {
 				/* Not entirely safe, but the best we can do */
-				const p = new Previewmaker(
+				var p = new Previewmaker(
 					content,
 					pg.current.link.navpopup.article,
 					pg.current.link.navpopup
@@ -5265,16 +5227,16 @@ $(() => {
 
 	function APIimagepagePreviewHTML(article, download, navpop) {
 		try {
-			const jsObj = getJsObj(download.data);
-			const page = anyChild(jsObj.query.pages);
-			const content =
+			var jsObj = getJsObj(download.data);
+			var page = anyChild(jsObj.query.pages);
+			var content =
 				page && page.revisions && page.revisions[0] &&
 				page.revisions[0].slots && page.revisions[0].slots.main &&
 				page.revisions[0].slots.main.contentmodel === 'wikitext' ?
 					page.revisions[0].slots.main.content :
 					null;
-			let ret = '';
-			let alt = '';
+			var ret = '';
+			var alt = '';
 			try {
 				alt = navpop.parentAnchor.childNodes[0].alt;
 			} catch (e) {}
@@ -5282,21 +5244,21 @@ $(() => {
 				ret = ret + '<hr /><b>' + popupString('Alt text:') + '</b> ' + pg.escapeQuotesHTML(alt);
 			}
 			if (typeof content === 'string') {
-				const p = prepPreviewmaker(content, article, navpop);
+				var p = prepPreviewmaker(content, article, navpop);
 				p.makePreview();
 				if (p.html) {
 					ret += '<hr />' + p.html;
 				}
 				if (getValueOf('popupSummaryData')) {
-					const info = getPageInfo(content, download);
+					var info = getPageInfo(content, download);
 					log(info);
 					setPopupTrailer(info, navpop.idNumber);
 				}
 			}
 			if (page && page.imagerepository == 'shared') {
-				const art = new Title(article);
-				const encart = encodeURIComponent('File:' + art.stripNamespace());
-				const shared_url =
+				var art = new Title(article);
+				var encart = encodeURIComponent('File:' + art.stripNamespace());
+				var shared_url =
 					pg.wiki.apicommonsbase +
 					'?format=json&formatversion=2' +
 					'&callback=pg.fn.APIsharedImagePagePreviewHTML' +
@@ -5332,11 +5294,11 @@ $(() => {
 
 	function APIimagelinksPreviewHTML(article, download) {
 		try {
-			const jsobj = getJsObj(download.data);
-			const list = jsobj.query.imageusage;
+			var jsobj = getJsObj(download.data);
+			var list = jsobj.query.imageusage;
 			if (list) {
-				const ret = [];
-				for (let i = 0; i < list.length; i++) {
+				var ret = [];
+				for (var i = 0; i < list.length; i++) {
 					ret.push(list[i].title);
 				}
 				if (ret.length === 0) {
@@ -5353,10 +5315,10 @@ $(() => {
 
 	function APIcategoryPreviewHTML(article, download) {
 		try {
-			const jsobj = getJsObj(download.data);
-			const list = jsobj.query.categorymembers;
-			let ret = [];
-			for (let p = 0; p < list.length; p++) {
+			var jsobj = getJsObj(download.data);
+			var list = jsobj.query.categorymembers;
+			var ret = [];
+			for (var p = 0; p < list.length; p++) {
 				ret.push(list[p].title);
 			}
 			if (ret.length === 0) {
@@ -5373,17 +5335,17 @@ $(() => {
 	}
 
 	function APIuserInfoPreviewHTML(article, download) {
-		let ret = [];
-		let queryobj = {};
+		var ret = [];
+		var queryobj = {};
 		try {
 			queryobj = getJsObj(download.data).query;
 		} catch (someError) {
 			return 'Userinfo preview failed :(';
 		}
 
-		const user = anyChild(queryobj.users);
+		var user = anyChild(queryobj.users);
 		if (user) {
-			const globaluserinfo = queryobj.globaluserinfo;
+			var globaluserinfo = queryobj.globaluserinfo;
 			if (user.invalid === '') {
 				ret.push(popupString('Invalid user'));
 			} else if (user.missing === '') {
@@ -5397,8 +5359,8 @@ $(() => {
 				}
 			}
 			if (globaluserinfo && ('locked' in globaluserinfo || 'hidden' in globaluserinfo)) {
-				let lockedSulAccountIsAttachedToThis = true;
-				for (let i = 0; globaluserinfo.unattached && i < globaluserinfo.unattached.length; i++) {
+				var lockedSulAccountIsAttachedToThis = true;
+				for (var i = 0; globaluserinfo.unattached && i < globaluserinfo.unattached.length; i++) {
 					if (globaluserinfo.unattached[i].wiki === mw.config.get('wgDBname')) {
 						lockedSulAccountIsAttachedToThis = false;
 						break;
@@ -5425,7 +5387,7 @@ $(() => {
 			}
 			if (user.groups) {
 				user.groups.forEach((groupName) => {
-					if (!['*', 'user', 'autoconfirmed', 'extendedconfirmed', 'named'].includes(groupName)) {
+					if (['*', 'user', 'autoconfirmed', 'extendedconfirmed', 'named'].indexOf(groupName) === -1) {
 						ret.push(
 							pg.escapeQuotesHTML(mw.message('group-' + groupName + '-member', user.gender).text())
 						);
@@ -5462,8 +5424,8 @@ $(() => {
 
 		if (queryobj.blocks) {
 			ret.push(popupString('IP user')); //we only request list=blocks for IPs
-			for (let l = 0; l < queryobj.blocks.length; l++) {
-				let rbstr =
+			for (var l = 0; l < queryobj.blocks.length; l++) {
+				var rbstr =
 					queryobj.blocks[l].rangestart === queryobj.blocks[l].rangeend ? 'BLOCK' : 'RANGEBLOCK';
 				rbstr = !Array.isArray(queryobj.blocks[l].restrictions) ?
 					'Has ' + rbstr.toLowerCase() + 's' :
@@ -5474,7 +5436,7 @@ $(() => {
 
 		// if any element of ret ends with ' · ', merge it with the next element to avoid
 		// the .join(', ') call inserting a comma after it
-		for (let m = 0; m < ret.length - 1; m++) {
+		for (var m = 0; m < ret.length - 1; m++) {
 			if (ret[m].length > 3 && ret[m].substring(ret[m].length - 3) === ' · ') {
 				ret[m] = ret[m] + ret[m + 1];
 				ret.splice(m + 1, 1); // delete element at index m+1
@@ -5492,15 +5454,15 @@ $(() => {
 
 	function APIhistoryPreviewHTML(article, download, navpop, reallyContribs) {
 		try {
-			const jsobj = getJsObj(download.data);
-			let edits = [];
+			var jsobj = getJsObj(download.data);
+			var edits = [];
 			if (reallyContribs) {
 				edits = jsobj.query.usercontribs;
 			} else {
 				edits = anyChild(jsobj.query.pages).revisions;
 			}
 
-			const ret = editPreviewTable(article, edits, reallyContribs);
+			var ret = editPreviewTable(article, edits, reallyContribs);
 			return ret;
 		} catch (someError) {
 			return popupString('History preview failed');
@@ -5548,17 +5510,17 @@ $(() => {
 			return false;
 		}
 
-		const art = image.urlString();
+		var art = image.urlString();
 
-		let url = pg.wiki.apiwikibase + '?format=json&formatversion=2&action=query';
+		var url = pg.wiki.apiwikibase + '?format=json&formatversion=2&action=query';
 		url += '&prop=imageinfo&iiprop=url|mime&iiurlwidth=' + getValueOf('popupImageSizeLarge');
 		url += '&titles=' + art;
 
 		pendingNavpopTask(navpop);
-		const callback = function (d) {
+		var callback = function (d) {
 			popupsInsertImage(navpop.idNumber, navpop, d);
 		};
-		const go = function () {
+		var go = function () {
 			getPageWithCaching(url, callback, navpop);
 			return true;
 		};
@@ -5571,10 +5533,10 @@ $(() => {
 
 	function popupsInsertImage(id, navpop, download) {
 		log('popupsInsertImage');
-		let imageinfo;
+		var imageinfo;
 		try {
-			const jsObj = getJsObj(download.data);
-			const imagepage = anyChild(jsObj.query.pages);
+			var jsObj = getJsObj(download.data);
+			var imagepage = anyChild(jsObj.query.pages);
 			if (typeof imagepage.imageinfo === 'undefined') {
 				return;
 			}
@@ -5584,7 +5546,7 @@ $(() => {
 			return;
 		}
 
-		const popupImage = document.getElementById('popupImg' + id);
+		var popupImage = document.getElementById('popupImg' + id);
 		if (!popupImage) {
 			log('could not find insertion point for image');
 			return;
@@ -5603,7 +5565,7 @@ $(() => {
 			log("fullsize imagethumb, but not sure if it's an image");
 		}
 
-		const a = document.getElementById('popupImageLink' + id);
+		var a = document.getElementById('popupImageLink' + id);
 		if (a === null) {
 			return null;
 		}
@@ -5632,12 +5594,12 @@ $(() => {
 	// Toggles the image between inline small and navpop fullwidth.
 	// It's the same image, no actual sizechange occurs, only display width.
 	function toggleSize() {
-		const imgContainer = this;
+		var imgContainer = this;
 		if (!imgContainer) {
 			alert('imgContainer is null :/');
 			return;
 		}
-		const img = imgContainer.firstChild;
+		var img = imgContainer.firstChild;
 		if (!img) {
 			alert('img is null :/');
 			return;
@@ -5655,10 +5617,10 @@ $(() => {
 		// nb in pg.re.image we're interested in the second bracketed expression
 		// this may change if the regex changes :-(
 		//var match=pg.re.image.exec(wikiText);
-		let matched = null;
-		let match;
+		var matched = null;
+		var match;
 		// strip html comments, used by evil bots :-(
-		const t = removeMatchesUnless(
+		var t = removeMatchesUnless(
 			wikiText,
 			/(<!--[\s\S]*?-->)/,
 			1,
@@ -5667,7 +5629,7 @@ $(() => {
 
 		while ((match = pg.re.image.exec(t))) {
 			// now find a sane image name - exclude templates by seeking {
-			const m = match[2] || match[6];
+			var m = match[2] || match[6];
 			if (isValidImageName(m)) {
 				matched = m;
 				break;
@@ -5681,9 +5643,9 @@ $(() => {
 	}
 
 	function removeMatchesUnless(str, re1, parencount, re2) {
-		const split = str.parenSplit(re1);
-		const c = parencount + 1;
-		for (let i = 0; i < split.length; ++i) {
+		var split = str.parenSplit(re1);
+		var c = parencount + 1;
+		for (var i = 0; i < split.length; ++i) {
 			if (i % c === 0 || re2.test(split[i])) {
 				continue;
 			}
@@ -5709,9 +5671,9 @@ $(() => {
 	}
 
 	function setRedirs() {
-		const r = 'redirect';
-		const R = 'REDIRECT';
-		const redirLists = {
+		var r = 'redirect';
+		var R = 'REDIRECT';
+		var redirLists = {
 			ar: [R, 'تحويل'],
 			be: [r, 'перанакіраваньне'],
 			bg: [r, 'пренасочване', 'виж'],
@@ -5748,7 +5710,7 @@ $(() => {
 			yi: [R, 'ווייטערפירן'],
 			zh: [R, '重定向'], // no comma
 		};
-		const redirList = redirLists[pg.wiki.lang] || [r, R];
+		var redirList = redirLists[pg.wiki.lang] || [r, R];
 		// Mediawiki is very tolerant about what comes after the #redirect at the start
 		pg.re.redirect = RegExp(
 			'^\\s*[#](' + redirList.join('|') + ').*?\\[{2}([^\\|\\]]*)(|[^\\]]*)?\\]{2}\\s*(.*)',
@@ -5771,7 +5733,7 @@ $(() => {
 
 	// return a regexp pattern matching all variants to write the given namespace
 	function nsRe(namespaceId) {
-		const imageNamespaceVariants = [];
+		var imageNamespaceVariants = [];
 		$.each(mw.config.get('wgNamespaceIds'), (_localizedNamespaceLc, _namespaceId) => {
 			if (_namespaceId != namespaceId) {
 				return;
@@ -5794,7 +5756,7 @@ $(() => {
 	// STARTFILE: selpop.js
 	function getEditboxSelection() {
 		// see http://www.webgurusforum.com/8/12/0
-		let editbox;
+		var editbox;
 		try {
 			editbox = document.editform.wpTextbox1;
 		} catch (dang) {
@@ -5805,8 +5767,8 @@ $(() => {
 			return document.selection.createRange().text;
 		}
 		// Mozilla
-		const selStart = editbox.selectionStart;
-		const selEnd = editbox.selectionEnd;
+		var selStart = editbox.selectionStart;
+		var selEnd = editbox.selectionEnd;
 		return editbox.value.substring(selStart, selEnd);
 	}
 
@@ -5814,24 +5776,24 @@ $(() => {
 		// popup if the selection looks like [[foo|anything afterwards at all
 		// or [[foo|bar]]text without ']]'
 		// or [[foo|bar]]
-		const sel = getEditboxSelection();
-		const open = sel.indexOf('[[');
-		const pipe = sel.indexOf('|');
-		const close = sel.indexOf(']]');
+		var sel = getEditboxSelection();
+		var open = sel.indexOf('[[');
+		var pipe = sel.indexOf('|');
+		var close = sel.indexOf(']]');
 		if (open == -1 || (pipe == -1 && close == -1)) {
 			return;
 		}
 		if ((pipe != -1 && open > pipe) || (close != -1 && open > close)) {
 			return;
 		}
-		const article = new Title(sel.substring(open + 2, pipe < 0 ? close : pipe));
+		var article = new Title(sel.substring(open + 2, pipe < 0 ? close : pipe));
 		if (getValueOf('popupOnEditSelection') == 'boxpreview') {
 			return doSeparateSelectionPopup(sel, article);
 		}
-		if (close > 0 && sel.substring(close + 2).includes('[[')) {
+		if (close > 0 && sel.substring(close + 2).indexOf('[[') >= 0) {
 			return;
 		}
-		const a = document.createElement('a');
+		var a = document.createElement('a');
 		a.href = pg.wiki.titlebase + article.urlString();
 		mouseOverWikiLink2(a);
 		if (a.navpopup) {
@@ -5846,18 +5808,18 @@ $(() => {
 	}
 
 	function doSeparateSelectionPopup(str, article) {
-		let div = document.getElementById('selectionPreview');
+		var div = document.getElementById('selectionPreview');
 		if (!div) {
 			div = document.createElement('div');
 			div.id = 'selectionPreview';
 			try {
-				const box = document.editform.wpTextbox1;
+				var box = document.editform.wpTextbox1;
 				box.parentNode.insertBefore(div, box);
 			} catch (error) {
 				return;
 			}
 		}
-		const p = prepPreviewmaker(str, article, newNavpopup(document.createElement('a'), article));
+		var p = prepPreviewmaker(str, article, newNavpopup(document.createElement('a'), article));
 		p.makePreview();
 		if (p.html) {
 			div.innerHTML = p.html;
@@ -5880,28 +5842,24 @@ $(() => {
 
 	/**
 	 * Creates a new Mousetracker.
-	 *
 	 * @constructor
 	 * @class The Mousetracker class. This monitors mouse movements and manages associated hooks.
 	 */
 	function Mousetracker() {
 		/**
 		 * Interval to regularly run the hooks anyway, in milliseconds.
-		 *
 		 * @type {number}
 		 */
 		this.loopDelay = 400;
 
 		/**
 		 * Timer for the loop.
-		 *
 		 * @type Timer
 		 */
 		this.timer = null;
 
 		/**
 		 * Flag - are we switched on?
-		 *
 		 * @type {boolean}
 		 */
 		this.active = false;
@@ -5913,7 +5871,6 @@ $(() => {
 
 		/**
 		 * Array of hook functions.
-		 *
 		 * @private
 		 * @type {Array}
 		 */
@@ -5922,7 +5879,6 @@ $(() => {
 
 	/**
 	 * Adds a hook, to be called when we get events.
-	 *
 	 * @param {Function} f A function which is called as
 	 * <code>f(x,y)</code>. It should return <code>true</code> when it
 	 * wants to be removed, and <code>false</code> otherwise.
@@ -5935,7 +5891,6 @@ $(() => {
 	 * Runs hooks, passing them the x
 	 * and y coords of the mouse.  Hook functions that return true are
 	 * passed to {@link Mousetracker#removeHooks} for removal.
-	 *
 	 * @private
 	 */
 	Mousetracker.prototype.runHooks = function () {
@@ -5943,15 +5898,15 @@ $(() => {
 			return;
 		}
 		//log('Mousetracker.runHooks; we got some hooks to run');
-		let remove = false;
-		const removeObj = {};
+		var remove = false;
+		var removeObj = {};
 		// this method gets called a LOT -
 		// pre-cache some variables
-		const x = this.x,
+		var x = this.x,
 			y = this.y,
 			len = this.hooks.length;
 
-		for (let i = 0; i < len; ++i) {
+		for (var i = 0; i < len; ++i) {
 			//~ run the hook function, and remove it if it returns true
 			if (this.hooks[i](x, y) === true) {
 				remove = true;
@@ -5965,15 +5920,14 @@ $(() => {
 
 	/**
 	 * Removes hooks.
-	 *
 	 * @private
 	 * @param {Object} removeObj An object whose keys are the index
 	 * numbers of functions for removal, with values that evaluate to true
 	 */
 	Mousetracker.prototype.removeHooks = function (removeObj) {
-		const newHooks = [];
-		const len = this.hooks.length;
-		for (let i = 0; i < len; ++i) {
+		var newHooks = [];
+		var len = this.hooks.length;
+		for (var i = 0; i < len; ++i) {
 			if (!removeObj[i]) {
 				newHooks.push(this.hooks[i]);
 			}
@@ -5985,20 +5939,19 @@ $(() => {
 	 * Event handler for mouse wiggles.
 	 * We simply grab the event, set x and y and run the hooks.
 	 * This makes the cpu all hot and bothered :-(
-	 *
 	 * @private
 	 * @param {Event} e Mousemove event
 	 */
 	Mousetracker.prototype.track = function (e) {
 		//~ Apparently this is needed in IE.
 		e = e || window.event;
-		let x, y;
+		var x, y;
 		if (e) {
 			if (e.pageX) {
 				x = e.pageX;
 				y = e.pageY;
 			} else if (typeof e.clientX != 'undefined') {
-				let left,
+				var left,
 					top,
 					docElt = document.documentElement;
 
@@ -6024,7 +5977,6 @@ $(() => {
 	/**
 	 * Sets the x and y coordinates stored and takes appropriate action,
 	 * running hooks as appropriate.
-	 *
 	 * @param {number} x Screen coordinates to set
 	 * @param {number} y Screen coordinates to set
 	 */
@@ -6039,7 +5991,7 @@ $(() => {
 			this.lastHook_x = -100;
 			this.lastHook_y = -100;
 		}
-		let diff = (this.lastHook_x - x) * (this.lastHook_y - y);
+		var diff = (this.lastHook_x - x) * (this.lastHook_y - y);
 		diff = diff >= 0 ? diff : -diff;
 		if (diff > 1) {
 			this.lastHook_x = x;
@@ -6067,7 +6019,7 @@ $(() => {
 		this.savedHandler = document.onmousemove;
 		//~ Gotta save @tt{this} again for the closure, and use apply for
 		//~ the member function.
-		const savedThis = this;
+		var savedThis = this;
 		document.onmousemove = function (e) {
 			savedThis.track.apply(savedThis, [e]);
 		};
@@ -6100,7 +6052,6 @@ $(() => {
 	/**
 	 * Creates a new Navpopup.
 	 * Gets a UID for the popup and
-	 *
 	 * @param init Contructor object. If <code>init.draggable</code> is true or absent, the popup becomes draggable.
 	 * @constructor
 	 * @class The Navpopup class. This generates popup hints, and does some management of them.
@@ -6111,14 +6062,12 @@ $(() => {
 		/**
 		 * UID for each Navpopup instance.
 		 * Read-only.
-		 *
 		 * @type {number}
 		 */
 		this.uid = Navpopup.uid++;
 
 		/**
 		 * Read-only flag for current visibility of the popup.
-		 *
 		 * @type {boolean}
 		 * @private
 		 */
@@ -6126,7 +6075,6 @@ $(() => {
 
 		/** Flag to be set when we want to cancel a previous request to
 		 * show the popup in a little while.
-		 *
 		 * @private
 		 * @type {boolean}
 		 */
@@ -6146,7 +6094,6 @@ $(() => {
 
 		/**
 		 * list of unique IDs of hook functions, to avoid duplicates
-		 *
 		 * @private
 		 */
 		this.hookIds = {};
@@ -6159,28 +6106,24 @@ $(() => {
 
 		/**
 		 * Number of uncompleted downloads.
-		 *
 		 * @type {number}
 		 */
 		this.pending = null;
 
 		/**
 		 * Tolerance in pixels when detecting whether the mouse has left the popup.
-		 *
 		 * @type {number}
 		 */
 		this.fuzz = 5;
 
 		/**
 		 * Flag to toggle running {@link #limitHorizontalPosition} to regulate the popup's position.
-		 *
 		 * @type {boolean}
 		 */
 		this.constrained = true;
 
 		/**
 		 * The popup width in pixels.
-		 *
 		 * @private
 		 * @type {number}
 		 */
@@ -6188,7 +6131,6 @@ $(() => {
 
 		/**
 		 * The popup width in pixels.
-		 *
 		 * @private
 		 * @type {number}
 		 */
@@ -6196,7 +6138,6 @@ $(() => {
 
 		/**
 		 * The main content DIV element.
-		 *
 		 * @type HTMLDivElement
 		 */
 		this.mainDiv = null;
@@ -6209,7 +6150,6 @@ $(() => {
 
 	/**
 	 * A UID for each Navpopup. This constructor property is just a counter.
-	 *
 	 * @type {number}
 	 * @private
 	 */
@@ -6217,7 +6157,6 @@ $(() => {
 
 	/**
 	 * Retrieves the {@link #visible} attribute, indicating whether the popup is currently visible.
-	 *
 	 * @type {boolean}
 	 */
 	Navpopup.prototype.isVisible = function () {
@@ -6226,7 +6165,6 @@ $(() => {
 
 	/**
 	 * Repositions popup using CSS style.
-	 *
 	 * @private
 	 * @param {number} x x-coordinate (px)
 	 * @param {number} y y-coordinate (px)
@@ -6254,7 +6192,6 @@ $(() => {
 	/**
 	 * Prevents popups from being in silly locations. Hopefully.
 	 * Should not be run if {@link #constrained} is true.
-	 *
 	 * @private
 	 */
 	Navpopup.prototype.limitHorizontalPosition = function () {
@@ -6262,9 +6199,9 @@ $(() => {
 			return;
 		}
 		this.updateDimensions();
-		const x = this.left;
-		const w = this.width;
-		const cWidth = document.body.clientWidth;
+		var x = this.left;
+		var w = this.width;
+		var cWidth = document.body.clientWidth;
 
 		//	log('limitHorizontalPosition: x='+x+
 		//			', this.left=' + this.left +
@@ -6284,8 +6221,8 @@ $(() => {
 			// then reset it so that it should be flush right (well, nearly)
 			this.mainDiv.style.left = '-10000px';
 			this.mainDiv.style.width = this.maxWidth + 'px';
-			const naturalWidth = parseInt(this.mainDiv.offsetWidth, 10);
-			let newLeft = cWidth - naturalWidth - 1;
+			var naturalWidth = parseInt(this.mainDiv.offsetWidth, 10);
+			var newLeft = cWidth - naturalWidth - 1;
 			if (newLeft < 0) {
 				newLeft = 0;
 				this.tooWide = true;
@@ -6309,7 +6246,6 @@ $(() => {
 	 * Counter indicating the z-order of the "highest" popup.
 	 * We start the z-index at 1000 so that popups are above everything
 	 * else on the screen.
-	 *
 	 * @private
 	 * @type {number}
 	 */
@@ -6318,7 +6254,6 @@ $(() => {
 	/**
 	 * Brings popup to the top of the z-order.
 	 * We increment the {@link #highest} property of the contructor here.
-	 *
 	 * @private
 	 */
 	Navpopup.prototype.raise = function () {
@@ -6345,7 +6280,6 @@ $(() => {
 	 * Checks to see if the mouse pointer has
 	 * stabilised (checking every <code>time</code>/2 milliseconds) and runs the
 	 * {@link #show} method if it has.
-	 *
 	 * @param {number} time The minimum time (ms) before the popup may be shown.
 	 */
 	Navpopup.prototype.showSoonIfStable = function (time) {
@@ -6360,13 +6294,13 @@ $(() => {
 		this.stable_x = -10000;
 		this.stable_y = -10000;
 
-		const stableShow = function () {
+		var stableShow = function () {
 			log('stableShow called');
-			let new_x = Navpopup.tracker.x,
+			var new_x = Navpopup.tracker.x,
 				new_y = Navpopup.tracker.y;
-			let dx = savedThis.stable_x - new_x,
+			var dx = savedThis.stable_x - new_x,
 				dy = savedThis.stable_y - new_y;
-			let fuzz2 = 0; // savedThis.fuzz * savedThis.fuzz;
+			var fuzz2 = 0; // savedThis.fuzz * savedThis.fuzz;
 			//document.title += '[' + [savedThis.stable_x,new_x, savedThis.stable_y,new_y, dx, dy, fuzz2].join(',') + '] ';
 			if (dx * dx <= fuzz2 && dy * dy <= fuzz2) {
 				log('mouse is stable');
@@ -6401,7 +6335,6 @@ $(() => {
 
 	/**
 	 * Runs hooks added with {@link #addHook}.
-	 *
 	 * @private
 	 * @param {string} key Key name of the {@link #hooks} array - one of 'create', 'unhide', 'hide'
 	 * @param {string} when Controls exactly when the hook is run: either 'before' or 'after'
@@ -6410,9 +6343,9 @@ $(() => {
 		if (!this.hooks[key]) {
 			return;
 		}
-		const keyHooks = this.hooks[key];
-		const len = keyHooks.length;
-		for (let i = 0; i < len; ++i) {
+		var keyHooks = this.hooks[key];
+		var len = keyHooks.length;
+		for (var i = 0; i < len; ++i) {
 			if (keyHooks[i] && keyHooks[i].when == when) {
 				if (keyHooks[i].hook.apply(this, [])) {
 					// remove the hook
@@ -6428,7 +6361,6 @@ $(() => {
 	/**
 	 * Adds a hook to the popup. Hook functions are run with <code>this</code> set to refer to the
 	 * Navpopup instance, and no arguments.
-	 *
 	 * @param {Function} hook The hook function. Functions that return true are deleted.
 	 * @param {string} key Key name of the {@link #hooks} array - one of 'create', 'unhide', 'hide'
 	 * @param {String} when Controls exactly when the hook is run: either 'before' or 'after'
@@ -6441,7 +6373,7 @@ $(() => {
 			return;
 		}
 		// if uid is specified, don't add duplicates
-		let hookId = null;
+		var hookId = null;
 		if (uid) {
 			hookId = [key, when, uid].join('|');
 			if (this.hookIds[hookId]) {
@@ -6455,7 +6387,6 @@ $(() => {
 	/**
 	 * Creates the main DIV element, which contains all the actual popup content.
 	 * Runs hooks with key 'create'.
-	 *
 	 * @private
 	 */
 	Navpopup.prototype.createMainDiv = function () {
@@ -6463,9 +6394,9 @@ $(() => {
 			return;
 		}
 		this.runHooks('create', 'before');
-		const mainDiv = document.createElement('div');
+		var mainDiv = document.createElement('div');
 
-		const savedThis = this;
+		var savedThis = this;
 		mainDiv.onclick = function (e) {
 			savedThis.onclickHandler(e);
 		};
@@ -6487,7 +6418,6 @@ $(() => {
 
 	/**
 	 * Calls the {@link #raise} method.
-	 *
 	 * @private
 	 */
 	Navpopup.prototype.onclickHandler = function (/*e*/) {
@@ -6496,14 +6426,13 @@ $(() => {
 
 	/**
 	 * Makes the popup draggable, using a {@link Drag} object.
-	 *
 	 * @private
 	 */
 	Navpopup.prototype.makeDraggable = function (handleName) {
 		if (!this.mainDiv) {
 			this.createMainDiv();
 		}
-		const drag = new Drag();
+		var drag = new Drag();
 		if (!handleName) {
 			drag.startCondition = function (e) {
 				try {
@@ -6516,14 +6445,14 @@ $(() => {
 				return true;
 			};
 		}
-		let dragHandle;
+		var dragHandle;
 		if (handleName) {
 			dragHandle = document.getElementById(handleName);
 		}
 		if (!dragHandle) {
 			dragHandle = this.mainDiv;
 		}
-		const np = this;
+		var np = this;
 		drag.endHook = function (x, y) {
 			Navpopup.tracker.dirty = true;
 			np.reposition(x, y);
@@ -6535,7 +6464,6 @@ $(() => {
 	 * Hides the popup using CSS. Runs hooks with key 'hide'.
 	 * Sets {@link #visible} appropriately.
 	 * {@link #banish} should be called externally instead of this method.
-	 *
 	 * @private
 	 */
 	Navpopup.prototype.hide = function () {
@@ -6551,7 +6479,6 @@ $(() => {
 	/**
 	 * Shows the popup using CSS. Runs hooks with key 'unhide'.
 	 * Sets {@link #visible} appropriately.   {@link #show} should be called externally instead of this method.
-	 *
 	 * @private
 	 */
 	Navpopup.prototype.unhide = function () {
@@ -6565,7 +6492,6 @@ $(() => {
 
 	/**
 	 * Sets the <code>innerHTML</code> attribute of the main div containing the popup content.
-	 *
 	 * @param {string} html The HTML to set.
 	 */
 	Navpopup.prototype.setInnerHTML = function (html) {
@@ -6574,7 +6500,6 @@ $(() => {
 
 	/**
 	 * Updates the {@link #width} and {@link #height} attributes with the CSS properties.
-	 *
 	 * @private
 	 */
 	Navpopup.prototype.updateDimensions = function () {
@@ -6585,7 +6510,6 @@ $(() => {
 	/**
 	 * Checks if the point (x,y) is within {@link #fuzz} of the
 	 * {@link #mainDiv}.
-	 *
 	 * @param {number} x x-coordinate (px)
 	 * @param {number} y y-coordinate (px)
 	 * @type {boolean}
@@ -6597,7 +6521,7 @@ $(() => {
 			return false;
 		}
 		this.updateDimensions();
-		const fuzz = this.fuzz || 0;
+		var fuzz = this.fuzz || 0;
 		//~ Use a simple box metric here.
 		return (
 			x + fuzz >= this.left &&
@@ -6609,7 +6533,6 @@ $(() => {
 
 	/**
 	 * Adds a download to {@link #downloads}.
-	 *
 	 * @param {Downloader} download
 	 */
 	Navpopup.prototype.addDownload = function (download) {
@@ -6621,12 +6544,11 @@ $(() => {
 
 	/**
 	 * Aborts the downloads listed in {@link #downloads}.
-	 *
 	 * @see Downloader#abort
 	 */
 	Navpopup.prototype.abortDownloads = function () {
-		for (let i = 0; i < this.downloads.length; ++i) {
-			const d = this.downloads[i];
+		for (var i = 0; i < this.downloads.length; ++i) {
+			var d = this.downloads[i];
 			if (d && d.abort) {
 				d.abort();
 			}
@@ -6668,8 +6590,8 @@ $(() => {
 		if (!b[i].row && b[i].row !== 0) {
 			return -1;
 		}
-		let count = 0;
-		for (let j = 0; j < a.length; ++j) {
+		var count = 0;
+		for (var j = 0; j < a.length; ++j) {
 			if (!a[j].row && a[j].row !== 0) {
 				continue;
 			}
@@ -6684,10 +6606,10 @@ $(() => {
 	}
 
 	function shortenDiffString(str, context) {
-		const re = /(<del[\s\S]*?<\/del>|<ins[\s\S]*?<\/ins>)/;
-		const splitted = str.parenSplit(re);
-		let ret = [''];
-		for (let i = 0; i < splitted.length; i += 2) {
+		var re = /(<del[\s\S]*?<\/del>|<ins[\s\S]*?<\/ins>)/;
+		var splitted = str.parenSplit(re);
+		var ret = [''];
+		for (var i = 0; i < splitted.length; i += 2) {
 			if (splitted[i].length < 2 * context) {
 				ret[ret.length - 1] += splitted[i];
 				if (i + 1 < splitted.length) {
@@ -6710,11 +6632,11 @@ $(() => {
 	}
 
 	function diffString(o, n, simpleSplit) {
-		const splitRe = /([[]{2}|[\]]{2}|[{]{2,3}|[}]{2,3}|[|]|=|<|>|[*:]+|\s|\b)/;
+		var splitRe = /([[]{2}|[\]]{2}|[{]{2,3}|[}]{2,3}|[|]|=|<|>|[*:]+|\s|\b)/;
 
 		//  We need to split the strings o and n first, and entify() the parts
 		//  individually, so that the HTML entities are never cut apart. (AxelBoldt)
-		let out, i, oSplitted, nSplitted;
+		var out, i, oSplitted, nSplitted;
 		if (simpleSplit) {
 			oSplitted = o.split(/\b/);
 			nSplitted = n.split(/\b/);
@@ -6730,12 +6652,12 @@ $(() => {
 		}
 
 		out = diff(oSplitted, nSplitted);
-		let str = '';
-		let acc = []; // accumulator for prettier output
+		var str = '';
+		var acc = []; // accumulator for prettier output
 
 		// crossing pairings -- eg 'A B' vs 'B A' -- cause problems, so let's iron them out
 		// this doesn't always do things optimally but it should be fast enough
-		let maxOutputPair = 0;
+		var maxOutputPair = 0;
 		for (i = 0; i < out.n.length; ++i) {
 			if (out.n[i].paired) {
 				if (maxOutputPair > out.n[i].row) {
@@ -6768,7 +6690,7 @@ $(() => {
 				// this new "line" is paired with the (out.n[i].row)th old "line"
 				str += out.n[i].text;
 				// output unpaired old rows starting after this new line's partner
-				let m = out.n[i].row + 1;
+				var m = out.n[i].row + 1;
 				while (m < out.o.length && !out.o[m].paired) {
 					acc.push(out.o[m++]);
 				}
@@ -6781,7 +6703,7 @@ $(() => {
 
 	// see http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Object
 	// FIXME: use obj.hasOwnProperty instead of this kludge!
-	const jsReservedProperties = RegExp(
+	var jsReservedProperties = RegExp(
 		'^(constructor|prototype|__((define|lookup)[GS]etter)__' +
 			'|eval|hasOwnProperty|propertyIsEnumerable' +
 			'|to(Source|String|LocaleString)|(un)?watch|valueOf)$'
@@ -6797,8 +6719,8 @@ $(() => {
 	diffBugAlert.list = {};
 
 	function makeDiffHashtable(src) {
-		const ret = {};
-		for (let i = 0; i < src.length; i++) {
+		var ret = {};
+		for (var i = 0; i < src.length; i++) {
 			if (jsReservedProperties.test(src[i])) {
 				src[i] += '<!-- -->';
 			}
@@ -6816,13 +6738,13 @@ $(() => {
 
 	function diff(o, n) {
 		// pass 1: make hashtable ns with new rows as keys
-		const ns = makeDiffHashtable(n);
+		var ns = makeDiffHashtable(n);
 
 		// pass 2: make hashtable os with old rows as keys
-		const os = makeDiffHashtable(o);
+		var os = makeDiffHashtable(o);
 
 		// pass 3: pair unique new rows and matching unique old rows
-		let i;
+		var i;
 		for (i in ns) {
 			if (ns[i].length == 1 && os[i] && os[i].length == 1) {
 				n[ns[i][0]] = { text: n[ns[i][0]], row: os[i][0], paired: true };
@@ -6877,12 +6799,12 @@ $(() => {
 				'commons.wikimedia.org' :
 				null;
 		pg.wiki.lang = mw.config.get('wgContentLanguage');
-		const port = location.port ? ':' + location.port : '';
+		var port = location.port ? ':' + location.port : '';
 		pg.wiki.sitebase = pg.wiki.hostname + port;
 	}
 
 	function setUserInfo() {
-		const params = {
+		var params = {
 			action: 'query',
 			list: 'users',
 			ususers: mw.config.get('wgUserName'),
@@ -6894,14 +6816,14 @@ $(() => {
 			getMwApi()
 				.get(params)
 				.done((data) => {
-					const rights = data.query.users[0].rights;
-					pg.user.canReview = rights.includes('review'); // TODO: Should it be a getValueOf('ReviewRight') ?
+					var rights = data.query.users[0].rights;
+					pg.user.canReview = rights.indexOf('review') !== -1; // TODO: Should it be a getValueOf('ReviewRight') ?
 				});
 		}
 	}
 
 	function fetchSpecialPageNames() {
-		const params = {
+		var params = {
 			action: 'query',
 			meta: 'siteinfo',
 			siprop: 'specialpagealiases',
@@ -6918,13 +6840,13 @@ $(() => {
 	}
 
 	function setTitleBase() {
-		const protocol = window.popupLocalDebug ? 'http:' : location.protocol;
+		var protocol = window.popupLocalDebug ? 'http:' : location.protocol;
 		pg.wiki.articlePath = mw.config.get('wgArticlePath').replace(/\/\$1/, ''); // as in http://some.thing.com/wiki/Article
 		pg.wiki.botInterfacePath = mw.config.get('wgScript');
 		pg.wiki.APIPath = mw.config.get('wgScriptPath') + '/api.php';
 		// default mediawiki setting is paths like http://some.thing.com/articlePath/index.php?title=foo
 
-		const titletail = pg.wiki.botInterfacePath + '?title=';
+		var titletail = pg.wiki.botInterfacePath + '?title=';
 		//var titletail2 = joinPath([pg.wiki.botInterfacePath, 'wiki.phtml?title=']);
 
 		// other sites may need to add code here to set titletail depending on how their urls work
@@ -6950,19 +6872,19 @@ $(() => {
 	// Global regexps
 
 	function setMainRegex() {
-		const reStart = '[^:]*://';
-		let preTitles =
+		var reStart = '[^:]*://';
+		var preTitles =
 			// Take customizable wgScript into account (it isn't guaranteed to be index.php)
 			'(?:' + literalizeRegex(mw.config.get('wgScript')) + '|' +
 			// handle index.php (likely to work even if different from wgScript) and legacy wiki.phtml
 			literalizeRegex(mw.config.get('wgScriptPath')) + '/(?:index[.]php|wiki[.]phtml))';
 		preTitles += '[?]title=|' + literalizeRegex(pg.wiki.articlePath + '/');
-		const reEnd = '(' + preTitles + ')([^&?#]*)[^#]*(?:#(.+))?';
+		var reEnd = '(' + preTitles + ')([^&?#]*)[^#]*(?:#(.+))?';
 		pg.re.main = RegExp(reStart + literalizeRegex(pg.wiki.sitebase) + reEnd);
 	}
 
 	function buildSpecialPageGroup(specialPageObj) {
-		const variants = [];
+		var variants = [];
 		variants.push(mw.util.escapeRegExp(specialPageObj.realname));
 		variants.push(mw.util.escapeRegExp(encodeURI(specialPageObj.realname)));
 		specialPageObj.aliases.forEach((alias) => {
@@ -6974,7 +6896,7 @@ $(() => {
 
 	function setRegexps() {
 		setMainRegex();
-		const sp = nsRe(pg.nsSpecialId);
+		var sp = nsRe(pg.nsSpecialId);
 		pg.re.urlNoPopup = RegExp('((title=|/)' + sp + '(?:%3A|:)|section=[0-9]|^#$)');
 
 		pg.wiki.specialpagealiases.forEach((specialpage) => {
@@ -7020,7 +6942,7 @@ $(() => {
 			}
 		});
 
-		const im = nsReImage();
+		var im = nsReImage();
 		// note: tries to get images in infobox templates too, e.g. movie pages, album pages etc
 		//					  (^|\[\[)image: *([^|\]]*[^|\] ]) *
 		//					  (^|\[\[)image: *([^|\]]*[^|\] ])([^0-9\]]*([0-9]+) *px)?
@@ -7165,7 +7087,7 @@ $(() => {
 	//
 
 	function defaultNavlinkSpec() {
-		let str = '';
+		var str = '';
 		str += '<b><<mainlink|shortcut= >></b>';
 		if (getValueOf('popupLastEditLink')) {
 			str +=
@@ -7183,13 +7105,13 @@ $(() => {
 		// editing links
 		// talkpage   -> edit|new - history - un|watch - article|edit
 		// other page -> edit - history - un|watch - talk|edit|new
-		const editstr = '<<edit|shortcut=e>>';
-		const editOldidStr =
+		var editstr = '<<edit|shortcut=e>>';
+		var editOldidStr =
 			'if(oldid){<<editOld|shortcut=e>>|<<revert|shortcut=v|rv>>|<<edit|cur>>}else{' +
 			editstr +
 			'}';
-		const historystr = '<<history|shortcut=h>>|<<editors|shortcut=E|>>';
-		const watchstr = '<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>';
+		var historystr = '<<history|shortcut=h>>|<<editors|shortcut=E|>>';
+		var watchstr = '<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>';
 
 		str +=
 			'<br>if(talk){' +
@@ -7222,40 +7144,40 @@ $(() => {
 
 	function navLinksHTML(article, hint, params) {
 		//oldid, rcid) {
-		const str = '<span class="popupNavLinks">' + defaultNavlinkSpec() + '</span>';
+		var str = '<span class="popupNavLinks">' + defaultNavlinkSpec() + '</span>';
 		// BAM
 		return navlinkStringToHTML(str, article, params);
 	}
 
 	function expandConditionalNavlinkString(s, article, z, recursionCount) {
-		const oldid = z.oldid,
+		var oldid = z.oldid,
 			rcid = z.rcid,
 			diff = z.diff;
 		// nested conditionals (up to 10 deep) are ok, hopefully! (work from the inside out)
 		if (typeof recursionCount != typeof 0) {
 			recursionCount = 0;
 		}
-		const conditionalSplitRegex = RegExp(
+		var conditionalSplitRegex = RegExp(
 			//(1	 if	\\(	(2	2)	\\)	  {(3	3)}  (4   else	  {(5	 5)}  4)1)
 			'(;?\\s*if\\s*\\(\\s*([\\w]*)\\s*\\)\\s*\\{([^{}]*)\\}(\\s*else\\s*\\{([^{}]*?)\\}|))',
 			'i'
 		);
-		const splitted = s.parenSplit(conditionalSplitRegex);
+		var splitted = s.parenSplit(conditionalSplitRegex);
 		// $1: whole conditional
 		// $2: test condition
 		// $3: true expansion
 		// $4: else clause (possibly empty)
 		// $5: false expansion (possibly null)
-		const numParens = 5;
-		let ret = splitted[0];
-		for (let i = 1; i < splitted.length; i = i + numParens + 1) {
-			const testString = splitted[i + 2 - 1];
-			const trueString = splitted[i + 3 - 1];
-			let falseString = splitted[i + 5 - 1];
+		var numParens = 5;
+		var ret = splitted[0];
+		for (var i = 1; i < splitted.length; i = i + numParens + 1) {
+			var testString = splitted[i + 2 - 1];
+			var trueString = splitted[i + 3 - 1];
+			var falseString = splitted[i + 5 - 1];
 			if (typeof falseString == 'undefined' || !falseString) {
 				falseString = '';
 			}
-			let testResult = null;
+			var testResult = null;
 
 			switch (testString) {
 				case 'user':
@@ -7310,16 +7232,16 @@ $(() => {
 
 	function navlinkStringToArray(s, article, params) {
 		s = expandConditionalNavlinkString(s, article, params);
-		const splitted = s.parenSplit(/<<(.*?)>>/);
-		const ret = [];
-		for (let i = 0; i < splitted.length; ++i) {
+		var splitted = s.parenSplit(/<<(.*?)>>/);
+		var ret = [];
+		for (var i = 0; i < splitted.length; ++i) {
 			if (i % 2) {
 				// i odd, so s is a tag
-				const t = new navlinkTag();
-				const ss = splitted[i].split('|');
+				var t = new navlinkTag();
+				var ss = splitted[i].split('|');
 				t.id = ss[0];
-				for (let j = 1; j < ss.length; ++j) {
-					const sss = ss[j].split('=');
+				for (var j = 1; j < ss.length; ++j) {
+					var sss = ss[j].split('=');
 					if (sss.length > 1) {
 						t[sss[0]] = sss[1];
 					} else {
@@ -7328,7 +7250,7 @@ $(() => {
 					}
 				}
 				t.article = article;
-				const oldid = params.oldid,
+				var oldid = params.oldid,
 					rcid = params.rcid,
 					diff = params.diff;
 				if (typeof oldid !== 'undefined' && oldid !== null) {
@@ -7377,11 +7299,11 @@ $(() => {
 
 	function navlinkStringToHTML(s, article, params) {
 		//limitAlert(navlinkStringToHTML, 5, 'navlinkStringToHTML\n' + article + '\n' + (typeof article));
-		const p = navlinkStringToArray(s, article, params);
-		let html = '';
-		let menudepth = 0; // nested menus not currently allowed, but doesn't do any harm to code for it
-		let menurowdepth = 0;
-		for (let i = 0; i < p.length; ++i) {
+		var p = navlinkStringToArray(s, article, params);
+		var html = '';
+		var menudepth = 0; // nested menus not currently allowed, but doesn't do any harm to code for it
+		var menurowdepth = 0;
+		for (var i = 0; i < p.length; ++i) {
 			if (typeof p[i] == typeof '') {
 				html += navlinkSubstituteHTML(p[i]);
 				menudepth += navlinkDepth('menu', p[i]);
@@ -7411,9 +7333,9 @@ $(() => {
 	navlinkTag.prototype.html = function () {
 		this.getNewWin();
 		this.getPrintFunction();
-		let html = '';
-		let opening, closing;
-		const tagType = 'span';
+		var html = '';
+		var opening, closing;
+		var tagType = 'span';
 		if (!tagType) {
 			opening = '';
 			closing = '';
@@ -7603,7 +7525,7 @@ $(() => {
 				this.print = wikiLink;
 				this.action = 'delete';
 				if (this.article.namespaceId() == pg.nsImageId) {
-					const img = this.article.stripNamespace();
+					var img = this.article.stripNamespace();
 					this.action += '&image=' + img;
 				}
 				break;
@@ -7632,7 +7554,7 @@ $(() => {
 				}
 				if (getValueOf('popupSimplifyMainLink') && isInStrippableNamespace(this.article)) {
 					// only show the /subpage part of the title text
-					const s = this.text.split('/');
+					var s = this.text.split('/');
 					this.text = s[s.length - 1];
 					if (this.text === '' && s.length > 1) {
 						this.text = s[s.length - 2];
@@ -7762,7 +7684,7 @@ $(() => {
 
 	// STARTFILE: shortcutkeys.js
 	function popupHandleKeypress(evt) {
-		const keyCode = window.event ? window.event.keyCode : evt.keyCode ? evt.keyCode : evt.which;
+		var keyCode = window.event ? window.event.keyCode : evt.keyCode ? evt.keyCode : evt.which;
 		if (!keyCode || !pg.current.link || !pg.current.link.navpopup) {
 			return;
 		}
@@ -7772,10 +7694,10 @@ $(() => {
 			return false; // swallow keypress
 		}
 
-		const letter = String.fromCharCode(keyCode);
-		const links = pg.current.link.navpopup.mainDiv.getElementsByTagName('A');
-		let startLink = 0;
-		let i, j;
+		var letter = String.fromCharCode(keyCode);
+		var links = pg.current.link.navpopup.mainDiv.getElementsByTagName('A');
+		var startLink = 0;
+		var i, j;
 
 		if (popupHandleKeypress.lastPopupLinkSelected) {
 			for (i = 0; i < links.length; ++i) {
@@ -7827,7 +7749,7 @@ $(() => {
 	function addLinkProperty(html, property) {
 		// take "<a href=...>...</a> and add a property
 		// not sophisticated at all, easily broken
-		const i = html.indexOf('>');
+		var i = html.indexOf('>');
 		if (i < 0) {
 			return html;
 		}
@@ -7838,7 +7760,7 @@ $(() => {
 		if (!getValueOf('popupShortcutKeys')) {
 			return html;
 		}
-		const ret = addLinkProperty(html, 'popupkey="' + key + '"');
+		var ret = addLinkProperty(html, 'popupkey="' + key + '"');
 		if (key == ' ') {
 			key = popupString('spacebar');
 		}
@@ -7860,8 +7782,8 @@ $(() => {
 	function loadDiff(article, oldid, diff, navpop) {
 		navpop.diffData = { oldRev: {}, newRev: {} };
 		mw.loader.using('mediawiki.api').then(() => {
-			const api = getMwApi();
-			const params = {
+			var api = getMwApi();
+			var params = {
 				action: 'compare',
 				prop: 'ids|title',
 			};
@@ -7905,9 +7827,9 @@ $(() => {
 
 				addReviewLink(navpop, 'popupMiscTools');
 
-				const go = function () {
+				var go = function () {
 					pendingNavpopTask(navpop);
-					let url = pg.wiki.apiwikibase + '?format=json&formatversion=2&action=query&';
+					var url = pg.wiki.apiwikibase + '?format=json&formatversion=2&action=query&';
 
 					url += 'revids=' + navpop.diffData.oldRev.revid + '|' + navpop.diffData.newRev.revid;
 					url += '&prop=revisions&rvslots=main&rvprop=ids|timestamp|content';
@@ -7935,7 +7857,7 @@ $(() => {
 		if (navpop.diffData.newRev.revid <= navpop.diffData.oldRev.revid) {
 			return;
 		}
-		const params = {
+		var params = {
 			action: 'query',
 			prop: 'info|flagged',
 			revids: navpop.diffData.oldRev.revid,
@@ -7944,18 +7866,18 @@ $(() => {
 		getMwApi()
 			.get(params)
 			.then((data) => {
-				const stable_revid =
+				var stable_revid =
 					(data.query.pages[0].flagged && data.query.pages[0].flagged.stable_revid) || 0;
 				// The diff can be reviewed if the old version is the last reviewed version
 				// TODO: Other possible conditions that we may want to implement instead of this one:
 				//  * old version is patrolled and the new version is not patrolled
 				//  * old version is patrolled and the new version is more recent than the last reviewed version
 				if (stable_revid == navpop.diffData.oldRev.revid) {
-					const a = document.createElement('a');
+					var a = document.createElement('a');
 					a.innerHTML = popupString('mark patrolled');
 					a.title = popupString('markpatrolledHint');
 					a.onclick = function () {
-						const params = {
+						var params = {
 							action: 'review',
 							revid: navpop.diffData.newRev.revid,
 							comment: tprintf('defaultpopupReviewedSummary', [
@@ -7982,10 +7904,10 @@ $(() => {
 		if (!download.owner || !download.owner.diffData) {
 			return;
 		}
-		const navpop = download.owner;
+		var navpop = download.owner;
 		completedNavpopTask(navpop);
 
-		let pages,
+		var pages,
 			revisions = [];
 		try {
 			// Process the downloads
@@ -8012,11 +7934,11 @@ $(() => {
 			context = 2;
 		}
 		// this is fairly slow... i think it's quicker than doing a word-based diff from the off, though
-		const aa = [],
+		var aa = [],
 			aaa = [];
-		const bb = [],
+		var bb = [],
 			bbb = [];
-		let i, j;
+		var i, j;
 
 		// first, gather all disconnected nodes in a and all crossing nodes in a and b
 		for (i = 0; i < a.length; ++i) {
@@ -8090,12 +8012,12 @@ $(() => {
 	}
 
 	function stripOuterCommonLines(a, b, context) {
-		let i = 0;
+		var i = 0;
 		while (i < a.length && i < b.length && a[i] == b[i]) {
 			++i;
 		}
-		let j = a.length - 1;
-		let k = b.length - 1;
+		var j = a.length - 1;
+		var k = b.length - 1;
 		while (j >= 0 && k >= 0 && a[j] == b[k]) {
 			--j;
 			--k;
@@ -8111,12 +8033,12 @@ $(() => {
 		// for speed reasons, we first do a line-based diff, discard stuff that seems boring, then
 		// do a word-based diff
 		// FIXME: sometimes this gives misleading diffs as distant chunks are squashed together
-		let oldlines = navpop.diffData.oldRev.revision.slots.main.content.split('\n');
-		let newlines = navpop.diffData.newRev.revision.slots.main.content.split('\n');
-		let inner = stripOuterCommonLines(oldlines, newlines, getValueOf('popupDiffContextLines'));
+		var oldlines = navpop.diffData.oldRev.revision.slots.main.content.split('\n');
+		var newlines = navpop.diffData.newRev.revision.slots.main.content.split('\n');
+		var inner = stripOuterCommonLines(oldlines, newlines, getValueOf('popupDiffContextLines'));
 		oldlines = inner.a;
 		newlines = inner.b;
-		let truncated = false;
+		var truncated = false;
 		getValueOf('popupDiffMaxLines');
 		if (
 			oldlines.length > pg.option.popupDiffMaxLines ||
@@ -8133,13 +8055,13 @@ $(() => {
 			newlines = inner.b;
 		}
 
-		const lineDiff = diff(oldlines, newlines);
-		const lines2 = rmBoringLines(lineDiff.o, lineDiff.n);
-		const oldlines2 = lines2.a;
-		const newlines2 = lines2.b;
+		var lineDiff = diff(oldlines, newlines);
+		var lines2 = rmBoringLines(lineDiff.o, lineDiff.n);
+		var oldlines2 = lines2.a;
+		var newlines2 = lines2.b;
 
-		const simpleSplit = !String.prototype.parenSplit.isNative;
-		let html = '<hr />';
+		var simpleSplit = !String.prototype.parenSplit.isNative;
+		var html = '<hr />';
 		if (getValueOf('popupDiffDates')) {
 			html += diffDatesTable(navpop);
 			html += '<hr />';
@@ -8159,19 +8081,19 @@ $(() => {
 	}
 
 	function diffDatesTable(navpop) {
-		let html = '<table class="popup_diff_dates">';
+		var html = '<table class="popup_diff_dates">';
 		html += diffDatesTableRow(navpop.diffData.newRev.revision, tprintf('New revision'));
 		html += diffDatesTableRow(navpop.diffData.oldRev.revision, tprintf('Old revision'));
 		html += '</table>';
 		return html;
 	}
 	function diffDatesTableRow(revision, label) {
-		let txt = '';
-		const lastModifiedDate = new Date(revision.timestamp);
+		var txt = '';
+		var lastModifiedDate = new Date(revision.timestamp);
 
 		txt = formattedDateTime(lastModifiedDate);
 
-		const revlink = generalLink({
+		var revlink = generalLink({
 			url: mw.config.get('wgScript') + '?oldid=' + revision.revid,
 			text: label,
 			title: label,
@@ -8215,13 +8137,13 @@ $(() => {
 		if (typeof l.oldid == 'undefined') {
 			l.oldid = null;
 		}
-		const savedOldid = l.oldid;
+		var savedOldid = l.oldid;
 		if (!/^(edit|view|revert|render)$|^raw/.test(l.action)) {
 			l.oldid = null;
 		}
-		let hint = popupString(l.action + 'Hint'); // revertHint etc etc etc
-		const oldidData = [l.oldid, safeDecodeURI(l.article)];
-		let revisionString = tprintf('revision %s of %s', oldidData);
+		var hint = popupString(l.action + 'Hint'); // revertHint etc etc etc
+		var oldidData = [l.oldid, safeDecodeURI(l.article)];
+		var revisionString = tprintf('revision %s of %s', oldidData);
 		log('revisionString=' + revisionString);
 		switch (l.action) {
 			case 'edit&section=new':
@@ -8297,7 +8219,7 @@ $(() => {
 	}
 
 	function revertSummary(oldid, diff) {
-		let ret = '';
+		var ret = '';
 		if (diff == 'prev') {
 			ret = getValueOf('popupQueriedRevertToPreviousSummary');
 		} else {
@@ -8318,8 +8240,8 @@ $(() => {
 			return null;
 		}
 
-		const base = pg.wiki.titlebase + l.article.urlString();
-		let url = base;
+		var base = pg.wiki.titlebase + l.article.urlString();
+		var url = base;
 
 		if (typeof l.actionName == 'undefined' || !l.actionName) {
 			l.actionName = 'action';
@@ -8334,7 +8256,7 @@ $(() => {
 			url += '&oldid=' + l.oldid;
 		}
 
-		let cssClass = pg.misc.defaultNavlinkClassname;
+		var cssClass = pg.misc.defaultNavlinkClassname;
 		if (typeof l.className != 'undefined' && l.className) {
 			cssClass = l.className;
 		}
@@ -8370,7 +8292,7 @@ $(() => {
 			);
 			return;
 		}
-		const newUrl =
+		var newUrl =
 			pg.wiki.titlebase +
 			new Title(stuff.page).urlString() +
 			'&diff=cur&oldid=' +
@@ -8389,7 +8311,7 @@ $(() => {
 			alert('Popups: something fishy happened. Please try again.');
 			return;
 		}
-		const friendlyName = stuff.page.split('_').join(' ');
+		var friendlyName = stuff.page.split('_').join(' ');
 		if (!info.myLastEdit) {
 			alert(
 				tprintf("Couldn't find an edit by %s\nin the last %s edits to\n%s", [
@@ -8406,7 +8328,7 @@ $(() => {
 			);
 			return;
 		}
-		const newUrl =
+		var newUrl =
 			pg.wiki.titlebase +
 			new Title(stuff.page).urlString() +
 			'&diff=cur&oldid=' +
@@ -8430,7 +8352,7 @@ $(() => {
 	};
 
 	function processAllPopups(nullify, banish) {
-		for (let i = 0; pg.current.links && i < pg.current.links.length; ++i) {
+		for (var i = 0; pg.current.links && i < pg.current.links.length; ++i) {
 			if (!pg.current.links[i].navpopup) {
 				continue;
 			}
@@ -8465,7 +8387,7 @@ $(() => {
 	}
 
 	pg.fn.modifyWatchlist = function modifyWatchlist(title, action) {
-		const reqData = {
+		var reqData = {
 			action: 'watch',
 			formatversion: 2,
 			titles: title,
@@ -8476,8 +8398,8 @@ $(() => {
 		}
 
 		// Load the Addedwatchtext or Removedwatchtext message and show it
-		const mwTitle = mw.Title.newFromText(title);
-		let messageName;
+		var mwTitle = mw.Title.newFromText(title);
+		var messageName;
 		if (mwTitle && mwTitle.getNamespaceId() > 0 && mwTitle.getNamespaceId() % 2 === 1) {
 			messageName = action === 'watch' ? 'addedwatchtext-talk' : 'removedwatchtext-talk';
 		} else {
@@ -8494,7 +8416,7 @@ $(() => {
 	function magicHistoryLink(l) {
 		// FIXME use onclick change href trick to sort this out instead of window.open
 
-		let jsUrl = '',
+		var jsUrl = '',
 			title = '',
 			onClick = '';
 		switch (l.id) {
@@ -8527,9 +8449,9 @@ $(() => {
 	}
 
 	function popupMenuLink(l) {
-		const jsUrl = simplePrintf('javascript:pg.fn.%s()', [l.id]); // jshint ignore:line
-		const title = popupString(simplePrintf('%sHint', [l.id]));
-		const onClick = simplePrintf('pg.fn.%s();return false;', [l.id]);
+		var jsUrl = simplePrintf('javascript:pg.fn.%s()', [l.id]); // jshint ignore:line
+		var title = popupString(simplePrintf('%sHint', [l.id]));
+		var onClick = simplePrintf('pg.fn.%s();return false;', [l.id]);
 		return generalNavLink({
 			url: jsUrl,
 			newWin: false,
@@ -8545,7 +8467,7 @@ $(() => {
 		if (typeof l.specialpage == 'undefined' || !l.specialpage) {
 			return null;
 		}
-		const base =
+		var base =
 			pg.wiki.titlebase +
 			mw.config.get('wgFormattedNamespaces')[pg.nsSpecialId] +
 			':' +
@@ -8553,10 +8475,10 @@ $(() => {
 		if (typeof l.sep == 'undefined' || l.sep === null) {
 			l.sep = '&target=';
 		}
-		let article = l.article.urlString({
+		var article = l.article.urlString({
 			keepSpaces: l.specialpage == 'Search',
 		});
-		let hint = popupString(l.specialpage + 'Hint');
+		var hint = popupString(l.specialpage + 'Hint');
 		switch (l.specialpage) {
 			case 'Log':
 				switch (l.sep) {
@@ -8590,7 +8512,7 @@ $(() => {
 			hint = safeDecodeURI(l.specialpage + ':' + l.article);
 		}
 
-		const url = base + l.sep + article;
+		var url = base + l.sep + article;
 		return generalNavLink({
 			url: url,
 			title: hint,
@@ -8602,7 +8524,6 @@ $(() => {
 
 	/**
 	 * Builds a link from a object representing a link
-	 *
 	 * @param {Object} link
 	 * @param {string} link.url URL
 	 * @param {string} link.text The text to show for a link
@@ -8618,7 +8539,7 @@ $(() => {
 			return null;
 		}
 
-		const elem = document.createElement( 'a' );
+		var elem = document.createElement( 'a' );
 
 		elem.href = link.url;
 		elem.title = link.title;
@@ -8630,7 +8551,7 @@ $(() => {
 			elem.setAttribute('noPopup', '1' );
 		}
 
-		let newWin;
+		var newWin;
 		if (typeof link.newWin == 'undefined' || link.newWin === null) {
 			newWin = getValueOf('popupNewWindows');
 		} else {
@@ -8648,11 +8569,11 @@ $(() => {
 	}
 
 	function appendParamsToLink(linkstr, params) {
-		const sp = linkstr.parenSplit(/(href="[^"]+?)"/i);
+		var sp = linkstr.parenSplit(/(href="[^"]+?)"/i);
 		if (sp.length < 2) {
 			return null;
 		}
-		let ret = sp.shift() + sp.shift();
+		var ret = sp.shift() + sp.shift();
 		ret += '&' + params + '"';
 		ret += sp.join('');
 		return ret;
@@ -8670,10 +8591,10 @@ $(() => {
 		// FIXME: first character of page title as well as namespace should be case insensitive
 		// eg [[:category:X1]] and [[:Category:X1]] are equivalent
 		// this'll break if charAt(0) is nasty
-		const cA = mw.util.escapeRegExp(x.oldTarget);
-		let chs = cA.charAt(0).toUpperCase();
+		var cA = mw.util.escapeRegExp(x.oldTarget);
+		var chs = cA.charAt(0).toUpperCase();
 		chs = '[' + chs + chs.toLowerCase() + ']';
-		let currentArticleRegexBit = chs + cA.substring(1);
+		var currentArticleRegexBit = chs + cA.substring(1);
 		currentArticleRegexBit = currentArticleRegexBit
 			.split(/(?:[_ ]+|%20)/g)
 			.join('(?:[_ ]+|%20)')
@@ -8687,8 +8608,8 @@ $(() => {
 
 		// autoedit=s~\[\[([Cc]ad)\]\]~[[Computer-aided%20design|$1]]~g;s~\[\[([Cc]AD)[|]~[[Computer-aided%20design|~g
 
-		const title = x.title || mw.config.get('wgPageName').split('_').join(' ');
-		const lk = titledWikiLink({
+		var title = x.title || mw.config.get('wgPageName').split('_').join(' ');
+		var lk = titledWikiLink({
 			article: new Title(title),
 			newWin: x.newWin,
 			action: 'edit',
@@ -8696,11 +8617,11 @@ $(() => {
 			title: x.hint,
 			className: 'popup_change_title_link',
 		});
-		let cmd = '';
+		var cmd = '';
 		if (x.newTarget) {
 			// escape '&' and other nasties
-			const t = x.newTarget;
-			const s = mw.util.escapeRegExp(x.newTarget);
+			var t = x.newTarget;
+			var s = mw.util.escapeRegExp(x.newTarget);
 			if (x.alsoChangeLabel) {
 				cmd += 's~\\[\\[' + currentArticleRegexBit + '\\]\\]~[[' + t + ']]~g;';
 				cmd += 's~\\[\\[' + currentArticleRegexBit + '[|]~[[' + t + '|~g;';
@@ -8730,7 +8651,7 @@ $(() => {
 
 	function redirLink(redirMatch, article) {
 		// NB redirMatch is in wikiText
-		let ret = '';
+		var ret = '';
 
 		if (getValueOf('popupAppendRedirNavLinks') && getValueOf('popupNavLinks')) {
 			ret += '<hr />';
@@ -8801,7 +8722,7 @@ $(() => {
 			return null;
 		}
 
-		const uN = l.article.userName();
+		var uN = l.article.userName();
 
 		return generalNavLink({
 			url: 'http://ws.arin.net/cgi-bin/whois.pl?queryinput=' + encodeURIComponent(uN),
@@ -8813,7 +8734,7 @@ $(() => {
 	}
 
 	function toolDbName(cookieStyle) {
-		let ret = mw.config.get('wgDBname');
+		var ret = mw.config.get('wgDBname');
 		if (!cookieStyle) {
 			ret += '_p';
 		}
@@ -8833,10 +8754,10 @@ $(() => {
 		if (!pg.wiki.wikimedia) {
 			return null;
 		}
-		const uN = l.article.userName();
-		const tool = getValueOf('popupEditCounterTool');
-		let url;
-		const defaultToolUrl = 'https://xtools.wmflabs.org/ec?user=$1&project=$2.$3&uselang=' + mw.config.get('wgUserLanguage');
+		var uN = l.article.userName();
+		var tool = getValueOf('popupEditCounterTool');
+		var url;
+		var defaultToolUrl = 'https://xtools.wmflabs.org/ec?user=$1&project=$2.$3&uselang=' + mw.config.get('wgUserLanguage');
 
 		switch (tool) {
 			case 'custom':
@@ -8868,8 +8789,8 @@ $(() => {
 			return null;
 		}
 
-		const base = 'https://global-search.toolforge.org/?uselang=' + mw.config.get('wgUserLanguage') + '&q=';
-		const article = l.article.urlString({ keepSpaces: true });
+		var base = 'https://global-search.toolforge.org/?uselang=' + mw.config.get('wgUserLanguage') + '&q=';
+		var article = l.article.urlString({ keepSpaces: true });
 
 		return generalNavLink({
 			url: base + article,
@@ -8885,8 +8806,8 @@ $(() => {
 			return null;
 		}
 
-		const base = 'https://www.google.com/search?q=';
-		const article = l.article.urlString({ keepSpaces: true });
+		var base = 'https://www.google.com/search?q=';
+		var article = l.article.urlString({ keepSpaces: true });
 
 		return generalNavLink({
 			url: base + '%22' + article + '%22',
@@ -8901,8 +8822,8 @@ $(() => {
 		if (!saneLinkCheck(l)) {
 			return null;
 		}
-		const article = l.article.articleFromTalkPage() || l.article;
-		const url =
+		var article = l.article.articleFromTalkPage() || l.article;
+		var url =
 			'https://xtools.wmflabs.org/articleinfo/' +
 			encodeURI(pg.wiki.hostname) +
 			'/' +
@@ -8943,7 +8864,7 @@ $(() => {
 
 	function getHistory(wikipage, onComplete) {
 		log('getHistory');
-		const url =
+		var url =
 			pg.wiki.apiwikibase +
 			'?format=json&formatversion=2&action=query&prop=revisions&titles=' +
 			new Title(wikipage).urlString() +
@@ -8954,11 +8875,11 @@ $(() => {
 	}
 
 	function processHistory(download) {
-		const jsobj = getJsObj(download.data);
+		var jsobj = getJsObj(download.data);
 		try {
-			const revisions = anyChild(jsobj.query.pages).revisions;
-			const edits = [];
-			for (let i = 0; i < revisions.length; ++i) {
+			var revisions = anyChild(jsobj.query.pages).revisions;
+			var edits = [];
+			for (var i = 0; i < revisions.length; ++i) {
 				edits.push({ oldid: revisions[i].revid, editor: revisions[i].user });
 			}
 			log('processed ' + edits.length + ' edits');
@@ -8970,12 +8891,12 @@ $(() => {
 	}
 
 	function finishProcessHistory(edits, userName) {
-		const histInfo = {};
+		var histInfo = {};
 
 		histInfo.edits = edits;
 		histInfo.userName = userName;
 
-		for (let i = 0; i < edits.length; ++i) {
+		for (var i = 0; i < edits.length; ++i) {
 			if (typeof histInfo.myLastEdit === 'undefined' && userName && edits[i].editor == userName) {
 				histInfo.myLastEdit = {
 					index: i,
@@ -9038,9 +8959,9 @@ $(() => {
 
 	function setOptions() {
 		// user-settable parameters and defaults
-		let userIsSysop = false;
+		var userIsSysop = false;
 		if (mw.config.get('wgUserGroups')) {
-			for (let g = 0; g < mw.config.get('wgUserGroups').length; ++g) {
+			for (var g = 0; g < mw.config.get('wgUserGroups').length; ++g) {
 				if (mw.config.get('wgUserGroups')[g] == 'sysop') {
 					userIsSysop = true;
 				}
@@ -9506,7 +9427,7 @@ $(() => {
 
 	// Support for MediaWiki's live preview, VisualEditor's saves and Echo's flyout.
 	(function () {
-		let once = true;
+		var once = true;
 		function dynamicContentHandler($content) {
 			// Try to detect the hook fired on initial page load and disregard
 			// it, we already hook to onload (possibly to different parts of
@@ -9519,8 +9440,8 @@ $(() => {
 			}
 
 			function registerHooksForVisibleNavpops() {
-				for (let i = 0; pg.current.links && i < pg.current.links.length; ++i) {
-					const navpop = pg.current.links[i].navpopup;
+				for (var i = 0; pg.current.links && i < pg.current.links.length; ++i) {
+					var navpop = pg.current.links[i].navpopup;
 					if (!navpop || !navpop.isVisible()) {
 						continue;
 					}
