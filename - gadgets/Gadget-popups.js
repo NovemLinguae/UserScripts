@@ -5895,7 +5895,7 @@ $(() => {
 		/**
 		 * Timer for the loop.
 		 *
-		 * @type Timer
+		 * @type {Timer}
 		 */
 		this.timer = null;
 
@@ -6197,7 +6197,7 @@ $(() => {
 		/**
 		 * The main content DIV element.
 		 *
-		 * @type HTMLDivElement
+		 * @type {HTMLDivElement}
 		 */
 		this.mainDiv = null;
 		this.createMainDiv();
