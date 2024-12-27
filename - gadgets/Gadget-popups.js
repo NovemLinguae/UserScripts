@@ -709,8 +709,8 @@ $(() => {
 	 * Initialises the Drag instance by telling it which object you want to be draggable, and what
 	 * you want to drag it by.
 	 *
-	 * @param {DOMElement} o The "handle" by which <code>oRoot</code> is dragged.
-	 * @param {DOMElement} oRoot The object which moves when <code>o</code> is dragged, or <code>o</code> if omitted.
+	 * @param {HTMLElement} o The "handle" by which <code>oRoot</code> is dragged.
+	 * @param {HTMLElement} oRoot The object which moves when <code>o</code> is dragged, or <code>o</code> if omitted.
 	 */
 	Drag.prototype.init = function (o, oRoot) {
 		const dragObj = this;
@@ -1496,7 +1496,7 @@ $(() => {
 		/**
 		 * Modification date, to be culled from the incoming headers
 		 *
-		 * @type Date
+		 * @type {Date}
 		 * @private
 		 */
 		this.lastModified = null;
