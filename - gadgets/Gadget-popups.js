@@ -235,6 +235,7 @@ $(() => {
 	/**
 	 * Gets the references list item that the provided footnote link targets. This
 	 * is typically a li element within the ol.references element inside the reflist.
+	 *
 	 * @param {Element} a - A footnote link.
 	 * @return {Element|boolean} The targeted element, or false if one can't be found.
 	 */
@@ -664,12 +665,14 @@ $(() => {
 
 	/**
 	 * Creates a new Drag object. This is used to make various DOM elements draggable.
+	 *
 	 * @constructor
 	 */
 	function Drag() {
 		/**
 		 * Condition to determine whether or not to drag. This function should take one parameter,
 		 * an Event.  To disable this, set it to <code>null</code>.
+		 *
 		 * @type {Function}
 		 */
 		this.startCondition = null;
@@ -677,6 +680,7 @@ $(() => {
 		/**
 		 * Hook to be run when the drag finishes. This is passed the final coordinates of the
 		 * dragged object (two integers, x and y). To disables this, set it to <code>null</code>.
+		 *
 		 * @type {Function}
 		 */
 		this.endHook = null;
@@ -684,6 +688,7 @@ $(() => {
 
 	/**
 	 * Gets an event in a cross-browser manner.
+	 *
 	 * @param {Event} e
 	 * @private
 	 */
@@ -703,6 +708,7 @@ $(() => {
 	/**
 	 * Initialises the Drag instance by telling it which object you want to be draggable, and what
 	 * you want to drag it by.
+	 *
 	 * @param {DOMElement} o The "handle" by which <code>oRoot</code> is dragged.
 	 * @param {DOMElement} oRoot The object which moves when <code>o</code> is dragged, or <code>o</code> if omitted.
 	 */
@@ -733,6 +739,7 @@ $(() => {
 
 	/**
 	 * Starts the drag.
+	 *
 	 * @private
 	 * @param {Event} e
 	 */
@@ -763,6 +770,7 @@ $(() => {
 
 	/**
 	 * Does the drag.
+	 *
 	 * @param {Event} e
 	 * @private
 	 */
@@ -790,6 +798,7 @@ $(() => {
 
 	/**
 	 * Ends the drag.
+	 *
 	 * @private
 	 */
 	Drag.prototype.end = function () {
@@ -1460,6 +1469,7 @@ $(() => {
 
 	/**
 	 * Creates a new Downloader
+	 *
 	 * @constructor
 	 * @class The Downloader class. Create a new instance of this class to download stuff.
 	 * @param {string} url The url to download. This can be omitted and supplied later.
@@ -1471,18 +1481,21 @@ $(() => {
 
 		/**
 		 * The url to download
+		 *
 		 * @type {string}
 		 */
 		this.url = url;
 
 		/**
 		 * A universally unique ID number
+		 *
 		 * @type {number}
 		 */
 		this.id = null;
 
 		/**
 		 * Modification date, to be culled from the incoming headers
+		 *
 		 * @type Date
 		 * @private
 		 */
@@ -1490,6 +1503,7 @@ $(() => {
 
 		/**
 		 * What to do when the download completes successfully
+		 *
 		 * @type {Function}
 		 * @private
 		 */
@@ -1497,6 +1511,7 @@ $(() => {
 
 		/**
 		 * What to do on failure
+		 *
 		 * @type {Function}
 		 * @private
 		 */
@@ -1504,6 +1519,7 @@ $(() => {
 
 		/**
 		 * Flag set on <code>abort</code>
+		 *
 		 * @type {boolean}
 		 */
 		this.aborted = false;
@@ -1511,11 +1527,13 @@ $(() => {
 		/**
 		 * HTTP method. See https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html for
 		 * possibilities.
+		 *
 		 * @type {string}
 		 */
 		this.method = 'GET';
 		/**
 		 * Async flag.
+		 *
 		 * @type {boolean}
 		 */
 		this.async = true;
@@ -1583,6 +1601,7 @@ $(() => {
 	 * Gets the 'Last-Modified' date from the download headers.
 	 * Should be run after the download completes.
 	 * Returns <code>null</code> on failure.
+	 *
 	 * @return {Date}
 	 */
 	Downloader.prototype.getLastModifiedDate = function () {
@@ -1601,6 +1620,7 @@ $(() => {
 
 	/**
 	 * Sets the callback function.
+	 *
 	 * @param {Function} f callback function, called as <code>f(this)</code> on success
 	 */
 	Downloader.prototype.setCallback = function (f) {
@@ -1622,6 +1642,7 @@ $(() => {
 
 	/**
 	 * Creates a new {@link Downloader} and prepares it for action.
+	 *
 	 * @param {string} url The url to download
 	 * @param {number} id The ID of the {@link Downloader} object
 	 * @param {Function} callback The callback function invoked on success
@@ -1664,6 +1685,7 @@ $(() => {
 	/**
 	 * Simulates a download from cached data.
 	 * The supplied data is put into a {@link Downloader} as if it had downloaded it.
+	 *
 	 * @param {string} url The url.
 	 * @param {number} id The ID.
 	 * @param {Function} callback The callback, which is invoked immediately as <code>callback(d)</code>,
@@ -1682,6 +1704,7 @@ $(() => {
 
 	/**
 	 * Starts a download.
+	 *
 	 * @param {string} url The url to download
 	 * @param {number} id The ID of the {@link Downloader} object
 	 * @param {Function} callback The callback function invoked on success
@@ -2641,6 +2664,7 @@ $(() => {
 
 	/**
 	 * Creates a new Stringwrapper.
+	 *
 	 * @constructor
 	 *
 	 * @class the Stringwrapper class. This base class is not really
@@ -2649,6 +2673,7 @@ $(() => {
 	function Stringwrapper() {
 		/**
 		 * Wrapper for this.toString().indexOf()
+		 *
 		 * @param {string} x
 		 * @type {number}
 		 */
@@ -2657,6 +2682,7 @@ $(() => {
 		};
 		/**
 		 * Returns this.value.
+		 *
 		 * @type {string}
 		 */
 		this.toString = function () {
@@ -2664,6 +2690,7 @@ $(() => {
 		};
 		/**
 		 * Wrapper for {@link String#parenSplit} applied to this.toString()
+		 *
 		 * @param {RegExp} x
 		 * @type {Array}
 		 */
@@ -2672,6 +2699,7 @@ $(() => {
 		};
 		/**
 		 * Wrapper for this.toString().substring()
+		 *
 		 * @param {string} x
 		 * @param {string} y (optional)
 		 * @type {string}
@@ -2684,6 +2712,7 @@ $(() => {
 		};
 		/**
 		 * Wrapper for this.toString().split()
+		 *
 		 * @param {string} x
 		 * @type {Array}
 		 */
@@ -2692,6 +2721,7 @@ $(() => {
 		};
 		/**
 		 * Wrapper for this.toString().replace()
+		 *
 		 * @param {string} x
 		 * @param {string} y
 		 * @type {string}
@@ -2703,6 +2733,7 @@ $(() => {
 
 	/**
 	 * Creates a new <code>Title</code>.
+	 *
 	 * @constructor
 	 *
 	 * @class The Title class. Holds article titles and converts them into
@@ -2720,6 +2751,7 @@ $(() => {
 		 * The canonical article title. This must be in UTF-8 with no
 		 * entities, escaping or nasties. Also, underscores should be
 		 * replaced with spaces.
+		 *
 		 * @type {string}
 		 * @private
 		 */
@@ -2728,6 +2760,7 @@ $(() => {
 		/**
 		 * The canonical form of the anchor. This should be exactly as
 		 * it appears in the URL, i.e. with the .C3.0A bits in.
+		 *
 		 * @type {string}
 		 */
 		this.anchor = '';
@@ -2737,6 +2770,7 @@ $(() => {
 	Title.prototype = new Stringwrapper();
 	/**
 	 * Returns the canonical representation of the article title, optionally without anchor.
+	 *
 	 * @param {boolean} omitAnchor
 	 * @fixme Decide specs for anchor
 	 * @return String The article title and the anchor.
@@ -4074,6 +4108,7 @@ $(() => {
 
 	/**
 	 * Creates a new Previewmaker
+	 *
 	 * @constructor
 	 * @class The Previewmaker class. Use an instance of this to generate short previews from Wikitext.
 	 * @param {string} wikiText The Wikitext source of the page we wish to preview.
@@ -4099,6 +4134,7 @@ $(() => {
 
 	/**
 	 * Remove HTML comments
+	 *
 	 * @private
 	 */
 	Previewmaker.prototype.killComments = function () {
@@ -4413,6 +4449,7 @@ $(() => {
 	/**
 	 * Runs the various methods to generate the preview.
 	 * The preview is stored in the <code>html</html> field.
+	 *
 	 * @private
 	 */
 	Previewmaker.prototype.makePreview = function () {
@@ -4603,6 +4640,7 @@ $(() => {
 
 	/**
 	 * Works around livepreview bugs.
+	 *
 	 * @private
 	 */
 	Previewmaker.prototype.fixHTML = function () {
@@ -4881,6 +4919,7 @@ $(() => {
 
 	/**
 	 * Creates a HTML table that's shown in the history and user-contribs popups.
+	 *
 	 * @param {Object[]} h - a list of revisions, returned from the API
 	 * @param {boolean} reallyContribs - true only if we're displaying user contributions
 	 */
@@ -5841,24 +5880,28 @@ $(() => {
 
 	/**
 	 * Creates a new Mousetracker.
+	 *
 	 * @constructor
 	 * @class The Mousetracker class. This monitors mouse movements and manages associated hooks.
 	 */
 	function Mousetracker() {
 		/**
 		 * Interval to regularly run the hooks anyway, in milliseconds.
+		 *
 		 * @type {number}
 		 */
 		this.loopDelay = 400;
 
 		/**
 		 * Timer for the loop.
+		 *
 		 * @type Timer
 		 */
 		this.timer = null;
 
 		/**
 		 * Flag - are we switched on?
+		 *
 		 * @type {boolean}
 		 */
 		this.active = false;
@@ -5870,6 +5913,7 @@ $(() => {
 
 		/**
 		 * Array of hook functions.
+		 *
 		 * @private
 		 * @type {Array}
 		 */
@@ -5878,6 +5922,7 @@ $(() => {
 
 	/**
 	 * Adds a hook, to be called when we get events.
+	 *
 	 * @param {Function} f A function which is called as
 	 * <code>f(x,y)</code>. It should return <code>true</code> when it
 	 * wants to be removed, and <code>false</code> otherwise.
@@ -5890,6 +5935,7 @@ $(() => {
 	 * Runs hooks, passing them the x
 	 * and y coords of the mouse.  Hook functions that return true are
 	 * passed to {@link Mousetracker#removeHooks} for removal.
+	 *
 	 * @private
 	 */
 	Mousetracker.prototype.runHooks = function () {
@@ -5919,6 +5965,7 @@ $(() => {
 
 	/**
 	 * Removes hooks.
+	 *
 	 * @private
 	 * @param {Object} removeObj An object whose keys are the index
 	 * numbers of functions for removal, with values that evaluate to true
@@ -5938,6 +5985,7 @@ $(() => {
 	 * Event handler for mouse wiggles.
 	 * We simply grab the event, set x and y and run the hooks.
 	 * This makes the cpu all hot and bothered :-(
+	 *
 	 * @private
 	 * @param {Event} e Mousemove event
 	 */
@@ -5976,6 +6024,7 @@ $(() => {
 	/**
 	 * Sets the x and y coordinates stored and takes appropriate action,
 	 * running hooks as appropriate.
+	 *
 	 * @param {number} x Screen coordinates to set
 	 * @param {number} y Screen coordinates to set
 	 */
@@ -6051,6 +6100,7 @@ $(() => {
 	/**
 	 * Creates a new Navpopup.
 	 * Gets a UID for the popup and
+	 *
 	 * @param init Contructor object. If <code>init.draggable</code> is true or absent, the popup becomes draggable.
 	 * @constructor
 	 * @class The Navpopup class. This generates popup hints, and does some management of them.
@@ -6061,12 +6111,14 @@ $(() => {
 		/**
 		 * UID for each Navpopup instance.
 		 * Read-only.
+		 *
 		 * @type {number}
 		 */
 		this.uid = Navpopup.uid++;
 
 		/**
 		 * Read-only flag for current visibility of the popup.
+		 *
 		 * @type {boolean}
 		 * @private
 		 */
@@ -6074,6 +6126,7 @@ $(() => {
 
 		/** Flag to be set when we want to cancel a previous request to
 		 * show the popup in a little while.
+		 *
 		 * @private
 		 * @type {boolean}
 		 */
@@ -6093,6 +6146,7 @@ $(() => {
 
 		/**
 		 * list of unique IDs of hook functions, to avoid duplicates
+		 *
 		 * @private
 		 */
 		this.hookIds = {};
@@ -6105,24 +6159,28 @@ $(() => {
 
 		/**
 		 * Number of uncompleted downloads.
+		 *
 		 * @type {number}
 		 */
 		this.pending = null;
 
 		/**
 		 * Tolerance in pixels when detecting whether the mouse has left the popup.
+		 *
 		 * @type {number}
 		 */
 		this.fuzz = 5;
 
 		/**
 		 * Flag to toggle running {@link #limitHorizontalPosition} to regulate the popup's position.
+		 *
 		 * @type {boolean}
 		 */
 		this.constrained = true;
 
 		/**
 		 * The popup width in pixels.
+		 *
 		 * @private
 		 * @type {number}
 		 */
@@ -6130,6 +6188,7 @@ $(() => {
 
 		/**
 		 * The popup width in pixels.
+		 *
 		 * @private
 		 * @type {number}
 		 */
@@ -6137,6 +6196,7 @@ $(() => {
 
 		/**
 		 * The main content DIV element.
+		 *
 		 * @type HTMLDivElement
 		 */
 		this.mainDiv = null;
@@ -6149,6 +6209,7 @@ $(() => {
 
 	/**
 	 * A UID for each Navpopup. This constructor property is just a counter.
+	 *
 	 * @type {number}
 	 * @private
 	 */
@@ -6156,6 +6217,7 @@ $(() => {
 
 	/**
 	 * Retrieves the {@link #visible} attribute, indicating whether the popup is currently visible.
+	 *
 	 * @type {boolean}
 	 */
 	Navpopup.prototype.isVisible = function () {
@@ -6164,6 +6226,7 @@ $(() => {
 
 	/**
 	 * Repositions popup using CSS style.
+	 *
 	 * @private
 	 * @param {number} x x-coordinate (px)
 	 * @param {number} y y-coordinate (px)
@@ -6191,6 +6254,7 @@ $(() => {
 	/**
 	 * Prevents popups from being in silly locations. Hopefully.
 	 * Should not be run if {@link #constrained} is true.
+	 *
 	 * @private
 	 */
 	Navpopup.prototype.limitHorizontalPosition = function () {
@@ -6245,6 +6309,7 @@ $(() => {
 	 * Counter indicating the z-order of the "highest" popup.
 	 * We start the z-index at 1000 so that popups are above everything
 	 * else on the screen.
+	 *
 	 * @private
 	 * @type {number}
 	 */
@@ -6253,6 +6318,7 @@ $(() => {
 	/**
 	 * Brings popup to the top of the z-order.
 	 * We increment the {@link #highest} property of the contructor here.
+	 *
 	 * @private
 	 */
 	Navpopup.prototype.raise = function () {
@@ -6279,6 +6345,7 @@ $(() => {
 	 * Checks to see if the mouse pointer has
 	 * stabilised (checking every <code>time</code>/2 milliseconds) and runs the
 	 * {@link #show} method if it has.
+	 *
 	 * @param {number} time The minimum time (ms) before the popup may be shown.
 	 */
 	Navpopup.prototype.showSoonIfStable = function (time) {
@@ -6334,6 +6401,7 @@ $(() => {
 
 	/**
 	 * Runs hooks added with {@link #addHook}.
+	 *
 	 * @private
 	 * @param {string} key Key name of the {@link #hooks} array - one of 'create', 'unhide', 'hide'
 	 * @param {string} when Controls exactly when the hook is run: either 'before' or 'after'
@@ -6360,6 +6428,7 @@ $(() => {
 	/**
 	 * Adds a hook to the popup. Hook functions are run with <code>this</code> set to refer to the
 	 * Navpopup instance, and no arguments.
+	 *
 	 * @param {Function} hook The hook function. Functions that return true are deleted.
 	 * @param {string} key Key name of the {@link #hooks} array - one of 'create', 'unhide', 'hide'
 	 * @param {String} when Controls exactly when the hook is run: either 'before' or 'after'
@@ -6386,6 +6455,7 @@ $(() => {
 	/**
 	 * Creates the main DIV element, which contains all the actual popup content.
 	 * Runs hooks with key 'create'.
+	 *
 	 * @private
 	 */
 	Navpopup.prototype.createMainDiv = function () {
@@ -6417,6 +6487,7 @@ $(() => {
 
 	/**
 	 * Calls the {@link #raise} method.
+	 *
 	 * @private
 	 */
 	Navpopup.prototype.onclickHandler = function (/*e*/) {
@@ -6425,6 +6496,7 @@ $(() => {
 
 	/**
 	 * Makes the popup draggable, using a {@link Drag} object.
+	 *
 	 * @private
 	 */
 	Navpopup.prototype.makeDraggable = function (handleName) {
@@ -6463,6 +6535,7 @@ $(() => {
 	 * Hides the popup using CSS. Runs hooks with key 'hide'.
 	 * Sets {@link #visible} appropriately.
 	 * {@link #banish} should be called externally instead of this method.
+	 *
 	 * @private
 	 */
 	Navpopup.prototype.hide = function () {
@@ -6478,6 +6551,7 @@ $(() => {
 	/**
 	 * Shows the popup using CSS. Runs hooks with key 'unhide'.
 	 * Sets {@link #visible} appropriately.   {@link #show} should be called externally instead of this method.
+	 *
 	 * @private
 	 */
 	Navpopup.prototype.unhide = function () {
@@ -6491,6 +6565,7 @@ $(() => {
 
 	/**
 	 * Sets the <code>innerHTML</code> attribute of the main div containing the popup content.
+	 *
 	 * @param {string} html The HTML to set.
 	 */
 	Navpopup.prototype.setInnerHTML = function (html) {
@@ -6499,6 +6574,7 @@ $(() => {
 
 	/**
 	 * Updates the {@link #width} and {@link #height} attributes with the CSS properties.
+	 *
 	 * @private
 	 */
 	Navpopup.prototype.updateDimensions = function () {
@@ -6509,6 +6585,7 @@ $(() => {
 	/**
 	 * Checks if the point (x,y) is within {@link #fuzz} of the
 	 * {@link #mainDiv}.
+	 *
 	 * @param {number} x x-coordinate (px)
 	 * @param {number} y y-coordinate (px)
 	 * @type {boolean}
@@ -6532,6 +6609,7 @@ $(() => {
 
 	/**
 	 * Adds a download to {@link #downloads}.
+	 *
 	 * @param {Downloader} download
 	 */
 	Navpopup.prototype.addDownload = function (download) {
@@ -6543,6 +6621,7 @@ $(() => {
 
 	/**
 	 * Aborts the downloads listed in {@link #downloads}.
+	 *
 	 * @see Downloader#abort
 	 */
 	Navpopup.prototype.abortDownloads = function () {
@@ -8523,6 +8602,7 @@ $(() => {
 
 	/**
 	 * Builds a link from a object representing a link
+	 *
 	 * @param {Object} link
 	 * @param {string} link.url URL
 	 * @param {string} link.text The text to show for a link
