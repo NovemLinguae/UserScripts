@@ -11,7 +11,7 @@ function getWikitextFromEnWiki($article) {
 	return $json['query']['pages'][0]['revisions'][0]['slots']['main']['content'];
 }
 
-$inputTextArea = getWikitextFromEnWiki('Wikipedia:New page patrol source guide') . "\n\n" . getWikitextFromEnWiki('User:Novem Linguae/Scripts/CiteHighlighter/AllSourcesExceptNPPSG');
+$inputTextArea = getWikitextFromEnWiki('Wikipedia:New pages patrol source guide') . "\n\n" . getWikitextFromEnWiki('User:Novem Linguae/Scripts/CiteHighlighter/AllSourcesExceptNPPSG');
 
 ?><!DOCTYPE html>
 <html lang="en-us">
@@ -26,7 +26,7 @@ $inputTextArea = getWikitextFromEnWiki('Wikipedia:New page patrol source guide')
 			Cite Highlighter - NPPSG and MySources to array tool
 		</h1>
 		<p>
-			Automatically loads the contents of <a href="https://en.wikipedia.org/wiki/Wikipedia:New_page_patrol_source_guide" target="_blank">Wikipedia:New page patrol source guide</a> and <a href="https://en.wikipedia.org/wiki/User:Novem_Linguae/Scripts/CiteHighlighter/AllSourcesExceptNPPSG" target="_blank">User:Novem Linguae/Scripts/CiteHighlighter/AllSourcesExceptNPPSG</a>, then parses it into JSON below. There are also some hard-coded domains and changes in this tool's Javascript logic.
+			Automatically loads the contents of <a href="https://en.wikipedia.org/wiki/Wikipedia:New_page_patrol_source_guide" target="_blank">Wikipedia:New pages patrol source guide</a> and <a href="https://en.wikipedia.org/wiki/User:Novem_Linguae/Scripts/CiteHighlighter/AllSourcesExceptNPPSG" target="_blank">User:Novem Linguae/Scripts/CiteHighlighter/AllSourcesExceptNPPSG</a>, then parses it into JSON below. There are also some hard-coded domains and changes in this tool's Javascript logic.
 		</p>
 		<p style="display:none;">
 			<textarea id="input"><?= $inputTextArea; ?></textarea>

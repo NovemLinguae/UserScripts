@@ -124,7 +124,7 @@ class CiteHighlighter {
 			'Main Page',
 			'Wikipedia:Featured articles',
 			'Special:Watchlist',
-			'Wikipedia:New page patrol source guide',
+			'Wikipedia:New pages patrol source guide',
 			'Wikipedia:Redirects for discussion',
 			'User:Novem Linguae/Scripts/CiteHighlighter/SourcesJSON.js'
 		].map( ( title ) => title.replace( / /g, '_' ) );
