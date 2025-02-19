@@ -88,10 +88,7 @@ function writeWikitextToWikipedia($ABSOLUTE_PATH_TO_TEMP_DIRECTORY, $WIKIPEDIA_A
 }
 
 function generateWikitext($MAIN_FILE_PATH, $CLASSES_FOLDER_PATH) {
-	$wikitext = "// === Compiled with Novem Linguae's publish.php script ======================\n\n";
-	$wikitext .= "$(async function() {\n\n// === $MAIN_FILE_PATH ======================================================\n\n";
-
-	$wikitext .= file_get_contents($MAIN_FILE_PATH);
+	$wikitext = "// === Compiled with Novem Linguae's publish.php script ======================";
 
 	$files = scandir($CLASSES_FOLDER_PATH);
 	foreach ( $files as $fileName ) {
@@ -105,6 +102,9 @@ function generateWikitext($MAIN_FILE_PATH, $CLASSES_FOLDER_PATH) {
 		$classText = file_get_contents($path);
 		$wikitext .= "\n\n// === $path ======================================================\n\n" . $classText;
 	}
+
+	$wikitext .= "$(async function() {\n\n// === $MAIN_FILE_PATH ======================================================\n\n";
+	$wikitext .= file_get_contents($MAIN_FILE_PATH);
 
 	$wikitext .= "\n\n});";
 
