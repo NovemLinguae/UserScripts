@@ -133,13 +133,7 @@ export class UserHighlighterSimple {
 
 		url = this.addDomainIfMissing( url );
 
-		// mw.Uri(url) throws an error if it doesn't like the URL. An example of a URL it doesn't like is https://meta.wikimedia.org/wiki/Community_Wishlist_Survey_2022/Larger_suggestions#1%, which has a section link to a section titled 1% (one percent).
-		let urlHelper;
-		try {
-			urlHelper = new this.mw.Uri( url );
-		} catch {
-			return false;
-		}
+		const urlHelper = new URL( url );
 
 		// Skip links that aren't to user pages
 		const isUserPageLink = url.includes( '/w/index.php?title=User' ) || url.includes( '/wiki/User' );
@@ -148,11 +142,11 @@ export class UserHighlighterSimple {
 		}
 
 		// Even if it is a link to a userpage, skip URLs that have any parameters except title=User, action=edit, and redlink=. We don't want links to diff pages, section editing pages, etc. to be highlighted.
-		const urlParameters = urlHelper.query;
+		const urlParameters = this.getObjectWithUriParamsFromQueryString( urlHelper );
 		delete urlParameters.title;
 		delete urlParameters.action;
 		delete urlParameters.redlink;
-		const hasNonUserpageParametersInUrl = !this.$.isEmptyObject( urlParameters );
+		const hasNonUserpageParametersInUrl = Object.keys( urlParameters ).length > 0;
 		if ( hasNonUserpageParametersInUrl ) {
 			return false;
 		}
@@ -174,6 +168,16 @@ export class UserHighlighterSimple {
 		return true;
 	}
 
+	getObjectWithUriParamsFromQueryString( url ) {
+		const params = {};
+		const queryString = url.search;
+		const urlParams = new URLSearchParams( queryString );
+		for ( const [ key, value ] of urlParams.entries() ) {
+			params[ key ] = value;
+		}
+		return params;
+	}
+
 	hasHref( url ) {
 		return Boolean( url );
 	}
@@ -189,7 +193,7 @@ export class UserHighlighterSimple {
 	}
 
 	/**
-	 * mw.Uri(url) expects a complete URL. If we get something like /wiki/User:Test, convert it to https://en.wikipedia.org/wiki/User:Test. Without this, UserHighlighterSimple doesn't work on metawiki.
+	 * URL( url ) expects a complete URL. If we get something like /wiki/User:Test, convert it to https://en.wikipedia.org/wiki/User:Test. Without this, UserHighlighterSimple doesn't work on metawiki.
 	 *
 	 * @param {string} url
 	 * @return {string} url
@@ -205,12 +209,9 @@ export class UserHighlighterSimple {
 	 * Figure out the wikipedia article title of the link
 	 *
 	 * @param {string} url
-	 * @param {mw.Uri} urlHelper
 	 * @return {string}
 	 */
 	getTitle( url ) {
-		const urlHelper = new this.mw.Uri( url );
-
 		// for links in the format /w/index.php?title=Blah
 		const titleParameterOfUrl = this.mw.util.getParamValue( 'title', url );
 		if ( titleParameterOfUrl ) {
@@ -218,8 +219,9 @@ export class UserHighlighterSimple {
 		}
 
 		// for links in the format /wiki/PageName. Slice off the /wiki/ (first 6 characters)
-		if ( urlHelper.path.startsWith( '/wiki/' ) ) {
-			return decodeURIComponent( urlHelper.path.slice( 6 ) );
+		const urlHelper = new URL( url );
+		if ( urlHelper.pathname.startsWith( '/wiki/' ) ) {
+			return decodeURIComponent( urlHelper.pathname.slice( 6 ) );
 		}
 
 		return '';
