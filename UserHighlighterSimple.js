@@ -21,14 +21,17 @@ class UserHighlighterSimple {
 		const $links = this.$( '#article a, #bodyContent a, #mw_contentholder a' );
 		$links.each( ( index, element ) => {
 			this.$link = this.$( element );
-			if ( !this.linksToAUser() ) {
+			const url = this.$link.attr( 'href' );
+			if ( !this.linksToAUser( url ) ) {
 				return;
 			}
+
 			this.user = this.getUserName();
 			const isUserSubpage = this.user.includes( '/' );
 			if ( isUserSubpage ) {
 				return;
 			}
+
 			this.hasAdvancedPermissions = false;
 			this.addClassesAndHoverTextToLinkIfNeeded();
 			// If the user has any advanced perms, they are likely to have a signature, so be aggressive about overriding the background and foreground color. That way there's no risk their signature is unreadable due to background color and foreground color being too similar. Don't do this for users without advanced perms... being able to see a redlinked username is useful.
@@ -36,42 +39,6 @@ class UserHighlighterSimple {
 				this.$link.addClass( this.$link.attr( 'class' ) + ' UHS-override-signature-colors' );
 			}
 		} );
-	}
-
-	addCSS( htmlClass, cssDeclaration ) {
-		// .plainlinks is for Wikipedia Signpost articles
-		// To support additional custom signature edge cases, add to the selectors here.
-		this.mw.util.addCSS( `
-			.plainlinks .${ htmlClass }.external,
-			.${ htmlClass },
-			.${ htmlClass } b,
-			.${ htmlClass } big,
-			.${ htmlClass } font,
-			.${ htmlClass } kbd,
-			.${ htmlClass } small,
-			.${ htmlClass } span {
-				${ cssDeclaration }
-			}
-		` );
-	}
-
-	async getWikitextFromCache( title ) {
-		const api = new this.mw.ForeignApi( 'https://en.wikipedia.org/w/api.php' );
-		let wikitext = '';
-		await api.get( {
-			action: 'query',
-			prop: 'revisions',
-			titles: title,
-			rvslots: '*',
-			rvprop: 'content',
-			formatversion: '2',
-			uselang: 'content', // needed for caching
-			smaxage: '86400', // cache for 1 day
-			maxage: '86400' // cache for 1 day
-		} ).then( ( data ) => {
-			wikitext = data.query.pages[ 0 ].revisions[ 0 ].slots.main.content;
-		} );
-		return wikitext;
 	}
 
 	async getUsernames() {
@@ -103,51 +70,65 @@ class UserHighlighterSimple {
 		};
 	}
 
-	hasHref( url ) {
-		return Boolean( url );
+	async getWikitextFromCache( title ) {
+		const api = new this.mw.ForeignApi( 'https://en.wikipedia.org/w/api.php' );
+		let wikitext = '';
+		await api.get( {
+			action: 'query',
+			prop: 'revisions',
+			titles: title,
+			rvslots: '*',
+			rvprop: 'content',
+			formatversion: '2',
+			uselang: 'content', // needed for caching
+			smaxage: '86400', // cache for 1 day
+			maxage: '86400' // cache for 1 day
+		} ).then( ( data ) => {
+			wikitext = data.query.pages[ 0 ].revisions[ 0 ].slots.main.content;
+		} );
+		return wikitext;
 	}
 
-	isAnchor( url ) {
-		return url.charAt( 0 ) === '#';
+	setHighlightColors() {
+		// Highest specificity goes on bottom. So if you want an admin+steward to be highlighted steward, place the steward CSS below the admin CSS in this section.
+		this.addCSS( 'UHS-override-signature-colors', `
+			color: #0645ad !important;
+			background-color: transparent !important;
+			background: unset !important;
+		` );
+
+		this.mw.util.addCSS( '.UHS-no-permissions { border: 1px solid black !important; }' );
+
+		// TODO: grab the order from an array, so I can keep checkForPermission and addCSS in the same order easily, lowering the risk of the HTML title="" being one thing, and the color being another
+		this.addCSS( 'UHS-500edits-bot-trustedIP', 'background-color: lightgray !important;' );
+		this.addCSS( 'UHS-10000edits', 'background-color: #9c9 !important;' );
+		this.addCSS( 'UHS-new-page-reviewer', 'background-color: #99f !important;' );
+		this.addCSS( 'UHS-former-administrator', 'background-color: #D3AC8B !important;' );
+		this.addCSS( 'UHS-administrator', 'background-color: #9ff !important;' );
+		this.addCSS( 'UHS-bureaucrat', 'background-color: orange !important; color: #0645ad !important;' );
+		this.addCSS( 'UHS-arbitration-committee', 'background-color: #FF3F3F !important; color: white !important;' );
+		this.addCSS( 'UHS-steward', 'background-color: #00FF00 !important;' );
+		this.addCSS( 'UHS-wmf', 'background-color: hotpink !important; color: #0645ad !important;' );
 	}
 
-	isHttpOrHttps( url ) {
-		return url.startsWith( 'http://', 0 ) ||
-			url.startsWith( 'https://', 0 ) ||
-			url.startsWith( '/', 0 );
+	addCSS( htmlClass, cssDeclaration ) {
+		// .plainlinks is for Wikipedia Signpost articles
+		// To support additional custom signature edge cases, add to the selectors here.
+		this.mw.util.addCSS( `
+			.plainlinks .${ htmlClass }.external,
+			.${ htmlClass },
+			.${ htmlClass } b,
+			.${ htmlClass } big,
+			.${ htmlClass } font,
+			.${ htmlClass } kbd,
+			.${ htmlClass } small,
+			.${ htmlClass } span {
+				${ cssDeclaration }
+			}
+		` );
 	}
 
-	/**
-	 * Figure out the wikipedia article title of the link
-	 *
-	 * @param {string} url
-	 * @param {mw.Uri} urlHelper
-	 * @return {string}
-	 */
-	getTitle( url, urlHelper ) {
-		// for links in the format /w/index.php?title=Blah
-		const titleParameterOfUrl = this.mw.util.getParamValue( 'title', url );
-		if ( titleParameterOfUrl ) {
-			return titleParameterOfUrl;
-		}
-
-		// for links in the format /wiki/PageName. Slice off the /wiki/ (first 6 characters)
-		if ( urlHelper.path.startsWith( '/wiki/' ) ) {
-			return decodeURIComponent( urlHelper.path.slice( 6 ) );
-		}
-
-		return '';
-	}
-
-	notInUserOrUserTalkNamespace() {
-		const namespace = this.titleHelper.getNamespaceId();
-		const notInSpecialUserOrUserTalkNamespace = this.$.inArray( namespace, [ 2, 3 ] ) === -1;
-		return notInSpecialUserOrUserTalkNamespace;
-	}
-
-	linksToAUser() {
-		let url = this.$link.attr( 'href' );
-
+	linksToAUser( url ) {
 		if ( !this.hasHref( url ) || this.isAnchor( url ) || !this.isHttpOrHttps( url ) ) {
 			return false;
 		}
@@ -199,11 +180,18 @@ class UserHighlighterSimple {
 		return true;
 	}
 
-	/**
-	 * @copyright Brandon Frohbieter, CC BY-SA 4.0, https://stackoverflow.com/a/4009771/3480193
-	 */
-	countInstances( string, word ) {
-		return string.split( word ).length - 1;
+	hasHref( url ) {
+		return Boolean( url );
+	}
+
+	isAnchor( url ) {
+		return url.charAt( 0 ) === '#';
+	}
+
+	isHttpOrHttps( url ) {
+		return url.startsWith( 'http://', 0 ) ||
+			url.startsWith( 'https://', 0 ) ||
+			url.startsWith( '/', 0 );
 	}
 
 	/**
@@ -220,28 +208,39 @@ class UserHighlighterSimple {
 	}
 
 	/**
+	 * Figure out the wikipedia article title of the link
+	 *
+	 * @param {string} url
+	 * @param {mw.Uri} urlHelper
+	 * @return {string}
+	 */
+	getTitle( url, urlHelper ) {
+		// for links in the format /w/index.php?title=Blah
+		const titleParameterOfUrl = this.mw.util.getParamValue( 'title', url );
+		if ( titleParameterOfUrl ) {
+			return titleParameterOfUrl;
+		}
+
+		// for links in the format /wiki/PageName. Slice off the /wiki/ (first 6 characters)
+		if ( urlHelper.path.startsWith( '/wiki/' ) ) {
+			return decodeURIComponent( urlHelper.path.slice( 6 ) );
+		}
+
+		return '';
+	}
+
+	notInUserOrUserTalkNamespace() {
+		const namespace = this.titleHelper.getNamespaceId();
+		const notInSpecialUserOrUserTalkNamespace = this.$.inArray( namespace, [ 2, 3 ] ) === -1;
+		return notInSpecialUserOrUserTalkNamespace;
+	}
+
+	/**
 	 * @return {string}
 	 */
 	getUserName() {
 		const user = this.titleHelper.getMain().replace( /_/g, ' ' );
 		return user;
-	}
-
-	checkForPermission( listOfUsernames, className, descriptionForHover ) {
-		if ( listOfUsernames[ this.user ] === 1 ) {
-			this.addClassAndHoverText( className, descriptionForHover );
-		}
-	}
-
-	addClassAndHoverText( className, descriptionForHover ) {
-		this.$link.addClass( className );
-
-		const title = this.$link.attr( 'title' );
-		if ( !title || title.startsWith( 'User:' ) ) {
-			this.$link.attr( 'title', descriptionForHover );
-		}
-
-		this.hasAdvancedPermissions = true;
 	}
 
 	addClassesAndHoverTextToLinkIfNeeded() {
@@ -271,26 +270,21 @@ class UserHighlighterSimple {
 		}
 	}
 
-	setHighlightColors() {
-		// Highest specificity goes on bottom. So if you want an admin+steward to be highlighted steward, place the steward CSS below the admin CSS in this section.
-		this.addCSS( 'UHS-override-signature-colors', `
-			color: #0645ad !important;
-			background-color: transparent !important;
-			background: unset !important;
-		` );
+	checkForPermission( listOfUsernames, className, descriptionForHover ) {
+		if ( listOfUsernames[ this.user ] === 1 ) {
+			this.addClassAndHoverText( className, descriptionForHover );
+		}
+	}
 
-		this.mw.util.addCSS( '.UHS-no-permissions { border: 1px solid black !important; }' );
+	addClassAndHoverText( className, descriptionForHover ) {
+		this.$link.addClass( className );
 
-		// TODO: grab the order from an array, so I can keep checkForPermission and addCSS in the same order easily, lowering the risk of the HTML title="" being one thing, and the color being another
-		this.addCSS( 'UHS-500edits-bot-trustedIP', 'background-color: lightgray !important;' );
-		this.addCSS( 'UHS-10000edits', 'background-color: #9c9 !important;' );
-		this.addCSS( 'UHS-new-page-reviewer', 'background-color: #99f !important;' );
-		this.addCSS( 'UHS-former-administrator', 'background-color: #D3AC8B !important;' );
-		this.addCSS( 'UHS-administrator', 'background-color: #9ff !important;' );
-		this.addCSS( 'UHS-bureaucrat', 'background-color: orange !important; color: #0645ad !important;' );
-		this.addCSS( 'UHS-arbitration-committee', 'background-color: #FF3F3F !important; color: white !important;' );
-		this.addCSS( 'UHS-steward', 'background-color: #00FF00 !important;' );
-		this.addCSS( 'UHS-wmf', 'background-color: hotpink !important; color: #0645ad !important;' );
+		const title = this.$link.attr( 'title' );
+		if ( !title || title.startsWith( 'User:' ) ) {
+			this.$link.attr( 'title', descriptionForHover );
+		}
+
+		this.hasAdvancedPermissions = true;
 	}
 }
 
