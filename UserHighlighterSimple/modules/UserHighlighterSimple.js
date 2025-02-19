@@ -166,10 +166,6 @@ export class UserHighlighterSimple {
 			return false;
 		}
 
-		if ( this.notInUserOrUserTalkNamespace() ) {
-			return false;
-		}
-
 		const isDiscussionToolsSectionLink = url.includes( '#' );
 		if ( isDiscussionToolsSectionLink ) {
 			return false;
@@ -227,12 +223,6 @@ export class UserHighlighterSimple {
 		}
 
 		return '';
-	}
-
-	notInUserOrUserTalkNamespace() {
-		const namespace = this.titleHelper.getNamespaceId();
-		// TODO: refactor $.inArray
-		return this.$.inArray( namespace, [ 2, 3 ] ) === -1;
 	}
 
 	/**
