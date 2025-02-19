@@ -157,7 +157,7 @@ export class UserHighlighterSimple {
 			return false;
 		}
 
-		const title = this.getTitle( url, urlHelper );
+		const title = this.getTitle( url );
 
 		// Handle edge cases such as https://web.archive.org/web/20231105033559/https://en.wikipedia.org/wiki/User:SandyGeorgia/SampleIssue, which shows up as isUserPageLink = true but isn't really a user page.
 		try {
@@ -200,7 +200,7 @@ export class UserHighlighterSimple {
 	 */
 	addDomainIfMissing( url ) {
 		if ( url.startsWith( '/' ) ) {
-			url = window.location.origin + url;
+			url = this.window.location.origin + url;
 		}
 		return url;
 	}
@@ -212,7 +212,9 @@ export class UserHighlighterSimple {
 	 * @param {mw.Uri} urlHelper
 	 * @return {string}
 	 */
-	getTitle( url, urlHelper ) {
+	getTitle( url ) {
+		const urlHelper = new this.mw.Uri( url );
+
 		// for links in the format /w/index.php?title=Blah
 		const titleParameterOfUrl = this.mw.util.getParamValue( 'title', url );
 		if ( titleParameterOfUrl ) {
@@ -229,8 +231,8 @@ export class UserHighlighterSimple {
 
 	notInUserOrUserTalkNamespace() {
 		const namespace = this.titleHelper.getNamespaceId();
-		const notInSpecialUserOrUserTalkNamespace = this.$.inArray( namespace, [ 2, 3 ] ) === -1;
-		return notInSpecialUserOrUserTalkNamespace;
+		// TODO: refactor $.inArray
+		return this.$.inArray( namespace, [ 2, 3 ] ) === -1;
 	}
 
 	/**

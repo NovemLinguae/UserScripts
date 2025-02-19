@@ -1,11 +1,12 @@
 {
 	"dependencies": {
 		"jest": "^27.4.3",
-		"jquery": "^3.6.0"
+		"jquery": "^3.6.0",
+		"mock-mediawiki": "^1.4.0",
+		"types-mediawiki": "^1.9.1"
 	},
 	"scripts": {
-		"test": "jest",
-		"build": "babel-node src/DraftCleaner2.js -d dist"
+		"test": "jest"
 	},
 	"devDependencies": {
 		"@babel/plugin-transform-modules-commonjs": "^7.16.0",
