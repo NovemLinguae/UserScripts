@@ -174,21 +174,6 @@ describe( 'getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortT
 `;
 		expect( wg.getPassWikicodeForTalkPage( talkWikicode, reviewTitle, gaSubpageShortTitle, oldid ) ).toBe( output );
 	} );
-
-	test( 'Should change {{WikiProject}} template with no parameters to include |class=GA', () => {
-		const talkWikicode =
-`{{GA nominee|17:35, 8 June 2022 (UTC)|nominator=[[User:Underclass King|Underclass King]] ([[User talk:Underclass King|talk]])|page=1|subtopic=Television|status=onreview|note=}}
-{{WikiProject Television}}
-`;
-		const reviewTitle = 'Talk:Seriously, Dude, I\'m Gay/GA1';
-		const gaSubpageShortTitle = 'Media and drama';
-		const oldid = 1111;
-		const output =
-`{{GA|~~~~~|topic=Media and drama|page=1|oldid=1111}}
-{{WikiProject Television|class=GA}}
-`;
-		expect( wg.getPassWikicodeForTalkPage( talkWikicode, reviewTitle, gaSubpageShortTitle, oldid ) ).toBe( output );
-	} );
 } );
 
 describe( 'getPassWikicodeForGAListPage(gaSubpageHeading, gaSubpageWikicode, gaTitle, gaDisplayTitle)', () => {
@@ -1561,25 +1546,25 @@ Test Test`;
 } );
 
 describe( 'changeWikiProjectArticleClassToGA(talkWikicode)', () => {
-	test( 'normal', () => {
+	test( 'change class in {{WikiProject banner shell}}', () => {
 		const talkWikicode =
-`{{WikiProject banner shell|blp=yes|1=
-{{WikiProject Biography|living=yes|needs-infobox=no|needs-photo=yes|listas=Amamiya, Sora|class=Start|musician-work-group=yes|musician-priority=}}
-{{WikiProject Anime and manga|class=Start|biography=yes|importance=low|listas=Amamiya, Sora}}
-{{WikiProject Japan|class=Start|biography|yes|importance=low|listas=Amamiya, Sora}}
-{{WikiProject Women in Music |class=Start |importance=Low|listas=Amamiya, Sora}}
+`{{WikiProject banner shell|blp=yes|class=Start|1=
+{{WikiProject Biography|living=yes|needs-infobox=no|needs-photo=yes|listas=Amamiya, Sora|musician-work-group=yes|musician-priority=}}
+{{WikiProject Anime and manga|biography=yes|importance=low|listas=Amamiya, Sora}}
+{{WikiProject Japan|biography|yes|importance=low|listas=Amamiya, Sora}}
+{{WikiProject Women in Music |importance=Low|listas=Amamiya, Sora}}
 }}`;
 		const output =
-`{{WikiProject banner shell|blp=yes|1=
-{{WikiProject Biography|living=yes|needs-infobox=no|needs-photo=yes|listas=Amamiya, Sora|class=GA|musician-work-group=yes|musician-priority=}}
-{{WikiProject Anime and manga|class=GA|biography=yes|importance=low|listas=Amamiya, Sora}}
-{{WikiProject Japan|class=GA|biography|yes|importance=low|listas=Amamiya, Sora}}
-{{WikiProject Women in Music |class=GA |importance=Low|listas=Amamiya, Sora}}
+`{{WikiProject banner shell|blp=yes|class=GA|1=
+{{WikiProject Biography|living=yes|needs-infobox=no|needs-photo=yes|listas=Amamiya, Sora|musician-work-group=yes|musician-priority=}}
+{{WikiProject Anime and manga|biography=yes|importance=low|listas=Amamiya, Sora}}
+{{WikiProject Japan|biography|yes|importance=low|listas=Amamiya, Sora}}
+{{WikiProject Women in Music |importance=Low|listas=Amamiya, Sora}}
 }}`;
 		expect( wg.changeWikiProjectArticleClassToGA( talkWikicode ) ).toBe( output );
 	} );
 
-	test( 'don\'t change |class in non-WikiProject templates', () => {
+	test( "don't change class in non-WikiProject templates", () => {
 		const talkWikicode =
 `{{WikiProject Anime and manga|class=Start|biography=yes|importance=low|listas=Amamiya, Sora}}
 {{Random template|class=DontChangeMe}}`;

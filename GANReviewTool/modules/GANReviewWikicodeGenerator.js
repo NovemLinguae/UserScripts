@@ -318,14 +318,8 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	changeWikiProjectArticleClassToGA( talkWikicode ) {
-		// TODO: need to rewrite this to handle the following test case: {{WikiProject Energy|importance=Mid}}. Should add |rating=GA
-
-		// replace existing |class=
+		// replace existing |class=. this should handle most cases. GA talk pages usually already have a rating.
 		talkWikicode = talkWikicode.replace( /(\|\s*class\s*=\s*)(a|b|c|start|stub|list|fa|fl)?(?=[}\s|])/gi, '$1GA' );
-
-		// add |class= to {{WikiProject}} templates containing no parameters
-		talkWikicode = talkWikicode.replace( /(\{\{WikiProject [^|}]+)(\}\})/gi, '$1|class=GA$2' );
-
 		return talkWikicode;
 	}
 
