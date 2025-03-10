@@ -1,22 +1,22 @@
 {
-  "name": "user-scripts",
-  "version": "1.0.0",
-  "description": "I added most of my Wikipedia user scripts to this GitHub to make pull requests/collaboration easier.",
-  "main": "",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/NovemLinguae/UserScripts.git"
-  },
-  "author": "",
-  "license": "",
-  "bugs": {
-    "url": "https://github.com/NovemLinguae/UserScripts/issues"
-  },
-  "homepage": "https://github.com/NovemLinguae/UserScripts#readme",
-  "devDependencies": {
-    "eslint-config-wikimedia": "^0.28.2"
-  }
+	"name": "user-scripts",
+	"version": "1.0.0",
+	"description": "I added most of my Wikipedia user scripts to this GitHub to make pull requests/collaboration easier.",
+	"main": "",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/NovemLinguae/UserScripts.git"
+	},
+	"author": "",
+	"license": "",
+	"bugs": {
+		"url": "https://github.com/NovemLinguae/UserScripts/issues"
+	},
+	"homepage": "https://github.com/NovemLinguae/UserScripts#readme",
+	"devDependencies": {
+		"eslint-config-wikimedia": "^0.29.1"
+	}
 }
