@@ -711,7 +711,6 @@ export function deleteMoreThanTwoEntersInARow( wikicode ) {
 
 	// delete extra enters
 	wikicode = wikicode.replace( /\n{3,}/gm, '\n\n' );
-	wikicode = wikicode.replace( /\n{2}(\{\{[^}]*stub\}\})/gi, '\n\n\n$1' );
 	return wikicode;
 }
 

@@ -1315,7 +1315,7 @@ Test`;
 		expect( dc.deleteMoreThanTwoEntersInARow( wikicode ) ).toBe( output );
 	} );
 
-	test( 'Change 3 enters to 2 enters in front of a stub tag', () => {
+	test( 'Change 3 enters to 1 enter in front of a stub tag', () => {
 		const wikicode =
 `Test
 
@@ -1324,20 +1324,18 @@ Test`;
 {{Stub}}`;
 		const output =
 `Test
-
 
 {{Stub}}`;
 		expect( dc.deleteMoreThanTwoEntersInARow( wikicode ) ).toBe( output );
 	} );
 
-	test( 'Change 1 enters to 2 enters in front of a stub tag', () => {
+	test( 'Make no changes to 1 enter in front of a stub tag', () => {
 		const wikicode =
 `Test
 
 {{Stub}}`;
 		const output =
 `Test
-
 
 {{Stub}}`;
 		expect( dc.deleteMoreThanTwoEntersInARow( wikicode ) ).toBe( output );

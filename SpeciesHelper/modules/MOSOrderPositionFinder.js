@@ -703,11 +703,7 @@ export class MOSOrderPositionFinder {
 
 		// TODO: these are band aid fixes, they need a rewrite. should probably add the ideal # of blank lines beneath each section to the list of sections, and then do a foreach loop through that
 		// if too much whitespace, reduce amount of whitespace
-		if ( section === 'stubTemplates' ) {
-			topHalf = topHalf.replace( /\n{4,}$/, '\n\n\n' );
-		} else {
-			topHalf = topHalf.replace( /\n{3,}$/, '\n\n' );
-		}
+		topHalf = topHalf.replace( /\n{3,}$/, '\n\n' );
 		bottomHalf = bottomHalf.replace( /^\n{3,}/, '\n\n' );
 
 		if ( topHalf.endsWith( '\n\n' ) ) {

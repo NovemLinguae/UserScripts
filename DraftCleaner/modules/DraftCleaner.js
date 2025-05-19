@@ -400,11 +400,10 @@ export class DraftCleaner {
 		return wikicode.replace( /^\s*$/gm, '' );
 	}
 
-	// no more than 2 newlines (1 blank line) in a row. except stubs, which get 3 newlines (2 blank lines)
+	// no more than 2 newlines (1 blank line) in a row.
 	// Note: AFCH does this too
 	deleteMoreThanTwoEntersInARow( wikicode ) {
 		wikicode = wikicode.replace( /\n{3,}/gm, '\n\n' );
-		wikicode = wikicode.replace( /\n{2}(\{\{[^}]*stub\}\})/gi, '\n\n\n$1' );
 		return wikicode;
 	}
 
