@@ -72,6 +72,11 @@ describe( 'linksToAUser( url )', () => {
 	test( 'DiscussionTools section link', () => {
 		expect( userHighlighterSimple.linksToAUser( 'https://en.wikipedia.org/wiki/User_talk:Novem_Linguae#c-Scope_creep-20250218175200-Novem_Linguae-20250218170600' ) ).toBe( false );
 	} );
+
+	test( 'invalid domain name (weird punctuation)', () => {
+		expect( userHighlighterSimple.linksToAUser( 'https://a:a' ) ).toBe( false );
+		expect( userHighlighterSimple.linksToAUser( 'http://Wikipedia:Requests%20for%20arbitration/Eastern%20Europe' ) ).toBe( false );
+	} );
 } );
 
 describe( 'getTitle( url )', () => {

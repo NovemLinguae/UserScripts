@@ -133,7 +133,12 @@ export class UserHighlighterSimple {
 
 		url = this.addDomainIfMissing( url );
 
-		const urlHelper = new URL( url );
+		let urlHelper;
+		try {
+			urlHelper = new URL( url );
+		} catch {
+			return false;
+		}
 
 		// Skip links that aren't to user pages
 		const isUserPageLink = url.includes( '/w/index.php?title=User' ) || url.includes( '/wiki/User' );
