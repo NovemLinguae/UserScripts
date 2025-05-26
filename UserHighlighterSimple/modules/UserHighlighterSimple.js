@@ -141,7 +141,14 @@ export class UserHighlighterSimple {
 		}
 
 		// Skip links that aren't to user pages
-		const isUserPageLink = url.includes( '/w/index.php?title=User' ) || url.includes( '/wiki/User' );
+		const isUserPageLink = url.includes( '/w/index.php?title=User:' ) ||
+			url.includes( '/w/index.php?title=User_talk:' ) ||
+			url.includes( '/w/index.php?title=User%20talk:' ) ||
+			url.includes( '/w/index.php?title=User talk:' ) ||
+			url.includes( '/wiki/User:' ) ||
+			url.includes( '/wiki/User_talk:' ) ||
+			url.includes( '/wiki/User%talk:' ) ||
+			url.includes( '/wiki/User talk:' );
 		if ( !isUserPageLink ) {
 			return false;
 		}

@@ -77,6 +77,14 @@ describe( 'linksToAUser( url )', () => {
 		expect( userHighlighterSimple.linksToAUser( 'https://a:a' ) ).toBe( false );
 		expect( userHighlighterSimple.linksToAUser( 'http://Wikipedia:Requests%20for%20arbitration/Eastern%20Europe' ) ).toBe( false );
 	} );
+
+	test( 'mainspace article names that start with "User"', () => {
+		expect( userHighlighterSimple.linksToAUser( 'https://en.wikipedia.org/wiki/User' ) ).toBe( false );
+		expect( userHighlighterSimple.linksToAUser( 'https://en.wikipedia.org/wiki/User_(computing)' ) ).toBe( false );
+		expect( userHighlighterSimple.linksToAUser( 'https://en.wikipedia.org/wiki/User-centered_design' ) ).toBe( false );
+		expect( userHighlighterSimple.linksToAUser( 'https://en.wikipedia.org/wiki/User_interface' ) ).toBe( false );
+	} );
+
 } );
 
 describe( 'getTitle( url )', () => {
