@@ -147,7 +147,7 @@ export class UserHighlighterSimple {
 			url.includes( '/w/index.php?title=User talk:' ) ||
 			url.includes( '/wiki/User:' ) ||
 			url.includes( '/wiki/User_talk:' ) ||
-			url.includes( '/wiki/User%talk:' ) ||
+			url.includes( '/wiki/User%20talk:' ) ||
 			url.includes( '/wiki/User talk:' );
 		if ( !isUserPageLink ) {
 			return false;
