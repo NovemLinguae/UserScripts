@@ -73,6 +73,70 @@ Body
 	} );
 } );
 
+describe( 'insertAtSection(wikicode, needle, section)', () => {
+	test( 'Section does not exist yet', () => {
+		const mopf = new MOSOrderPositionFinder();
+		const wikicode =
+`{{Short description|test}}
+
+Lead
+
+== First heading ==
+Body
+`;
+		const needle = '{{Taxonbar}}';
+		const section = 'taxonBar';
+		const output =
+`{{Short description|test}}
+
+Lead
+
+== First heading ==
+Body
+
+{{Taxonbar}}
+`;
+		expect( mopf.insertAtSection( wikicode, needle, section ) ).toBe( output );
+	} );
+
+	test( 'Section already exists', () => {
+		const mopf = new MOSOrderPositionFinder();
+		const wikicode =
+`{{Short description|test}}
+{{Copy edit}}
+
+Lead
+
+== First heading ==
+Body
+`;
+		const needle = '{{Close paraphrasing}}';
+		const section = 'maintenanceTags';
+		const output =
+`{{Short description|test}}
+
+{{Close paraphrasing}}
+{{Copy edit}}
+
+Lead
+
+== First heading ==
+Body
+`;
+		expect( mopf.insertAtSection( wikicode, needle, section ) ).toBe( output );
+	} );
+
+	test( 'Invalid section name throws error', () => {
+		const mopf = new MOSOrderPositionFinder();
+		const wikicode = 'Test';
+		const needle = '{{test}}';
+		const section = 'invalidSection';
+		expect( () => {
+			mopf.insertAtSection( wikicode, needle, section );
+		} ).toThrowError( 'MOSOrderPositionFinder: Invalid section name.' );
+	} );
+} );
+
 describe( 'getAllExistingSectionPositions(wikicode)', () => {
 	test( 'simple', () => {
 		const mopf = new MOSOrderPositionFinder();
@@ -101,7 +165,8 @@ Body
 		const wikicode =
 `{{AfC Comment}}<!-- do not remove this line-->
 
-Lead`;
+Lead
+`;
 		const needle = '{{Speciesbox}}';
 		const section = 'infoboxes';
 		const output =
@@ -109,7 +174,8 @@ Lead`;
 
 {{Speciesbox}}
 
-Lead`;
+Lead
+`;
 		expect( mopf.insertAtSection( wikicode, needle, section ) ).toStrictEqual( output );
 	} );
 } );

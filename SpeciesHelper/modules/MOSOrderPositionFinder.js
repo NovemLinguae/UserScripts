@@ -90,7 +90,7 @@ export class MOSOrderPositionFinder {
 			this.wikitext = this.wikitext.replace( /(\{\{(?:Short description|Shortdesc|Shortdescription|Short desc)\|[^}]+\}\}\n)\n(\{\{)/is, '$1$2' );
 		}
 
-		// this.wikitext = this.wikitext.trim();
+		this.wikitext = this.wikitext.trim() + '\n';
 		return this.wikitext;
 	}
 
