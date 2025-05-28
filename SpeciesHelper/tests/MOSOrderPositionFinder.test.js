@@ -4,8 +4,8 @@ import { MOSOrderPositionFinder } from '../modules/MOSOrderPositionFinder.js';
 // Copy package.json and .babelrc from a project that already has this working
 // Babel tutorial: https://www.sitepoint.com/babel-beginners-guide/
 
-describe( 'getAllExistingSectionPositions(wikicode)', () => {
-	test( 'simple', () => {
+describe( 'hasSection(wikicode, section)', () => {
+	test( 'Section exists', () => {
 		const mopf = new MOSOrderPositionFinder();
 		const wikicode =
 `{{Short description|test}}
@@ -16,34 +16,25 @@ Lead
 Body
 
 {{Navbox}}`;
-		const output = {
-			top: 0,
-			shortDescription: 0,
-			lead: 28,
-			body: 34,
-			navboxes: 60,
-			bottom: 70
-		};
-		expect( mopf.getAllExistingSectionPositions( wikicode ) ).toStrictEqual( output );
+		expect( mopf.hasSection( wikicode, 'shortDescription' ) ).toBe( true );
 	} );
-} );
 
-describe( 'getAllExistingSectionPositions(wikicode)', () => {
-	test( 'bug involving putting HTML comments in the wrong place in AFC drafts', () => {
+	test( 'Section does not exist', () => {
 		const mopf = new MOSOrderPositionFinder();
 		const wikicode =
-`{{AfC Comment}}<!-- do not remove this line-->
+`Lead
 
-Lead`;
-		const needle = '{{Speciesbox}}';
-		const section = 'infoboxes';
-		const output =
-`{{AfC Comment}}<!-- do not remove this line-->
+== First heading ==
+Body`;
+		expect( mopf.hasSection( wikicode, 'shortDescription' ) ).toBe( false );
+	} );
 
-{{Speciesbox}}
-
-Lead`;
-		expect( mopf.insertAtSection( wikicode, needle, section ) ).toStrictEqual( output );
+	test( 'Invalid section name', () => {
+		const mopf = new MOSOrderPositionFinder();
+		const wikicode = 'test';
+		expect( () => {
+			mopf.hasSection( wikicode, 'invalidSection' );
+		} ).toThrowError( 'MOSOrderPositionFinder: Invalid section name.' );
 	} );
 } );
 
@@ -79,5 +70,46 @@ Body
 		expect( () => {
 			mopf.getSectionPosition( wikicode, section );
 		} ).toThrowError( 'MOSOrderPositionFinder: Invalid section name.' );
+	} );
+} );
+
+describe( 'getAllExistingSectionPositions(wikicode)', () => {
+	test( 'simple', () => {
+		const mopf = new MOSOrderPositionFinder();
+		const wikicode =
+`{{Short description|test}}
+
+Lead
+
+== First heading ==
+Body
+
+{{Navbox}}`;
+		const output = {
+			top: 0,
+			shortDescription: 0,
+			lead: 28,
+			body: 34,
+			navboxes: 60,
+			bottom: 70
+		};
+		expect( mopf.getAllExistingSectionPositions( wikicode ) ).toStrictEqual( output );
+	} );
+
+	test( 'bug involving putting HTML comments in the wrong place in AFC drafts', () => {
+		const mopf = new MOSOrderPositionFinder();
+		const wikicode =
+`{{AfC Comment}}<!-- do not remove this line-->
+
+Lead`;
+		const needle = '{{Speciesbox}}';
+		const section = 'infoboxes';
+		const output =
+`{{AfC Comment}}<!-- do not remove this line-->
+
+{{Speciesbox}}
+
+Lead`;
+		expect( mopf.insertAtSection( wikicode, needle, section ) ).toStrictEqual( output );
 	} );
 } );
