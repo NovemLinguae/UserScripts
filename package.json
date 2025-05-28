@@ -17,6 +17,6 @@
 	},
 	"homepage": "https://github.com/NovemLinguae/UserScripts#readme",
 	"devDependencies": {
-		"eslint-config-wikimedia": "^0.29.1"
+		"eslint-config-wikimedia": "^0.30.0"
 	}
 }
