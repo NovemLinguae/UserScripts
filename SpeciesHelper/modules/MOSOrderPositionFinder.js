@@ -95,7 +95,10 @@ export class MOSOrderPositionFinder {
 	}
 
 	/**
-	 * Useful for testing. Returns all section positions.
+	 * Returns all section positions. Useful for testing.
+	 *
+	 * @param {string} wikicode
+	 * @return {Object} An object with section names as keys and their positions in the wikitext as values. 0 is the very beginning of the string. -1 means the section is not present.
 	 */
 	getAllSectionPositions( wikicode ) {
 		this.wikitext = wikicode;
@@ -104,7 +107,10 @@ export class MOSOrderPositionFinder {
 	}
 
 	/**
-	 * Useful for testing. Returns all section positions that exist (that aren't -1).
+	 * Returns all section positions that exist (that aren't -1). Useful for testing.
+	 *
+	 * @param {string} wikicode
+	 * @return {Object} An object with section names as keys and their positions in the wikitext as values. 0 is the very beginning of the string.
 	 */
 	getAllExistingSectionPositions( wikicode ) {
 		this.wikitext = wikicode;
