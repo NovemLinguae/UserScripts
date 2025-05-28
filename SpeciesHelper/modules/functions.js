@@ -3,8 +3,6 @@ import { MOSOrderPositionFinder } from "./MOSOrderPositionFinder";
 import { Inflect } from "./Inflect";
 /* eslint-enable */
 
-/* eslint-disable security/detect-bidi-characters */
-
 // TODO: convert to class. name it SHUtil or SpeciesHelperUtil or something. or move all these to main and make a giant SpeciesHelperController class, then extract some classes out of that
 
 export async function getWikicodeOfDiff( diffID ) {
@@ -182,7 +180,7 @@ export function getPagesToCheck( taxa, listOfNonLatinSpeciesCategories ) {
 		// '': 'Canid',
 		// '': 'Carposina',
 		// '': 'Ceromitia',
-		// '': 'Cettiidae‎',
+		// '': 'Cettiidae',
 		Chamaeleonidae: 'Chameleon',
 		// '': 'Chilinidae',
 		Chilodontaidae: 'Chilodontidae-gastropod',
@@ -250,7 +248,7 @@ export function getPagesToCheck( taxa, listOfNonLatinSpeciesCategories ) {
 		Phthiraptera: 'Louse',
 		// '': 'Lyase',
 		Lycophytes: 'Lycophyte',
-		// '': 'Macrosphenidae‎',
+		// '': 'Macrosphenidae',
 		Magnoliids: 'Magnoliid',
 		Mammalia: 'Mammal',
 		Marsupialia: 'Marsupial',
@@ -311,7 +309,7 @@ export function getPagesToCheck( taxa, listOfNonLatinSpeciesCategories ) {
 		// '': 'Pyramidulidae',
 		Pyrausta: 'Pyrausta (moth)',
 		// '': 'Rasboras',
-		// '': 'Remizidae‎',
+		// '': 'Remizidae',
 		Rodentia: 'Rodent',
 		Rosids: 'Rosid',
 		// '': 'Rotifer',
