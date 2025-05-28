@@ -181,6 +181,54 @@ Lead
 	} );
 } );
 
+describe( 'getAllSectionPositions(wikicode)', () => {
+	test( 'returns all section positions including -1 values', () => {
+		const mopf = new MOSOrderPositionFinder();
+		const wikicode =
+`{{Short description|test}}
+
+Lead
+
+== First heading ==
+Body
+
+{{Navbox}}`;
+		const output = {
+			top: 0,
+			shortDescription: 0,
+			displayTitle: -1,
+			hatnotes: -1,
+			featured: -1,
+			deletionAndProtection: -1,
+			maintenanceTags: -1,
+			engvar: -1,
+			infoboxes: -1,
+			languageScriptNeeded: -1,
+			sidebars: -1,
+			lead: 28,
+			tableOfContents: -1,
+			body: 34,
+			worksOrPublications: -1,
+			seeAlso: -1,
+			notesAndReferences: -1,
+			furtherReading: -1,
+			externalLinks: -1,
+			successionAndGeographyBoxes: -1,
+			navboxes: 60,
+			portalBar: -1,
+			taxonBar: -1,
+			authorityControl: -1,
+			geographicalCoordinates: -1,
+			defaultSort: -1,
+			categories: -1,
+			improveCategories: -1,
+			stubTemplates: -1,
+			bottom: 70
+		};
+		expect( mopf.getAllSectionPositions( wikicode ) ).toStrictEqual( output );
+	} );
+} );
+
 describe( 'getAllExistingSectionPositions(wikicode)', () => {
 	test( 'simple', () => {
 		const mopf = new MOSOrderPositionFinder();
