@@ -126,6 +126,31 @@ Body
 		expect( mopf.insertAtSection( wikicode, needle, section ) ).toBe( output );
 	} );
 
+	test( 'Stubs only insert one blank line', () => {
+		const mopf = new MOSOrderPositionFinder();
+		const wikicode =
+`{{Short description|test}}
+
+Lead
+
+== First heading ==
+Body
+`;
+		const needle = '{{Stub}}';
+		const section = 'stubTemplates';
+		const output =
+`{{Short description|test}}
+
+Lead
+
+== First heading ==
+Body
+
+{{Stub}}
+`;
+		expect( mopf.insertAtSection( wikicode, needle, section ) ).toBe( output );
+	} );
+
 	test( 'Invalid section name throws error', () => {
 		const mopf = new MOSOrderPositionFinder();
 		const wikicode = 'Test';
@@ -134,6 +159,25 @@ Body
 		expect( () => {
 			mopf.insertAtSection( wikicode, needle, section );
 		} ).toThrowError( 'MOSOrderPositionFinder: Invalid section name.' );
+	} );
+
+	test( 'bug involving putting HTML comments in the wrong place in AFC drafts', () => {
+		const mopf = new MOSOrderPositionFinder();
+		const wikicode =
+`{{AfC Comment}}<!-- do not remove this line-->
+
+Lead
+`;
+		const needle = '{{Speciesbox}}';
+		const section = 'infoboxes';
+		const output =
+`{{AfC Comment}}<!-- do not remove this line-->
+
+{{Speciesbox}}
+
+Lead
+`;
+		expect( mopf.insertAtSection( wikicode, needle, section ) ).toStrictEqual( output );
 	} );
 } );
 
@@ -158,24 +202,5 @@ Body
 			bottom: 70
 		};
 		expect( mopf.getAllExistingSectionPositions( wikicode ) ).toStrictEqual( output );
-	} );
-
-	test( 'bug involving putting HTML comments in the wrong place in AFC drafts', () => {
-		const mopf = new MOSOrderPositionFinder();
-		const wikicode =
-`{{AfC Comment}}<!-- do not remove this line-->
-
-Lead
-`;
-		const needle = '{{Speciesbox}}';
-		const section = 'infoboxes';
-		const output =
-`{{AfC Comment}}<!-- do not remove this line-->
-
-{{Speciesbox}}
-
-Lead
-`;
-		expect( mopf.insertAtSection( wikicode, needle, section ) ).toStrictEqual( output );
 	} );
 } );
