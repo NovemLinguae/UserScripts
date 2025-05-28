@@ -19,13 +19,13 @@ class Tool {
 			buffer.domains = domains === null ? [] : domains[ 1 ].split( '|' );
 
 			// TODO:
-			const reliability = '';
+			// const reliability = '';
 
 			// TODO:
-			const blacklisted = '';
+			// const blacklisted = '';
 
 			// TODO:
-			const summary = '';
+			// const summary = '';
 
 			output.push( buffer );
 		}

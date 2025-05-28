@@ -51,7 +51,7 @@ class BlockedUserHistory {
 	 * @copyright nickf, CC BY-SA 2.5, https://stackoverflow.com/a/1586333/3480193
 	 */
 	getUriParameter( uriParameter ) {
-		const parts = this.window.location.search.substr( 1 ).split( '&' );
+		const parts = this.window.location.search.slice( 1 ).split( '&' );
 		const $_GET = {};
 		for ( let i = 0; i < parts.length; i++ ) {
 			const temp = parts[ i ].split( '=' );

@@ -55,7 +55,7 @@ class DetectG4G5 {
 
 	async hasAFDTemplate( title ) {
 		const wikicode = await this.getWikicode( title );
-		return wikicode.indexOf( '{{Article for deletion' ) !== -1;
+		return wikicode.includes( '{{Article for deletion' );
 	}
 
 	displayWarning( html ) {
