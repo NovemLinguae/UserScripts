@@ -1,5 +1,5 @@
 /**
- * Utilities that help user scripts that manipulate wikicode properly follow English Wikipedia's MOS:ORDER.
+ * Utilities to help user scripts properly follow English Wikipedia's MOS:ORDER. Most of the methods need wikitext and a specific MOS:ORDER section as parameters, then output something useful related to MOS:ORDER.
  */
 export class MOSOrderPositionFinder {
 
@@ -39,7 +39,7 @@ export class MOSOrderPositionFinder {
 	 * @param {string} wikicode
 	 * @param {string} needle The string to insert
 	 * @param {string} section One of: top, shortDescription, displayTitle, hatnotes, featured, deletionAndProtection, maintenanceTags, engvar, infoboxes, languageScriptNeeded, sidebars, lead, tableOfContents, body, worksOrPublications, seeAlso, notesAndReferences, furtherReading, externalLinks, successionAndGeographyBoxes, navboxes, portalBar, taxonBar, authorityControl, geographicalCoordinates, defaultSort, categories, improveCategories, stubTemplates, bottom
-	 * @return {number} sectionPosition: -1 if no section, integer if section. Counting starts at 0.
+	 * @return {string} wikitext Transformed wikitext, containing the inserted string
 	 */
 	insertAtSection( wikicode, needle, section ) {
 		this.wikitext = wikicode;
