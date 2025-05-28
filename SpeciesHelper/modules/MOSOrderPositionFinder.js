@@ -1,6 +1,123 @@
-// Making this more complex than needed for this program. There are some other things I can use this for and I want to start developing it.
-/** This class acts static. You pass in the wikicode variable to each method, and each method outputs the modified wikicode variable. */
+/**
+ * Utilities that help user scripts that manipulate wikicode properly follow English Wikipedia's MOS:ORDER.
+ */
 export class MOSOrderPositionFinder {
+
+	/**
+	 * Determines whether the given wikitext has the specified MOS:ORDER section
+	 *
+	 * @param {string} wikicode
+	 * @param {string} section One of: top, shortDescription, displayTitle, hatnotes, featured, deletionAndProtection, maintenanceTags, engvar, infoboxes, languageScriptNeeded, sidebars, lead, tableOfContents, body, worksOrPublications, seeAlso, notesAndReferences, furtherReading, externalLinks, successionAndGeographyBoxes, navboxes, portalBar, taxonBar, authorityControl, geographicalCoordinates, defaultSort, categories, improveCategories, stubTemplates, bottom
+	 * @return {boolean} whether the section is present
+	 */
+	hasSection( wikicode, section ) {
+		this.wikitext = wikicode;
+		this._calculate();
+		return this._getSectionStartPosition( section ) !== -1;
+	}
+
+	/**
+	 * Returns the numerical position of an MOS:ORDER section in wikitext
+	 *
+	 * @param {string} wikicode
+	 * @param {string} section One of: top, shortDescription, displayTitle, hatnotes, featured, deletionAndProtection, maintenanceTags, engvar, infoboxes, languageScriptNeeded, sidebars, lead, tableOfContents, body, worksOrPublications, seeAlso, notesAndReferences, furtherReading, externalLinks, successionAndGeographyBoxes, navboxes, portalBar, taxonBar, authorityControl, geographicalCoordinates, defaultSort, categories, improveCategories, stubTemplates, bottom
+	 * @return {number} sectionPosition: -1 if no section, integer if section. Counting starts at 0.
+	 */
+	getSectionPosition( wikicode, section ) {
+		this.wikitext = wikicode;
+		this._calculate();
+		let position = this._getSectionStartPosition( section );
+		if ( position === -1 ) {
+			position = this._getPositionOfClosestSection( section );
+		}
+		return position;
+	}
+
+	/**
+	 * Insert a string at the specified section in the wikitext. If section is absent, will guess where the section should go. Do not add whitespace, it will be computed for you.
+	 *
+	 * @param {string} wikicode
+	 * @param {string} needle The string to insert
+	 * @param {string} section One of: top, shortDescription, displayTitle, hatnotes, featured, deletionAndProtection, maintenanceTags, engvar, infoboxes, languageScriptNeeded, sidebars, lead, tableOfContents, body, worksOrPublications, seeAlso, notesAndReferences, furtherReading, externalLinks, successionAndGeographyBoxes, navboxes, portalBar, taxonBar, authorityControl, geographicalCoordinates, defaultSort, categories, improveCategories, stubTemplates, bottom
+	 * @return {number} sectionPosition: -1 if no section, integer if section. Counting starts at 0.
+	 */
+	insertAtSection( wikicode, needle, section ) {
+		this.wikitext = wikicode;
+
+		// fix more than two enters in a row
+		// this.wikitext = this.wikitext.replace(/\n{3,}/g, '\n\n');
+
+		this._calculate();
+
+		let position = this._getSectionStartPosition( section );
+		if ( typeof position === 'undefined' ) {
+			throw new Error( 'MOSOrderPositionFinder: invalid section supplied to function insertAtSection()' );
+		}
+		let hadToCreateNewSection = false;
+		if ( position === -1 ) {
+			position = this._getPositionOfClosestSection( section );
+			hadToCreateNewSection = true;
+		}
+
+		let topHalf = this.wikitext.slice( 0, position );
+		let bottomHalf = this.wikitext.slice( position );
+
+		// TODO: these are band aid fixes, they need a rewrite. should probably add the ideal # of blank lines beneath each section to the list of sections, and then do a foreach loop through that
+		// if too much whitespace, reduce amount of whitespace
+		topHalf = topHalf.replace( /\n{3,}$/, '\n\n' );
+		bottomHalf = bottomHalf.replace( /^\n{3,}/, '\n\n' );
+
+		if ( topHalf.endsWith( '\n\n' ) ) {
+			// intentionally left blank
+		} else if ( topHalf.endsWith( '\n' ) ) {
+			topHalf += '\n';
+		} else {
+			topHalf += '\n\n';
+		}
+
+		if ( !bottomHalf.startsWith( '\n' ) ) {
+			bottomHalf = '\n' + bottomHalf;
+		}
+
+		if ( hadToCreateNewSection && !bottomHalf.startsWith( '\n\n' ) ) {
+			bottomHalf = '\n' + bottomHalf;
+		}
+
+		this.wikitext = topHalf + needle + bottomHalf;
+
+		if ( section === 'shortDescription' ) {
+			// if template beneath the insertion point, don't put a blank line between SD and other template
+			this.wikitext = this.wikitext.replace( /(\{\{(?:Short description|Shortdesc|Shortdescription|Short desc)\|[^}]+\}\}\n)\n(\{\{)/is, '$1$2' );
+		}
+
+		// this.wikitext = this.wikitext.trim();
+		return this.wikitext;
+	}
+
+	/**
+	 * Useful for testing. Returns all section positions.
+	 */
+	getAllSectionPositions( wikicode ) {
+		this.wikitext = wikicode;
+		this._calculate();
+		return this.sectionStartPositions;
+	}
+
+	/**
+	 * Useful for testing. Returns all section positions that exist (that aren't -1).
+	 */
+	getAllExistingSectionPositions( wikicode ) {
+		this.wikitext = wikicode;
+		this._calculate();
+		const sections = {};
+		for ( const key in this.sectionStartPositions ) {
+			if ( this.sectionStartPositions[ key ] !== -1 ) {
+				sections[ key ] = this.sectionStartPositions[ key ];
+			}
+		}
+		return sections;
+	}
+
 	_calculate() {
 		this.sectionOrder = [
 			'top',
@@ -634,103 +751,12 @@ export class MOSOrderPositionFinder {
 		return matches ? matches.index : -1;
 	}
 
-	hasSection( wikicode, section ) {
-		this.wikitext = wikicode;
-		this._calculate();
-		return this._getSectionStartPosition( section ) !== -1;
-	}
-
-	/** @return {number} sectionPosition: -1 if no section, integer if section */
-	getSectionPosition( wikicode, section ) {
-		this.wikitext = wikicode;
-		this._calculate();
-		let position = this._getSectionStartPosition( section );
-		if ( position === -1 ) {
-			position = this._getPositionOfClosestSection( section );
-		}
-		return position;
-	}
-
 	_getSectionStartPosition( section ) {
 		const validSection = section in this.sectionStartPositions;
 		if ( !validSection ) {
 			throw new Error( 'MOSOrderPositionFinder: Invalid section name.' );
 		}
 		return this.sectionStartPositions[ section ];
-	}
-
-	/** Useful for testing. Returns all section positions. */
-	getAllSectionPositions( wikicode ) {
-		this.wikitext = wikicode;
-		this._calculate();
-		return this.sectionStartPositions;
-	}
-
-	/** Useful for testing. Returns all section positions that exist (that aren't -1). */
-	getAllExistingSectionPositions( wikicode ) {
-		this.wikitext = wikicode;
-		this._calculate();
-		const sections = {};
-		for ( const key in this.sectionStartPositions ) {
-			if ( this.sectionStartPositions[ key ] !== -1 ) {
-				sections[ key ] = this.sectionStartPositions[ key ];
-			}
-		}
-		return sections;
-	}
-
-	/** If section is absent, we will guess where the section should go. Do not add whitespace, we will figure it out for you. */
-	insertAtSection( wikicode, needle, section ) {
-		this.wikitext = wikicode;
-
-		// fix more than two enters in a row
-		// this.wikitext = this.wikitext.replace(/\n{3,}/g, '\n\n');
-
-		this._calculate();
-
-		let position = this._getSectionStartPosition( section );
-		if ( typeof position === 'undefined' ) {
-			throw new Error( 'MOSOrderPositionFinder: invalid section supplied to function insertAtSection()' );
-		}
-		let hadToCreateNewSection = false;
-		if ( position === -1 ) {
-			position = this._getPositionOfClosestSection( section );
-			hadToCreateNewSection = true;
-		}
-
-		let topHalf = this.wikitext.slice( 0, position );
-		let bottomHalf = this.wikitext.slice( position );
-
-		// TODO: these are band aid fixes, they need a rewrite. should probably add the ideal # of blank lines beneath each section to the list of sections, and then do a foreach loop through that
-		// if too much whitespace, reduce amount of whitespace
-		topHalf = topHalf.replace( /\n{3,}$/, '\n\n' );
-		bottomHalf = bottomHalf.replace( /^\n{3,}/, '\n\n' );
-
-		if ( topHalf.endsWith( '\n\n' ) ) {
-			// intentionally left blank
-		} else if ( topHalf.endsWith( '\n' ) ) {
-			topHalf += '\n';
-		} else {
-			topHalf += '\n\n';
-		}
-
-		if ( !bottomHalf.startsWith( '\n' ) ) {
-			bottomHalf = '\n' + bottomHalf;
-		}
-
-		if ( hadToCreateNewSection && !bottomHalf.startsWith( '\n\n' ) ) {
-			bottomHalf = '\n' + bottomHalf;
-		}
-
-		this.wikitext = topHalf + needle + bottomHalf;
-
-		if ( section === 'shortDescription' ) {
-			// if template beneath the insertion point, don't put a blank line between SD and other template
-			this.wikitext = this.wikitext.replace( /(\{\{(?:Short description|Shortdesc|Shortdescription|Short desc)\|[^}]+\}\}\n)\n(\{\{)/is, '$1$2' );
-		}
-
-		// this.wikitext = this.wikitext.trim();
-		return this.wikitext;
 	}
 
 	// https://stackoverflow.com/a/13109786/3480193
