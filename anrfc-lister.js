@@ -1,3 +1,4 @@
+// {{Wikipedia:USync |repo=https://github.com/novemlinguae/userscripts |ref=refs/heads/master |path=anrfc-lister.js}}
 /*
 
 Forked from https://en.wikipedia.org/wiki/User:Ajbura/anrfc-lister.js. A big thanks to the original author, Ajbura.
@@ -8,7 +9,7 @@ HOW TO USE:
 - there will now be "List on ANRFC" links next to each section. click one
 - fill out the form
 - press "Submit"
-- the script will add a listing to WP:ANRFC for you :)
+- the script will add a listing to WP:ANRFC for you :) 
 
 SKINS IT WORKS IN:
 - vector
