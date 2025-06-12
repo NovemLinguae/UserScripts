@@ -1,4 +1,4 @@
-// {{Wikipedia:USync |repo=https://github.com/novemlinguae/userscripts |ref=refs/heads/master |path=anrfc-lister.js}}
+// {{Wikipedia:USync |repo=https://github.com/NovemLinguae/UserScripts |ref=refs/heads/master |path=anrfc-lister.js}}
 /*
 
 Forked from https://en.wikipedia.org/wiki/User:Ajbura/anrfc-lister.js. A big thanks to the original author, Ajbura.
