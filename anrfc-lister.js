@@ -9,7 +9,7 @@ HOW TO USE:
 - there will now be "List on ANRFC" links next to each section. click one
 - fill out the form
 - press "Submit"
-- the script will add a listing to WP:ANRFC for you :)  
+- the script will add a listing to WP:ANRFC for you :)   
 
 SKINS IT WORKS IN:
 - vector
