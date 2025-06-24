@@ -109,13 +109,13 @@ export class UnblockReview {
 	 */
 	hasSignature( text ) {
 		// no literal signature?
-		if ( text.indexOf( this.SIGNATURE ) < 0 ) {
+		if ( !text.includes( this.SIGNATURE ) ) {
 			return false;
 		}
 
 		// if there's a literal signature and no nowiki elements,
 		// there must be a real signature
-		if ( text.indexOf( '<nowiki>' ) < 0 ) {
+		if ( !text.includes( '<nowiki>' ) ) {
 			return true;
 		}
 
