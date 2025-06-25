@@ -6,7 +6,8 @@ Many additional bugs fixed.
 /* global importStylesheet */
 // <nowiki>
 ( function () {
-	const UNBLOCK_REQ_COLOR = 'var(--background-color-progressive-subtle, #EBF4FF)';
+	const UNBLOCK_REQ_COLOR_PRE_2025 = 'rgb(235, 244, 255)';
+	const UNBLOCK_REQ_COLOR_POST_2025 = 'var(--background-color-progressive-subtle, #EBF4FF)';
 	const DEFAULT_DECLINE_REASON = '{{subst:Decline reason here}}';
 	const ADVERT = ' ([[User:Novem Linguae/Scripts/UnblockReview.js|unblock-review]])';
 
@@ -28,7 +29,10 @@ Many additional bugs fixed.
 			// look for user-block HTML class, which will correspond to {{Unblock}} requests
 			const userBlockBoxes = document.querySelectorAll( 'div.user-block' );
 			for ( let i = 0, n = userBlockBoxes.length; i < n; i++ ) {
-				if ( userBlockBoxes[ i ].style.background !== UNBLOCK_REQ_COLOR ) {
+				if (
+					userBlockBoxes[ i ].style[ 'background-color' ] !== UNBLOCK_REQ_COLOR_PRE_2025 &&
+					userBlockBoxes[ i ].style.background !== UNBLOCK_REQ_COLOR_POST_2025
+				) {
 					continue;
 				}
 
