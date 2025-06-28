@@ -51,6 +51,12 @@ class ANRFC {
 		this.mw = mw;
 		// eslint-disable-next-line no-jquery/variable-pattern
 		this.$ = $;
+		this.sections = [
+			'Administrative discussions',
+			'Requests for comment',
+			'Deletion discussions',
+			'Other types of closing requests'
+		];
 	}
 
 	async execute() {
@@ -141,27 +147,19 @@ class ANRFC {
 			'font-family': 'sans-serif'
 		} );
 
+		const items = [];
+		let i = 0;
+		for ( const section of this.sections ) {
+			items.push( new OO.ui.MenuOptionWidget( {
+				data: i,
+				label: section
+			} ) );
+			i++;
+		}
 		const dropDown = new OO.ui.DropdownWidget( {
 			label: 'Dropdown menu: Select discussion section',
 			menu: {
-				items: [
-					new OO.ui.MenuOptionWidget( {
-						data: 0,
-						label: 'Administrative discussions'
-					} ),
-					new OO.ui.MenuOptionWidget( {
-						data: 1,
-						label: 'Requests for comment'
-					} ),
-					new OO.ui.MenuOptionWidget( {
-						data: 2,
-						label: 'Deletion discussions'
-					} ),
-					new OO.ui.MenuOptionWidget( {
-						data: 3,
-						label: 'Other types of closing requests'
-					} )
-				]
+				items: items
 			}
 		} );
 
