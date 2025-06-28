@@ -55,6 +55,8 @@ class ANRFC {
 			'Administrative discussions',
 			'Requests for comment',
 			'Deletion discussions',
+			'Merge proposals',
+			'Requested moves',
 			'Other types of closing requests'
 		];
 	}
