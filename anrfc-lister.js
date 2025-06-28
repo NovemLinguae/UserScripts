@@ -383,12 +383,10 @@ class ANRFC {
 	}
 
 	makeWikitext( wikitext, wikitextToWrite, initiatedDate, targetSection ) {
-		const discussions = [
-			'== Administrative discussions ==',
-			'== Requests for comment ==',
-			'== Deletion discussions ==',
-			'== Other types of closing requests =='
-		];
+		const discussions = [];
+		for ( const section of this.sections ) {
+			discussions.push( '== ' + section + ' ==' );
+		}
 
 		const firstPart = wikitext.slice( 0, wikitext.indexOf( discussions[ targetSection ] ) );
 		wikitext = wikitext.slice( wikitext.indexOf( discussions[ targetSection ] ) );
