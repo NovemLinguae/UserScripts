@@ -11,7 +11,7 @@
 		"mw": "readonly"
 	},
 	"parserOptions": {
-		"sourceType": "module"
+		"sourceType": "module" // eslint-config-wikimedia default is "commonjs", but we need "module" for our unit tests
 	},
 	"rules": {
 		// default rules we don't like
