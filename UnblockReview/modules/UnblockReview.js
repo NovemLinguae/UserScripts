@@ -3,18 +3,29 @@ export class UnblockReview {
 		this.SIGNATURE = '~~~~';
 	}
 
-	processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) {
+	/**
+	 * Process the accept or decline of an unblock request.
+	 *
+	 * @param {string} wikitext - The wikitext of the page.
+	 * @param {string} paramsAndReason - The parameters and reason of the unblock request, e.g.
+	 *                                   "NewUsername|Reason" or "Reason". The initial pipe is omitted.
+	 * @param {string} acceptDeclineReason - The reason for accepting or declining the unblock request.
+	 * @param {string} DEFAULT_DECLINE_REASON - The default reason for declining the unblock request.
+	 * @param {string} acceptOrDecline - Either "accept" or "decline".
+	 * @return {string} wikitext
+	 */
+	processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) {
 		// HTML does one line break and wikitext does 2ish. Cut off all text after the first line break to avoid breaking our search algorithm.
-		appealReason = appealReason.split( '\n' )[ 0 ];
+		paramsAndReason = paramsAndReason.split( '\n' )[ 0 ];
 
 		let initialText = '';
 		// Special case: If the user didn't provide a reason, the template will display "Please provide a reason as to why you should be unblocked", and this will be detected as the appealReason.
-		const reasonProvided = !appealReason.startsWith( 'Please provide a reason as to why you should be unblocked' );
-		if ( !reasonProvided ) {
+		const reasonIsProvided = !paramsAndReason.startsWith( 'Please provide a reason as to why you should be unblocked' );
+		if ( !reasonIsProvided ) {
 			initialText = wikitext.match( /(\{\{Unblock)\}\}/i )[ 1 ];
-			appealReason = '';
+			paramsAndReason = '';
 		} else {
-			initialText = this.getLeftHalfOfUnblockTemplate( wikitext, appealReason );
+			initialText = this.getLeftHalfOfUnblockTemplate( wikitext, paramsAndReason );
 		}
 
 		if ( !acceptDeclineReason.trim() ) {
@@ -25,10 +36,11 @@ export class UnblockReview {
 
 		// eslint-disable-next-line no-useless-concat
 		const negativeLookbehinds = '(?<!<' + 'nowiki>)';
-		const regEx = new RegExp( negativeLookbehinds + this.escapeRegExp( initialText + appealReason ), 'g' );
+		const regEx = new RegExp( negativeLookbehinds + this.escapeRegExp( initialText + paramsAndReason ), 'g' );
+		const templateName = initialText.match( /^\{\{([A-Za-z-]+)/i )[ 1 ];
 		let wikitext2 = wikitext.replace(
 			regEx,
-			'{{unblock reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + appealReason
+			'{{' + templateName + ' reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|' + paramsAndReason
 		);
 
 		if ( wikitext === wikitext2 ) {
