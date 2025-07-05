@@ -60,36 +60,27 @@ export class UnblockReview {
 			throw new Error( 'Searching for target text failed!' );
 		}
 
-		// Loop through all the potential matches, and peek at the characters in front of the match. Eliminate false positives ({{tlx|unblock}}, the same text not anywhere near an {{unblock}} template, etc.). If a true positive, return the beginning of the template.
+		// Loop through all the potential matches, trying to find an {{Unblock template. If found, return the beginning of the template.
 		for ( const match of matches ) {
-			// The position of the match within the wikicode.
-			const MatchPos = match.index;
-			// The position of the unblock template of that match within the wikicode. Set them equal initially. Will be adjusted below.
-			let UnblockTemplateStartPos = MatchPos;
-
-			// check for {{tlx|unblock. if found, this isn't what we want, skip.
-			const startOfSplice = UnblockTemplateStartPos - 50 < 0 ? 0 : UnblockTemplateStartPos - 50;
-			const chunkFiftyCharactersWide = wikitext.slice( startOfSplice, UnblockTemplateStartPos );
-			if ( /\{\{\s*tlx\s*\|\s*unblock/i.test( chunkFiftyCharactersWide ) ) {
-				continue;
-			}
+			const matchPos = match.index;
+			let unblockTemplateStartPos;
 
 			// Scan backwards from the match until we find {{
-			let i = 0;
-			while ( wikitext[ UnblockTemplateStartPos ] !== '{' && i < 50 ) {
-				UnblockTemplateStartPos--;
-				i++;
+			// Stop at the beginning of the string OR after 50 characters
+			const stopPos = Math.max( 0, matchPos - 50 );
+			for ( let i = matchPos; i > stopPos; i-- ) {
+				if ( wikitext[ i ] === '{' && wikitext[ i - 1 ] === '{' ) {
+					unblockTemplateStartPos = i - 1;
+					break;
+				}
 			}
 
-			// If the above scan couldn't find the beginning of the template within 50 characters of the match, then that wasn't it. Even a long template like `{{Unblock-auto|reason=` isn't 50 characters long. Move on to the next match.
-			if ( i === 50 ) {
+			// Don't match stuff that isn't an unblock template
+			const initialText = wikitext.slice( unblockTemplateStartPos, matchPos );
+			if ( !initialText.match( /^\{\{unblock/i ) ) {
 				continue;
 			}
 
-			// The above scan stopped at {Unblock. Subtract one so it's {{Unblock
-			UnblockTemplateStartPos--;
-
-			const initialText = wikitext.slice( UnblockTemplateStartPos, MatchPos );
 			return initialText;
 		}
 

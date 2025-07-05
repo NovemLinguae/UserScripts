@@ -103,6 +103,19 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( Error );
 		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( "Searching for target text failed!" );
 	} );
+
+	test( '{{AAA}}AAAblock', () => {
+		const wikitext =
+`{{PAGENAME}}]]<!-- Template:Uw-soablock -->
+
+:IP CDOs: An Encyclopedic Overview
+
+:{{unblock|reason=IP CDOs: An Encyclopedic Overview}}
+`;
+		const appealReason = `IP CDOs: An Encyclopedic Overview`;
+		const expected = `{{unblock|reason=`;
+		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
+	} );
 } );
 
 describe( 'processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline )', () => {

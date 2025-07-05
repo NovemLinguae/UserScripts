@@ -15,7 +15,6 @@
 	},
 	"rules": {
 		// default rules we don't like
-		"camelcase": "off",
 		"es-x/no-class-fields": "off",
 		"es-x/no-optional-catch-binding": "off",
 		"es-x/no-regexp-lookbehind-assertions": "off",
@@ -43,6 +42,7 @@
 		"no-nested-ternary": "error",
 
 		// rules we should probably fix someday
+		"camelcase": "warn",
 		"eqeqeq": "warn",
 		"no-console": "warn"
 	}
