@@ -11,10 +11,10 @@
 		"mw": "readonly"
 	},
 	"parserOptions": {
-		"ecmaVersion": "latest",
 		"sourceType": "module"
 	},
 	"rules": {
+		// default rules we don't like
 		"camelcase": "off",
 		"es-x/no-async-functions": "off",
 		"es-x/no-class-fields": "off",
@@ -24,15 +24,11 @@
 		"es-x/no-rest-spread-properties": "off",
 		"es-x/no-string-prototype-matchall": "off",
 		"es-x/no-string-prototype-replaceall": "off",
-		"eqeqeq": "warn",
 		"jsdoc/require-param": "off",
 		"jsdoc/require-param-type": "off",
 		"jsdoc/require-returns": "off",
-		"jsdoc/check-alignment": "error",
-		"jsdoc/tag-lines": "error",
 		"max-len": "off", // annoying
 		"mediawiki/class-doc": "off",
-		"no-console": "warn",
 		"no-jquery/no-class-state": "off",
 		"no-jquery/no-extend": "off", // autofix is buggy
 		"no-jquery/no-global-selector": "off",
@@ -40,6 +36,14 @@
 		"no-shadow": "off",
 		"no-underscore-dangle": "off",
 		"security/detect-non-literal-regexp": "off",
-		"security/detect-unsafe-regex": "off"
+		"security/detect-unsafe-regex": "off",
+
+		// non-default rules we do like
+		"jsdoc/check-alignment": "error",
+		"jsdoc/tag-lines": "error",
+
+		// rules we should probably fix someday
+		"eqeqeq": "warn",
+		"no-console": "warn"
 	}
 }
