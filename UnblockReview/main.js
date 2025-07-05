@@ -5,19 +5,19 @@ Many additional bugs fixed.
 
 /* global importStylesheet */
 // <nowiki>
-( function () {
+( async function () {
 	const UNBLOCK_REQ_COLOR_PRE_2025 = 'rgb(235, 244, 255)';
 	const UNBLOCK_REQ_COLOR_POST_2025 = 'var(--background-color-progressive-subtle, #EBF4FF)';
 	const DEFAULT_DECLINE_REASON = '{{subst:Decline reason here}}';
 	const ADVERT = ' ([[User:Novem Linguae/Scripts/UnblockReview.js|unblock-review]])';
 
-	function execute() {
+	async function execute() {
 		const userTalkNamespace = 3;
 		if ( mw.config.get( 'wgNamespaceNumber' ) !== userTalkNamespace ) {
 			return;
 		}
 
-		$.when( $.ready, mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ) ).then( () => {
+		$.when( $.ready, mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ) ).then( async () => {
 			// add styles
 			mw.util.addCSS(
 				'.unblock-review td { padding: 0 }' +
@@ -39,7 +39,7 @@ Many additional bugs fixed.
 				// We now have a pending unblock request - add UI
 				const unblockDiv = userBlockBoxes[ i ];
 				const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
-				listenForAcceptAndDecline( container, hrEl );
+				await listenForAcceptAndDecline( container, hrEl );
 			}
 		} );
 	}
@@ -67,9 +67,9 @@ Many additional bugs fixed.
 		return [ container, hrEl ];
 	}
 
-	function listenForAcceptAndDecline( container, hrEl ) {
+	async function listenForAcceptAndDecline( container, hrEl ) {
 		const reasonArea = container.querySelector( 'textarea' );
-		$( container ).find( 'button' ).on( 'click', function () {
+		$( container ).find( 'button' ).on( 'click', async function () {
 			// look at the innerHtml of the button to see if it says "Accept" or "Decline"
 			const acceptOrDecline = $( this ).text().toLowerCase();
 			const appealReason = hrEl.nextElementSibling.nextElementSibling.childNodes[ 0 ].textContent;
@@ -78,52 +78,56 @@ Many additional bugs fixed.
 				mw.notify( 'UnblockReview error 1: unable to find decline reason by scanning HTML', { type: 'error' } );
 				return;
 			}
-			$.getJSON(
-				mw.util.wikiScript( 'api' ),
-				{
-					format: 'json',
-					action: 'query',
-					prop: 'revisions',
-					rvprop: 'content',
-					rvlimit: 1,
-					titles: mw.config.get( 'wgPageName' )
-				}
-			).done( ( data ) => {
-				// Extract wikitext from API response
-				const pageId = Object.keys( data.query.pages )[ 0 ];
-				const wikitext = data.query.pages[ pageId ].revisions[ 0 ][ '*' ];
 
-				// change wikitext
-				// eslint-disable-next-line no-undef
-				const unblockReview = new UnblockReview();
-				const acceptDeclineReason = reasonArea.value;
-				const wikitext2 = unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline );
-				if ( wikitext === wikitext2 ) {
-					mw.notify( 'UnblockReview error 2: unable to determine write location.', { type: 'error' } );
-					return;
-				}
+			const title = mw.config.get( 'wgPageName' );
+			const wikitext = await getWikitext( title );
 
-				// build edit summary
-				const acceptingOrDeclining = ( acceptOrDecline === 'accept' ? 'Accepting' : 'Declining' );
-				const summary = acceptingOrDeclining + ' unblock request' + ADVERT;
+			// change wikitext
+			// eslint-disable-next-line no-undef
+			const unblockReview = new UnblockReview();
+			const acceptDeclineReason = reasonArea.value;
+			const wikitext2 = unblockReview.processAcceptOrDecline(
+				wikitext,
+				appealReason,
+				acceptDeclineReason,
+				DEFAULT_DECLINE_REASON,
+				acceptOrDecline
+			);
+			if ( wikitext === wikitext2 ) {
+				mw.notify( 'UnblockReview error 2: unable to determine write location.', { type: 'error' } );
+				return;
+			}
 
-				// make edit
-				( new mw.Api() ).postWithToken( 'csrf', {
-					action: 'edit',
-					title: mw.config.get( 'wgPageName' ),
-					summary: summary,
-					text: wikitext2
-				} ).done( ( data ) => {
-					if ( data && data.edit && data.edit.result && data.edit.result === 'Success' ) {
-						window.location.reload( true );
-					} else {
-						console.log( data );
-					}
-				} );
-			} );
+			const acceptingOrDeclining = ( acceptOrDecline === 'accept' ? 'Accepting' : 'Declining' );
+			const editSummary = acceptingOrDeclining + ' unblock request' + ADVERT;
+			await editPage( title, wikitext2, editSummary );
+			window.location.reload( true );
 		} );
 	}
 
-	execute();
+	async function getWikitext( title ) {
+		const data = await ( new mw.Api() ).get( {
+			format: 'json',
+			action: 'query',
+			prop: 'revisions',
+			rvprop: 'content',
+			rvlimit: 1,
+			titles: title
+		} );
+		const pageId = Object.keys( data.query.pages )[ 0 ];
+		const wikitext = data.query.pages[ pageId ].revisions[ 0 ][ '*' ];
+		return wikitext;
+	}
+
+	async function editPage( title, wikitext, editSummary ) {
+		await ( new mw.Api() ).postWithToken( 'csrf', {
+			action: 'edit',
+			title: title,
+			summary: editSummary,
+			text: wikitext
+		} );
+	}
+
+	await execute();
 }() );
 // </nowiki>
