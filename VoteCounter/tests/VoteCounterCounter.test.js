@@ -79,4 +79,10 @@ describe( '_convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)', () => {
 		const output = 'Proposal_A:_IBAN_Between_User:BrownHairedGirl_and_User:Laurel_Lodged';
 		expect( vcc._convertWikicodeHeadingToHTMLSectionID( lineOfWikicode ) ).toEqual( output );
 	} );
+
+	it( 'Should handle HTML tags', () => {
+		const lineOfWikicode = '== Survey_<small>(tagline)</small> ==';
+		const output = 'Survey_(tagline)';
+		expect( vcc._convertWikicodeHeadingToHTMLSectionID( lineOfWikicode ) ).toEqual( output );
+	} );
 } );

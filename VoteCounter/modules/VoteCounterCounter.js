@@ -97,6 +97,8 @@ export class VoteCounterCounter {
 		lineOfWikicode = lineOfWikicode.replace( /\]\]/g, '' );
 		// remove bold and italic
 		lineOfWikicode = lineOfWikicode.replace( /'{2,5}/g, '' );
+		// remove HTML tags
+		lineOfWikicode = lineOfWikicode.replace( /<[^>]+>/g, '' );
 		// handle {{t}} and {{tlx}}
 		lineOfWikicode = lineOfWikicode.replace( /\{\{t\|/gi, '{{' );
 		lineOfWikicode = lineOfWikicode.replace( /\{\{tlx\|/gi, '{{' );
