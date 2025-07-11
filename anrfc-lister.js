@@ -9,7 +9,7 @@ HOW TO USE:
 - there will now be "List on ANRFC" links next to each section. click one
 - fill out the form
 - press "Submit"
-- the script will add a listing to WP:ANRFC for you :)    
+- the script will add a listing to WP:ANRFC for you :)
 
 SKINS IT WORKS IN:
 - vector
@@ -247,7 +247,7 @@ class ANRFC {
 
 		// Get ready to write some WP:ANRFC wikicode
 		const heading = '=== [[' + pageName + '#' + sectionTitle + ']] ===';
-		const initiatedTemplate = '{{initiated|' + initiatedDate + '}}';
+		const initiatedTemplate = '{{initiated|' + initiatedDate + '|done=no}}';
 		const wikitextToWrite = heading + '\n' + initiatedTemplate + ' ' + message + ' ~~~~';
 
 		const api = new this.mw.Api();
