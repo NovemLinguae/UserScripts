@@ -3,11 +3,19 @@
 /*
 - Let reviewer know when certain promotional and POV keywords are detected.
 - Displays an orange bar at the top of the article, listing the detected keywords.
+- Only runs in mainspace and draftspace.
 */
 
 class DetectPromo {
-	/** @member {string} */
-	wordsToSearchString = `
+	/**
+	 * @param {Object} mw
+	 * @param {jQuery} $
+	 */
+	constructor( mw, $ ) {
+		this.mw = mw;
+		// eslint-disable-next-line no-jquery/variable-pattern
+		this.$ = $;
+		this.wordsToSearchString = `
 
 % growth
 100%
@@ -15,8 +23,6 @@ class DetectPromo {
 7-figure
 8-figure
 9-figure
-B2B
-B2C
 a record
 acclaimed
 accomplished
@@ -24,15 +30,23 @@ are a necessity
 around the world
 award winning
 award-winning
+B2B
+B2C
 beloved
 best available
 bestselling
 boasts
+collaborative spirit
 comprehensive
+cornerstone
 countless hours
 create a revolution
 critical acclaim
 critical acclaim
+dedication
+deep commitment
+deep conviction
+deeply rooted
 disrupt
 drastically
 dynamic
@@ -41,6 +55,7 @@ eminent
 engaging
 entrepreneur
 evangelist
+evolving identity
 excelled
 exceptional
 exemplified
@@ -55,6 +70,7 @@ fast-growing
 fastest growing
 fastest-growing
 finest
+fosters belonging
 fully integrated
 fully-integrated
 globally
@@ -65,7 +81,10 @@ highly accomplished
 highly praised
 highly specialized
 historic
+historical roots
 honored with
+humble beginnings
+humble perseverance
 hypnotic
 illustrious
 impressive
@@ -75,15 +94,17 @@ influential
 innovation
 innovative
 insights
+inspire
 inspired by
 integrate
 invaluable
 invaluable
 leader in
 leading
-leading
+legacy is reflected
 legendary
 leverag
+living testament
 massive
 mastermind
 more than
@@ -102,15 +123,19 @@ philanthropist
 picturesque
 pioneer
 pioneering
+pivotal role
 popular destination
 popularity
+powerful testament
 premiere
 prestigious
+profound
 prominence
 prominent
 promising
 promulgator
 ranked
+reflects the
 reinvent
 remarkable
 remarkable
@@ -120,6 +145,7 @@ resonating
 respected
 revolutionary
 rising star
+rooted in
 save millions
 savvy
 seamless
@@ -128,12 +154,15 @@ several offers
 showcased
 signature
 significant
+solidifies
 soulful
 spanning
+stands as a
 state of art
 state of the art
 state-of-art
 state-of-the-art
+steadfast dedication
 striking
 super famous
 tailored
@@ -141,6 +170,8 @@ tranquility
 transcend
 transform
 underpin
+underscore
+unique identity
 ventured into
 very first
 visionary
@@ -151,16 +182,7 @@ world-class
 worldwide
 zero to hero
 
-	`;
-
-	/**
-	 * @param {Object} mw
-	 * @param {jQuery} $
-	 */
-	constructor( mw, $ ) {
-		this.mw = mw;
-		// eslint-disable-next-line no-jquery/variable-pattern
-		this.$ = $;
+		`;
 	}
 
 	async execute() {
