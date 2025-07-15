@@ -66,7 +66,8 @@ class Links {
 		this.mw.util.addPortletLink( 'p-links', `/wiki/${ this.username }/vector.js`, 'vector.js' );
 		this.mw.util.addPortletLink( 'p-links', `/wiki/${ this.username }/common.css`, 'common.css' );
 		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/${ this.username }/global.css`, 'global.css' );
-		this.mw.util.addPortletLink( 'p-links', `/wiki/Special:CentralAuth?target=${ this.usernameURI }`, 'Central auth' );
+		// point this one to meta. Speical:CentralAuth works locally, but does not show the "previous global account changes" log when used locally
+		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/Special:CentralAuth?target=${ this.usernameURI }`, 'Central auth' );
 		this.mw.util.addPortletLink( 'p-links', `/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }`, 'User rights log' );
 		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }@enwiki`, 'User rights log (meta 1)' );
 		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }`, 'User rights log (meta 2)' );
