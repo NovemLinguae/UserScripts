@@ -243,22 +243,25 @@ class CiteHighlighter {
 		}
 	}
 
-	highlightCitation( source, color ) {
+	highlightCitation( domainName, sourceType ) {
 		// highlight whole cite
 		// [title="source" i]... the "i" part is not working in :has() for some reason
 		// use .toLowerCase() for now
 		// using .addClass() instead of .css() or .attr('style') because I'm having issues getting medrs to override arXiv/Wikidata/other red sources
 		this.$( 'li[id^="cite_note-"]' )
 			// select /domain.com and .domain.com
-			.has( 'a[href*="/' + source.toLowerCase() + '"], a[href*=".' + source.toLowerCase() + '"]' )
-			.addClass( 'cite-highlighter-' + color );
+			.has( 'a[href*="/' + domainName.toLowerCase() + '"], a[href*=".' + domainName.toLowerCase() + '"]' )
+			.addClass( 'cite-highlighter-' + sourceType );
 
-		// in dark mode, make foreground text black instead of white, being careful not to notheme the bullet/number/marker, which needs to stay white because it is outside the background color
-		this.$( 'li[id^="cite_note-"]' )
-			// select /domain.com and .domain.com
-			.has( 'a[href*="/' + source.toLowerCase() + '"], a[href*=".' + source.toLowerCase() + '"]' )
-			.find( ' > .reference-text' )
-			.addClass( 'notheme' );
+		// DOI is transparent, so don't add notheme class. Else the text is dark gray (almost black), which is hard to read.
+		if ( sourceType !== 'doi' ) {
+			// in dark mode, make foreground text black instead of white, being careful not to notheme the bullet/number/marker, which needs to stay white because it is outside the background color
+			this.$( 'li[id^="cite_note-"]' )
+				// select /domain.com and .domain.com
+				.has( 'a[href*="/' + domainName.toLowerCase() + '"], a[href*=".' + domainName.toLowerCase() + '"]' )
+				.find( ' > .reference-text' )
+				.addClass( 'notheme' );
+		}
 	}
 
 	highlightUnorderedListItem( source, color ) {
