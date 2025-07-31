@@ -1,3 +1,6 @@
+import Parser from './Parser.js';
+import { articleHistorySelector } from './GANReviewWikicodeGenerator.js';
+
 export class GARCloserWikicodeGenerator {
 	processKeepForGARPage( garPageWikicode, message, isCommunityAssessment ) {
 		return this.processGARPage( garPageWikicode, message, isCommunityAssessment, 'Kept.', 'green' );
@@ -94,17 +97,28 @@ __TOC__`;
 	}
 
 	processDelistForArticle( wikicode ) {
-		const gaTemplateNames = [ 'ga icon', 'ga article', 'good article' ];
-		for ( const templateName of gaTemplateNames ) {
-			// handle lots of line breaks: \n\n{{templateName}}\n\n -> \n\n
-			let regex = new RegExp( '\\n\\n\\{\\{' + templateName + '\\}\\}\\n\\n', 'i' );
-			wikicode = wikicode.replace( regex, '\n\n' );
-
-			// handle normal: {{templateName}}\n -> '', {{templateName}} -> ''
-			regex = new RegExp( '\\{\\{' + templateName + '\\}\\}\\n?', 'i' );
-			wikicode = wikicode.replace( regex, '' );
+		const gaTemplateNames = [ 'GA icon', 'GA article', 'Good article', 'Good Article' ]
+			.map( ( name ) => this.getTemplateSelector( name ) );
+		const root = Parser.parse( wikicode );
+		const templates = root.querySelectorAll( gaTemplateNames.join() );
+		if ( templates.length === 0 ) {
+			return wikicode;
 		}
-		return wikicode;
+		for ( const template of templates ) {
+			const { previousSibling, nextSibling } = template;
+			if ( nextSibling && nextSibling.type === 'text' && nextSibling.data.startsWith( '\n' ) ) {
+				if (
+					nextSibling.data.startsWith( '\n\n' ) &&
+					previousSibling && previousSibling.type === 'text' && previousSibling.data.endsWith( '\n\n' )
+				) {
+					nextSibling.replaceData( nextSibling.data.slice( 2 ) );
+				} else {
+					nextSibling.replaceData( nextSibling.data.slice( 1 ) );
+				}
+			}
+			template.remove();
+		}
+		return String( root );
 	}
 
 	processDelistForGAList( wikicode, articleToRemove ) {
@@ -286,8 +300,21 @@ __TOC__`;
 			'weapons and buildings': 'Wikipedia:Good articles/Warfare',
 			weapons: 'Wikipedia:Good articles/Warfare'
 		};
-		let topic = wikicode.match( /(?:\{\{Article ?history|\{\{GA\s*(?=\|)).*?\|\s*(?:sub)?topic\s*=\s*([^|}\n]+)/is )[ 1 ];
-		topic = topic.toLowerCase().trim();
+		const root = Parser.parse( wikicode );
+		const selector = `${ articleHistorySelector },template#Template:GA,template#Template:Ga`;
+		/** @type {import('wikiparser-template').TranscludeToken[]} */
+		const templates = root.querySelectorAll( selector );
+		let topic;
+		for ( const template of templates ) {
+			const parameter = template.getAllArgs().reverse().find( ( { name } ) => /^(?:sub)?topic$/i.test( name ) );
+			if ( parameter ) {
+				topic = parameter.getValue().toLowerCase();
+				break;
+			}
+		}
+		if ( topic === undefined ) {
+			throw new Error( 'No topic found in {{Article history}} or {{GA}}.' );
+		}
 		const gaListTitle = dictionary[ topic ];
 		// throw the error a little later rather than now. that way it doesn't interrupt modifying the article talk page.
 		return gaListTitle;
@@ -320,7 +347,14 @@ __TOC__`;
 	 */
 	replaceGARCurrentWithGARResult( message, wikicode ) {
 		message = message.replace( / ?~~~~/g, '' );
-		return wikicode.replace( /\{\{GAR\/current\}\}/i, `{{subst:GAR/result|result=${ this.escapeTemplateParameter( message ) }}} ~~~~` );
+		const root = Parser.parse( wikicode );
+		const template = root.querySelector( 'template#Template:GAR/current' );
+		if ( !template ) {
+			return wikicode;
+		}
+		template.after( `{{subst:GAR/result|result=${ this.escapeTemplateParameter( message ) }}} ~~~~` );
+		template.remove();
+		return String( root );
 	}
 
 	escapeTemplateParameter( parameter ) {
@@ -352,9 +386,15 @@ __TOC__`;
 		const resultText = result ? `\n| result = ${ result }\n` : '';
 		const prependText =
 `{{atop${ colorCode }${ resultText }}}`;
-		const hasH2OrH3 = wikicode.match( /^===?[^=]+===?$/m );
-		if ( hasH2OrH3 ) {
-			wikicode = wikicode.replace( /^(.*?===?[^=]+===?\n)\n*(.*)$/s, '$1' + prependText + '\n$2' );
+		const root = Parser.parse( wikicode );
+		/** @type {import('wikiparser-template').HeadingToken[]} */
+		const headings = root.querySelectorAll( 'heading' );
+		const h2OrH3 = headings.find( ( { level } ) => level === 2 || level === 3 );
+		if ( h2OrH3 ) {
+			const { lastChild } = h2OrH3;
+			lastChild.replaceChildren( String( lastChild ).replace( /\n*$/, '' ) );
+			h2OrH3.after( `\n${ prependText }` );
+			wikicode = String( root );
 		} else {
 			wikicode = prependText + '\n' + wikicode;
 		}
@@ -374,9 +414,22 @@ __TOC__`;
 		return string.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ); // $& means the whole matched string
 	}
 
+	getTemplateSelector( template ) {
+		return `template#Template:${ template.replace( / /g, '_' ) }`;
+	}
+
 	removeTemplate( templateName, wikicode ) {
-		const regex = new RegExp( `\\{\\{${ this.regExEscape( templateName ) }[^\\}]*\\}\\}\\n?`, 'i' );
-		return wikicode.replace( regex, '' );
+		const root = Parser.parse( wikicode );
+		const template = root.querySelector( this.getTemplateSelector( templateName ) );
+		if ( !template ) {
+			return wikicode;
+		}
+		const { nextSibling } = template;
+		if ( nextSibling && nextSibling.type === 'text' && nextSibling.data.startsWith( '\n' ) ) {
+			nextSibling.replaceData( nextSibling.data.slice( 1 ) );
+		}
+		template.remove();
+		return String( root );
 	}
 
 	regexGetFirstMatchString( regex, haystack ) {
@@ -391,16 +444,21 @@ __TOC__`;
 	 * There's a {{GA}} template that some people use instead of {{Article history}}. If this is present, replace it with {{Article history}}.
 	 */
 	convertGATemplateToArticleHistoryIfPresent( talkPageTitle, wikicode ) {
-		const hasArticleHistory = Boolean( wikicode.match( /\{\{Article ?history([^}]*)\}\}/gi ) );
-		const gaTemplateWikicode = this.regexGetFirstMatchString( /(\{\{GA[^}]*\}\})/i, wikicode );
-		if ( !hasArticleHistory && gaTemplateWikicode ) {
+		const root = Parser.parse( wikicode );
+		const hasArticleHistory = Boolean( root.querySelector( articleHistorySelector ) );
+		const gaTemplate = root.querySelector( 'template#Template:GA,template#Template:Ga' );
+		if ( !hasArticleHistory && gaTemplate ) {
 			// delete {{ga}} template
-			wikicode = wikicode.replace( /\{\{GA[^}]*\}\}\n?/i, '' );
-			wikicode = wikicode.trim();
+			const { nextSibling } = gaTemplate;
+			if ( nextSibling && nextSibling.type === 'text' && nextSibling.data.startsWith( '\n' ) ) {
+				nextSibling.replaceData( nextSibling.data.slice( 1 ) );
+			}
+			gaTemplate.remove();
+			wikicode = String( root ).trim();
 
 			// parse its parameters
 			// example: |21:00, 12 March 2017 (UTC)|topic=Sports and recreation|page=1|oldid=769997774
-			const parameters = this.getParametersFromTemplateWikicode( gaTemplateWikicode );
+			const parameters = this.getParametersFromTemplateWikicode( gaTemplate );
 
 			// if no page specified, assume page is 1. so then the good article review link will be parsed as /GA1
 			const noPageSpecified = parameters.page === undefined;
@@ -545,30 +603,16 @@ __TOC__`;
 	}
 
 	/**
+	 * @param {import('wikiparser-template').TranscludeToken} template
 	 * @return {Object} Parameters, with keys being equivalent to the template parameter names. Unnamed parameters will be 1, 2, 3, etc.
 	 */
-	getParametersFromTemplateWikicode( wikicodeOfSingleTemplate ) {
-		wikicodeOfSingleTemplate = wikicodeOfSingleTemplate.slice( 2, -2 ); // remove {{ and }}
-		// TODO: explode without exploding | inside of inner templates
-		const strings = wikicodeOfSingleTemplate.split( '|' );
+	getParametersFromTemplateWikicode( template ) {
+		if ( typeof template === 'string' ) {
+			template = Parser.parse( template ).querySelector( 'template' );
+		}
 		const parameters = {};
-		let unnamedParameterCount = 1;
-		let i = 0;
-		for ( const string of strings ) {
-			i++;
-			if ( i == 1 ) {
-				continue; // skip the template name, this is not a parameter
-			}
-			const hasEquals = string.indexOf( '=' );
-			if ( hasEquals === -1 ) {
-				parameters[ unnamedParameterCount ] = string;
-				unnamedParameterCount++;
-			} else {
-				const matches = string.match( /^([^=]*)=(.*)/s ); // isolate param name and param value by looking for first equals sign
-				const paramName = matches[ 1 ].trim().toLowerCase();
-				const paramValue = matches[ 2 ].trim();
-				parameters[ paramName ] = paramValue;
-			}
+		for ( const parameter of template.getAllArgs() ) {
+			parameters[ parameter.name.toLowerCase() ] = parameter.getValue();
 		}
 		return parameters;
 	}
@@ -583,15 +627,15 @@ __TOC__`;
 			throw new Error( 'InvalidArgumentException' );
 		}
 
-		const topic = this.firstTemplateGetParameterValue( wikicode, 'Artricle history', 'topic' );
+		const topic = this.firstTemplateGetParameterValue( wikicode, articleHistorySelector, 'topic' );
 		let topicString = '';
 		if ( !topic ) {
 			topicString = `\n|topic = ${ topic }`;
 		}
 
 		// https://en.wikipedia.org/wiki/Template:Article_history#How_to_use_in_practice
-		const existingStatus = this.firstTemplateGetParameterValue( wikicode, 'Artricle history', 'currentstatus' );
-		wikicode = this.firstTemplateDeleteParameter( wikicode, 'Article history', 'currentstatus' );
+		const existingStatus = this.firstTemplateGetParameterValue( wikicode, articleHistorySelector, 'currentstatus' );
+		wikicode = this.firstTemplateDeleteParameter( wikicode, articleHistorySelector, 'currentstatus' );
 		const currentStatusString = this.getArticleHistoryNewStatus( existingStatus, keepOrDelist );
 
 		const result = this.getKeepOrDelistPastTense( keepOrDelist );
@@ -605,7 +649,7 @@ __TOC__`;
 
 		addToArticleHistory += currentStatusString + topicString;
 
-		wikicode = this.firstTemplateInsertCode( wikicode, [ 'Article history', 'ArticleHistory' ], addToArticleHistory );
+		wikicode = this.firstTemplateInsertCode( wikicode, articleHistorySelector, addToArticleHistory );
 
 		return wikicode;
 	}
@@ -634,21 +678,15 @@ __TOC__`;
 		}
 	}
 
-	firstTemplateGetParameterValue( wikicode, template, parameter ) {
-		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
-		// new algorithm:
-			// find start of template. use regex /i (ignore case)
-			// iterate using loops until end of template found
-				// handle <nowiki>
-				// handle triple {{{
-				// handle nested
-
-		const regex = new RegExp( `\\|\\s*${ parameter }\\s*=\\s*([^\\n\\|\\}]*)\\s*`, '' );
-		const result = wikicode.match( regex );
-		if ( wikicode.match( regex ) === null ) {
+	firstTemplateGetParameterValue( wikicode, templateSelector, parameter ) {
+		const root = Parser.parse( wikicode );
+		/** @type {import('wikiparser-template').TranscludeToken[]} */
+		const templates = root.querySelectorAll( templateSelector );
+		const template = templates.find( ( t ) => t.getArg( parameter ) );
+		if ( !template ) {
 			return null;
 		}
-		return result[ 1 ];
+		return template.getValue( parameter );
 	}
 
 	getArticleHistoryNewStatus( existingStatus, keepOrDelist ) {
@@ -660,66 +698,32 @@ __TOC__`;
 	}
 
 	/**
-	 * @param {Array} templateNameArrayCaseInsensitive
+	 * @param {string} templateSelector
 	 */
-	firstTemplateInsertCode( wikicode, templateNameArrayCaseInsensitive, codeToInsert ) {
-		for ( const templateName of templateNameArrayCaseInsensitive ) {
-			const strPosOfEndOfFirstTemplate = this.getStrPosOfEndOfFirstTemplateFound( wikicode, templateName );
-			if ( strPosOfEndOfFirstTemplate !== null ) {
-				const insertPosition = strPosOfEndOfFirstTemplate - 2; // 2 characters from the end, right before }}
-				const result = this.insertStringIntoStringAtPosition( wikicode, `\n${ codeToInsert }\n`, insertPosition );
-				return result;
-			}
+	firstTemplateInsertCode( wikicode, templateSelector, codeToInsert ) {
+		const root = Parser.parse( wikicode );
+		const template = root.querySelector( templateSelector );
+		if ( !template ) {
+			return wikicode;
 		}
-	}
-
-	/**
-	 * CC BY-SA 4.0, jAndy, https://stackoverflow.com/a/4364902/3480193
-	 */
-	insertStringIntoStringAtPosition( bigString, insertString, position ) {
-		return [
-			bigString.slice( 0, position ),
-			insertString,
-			bigString.slice( position )
-		].join( '' );
-	}
-
-	/**
-	 * Grabs string position of the END of first {{template}} contained in wikicode. Case insensitive. Returns null if no template found. Handles nested templates.
-	 *
-	 * @return {number|null}
-	 */
-	getStrPosOfEndOfFirstTemplateFound( wikicode, templateName ) {
-		const starting_position = wikicode.toLowerCase().indexOf( '{{' + templateName.toLowerCase() );
-		if ( starting_position === -1 ) {
-			return null;
-		}
-		let counter = 0;
-		const length = wikicode.length;
-		for ( let i = starting_position + 2; i < length; i++ ) {
-			const next_two = wikicode.substr( i, 2 );
-			if ( next_two == '{{' ) {
-				counter++;
-				continue;
-			} else if ( next_two == '}}' ) {
-				if ( counter == 0 ) {
-					return i + 2; // +2 to account for next_two being }} (2 characters)
-				} else {
-					counter--;
-					continue;
-				}
-			}
-		}
-		return null;
+		template.append( `${ codeToInsert.replace( /^\s*\|/, '' ) }\n` );
+		return String( root );
 	}
 
 	removeGAStatusFromWikiprojectBanners( wikicode ) {
 		return wikicode.replace( /(\|\s*class\s*=\s*)([^}|\s]*)/gi, '$1' );
 	}
 
-	firstTemplateDeleteParameter( wikicode, template, parameter ) {
-		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
-		const regex = new RegExp( `\\|\\s*${ parameter }\\s*=\\s*([^\\n\\|\\}]*)\\s*`, '' );
-		return wikicode.replace( regex, '' );
+	firstTemplateDeleteParameter( wikicode, templateSelector, parameter ) {
+		const root = Parser.parse( wikicode );
+		/** @type {import('wikiparser-template').TranscludeToken | undefined} */
+		const template = root.querySelector( templateSelector );
+		if ( !template ) {
+			return wikicode;
+		}
+		for ( const parameterNode of template.getArgs( parameter ) ) {
+			parameterNode.remove();
+		}
+		return String( root );
 	}
 }

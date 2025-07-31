@@ -146,7 +146,6 @@ describe( 'processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =>
 |action3result=listed
 |action3oldid=154649662
 |topic=music
-
 |action4 = GAR
 |action4date = ~~~~~
 |action4link = Wikipedia:Good article reassessment/American popular music/1
@@ -184,7 +183,6 @@ describe( 'processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =>
 |action1date = 20:19, 29 June 2022 (UTC)
 |action1link = Talk:American popular music/GA1
 |action1result = listed
-
 |action2 = GAR
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/American popular music/1
@@ -227,7 +225,6 @@ describe( 'processKeepForTalkPage(wikicode, garPageTitle, talkPageTitle)', () =>
 |action1link = Talk:Proxima Centauri b/GA2
 |action1result = listed
 |action1oldid = 767553501
-
 |action2 = GAR
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/Proxima Centauri b/1
@@ -491,7 +488,6 @@ describe( 'processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () 
 |action3result=listed
 |action3oldid=154649662
 |topic=music
-
 |action4 = GAR
 |action4date = ~~~~~
 |action4link = Wikipedia:Good article reassessment/American popular music/1
@@ -529,7 +525,6 @@ describe( 'processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () 
 |action1date = 20:19, 29 June 2022 (UTC)
 |action1link = Talk:American popular music/GA1
 |action1result = listed
-
 |action2 = GAR
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/American popular music/1
@@ -573,7 +568,6 @@ describe( 'processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () 
 |dykdate=13 December 2011
 |dykentry=... that during '''[[Royce White]]'''{{\`s}} two-and-a-half-year hiatus from competitive [[basketball]], he spent time on his music career and learned how to play the [[piano]]?
 |topic=sports
-
 |action2 = GAR
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/Royce White/1
@@ -634,7 +628,6 @@ describe( 'processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () 
 |dykentry=... that while [[FIFA]] inquired about the creation of a '''[[Sudan women's national football team|Sudanese women's national football team]]''', the Islamic Fiqh Council in [[Sudan]] issued a [[fatwa]] forbidding it?
 |nompage=Template:Did you know nominations/Sudan women's national football team
 |topic=sports
-
 |action3 = GAR
 |action3date = ~~~~~
 |action3link = Talk:Sudan women's national football team/GA3
@@ -678,7 +671,6 @@ describe( 'processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () 
 |action1result=listed
 |action1oldid=228181192
 |topic=everydaylife
-
 |action2 = GAR
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/Once Upon a Time (game)/1
@@ -718,7 +710,6 @@ describe( 'processDelistForTalkPage(wikicode, garPageTitle, talkPageTitle)', () 
 |action1result=listed
 |action1oldid=228181192
 |topic=everydaylife
-
 |action2 = GAR
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/Once Upon a Time (game)/1
@@ -753,7 +744,7 @@ describe( 'getGAListTitleFromTalkPageWikicode(wikicode)', () => {
 	} );
 
 	it( 'Should be case insensitive', () => {
-		const wikicode = '{{aRTiClE HiStOrY|ToPiC=SpOrTs}}';
+		const wikicode = '{{article history|ToPiC=SpOrTs}}';
 		const output = 'Wikipedia:Good articles/Sports and recreation';
 		expect( wg.getGAListTitleFromTalkPageWikicode( wikicode ) ).toBe( output );
 	} );
@@ -948,10 +939,10 @@ describe( 'processDelistForArticle(wikicode)', () => {
 		expect( wg.processDelistForArticle( wikicode ) ).toBe( output );
 	} );
 
-	it( 'Should remove {{ga article}}', () => {
+	it( 'Should remove {{gA article}}', () => {
 		const wikicode =
 `{{Short description|None}}
-{{ga article}}
+{{gA article}}
 {{USmusicgenres}}`;
 		const output =
 `{{Short description|None}}
@@ -970,10 +961,10 @@ describe( 'processDelistForArticle(wikicode)', () => {
 		expect( wg.processDelistForArticle( wikicode ) ).toBe( output );
 	} );
 
-	it( 'Should remove {{ga icon}}', () => {
+	it( 'Should remove {{gA icon}}', () => {
 		const wikicode =
 `{{Short description|None}}
-{{ga icon}}
+{{gA icon}}
 {{USmusicgenres}}`;
 		const output =
 `{{Short description|None}}
@@ -1560,104 +1551,5 @@ describe( 'convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)',
 |action1result = listed
 }}`;
 		expect( wg.convertGATemplateToArticleHistoryIfPresent( talkPageTitle, wikicode ) ).toBe( output );
-	} );
-} );
-
-describe( 'getStrPosOfEndOfFirstTemplateFound(wikicode, templateName)', () => {
-	it( 'should handle needle template being 1st template on the page', () => {
-		const wikicode =
-'{{Good topic box}}';
-		const templateNameArrayCaseInsensitive = 'good topic box';
-		const output = 18;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-
-	it( 'should handle needle template being 1st template on the page', () => {
-		const wikicode =
-'Test{{Good topic box}}';
-		const templateNameArrayCaseInsensitive = 'good topic box';
-		const output = 22;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-
-	it( 'should handle needle template being 1st template on the page', () => {
-		const wikicode =
-`Test
-{{Good topic box}}`;
-		const templateNameArrayCaseInsensitive = 'good topic box';
-		const output = 23;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-
-	it( 'should handle needle template being 1st template on the page', () => {
-		const wikicode =
-`Test
-{{Good topic box
-| algo                = old(120d)
-| archive             = Wikipedia talk:Featured and good topic candidates/%(year)d
-| archiveheader       = {{Automatic archive navigator}}
-| minthreadstoarchive = 1
-| minthreadsleft      = 4
-}}
-{{tmbox
-|text= '''Questions about a topic you are working on or about the process in general should be asked at [[Wikipedia talk:Featured and good topic questions|Featured and good topic questions]].'''  This page is primarily for discussion on proposals regarding the FTC process.
-}}`;
-		const templateNameArrayCaseInsensitive = 'good topic box';
-		const output = 249;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-
-	it( 'should handle needle template being 2nd template on the page', () => {
-		const wikicode =
-`Test
-{{tmbox
-|text= '''Questions about a topic you are working on or about the process in general should be asked at [[Wikipedia talk:Featured and good topic questions|Featured and good topic questions]].'''  This page is primarily for discussion on proposals regarding the FTC process.
-}}
-{{Good topic box
-| algo                = old(120d)
-| archive             = Wikipedia talk:Featured and good topic candidates/%(year)d
-| archiveheader       = {{Automatic archive navigator}}
-| minthreadstoarchive = 1
-| minthreadsleft      = 4
-}}`;
-		const templateNameArrayCaseInsensitive = 'good topic box';
-		const output = 534;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-
-	it( 'should handle template not found', () => {
-		const wikicode =
-`{{User:MiszaBot/config
-| algo                = old(120d)
-| archive             = Wikipedia talk:Featured and good topic candidates/%(year)d
-| archiveheader       = {{Automatic archive navigator}}
-| minthreadstoarchive = 1
-| minthreadsleft      = 4
-}}
-{{tmbox
-|text= '''Questions about a topic you are working on or about the process in general should be asked at [[Wikipedia talk:Featured and good topic questions|Featured and good topic questions]].'''  This page is primarily for discussion on proposals regarding the FTC process.
-}}`;
-		const templateNameArrayCaseInsensitive = 'good topic box';
-		const output = null;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-
-	it( 'should handle nested templates', () => {
-		const wikicode =
-`{{GAR/link|17:09, 22 February 2022 (UTC)|page=2|GARpage=1|status= }}
-{{ArticleHistory
-|action1=GAN
-|action1date=04:22, 26 December 2011 (UTC)
-|action1link=Talk:Royce White/GA1
-|action1result=listed
-|action1oldid=467699196
-|dykdate=13 December 2011
-|dykentry=... that during '''[[Royce White]]'''{{\`s}} two-and-a-half-year hiatus from competitive [[basketball]], he spent time on his music career and learned how to play the [[piano]]?
-|currentstatus=GA
-|topic=sports
-}}`;
-		const templateNameArrayCaseInsensitive = 'ArticleHistory';
-		const output = 469;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
 	} );
 } );
