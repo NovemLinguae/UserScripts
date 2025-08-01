@@ -2,7 +2,7 @@
 	"dependencies": {
 		"jest": "^28.1.0",
 		"types-mediawiki": "github:wikimedia-gadgets/types-mediawiki",
-		"wikiparser-template": "^1.22.1"
+		"wikiparser-template": "^1.23.0"
 	},
 	"scripts": {
 		"test": "jest",
