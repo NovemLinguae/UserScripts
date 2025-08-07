@@ -1,0 +1,40 @@
+/**
+ * XTools PageInfo gadget
+ * Based on meta.wikimedia.org/wiki/User:Hedonil/XTools
+ * Documentation: mediawiki.org/wiki/XTools/PageInfo_gadget
+ * Released under GPL 3.0+ license
+ * For updates, please copy and paste from https://xtools.wmcloud.org/pageinfo-gadget.js
+ */
+$(function () {
+    if (mw.config.get('wgArticleId') === 0 || // no deleted articles, no special pages
+            mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId') || // only current revision
+            mw.config.get('wgAction') !== 'view') { // only when viewing a page, not editing
+        return;
+    }
+
+    var $result,
+        markup = "<div id='xtools' style='font-size:84%; line-height:1.2em;" +
+        "width:auto;'><span id='xtools_result'>.</span></div>";
+    $(markup).insertBefore('#contentSub');
+    $result = $('#xtools_result');
+
+    var loadinganimation = window.setInterval(function () {
+        if ($result.html() === '.&nbsp;&nbsp;') {
+            $result.html('&nbsp;.&nbsp;');
+        } else if ($result.html() === '&nbsp;.&nbsp;') {
+            $result.html('&nbsp;&nbsp;.');
+        } else {
+            $result.html('.&nbsp;&nbsp;');
+        }
+    }, 300);
+
+    $.get(
+        'https://xtools.wmcloud.org/api/page/pageinfo/' +
+        mw.config.get('wgServerName') + '/' +
+        mw.config.get('wgPageName').replace(/["?%&+\\]/g, escape) + '?format=html' +
+        '&uselang=' + mw.config.get('wgUserLanguage')
+    ).done(function (result) {
+        $result.html(result);
+        clearInterval(loadinganimation);
+    });
+});
