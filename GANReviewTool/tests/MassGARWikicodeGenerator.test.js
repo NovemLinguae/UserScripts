@@ -72,7 +72,7 @@ Test
 	it( 'Should detect {{ga article}}', () => {
 		const wikicode =
 `{{Short description|None}}
-{{ga article}}
+{{gA article}}
 {{USmusicgenres}}`;
 		const output = true;
 		expect( wg.hasGoodArticleTemplate( wikicode ) ).toBe( output );
@@ -90,7 +90,7 @@ Test
 	it( 'Should detect {{ga icon}}', () => {
 		const wikicode =
 `{{Short description|None}}
-{{ga icon}}
+{{gA icon}}
 {{USmusicgenres}}`;
 		const output = true;
 		expect( wg.hasGoodArticleTemplate( wikicode ) ).toBe( output );
@@ -256,7 +256,7 @@ Test
 	it( 'Should be case insensitive', () => {
 		const wikicode =
 `{{Talk header}}
-{{gar/link|15:34, 17 February 2023 (UTC)|page=2|GARpage=1|status= }}
+{{gAR/link|15:34, 17 February 2023 (UTC)|page=2|GARpage=1|status= }}
 
 == Section ==
 Test

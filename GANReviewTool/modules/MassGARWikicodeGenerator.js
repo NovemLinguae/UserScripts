@@ -1,20 +1,24 @@
+import Parser from './Parser.js';
+import { articleHistorySelector } from './GANReviewWikicodeGenerator.js';
+
 export class MassGARWikicodeGenerator {
 	hasGoodArticleTemplate( mainArticleWikicode ) {
-		const gaTemplateNames = [ 'ga icon', 'ga article', 'good article' ];
+		const gaTemplateNames = [ 'GA icon', 'GA article', 'Good article', 'Good Article' ];
 		return this._wikicodeHasTemplate( mainArticleWikicode, gaTemplateNames );
 	}
 
 	talkPageIndicatesGA( talkPageWikicode ) {
 		// Check for {{GA}}
-		const gaTemplateNames = [ 'GA' ];
+		const gaTemplateNames = [ 'GA', 'Ga' ];
 		if ( this._wikicodeHasTemplate( talkPageWikicode, gaTemplateNames ) ) {
 			return true;
 		}
 
 		// Check for {{Article history|currentstatus=GA}}
-		// TODO: currently just checks for |currentstatus=GA anywhere on the page. Could improve this algorithm if there end up being false positives.
-		const matches = talkPageWikicode.match( /\|\s*currentstatus\s*=\s*GA\b/i );
-		if ( matches ) {
+		const root = Parser.parse( talkPageWikicode );
+		/** @type {import('wikiparser-template').TranscludeToken | undefined} */
+		const template = root.querySelector( articleHistorySelector );
+		if ( template && template.getArg( 'currentstatus' ) ) {
 			return true;
 		}
 		return false;
@@ -30,21 +34,8 @@ export class MassGARWikicodeGenerator {
 	 * @param {Array} listOfTemplates Case insensitive.
 	 */
 	_wikicodeHasTemplate( wikicode, listOfTemplates ) {
-		const stringForRegEx = listOfTemplates
-			.map( ( v ) => this._regExEscape( v ) )
-			.join( '|' );
-		const regex = new RegExp( `{{(?:${ stringForRegEx })\\b`, 'i' );
-		const matches = wikicode.match( regex );
-		if ( matches ) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * @copyright coolaj86, CC BY-SA 4.0 https://stackoverflow.com/a/6969486/3480193
-	 */
-	_regExEscape( string ) {
-		return string.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ); // $& means the whole matched string
+		const selector = listOfTemplates.map( ( v ) => `template#Template:${ v.replace( / /g, '_' ) }` ).join();
+		const root = Parser.parse( wikicode );
+		return Boolean( root.querySelector( selector ) );
 	}
 }
