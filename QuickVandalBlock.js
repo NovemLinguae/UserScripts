@@ -17,19 +17,15 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 
 			if ( isIp ) {
 				$linkAndListener = $( '<a>' ).attr( 'href', '#' )
-					.text( isIp ? '31h' : 'indef' )
+					.text( '31h' )
 					.on( 'click', function () {
 						const username = $( this ).parent().get( 0 ).previousElementSibling.textContent;
-						const duration = isIp ? '31 hours' : 'never';
+						const duration = '31 hours';
 						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
 						const templateName = 'uw-vblock';
 						const templateParams = {};
-						if ( isIp ) {
-							templateParams.anon = 'yes';
-							templateParams.time = '31 hours';
-						} else {
-							templateParams.indef = 'yes';
-						}
+						templateParams.anon = 'yes';
+						templateParams.time = '31 hours';
 						templateParams.sig = 'yes';
 						const isMainspaceSpecialOrMedia = mw.config.get( 'wgNamespaceNumber' ) < 1;
 						if ( !isMainspaceSpecialOrMedia ) {
@@ -37,21 +33,17 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 						}
 						block( username, duration, logReason, templateName, templateParams );
 					} );
+				$( element ).contents().last().before( ' | ', $linkAndListener );
 			} else {
 				$linkAndListener = $( '<a>' ).attr( 'href', '#' )
-					.text( isIp ? '31h' : 'indef' )
+					.text( 'indef' )
 					.on( 'click', function () {
 						const username = $( this ).parent().get( 0 ).previousElementSibling.textContent;
-						const duration = isIp ? '31 hours' : 'never';
+						const duration = 'never';
 						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
 						const templateName = 'uw-vblock';
 						const templateParams = {};
-						if ( isIp ) {
-							templateParams.anon = 'yes';
-							templateParams.time = '31 hours';
-						} else {
-							templateParams.indef = 'yes';
-						}
+						templateParams.indef = 'yes';
 						templateParams.sig = 'yes';
 						const isMainspaceSpecialOrMedia = mw.config.get( 'wgNamespaceNumber' ) < 1;
 						if ( !isMainspaceSpecialOrMedia ) {
@@ -59,9 +51,8 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 						}
 						block( username, duration, logReason, templateName, templateParams );
 					} );
+				$( element ).contents().last().before( ' | ', $linkAndListener );
 			}
-
-			$( element ).contents().last().before( ' | ', $linkAndListener );
 		} );
 	}
 
