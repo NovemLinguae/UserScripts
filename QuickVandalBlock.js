@@ -34,6 +34,23 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 						block( username, duration, logReason, templateName, templateParams );
 					} );
 				$( element ).contents().last().before( ' | ', $linkAndListener );
+
+				$linkAndListener = $( '<a>' ).attr( 'href', '#' )
+					.text( 'proxy' )
+					.on( 'click', function () {
+						const username = $( this ).parent().get( 0 ).previousElementSibling.textContent;
+						const duration = '1 year';
+						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
+						// no talk page message
+						const templateName = null;
+						const templateParams = {};
+						const isMainspaceSpecialOrMedia = mw.config.get( 'wgNamespaceNumber' ) < 1;
+						if ( !isMainspaceSpecialOrMedia ) {
+							templateParams.page = mw.config.get( 'wgPageName' );
+						}
+						block( username, duration, logReason, templateName, templateParams );
+					} );
+				$( element ).contents().last().before( ' | ', $linkAndListener );
 			} else {
 				$linkAndListener = $( '<a>' ).attr( 'href', '#' )
 					.text( 'indef' )
@@ -69,8 +86,12 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 				watchuser: 'true',
 				allowusertalk: 'true'
 			} ).then( () => {
-				mw.notify( 'Blocked ' + username + '; sending notification...' );
-				deliverBlockTemplate( username, templateName, templateParams );
+				if ( templateName ) {
+					mw.notify( 'Blocked ' + username + '; sending notification...' );
+					deliverBlockTemplate( username, templateName, templateParams );
+				} else {
+					mw.notify( 'Blocked ' + username + '. No talk page notification sent.' );
+				}
 			} );
 			return false;
 		}
