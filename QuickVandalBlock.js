@@ -12,21 +12,60 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 
 	function addLinksAndListener( obj ) {
 		obj.find( 'span.mw-usertoollinks' ).each( function ( idx, element ) {
-			const isAnon = this.previousElementSibling.className.includes( 'mw-anonuserlink' );
-			$( element ).contents().last().before( ' | ',
-				$( '<a>' ).attr( 'href', '#' )
-					.text( isAnon ? '31h' : 'indef' )
+			const isIp = this.previousElementSibling.className.includes( 'mw-anonuserlink' );
+			let $linkAndListener;
+
+			if ( isIp ) {
+				$linkAndListener = $( '<a>' ).attr( 'href', '#' )
+					.text( isIp ? '31h' : 'indef' )
 					.on( 'click', function () {
 						const username = $( this ).parent().get( 0 ).previousElementSibling.textContent;
-						const duration = isAnon ? '31 hours' : 'never';
+						const duration = isIp ? '31 hours' : 'never';
 						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
-						block( username, isAnon, duration, logReason );
-					} )
-			);
+						const templateName = 'uw-vblock';
+						const templateParams = {};
+						if ( isIp ) {
+							templateParams.anon = 'yes';
+							templateParams.time = '31 hours';
+						} else {
+							templateParams.indef = 'yes';
+						}
+						templateParams.sig = 'yes';
+						const isMainspaceSpecialOrMedia = mw.config.get( 'wgNamespaceNumber' ) < 1;
+						if ( !isMainspaceSpecialOrMedia ) {
+							templateParams.page = mw.config.get( 'wgPageName' );
+						}
+						block( username, duration, logReason, templateName, templateParams );
+					} );
+			} else {
+				$linkAndListener = $( '<a>' ).attr( 'href', '#' )
+					.text( isIp ? '31h' : 'indef' )
+					.on( 'click', function () {
+						const username = $( this ).parent().get( 0 ).previousElementSibling.textContent;
+						const duration = isIp ? '31 hours' : 'never';
+						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
+						const templateName = 'uw-vblock';
+						const templateParams = {};
+						if ( isIp ) {
+							templateParams.anon = 'yes';
+							templateParams.time = '31 hours';
+						} else {
+							templateParams.indef = 'yes';
+						}
+						templateParams.sig = 'yes';
+						const isMainspaceSpecialOrMedia = mw.config.get( 'wgNamespaceNumber' ) < 1;
+						if ( !isMainspaceSpecialOrMedia ) {
+							templateParams.page = mw.config.get( 'wgPageName' );
+						}
+						block( username, duration, logReason, templateName, templateParams );
+					} );
+			}
+
+			$( element ).contents().last().before( ' | ', $linkAndListener );
 		} );
 	}
 
-	function block( username, isAnon, duration, logReason ) {
+	function block( username, duration, logReason, templateName, templateParams ) {
 		// eslint-disable-next-line no-alert
 		if ( confirm( 'Block ' + username + '?' ) ) {
 			new mw.Api().postWithToken( 'csrf', {
@@ -40,13 +79,13 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 				allowusertalk: 'true'
 			} ).then( () => {
 				mw.notify( 'Blocked ' + username + '; sending notification...' );
-				deliverBlockTemplate( username, isAnon );
+				deliverBlockTemplate( username, templateName, templateParams );
 			} );
 			return false;
 		}
 	}
 
-	function deliverBlockTemplate( username, isAnon ) {
+	function deliverBlockTemplate( username, templateName, templateParams ) {
 		const now = new Date();
 		const sectionName = MONTHS[ now.getMonth() ] + ' ' + now.getFullYear();
 		api.get( {
@@ -65,21 +104,6 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 			}
 			const shouldAddSectionHeader = !( new RegExp( /==\s*/.source +
 				sectionName.replace( ' ', '\\s*' ) + /\s*==/.source ).test( existingText ) );
-
-			const templateName = 'uw-vblock';
-
-			const templateParams = {};
-			if ( isAnon ) {
-				templateParams.anon = 'yes';
-				templateParams.time = '31 hours';
-			} else {
-				templateParams.indef = 'yes';
-			}
-			templateParams.sig = 'yes';
-			const isMainspaceSpecialOrMedia = mw.config.get( 'wgNamespaceNumber' ) < 1;
-			if ( !isMainspaceSpecialOrMedia ) {
-				templateParams.page = mw.config.get( 'wgPageName' );
-			}
 
 			let textToAdd = '\n\n';
 			textToAdd += ( shouldAddSectionHeader ? '== ' + sectionName + ' ==\n\n' : '' );
