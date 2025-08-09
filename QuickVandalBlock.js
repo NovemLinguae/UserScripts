@@ -9,7 +9,6 @@ Changes:
 $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then( () => {
 	const MONTHS = mw.config.get( 'wgMonthNames' ).slice( 1 ); // theirs starts with the empty string
 	const api = new mw.Api();
-	const IP_BLOCK_LENGTH = '31 hours';
 
 	function addLinksAndListener( obj ) {
 		obj.find( 'span.mw-usertoollinks' ).each( function ( idx, element ) {
@@ -18,21 +17,23 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 				$( '<a>' ).attr( 'href', '#' )
 					.text( isAnon ? '31h' : 'indef' )
 					.on( 'click', function () {
-						block( this, isAnon );
+						const username = $( this ).parent().get( 0 ).previousElementSibling.textContent;
+						const duration = isAnon ? '31 hours' : 'never';
+						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
+						block( username, isAnon, duration, logReason );
 					} )
 			);
 		} );
 	}
 
-	function block( that, isAnon ) {
-		const username = $( that ).parent().get( 0 ).previousElementSibling.textContent;
+	function block( username, isAnon, duration, logReason ) {
 		// eslint-disable-next-line no-alert
 		if ( confirm( 'Block ' + username + '?' ) ) {
 			new mw.Api().postWithToken( 'csrf', {
 				action: 'block',
 				user: username,
-				expiry: isAnon ? '31 hours' : 'never',
-				reason: '[[Wikipedia:Vandalism|Vandalism]]',
+				expiry: duration,
+				reason: logReason,
 				nocreate: 'true',
 				autoblock: 'true',
 				watchuser: 'true',
@@ -65,12 +66,27 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 			const shouldAddSectionHeader = !( new RegExp( /==\s*/.source +
 				sectionName.replace( ' ', '\\s*' ) + /\s*==/.source ).test( existingText ) );
 
+			const templateName = 'uw-vblock';
+
+			const templateParams = {};
+			if ( isAnon ) {
+				templateParams.anon = 'yes';
+				templateParams.time = '31 hours';
+			} else {
+				templateParams.indef = 'yes';
+			}
+			templateParams.sig = 'yes';
+			const isMainspaceSpecialOrMedia = mw.config.get( 'wgNamespaceNumber' ) < 1;
+			if ( !isMainspaceSpecialOrMedia ) {
+				templateParams.page = mw.config.get( 'wgPageName' );
+			}
+
 			let textToAdd = '\n\n';
 			textToAdd += ( shouldAddSectionHeader ? '== ' + sectionName + ' ==\n\n' : '' );
-			textToAdd += '{{subst:uw-vblock|';
-			textToAdd += ( isAnon ? 'anon=yes|time=' + IP_BLOCK_LENGTH + '|' : 'indef=yes|' );
-			textToAdd += 'sig=yes';
-			textToAdd += ( mw.config.get( 'wgNamespaceNumber' ) >= 0 ? '|page=' + mw.config.get( 'wgPageName' ) : '' );
+			textToAdd += '{{subst:' + templateName;
+			textToAdd += Object.entries( templateParams )
+				.map( ( [ key, value ] ) => `|${ key }=${ value }` )
+				.join( '' );
 			textToAdd += '}}';
 
 			return api.postWithToken( 'csrf', {
