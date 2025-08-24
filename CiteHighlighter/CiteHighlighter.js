@@ -2,6 +2,8 @@
 
 // Test dark mode with ?vectornightmode=1&useskin=vector-2022
 
+// https://en.wikipedia.org/wiki/Gaza_genocide is a good article for speed tests since it has 600 references. Scroll down to the bottom of the page, then hit F5. CiteHighlighter takes around 14-19 seconds to highlight refs down there as of August 2025. The methods addHTMLClassesToRefs() and highlightUnorderedListItem() seem the most ripe for optimization, according to Firefox's profiler.
+
 class CiteHighlighter {
 	constructor( window, $, mw ) {
 		this.window = window;
