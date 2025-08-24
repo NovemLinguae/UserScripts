@@ -265,17 +265,16 @@ class CiteHighlighter {
 	}
 
 	highlightUnorderedListItem( source, color ) {
-		// Also support any {{Cite}} template inside an unordered list. For example, a works cited section supporting a references section consisting of "Smith 1986, pp. 573-574" type citations. Example: https://en.wikipedia.org/wiki/C._J._Cregg#Articles_and_tweets
-		this.$( 'li' )
+		const sourceLowerCase = source.toLowerCase();
+		const $lis = this.$( 'li' )
 			// select /domain.com and .domain.com
-			.has( '.citation a[href*="/' + source.toLowerCase() + '"], .citation a[href*=".' + source.toLowerCase() + '"]' )
-			.addClass( 'cite-highlighter-' + color );
+			.has( '.citation a[href*="/' + sourceLowerCase + '"], .citation a[href*=".' + sourceLowerCase + '"]' );
+
+		// Support any {{Cite}} template inside an unordered list. For example, a works cited section supporting a references section consisting of "Smith 1986, pp. 573-574" type citations. Example: https://en.wikipedia.org/wiki/C._J._Cregg#Articles_and_tweets
+		$lis.addClass( 'cite-highlighter-' + color );
 
 		// in dark mode, make foreground text black instead of white, being careful not to notheme the bullet/number/marker, which needs to stay white because it is outside the background color
-		this.$( 'li' )
-			// select /domain.com and .domain.com
-			.has( '.citation a[href*="/' + source.toLowerCase() + '"], .citation a[href*=".' + source.toLowerCase() + '"]' )
-			.find( ' > cite' )
+		$lis.find( ' > cite' )
 			.addClass( 'notheme' );
 	}
 
