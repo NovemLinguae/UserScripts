@@ -249,6 +249,7 @@ export class UserHighlighterSimple {
 
 	addClassesAndHoverTextToLinkIfNeeded() {
 		// highlight anybody with "WMF" in their name, case insensitive. this should not generate false positives because "WMF" is on the username blacklist. see https://meta.wikimedia.org/wiki/Title_blacklist
+		// not adding WMDE here since they are not on the title blacklist. need to add those folks manually in the bot
 		if ( this.user.match( /^[^/]*WMF/i ) ) {
 			this.addClassAndHoverText( 'UHS-wmf', 'Wikimedia Foundation (WMF)' );
 		}
