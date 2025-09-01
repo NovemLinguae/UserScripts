@@ -80,7 +80,7 @@ class ErasedSectionsDetector {
 			</div>
 		`;
 
-		this.$( '#contentSub2' ).after( html );
+		this.$( '#contentSub' ).after( html );
 	}
 
 	filterForContentRemoval() {
