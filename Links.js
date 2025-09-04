@@ -60,6 +60,7 @@ class Links {
 	async generateUserspaceLinks() {
 		this.username = 'User:' + this.username;
 		this.usernameURI = encodeURIComponent( this.username.replace( /_/g, ' ' ).replace( /^User:/, '' ) );
+		const wiki = this.mw.config.get( 'wgDBname' );
 
 		this.mw.util.addPortletLink( 'p-links', `/wiki/${ this.username }/common.js`, 'common.js' );
 		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/${ this.username }/global.js`, 'global.js' );
@@ -68,6 +69,8 @@ class Links {
 		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/${ this.username }/global.css`, 'global.css' );
 		// point this one to meta. Speical:CentralAuth works locally, but does not show the "previous global account changes" log when used locally
 		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/Special:CentralAuth?target=${ this.usernameURI }`, 'Central auth' );
+		this.mw.util.addPortletLink( 'p-links', `https://xtools.wmflabs.org/ec/${ wiki }/${ this.usernameURI }`, 'XTools' );
+		this.mw.util.addPortletLink( 'p-links', `https://techcontribs.toolforge.org/cn/${ this.usernameURI }`, 'Tech contribs' );
 		this.mw.util.addPortletLink( 'p-links', `/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }`, 'User rights log' );
 		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }@enwiki`, 'User rights log (meta 1)' );
 		this.mw.util.addPortletLink( 'p-links', `https://meta.wikimedia.org/wiki/Special:Log?type=rights&user=&page=${ this.usernameURI }`, 'User rights log (meta 2)' );
