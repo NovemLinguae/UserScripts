@@ -14,15 +14,16 @@ function apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $ABSOLUTE_PATH_TO_TEMP_
 
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // don't echo the output
 	curl_setopt($ch, CURLOPT_URL, $url); // set the URL
+	curl_setopt($ch, CURLOPT_USERAGENT, "[[w:User:Novem Linguae]]'s publish.php script. Concatenates .js files together and writes them to .js pages onwiki."); // set user agent
 	curl_setopt($ch, CURLOPT_COOKIEJAR, $ABSOLUTE_PATH_TO_TEMP_DIRECTORY . '\\cookie.txt');
 	curl_setopt($ch, CURLOPT_COOKIEFILE, $ABSOLUTE_PATH_TO_TEMP_DIRECTORY . '\\cookie.txt');
 	$result = curl_exec($ch);
 	curl_close($ch);
-	$result = json_decode($result, true);
-	if ( isset($result['error']) ) {
-		throw new Error('API returned an error message. ' . var_export($result['error'], true));
+	$resultJson = json_decode($result, true);
+	if ( !$resultJson || isset($resultJson['error']) ) {
+		throw new Error('API returned an error message. ' . var_export($result, true));
 	}
-	return $result;
+	return $resultJson;
 }
 
 function deleteImportStatements($str) {
