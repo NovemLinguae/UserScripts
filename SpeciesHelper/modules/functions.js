@@ -37,7 +37,7 @@ export async function getWikidataID( title ) {
 }
 
 export async function getTaxa( genus ) {
-	// Getting tree of life via API notes: https://en.wikipedia.org/wiki/Wikipedia_talk:Automated_taxobox_system#Family_for_user_script - {{#invoke:Autotaxobox|listAll|Bellis}} → Bellis-genus, Astereae-tribus, Asterodae-supertribus, etc.
+	// Getting tree of life via API notes: https://en.wikipedia.org/wiki/Wikipedia_talk:Automated_taxobox_system/Archive_5#Family_for_user_script - {{#invoke:Autotaxobox|listAll|Bellis}} → Bellis-genus, Astereae-tribus, Asterodae-supertribus, etc.
 	const api = new mw.Api();
 	const response = await api.get( {
 		action: 'expandtemplates',
@@ -521,6 +521,10 @@ export function arraysHaveSameValuesCaseInsensitive( array1, array2 ) {
 }
 
 export function taxaStringToArray( taxa ) {
+	// Double check that {{#invoke:Autotaxobox|listAll|*}} didn't return garbage. It can return garbage if Template:Taxonomy/* is formatted incorrectly.
+	if ( !taxa.match( /^[A-Za-z\-\/ ,]+$/ ) ) {
+		throw new Error();
+	}
 	// get rid of "Life" at the end
 	taxa = taxa.replace( ', Life-', '' );
 	// convert to array

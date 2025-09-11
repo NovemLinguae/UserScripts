@@ -221,7 +221,12 @@ $( async () => {
 		/** Example: Mansonia, rather than Mansonia (plant) */
 		const displayGenus = taxonomyTemplateGenus.replace( / \([^)]+\)/, '' );
 
-		taxa = taxaStringToArray( taxa );
+		try {
+			taxa = taxaStringToArray( taxa );
+		} catch ( e ) {
+			alert( `Garbled response received from {{#invoke:Autotaxobox|listAll|${ taxonomyTemplateGenus }}}. Is the page [[Template:Taxonomy/${ taxonomyTemplateGenus }]] formatted correctly? Does its wikicode contain {{Don't edit this line}} and match what other Template:Taxonomy/* pages look like?` );
+			return;
+		}
 
 		// Unusual edge case where the category and stub template exist, but their pages aren't for a taxa, they're for something not related to biology at all. The fix: just delete them from the taxa array.
 		const taxaToSkip = [ 'Appalachia' ];
