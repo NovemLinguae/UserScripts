@@ -163,7 +163,10 @@ class TemplateTaxonomyAddCite {
 		wikicode += refs[ websiteId ];
 		wikicode += '\n}}\n';
 
-		this.$( '#wpTextbox1' ).html( wikicode );
+		// Do this in a more complicated way than normal, to enable support for CodeMirror. https://www.mediawiki.org/wiki/Extension:CodeMirror#Using_jQuery.textSelection
+		const $textarea = this.$( '#wpTextbox1' );
+		const content = $textarea.textSelection( 'getContents' );
+		$textarea.textSelection( 'setContents', wikicode );
 
 		// watchlist it
 		this.$( '#wpWatchthis' ).prop( 'checked', true );
