@@ -20,8 +20,8 @@ class TemplateTaxonomyAddCite {
 			return;
 		}
 
-		let taxon = title.match( /(?<=\/).*$/ );
-		taxon = taxon[ 0 ];
+		// In the title, grab everything after the slash
+		const taxon = title.split( '/' ).pop();
 
 		// TODO: refactor to use JSON, and a loop to add the table rows
 
@@ -136,36 +136,54 @@ class TemplateTaxonomyAddCite {
 	}
 
 	addCite( websiteId ) {
+		/* eslint-disable no-alert */
+		let rank = prompt( "Enter this taxa's rank. For example, genus, tribe, or subfamily." );
+		rank = this.englishToLatin( rank );
+
+		let parent = prompt( "Enter this taxa's parent. For example, the parent of the genus homo is Hominina." );
+		// capitalize just the first letter
+		parent = parent.charAt( 0 ).toUpperCase() + parent.slice( 1 );
+
+		const url = prompt( 'Enter the URL. For example, if this is a citation to Catalogue of Life, enter the catalogueoflife.org URL that has info on this taxa.' );
+		let wormsId, catalogueOfLifeId;
+		if ( websiteId === 'ttac-worms' ) {
+			wormsId = url.match( /id=(\d+)$/ )[ 1 ] || '';
+		} else if ( websiteId === 'ttac-catalogue-of-life' ) {
+			catalogueOfLifeId = url.match( /\/([^/]+)$/ )[ 1 ] || '';
+		}
+
+		// TODO: extract the ID from the Catalogue of Life URL
+
 		// CC BY-SA 4.0, Mitch3091, https://stackoverflow.com/a/38148759/3480193
 		const date = new Date().toISOString().slice( 0, 10 ); // yyyy-mm-dd
 
+		// In the title, grab everything after the slash
 		const title = this.mw.config.get( 'wgPageName' );
-		let taxon = title.match( /(?<=\/).*$/ );
-		taxon = taxon[ 0 ];
+		const taxon = title.split( '/' ).pop();
 
-		let wikicode = "{{Don't edit this line {{{machine code|}}}\n|rank=genus\n|link={{subst:#titleparts:{{subst:PAGENAME}}|2|2}}\n|parent=\n|refs=";
+		let wikicode = `{{Don't edit this line {{{machine code|}}}\n|rank=${ rank }\n|link={{subst:#titleparts:{{subst:PAGENAME}}|2|2}}\n|parent=${ parent }\n|refs=`;
 
 		// TODO: if title has parentheses, use the format |link=Example (parentheses)|Example
 		// TODO: italics only for genus
 
 		const refs = {
-			// TODO: use {{Catalogue of Life}}
-			'ttac-catalogue-of-life': `{{Cite web |access-date=${ date } |url= |title=''${ taxon }'' |website=[[Catalogue of Life]]}}`,
-			'ttac-worms': `{{Cite WoRMS |title=''${ taxon }'' |id=NUMBER-GOES-HERE |access-date=${ date }}}`,
-			'ttac-ncbi': `{{Cite web |access-date=${ date } |url= |title=''${ taxon }'' |website=[[NCBI]]}}`,
-			'ttac-lpsn': `{{Cite web |access-date=${ date } |url= |title=''${ taxon }'' |website=[[LPSN]]}}`,
-			'ttac-mycobank': `{{Cite web |access-date=${ date } |url= |title=''${ taxon }'' |website=[[MycoBank]]}}`,
-			'ttac-index-fungorum': `{{Cite web |access-date=${ date } |url= |title=''${ taxon }'' |website=[[Index Fungorum]]}}`,
-			'ttac-mindat': `{{Cite web |access-date=${ date } |url= |title=''${ taxon }'' |website=[[Mindat.org]]}}`,
-			'ttac-other': `{{Cite web |access-date=${ date } |url= |title=''${ taxon }'' |website=}}`
+			// Old: {{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[Catalogue of Life]]}}`,
+			'ttac-catalogue-of-life': `{{Catalogue of Life |id=${ catalogueOfLifeId } |title=${ taxon } |access-date=${ date }}}`,
+			'ttac-worms': `{{Cite WoRMS |title=''${ taxon }'' |id=${ wormsId } |access-date=${ date }}}`,
+			'ttac-ncbi': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[NCBI]]}}`,
+			'ttac-lpsn': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[LPSN]]}}`,
+			'ttac-mycobank': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[MycoBank]]}}`,
+			'ttac-index-fungorum': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[Index Fungorum]]}}`,
+			'ttac-mindat': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[Mindat.org]]}}`,
+			'ttac-other': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=}}`
 		};
 
 		wikicode += refs[ websiteId ];
 		wikicode += '\n}}\n';
 
-		// Do this in a more complicated way than normal, to enable support for CodeMirror. https://www.mediawiki.org/wiki/Extension:CodeMirror#Using_jQuery.textSelection
+		// I did this in a more complicated way than normal, to enable support for CodeMirror. https://www.mediawiki.org/wiki/Extension:CodeMirror#Using_jQuery.textSelection
 		const $textarea = this.$( '#wpTextbox1' );
-		const content = $textarea.textSelection( 'getContents' );
+		$textarea.textSelection( 'getContents' );
 		$textarea.textSelection( 'setContents', wikicode );
 
 		// watchlist it
@@ -177,6 +195,136 @@ class TemplateTaxonomyAddCite {
 		} else { // editing
 			this.$( '#wpSummary' ).val( 'add/edit citation ([[User:Novem Linguae/Scripts/TemplateTaxonomyAddCite.js|TemplateTaxonomyAddCite]])' );
 		}
+	}
+
+	englishToLatin( rank ) {
+		// https://en.wikipedia.org/wiki/Wikipedia:Automated_taxobox_system/ranks#Rank_table
+		const rankMap = {
+			alliance: 'alliance',
+			'basic shell type': 'basic shell type',
+			branch: 'branch',
+			clade: 'cladus',
+			'clade?': 'possible clade',
+			class: 'classis',
+			cohort: 'cohort',
+			division: 'divisio',
+			domain: 'domain',
+			epifamily: 'epifamilia',
+			family: 'familia',
+			form: 'forma',
+			'form taxon': 'form taxon',
+			genus: 'genus',
+			grade: 'gradus',
+			grandorder: 'grandordo',
+			group: 'virus group',
+			hyperfamily: 'hyperfamilia',
+			ichnoclass: 'ichnoclassis',
+			ichnocohort: 'ichnocohort',
+			ichnodivision: 'ichnodivisio',
+			ichnofamily: 'ichnofamilia',
+			ichnogenus: 'ichnogenus',
+			ichnograndorder: 'ichnograndordo',
+			ichnoinfraclass: 'ichnoinfraclassis',
+			ichnoinfradivision: 'ichnoinfradivisio',
+			ichnoinfraorder: 'ichnoinfraordo',
+			ichnolegion: 'ichnolegio',
+			ichnomagnorder: 'ichnomagnordo',
+			ichnomicrorder: 'ichnomicrordo',
+			ichnoorder: 'ichnoordo',
+			ichnoparvorder: 'ichnoparvordo',
+			ichnospecies: 'ichnospecies',
+			'ichnostem-group': 'ichnostem-group',
+			ichnosubclass: 'ichnosubclassis',
+			ichnosubdivision: 'ichnosubdivisio',
+			ichnosubfamily: 'ichnosubfamilia',
+			ichnosublegion: 'ichnosublegio',
+			ichnosuborder: 'ichnosubordo',
+			ichnosuperclass: 'ichnosuperclassis',
+			ichnosupercohort: 'ichnosupercohort',
+			ichnosuperfamily: 'ichnosuperfamilia',
+			ichnosuperorder: 'ichnosuperordo',
+			'informal group': 'informal group',
+			infraclass: 'infraclassis',
+			infrakingdom: 'infraregnum',
+			infralegion: 'infralegio',
+			infraorder: 'infraordo',
+			infraphylum: 'infraphylum',
+			infratribe: 'infratribus',
+			kingdom: 'regnum',
+			legion: 'legio',
+			magnorder: 'magnordo',
+			microphylum: 'microphylum',
+			microrder: 'micrordo',
+			mirorder: 'mirordo',
+			morphotype: 'morphotype',
+			nanophylum: 'nanophylum',
+			nanorder: 'nanordo',
+			node: 'node',
+			ooclass: 'ooclassis',
+			oocohort: 'oocohort',
+			oofamily: 'oofamilia',
+			oogenus: 'oogenus',
+			oomagnorder: 'oomagnordo',
+			oorder: 'oordo',
+			oospecies: 'oospecies',
+			oosubclass: 'oosubclassis',
+			oosubgenus: 'oosubgenus',
+			oosubspecies: 'oosubspecies',
+			oosupercohort: 'oosupercohort',
+			oosuperorder: 'oosuperordo',
+			order: 'ordo',
+			parafamily: 'parafamilia',
+			parvclass: 'parvclassis',
+			parvorder: 'parvordo',
+			phylum: 'phylum',
+			plesion: 'plesion',
+			'plesion-group': 'plesion-group',
+			realm: 'realm',
+			section: 'sectio',
+			series: 'series',
+			serotype: 'serotype',
+			species: 'species',
+			'species complex': 'species complex',
+			'species group': 'species group',
+			'species subgroup': 'species subgroup',
+			'stem group': 'stem group',
+			strain: 'strain',
+			subclass: 'subclassis',
+			subcohort: 'subcohort',
+			subdivision: 'subdivisio',
+			subfamily: 'subfamilia',
+			subgenus: 'subgenus',
+			subkingdom: 'subregnum',
+			sublegion: 'sublegio',
+			suborder: 'subordo',
+			subphylum: 'subphylum',
+			subsection: 'subsectio',
+			subseries: 'subseries',
+			subspecies: 'subspecies',
+			subterclass: 'subterclassis',
+			subtribe: 'subtribus',
+			superclass: 'superclassis',
+			supercohort: 'supercohort',
+			superdivision: 'superdivisio',
+			superdomain: 'superdomain',
+			superfamily: 'superfamilia',
+			superkingdom: 'superregnum',
+			superlegion: 'superlegio',
+			superorder: 'superordo',
+			superphylum: 'superphylum',
+			supersection: 'supersectio',
+			supertribe: 'supertribus',
+			'total group': 'total group',
+			tribe: 'tribus',
+			variety: 'varietas',
+			virus: 'virus'
+		};
+		rank = rank.toLowerCase().trim();
+		if ( rank in rankMap ) {
+			return rankMap[ rank ];
+		}
+		// return original if not found
+		return rank;
 	}
 }
 
