@@ -63,11 +63,7 @@ class UserRightsDiff {
 		let text = this.$( el ).text();
 		let from, to;
 		try {
-			text = this.deleteParenthesesAndTags( text );
-			text = this.deleteBeginningOfLogEntry( text );
-			const matches = / from (.*?) to (.*?)(?: \(.*)?$/.exec( text );
-			from = this.permStringToArray( matches[ 1 ] );
-			to = this.permStringToArray( matches[ 2 ] );
+			[ from, to ] = this.logStringToArrays( text );
 		} catch ( err ) {
 			throw new Error( 'UserRightsDiff.js error. Error was: ' + err + '. Input text was: ' + this.$( el ).text() );
 		}
@@ -83,6 +79,16 @@ class UserRightsDiff {
 			'<span class="user-rights-diff" style="background-color:lightgray">[NO CHANGE]</span>' :
 			'';
 		this.$( el ).append( `<br />${ added } ${ removed } ${ noChange }` );
+	}
+
+	logStringToArrays( text ) {
+		text = this.deleteParenthesesAndTags( text );
+		text = this.deleteBeginningOfLogEntry( text );
+		const matches = / from (.*?) to (.*?)(?: \(.*)?$/.exec( text );
+		from = this.permStringToArray( matches[ 1 ] );
+		to = this.permStringToArray( matches[ 2 ] );
+		console.log( { from, to } );
+		return [ from, to ];
 	}
 
 	/** Don't delete "(none)". Delete all other parentheses and tags. */
