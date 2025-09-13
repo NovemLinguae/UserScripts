@@ -1,3 +1,5 @@
+const { UserHighlighterSimple } = require( './modules/UserHighlighterSimple.js' );
+
 // Fire after wiki content is added to the DOM, such as when first loading a page, or when a gadget such as the XTools gadget loads.
 mw.hook( 'wikipage.content' ).add( async () => {
 	await mw.loader.using( [ 'mediawiki.util', 'mediawiki.Title' ], async () => {

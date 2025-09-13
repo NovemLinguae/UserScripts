@@ -14,6 +14,8 @@ This script works in Special:UserRights, in watchlists, and when clicking "right
 
 */
 
+const { UserRightsDiffHtmlProcessor } = require( './modules/UserRightsDiffHtmlProcessor.js' );
+
 $( () => {
 	( new UserRightsDiffHtmlProcessor( $ ) ).execute();
 } );

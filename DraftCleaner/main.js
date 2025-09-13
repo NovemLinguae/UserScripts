@@ -44,6 +44,8 @@ Add one of the following to your User:yourName/common.js (at the top) to change 
 This page was assembled from 3 files using my publish.php script. I have an offline test suite with around 100 unit tests for the DraftCleaner and StringFilter classes.
 */
 
+const { DraftCleaner } = require( './modules/DraftCleaner.js' );
+
 ( function () {
 	async function getWikicode( title ) {
 		const pageIsDeleted = !mw.config.get( 'wgCurRevisionId' );

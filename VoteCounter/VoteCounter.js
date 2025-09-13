@@ -8,6 +8,8 @@
 
 */
 
+const { VoteCounterController } = require( './modules/VoteCounterController.js' );
+
 $( async () => {
 	await mw.loader.using( [ 'mediawiki.api' ], async () => {
 		await ( new VoteCounterController() ).execute();
