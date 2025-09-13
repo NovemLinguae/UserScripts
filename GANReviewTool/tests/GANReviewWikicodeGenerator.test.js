@@ -1,5 +1,5 @@
 // import * as service from "../modules/GANReviewWikicodeGenerator.js";
-const { GANReviewWikicodeGenerator } = require( '../modules/GANReviewWikicodeGenerator.js' );
+const { GANReviewWikicodeGenerator, articleHistorySelector } = require( '../modules/GANReviewWikicodeGenerator.js' );
 
 // Babel is required to use ES6 module syntax
 // Copy package.json and .babelrc from a project that already has this working
@@ -87,7 +87,6 @@ describe( 'getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortT
 |action1link = Wikipedia:Featured article candidates/Late Registration/archive1
 |action1result = failed
 |action1oldid = 1083301278
-
 
 |action2 = GAN
 |action2date = ~~~~~
@@ -1012,7 +1011,6 @@ describe( 'getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 |dykentry = ... that [[SpaceX]]'s reusable '''[[SpaceX Starship|Starship]]''' launch vehicle has twice as much thrust as the [[Apollo program]]'s [[Saturn&nbsp;V]]?
 |dyknom = Template:Did you know nominations/SpaceX Starship
 
-
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = SpaceX Starship/GA2
@@ -1051,7 +1049,6 @@ describe( 'getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 |action1link   = Talk:Cristiano Ronaldo/GA4
 |action1result = not listed
 |action1oldid  = 1036984152
-
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = Talk:Cristiano Ronaldo/GA5
@@ -1061,6 +1058,28 @@ describe( 'getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 |topic = Sports and recreation
 }}
 `;
+		expect( wg.getFailWikicodeForTalkPage( talkWikicode, reviewTitle, oldid ) ).toBe( output );
+	} );
+
+	test( '#209', () => {
+		const talkWikicode =
+`{{GA nominee|05:47, 28 December 2024 (UTC)|nominator=~{{Smallcaps|[[User:CtasACT|CtasACT]]}}<sup>[[User_talkCtasACT|Talk]]{{nbsp}}•{{nbsp}}[[Special:Contributions/CtasACT|Contribs]]</sup>|page=1|subtopic=Magazines and print journalism|status=onreview|note=|shortdesc=20th century Ethiopian writer and journalist}}
+{{WikiProject banner shell|class=C|blp=no|listas=Girma|
+{{WikiProject Biography|needs-photo=yes}}
+{{WikiProject Articles for creation|ts=20140219040153|reviewer=Kvng}}
+{{WikiProject Ethiopia}}
+{{WikiProject Journalism}}
+}}`;
+		const reviewTitle = 'Talk:Baalu Girma';
+		const oldid = 1267462501;
+		const output =
+`{{FailedGA|~~~~~|topic=Magazines and print journalism|page=1|oldid=1267462501}}
+{{WikiProject banner shell|class=C|blp=no|listas=Girma|
+{{WikiProject Biography|needs-photo=yes}}
+{{WikiProject Articles for creation|ts=20140219040153|reviewer=Kvng}}
+{{WikiProject Ethiopia}}
+{{WikiProject Journalism}}
+}}`;
 		expect( wg.getFailWikicodeForTalkPage( talkWikicode, reviewTitle, oldid ) ).toBe( output );
 	} );
 } );
@@ -1187,6 +1206,16 @@ describe( 'getOnHoldWikicodeForTalkPage(talkWikicode)', () => {
 '{{Talk header}}{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}{{WikiProject Football}}';
 		expect( wg.getOnHoldWikicodeForTalkPage( talkWikicode ) ).toBe( output );
 	} );
+
+	test( '#209', () => {
+		const talkWikicode =
+`{{GA nominee|05:34, 10 September 2023 (UTC)|nominator={{colored link|#198754|User:Jake-jakubowski|Jake Jakubowski}} <sup>{{colored link|#0d6efd|User_talk:Jake-jakubowski|Talk}}</sup>|page=2|subtopic=Transport|status=onreview|note=|shortdesc=Road bridge in Maine, US}}
+{{FailedGA|22:33, 29 August 2023 (UTC)|topic=Transport|page=1|oldid=1171806123}}`;
+		const output =
+`{{GA nominee|05:34, 10 September 2023 (UTC)|nominator={{colored link|#198754|User:Jake-jakubowski|Jake Jakubowski}} <sup>{{colored link|#0d6efd|User_talk:Jake-jakubowski|Talk}}</sup>|page=2|subtopic=Transport|status=onhold|note=|shortdesc=Road bridge in Maine, US}}
+{{FailedGA|22:33, 29 August 2023 (UTC)|topic=Transport|page=1|oldid=1171806123}}`;
+		expect( wg.getOnHoldWikicodeForTalkPage( talkWikicode ) ).toBe( output );
+	} );
 } );
 
 describe( 'getAskSecondOpinionWikicodeForTalkPage(talkWikicode)', () => {
@@ -1237,13 +1266,12 @@ test
 
 blah`;
 		const output =
+// empty lines after the inserted template will produce unexpected `<br>`
 `== Test ==
 {{atopg
 | status = 
 | result = Passed
 }}
-
-
 == Test ==
 
 test
@@ -1315,7 +1343,7 @@ describe( 'getTopicFromGANomineeTemplate(talkWikicode)', () => {
 	} );
 
 	test( 'lowercase', () => {
-		const talkWikicode = '{{ga nominee|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|topic=Media and drama|status=onhold|note=}}';
+		const talkWikicode = '{{gA nominee|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|topic=Media and drama|status=onhold|note=}}';
 		const output = 'Media and drama';
 		expect( wg.getTopicFromGANomineeTemplate( talkWikicode ) ).toBe( output );
 	} );
@@ -1346,7 +1374,7 @@ describe( 'deleteGANomineeTemplate(talkWikicode)', () => {
 	} );
 
 	test( 'lowercase', () => {
-		const talkWikicode = '{{Test}}{{ga nominee|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|topic=Media and drama|status=onhold|note=}}{{Test2}}';
+		const talkWikicode = '{{Test}}{{gA nominee|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|topic=Media and drama|status=onhold|note=}}{{Test2}}';
 		const output = '{{Test}}{{Test2}}';
 		expect( wg.deleteGANomineeTemplate( talkWikicode ) ).toBe( output );
 	} );
@@ -1361,6 +1389,15 @@ describe( 'deleteGANomineeTemplate(talkWikicode)', () => {
 {{Test2}}`;
 		expect( wg.deleteGANomineeTemplate( talkWikicode ) ).toBe( output );
 	} );
+
+	test( '#214', () => {
+		const talkWikicode =
+`{{GA nominee|08:24, 7 January 2024 (UTC)|nominator=<b>[[User talk:Praseodymium-141|<span style="color:#028A0F"><sup>141</sup></span>]][[User:Praseodymium-141|<span style="color:#A32CC4">Pr</span>]] {[[Special:Contributions/Praseodymium-141|contribs]]}</b>|page=2|subtopic=Chemistry and materials science|status=onreview|note=|shortdesc=}}
+{{Failed GA|17:02, 7 June 2022 (UTC)|page=1|subtopic=Chemistry and materials science}}`;
+		const output =
+'{{Failed GA|17:02, 7 June 2022 (UTC)|page=1|subtopic=Chemistry and materials science}}';
+		expect( wg.deleteGANomineeTemplate( talkWikicode ) ).toBe( output );
+	} );
 } );
 
 describe( 'getTemplateParameter(wikicode, templateName, parameterName)', () => {
@@ -1373,7 +1410,7 @@ describe( 'getTemplateParameter(wikicode, templateName, parameterName)', () => {
 	} );
 
 	test( 'template name case difference', () => {
-		const wikicode = '{{ga nomINee|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|topic=Media and drama|status=onhold|note=}}';
+		const wikicode = '{{gA nominee|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|topic=Media and drama|status=onhold|note=}}';
 		const templateName = 'GA nominee';
 		const parameterName = 'topic';
 		const output = 'Media and drama';
@@ -1392,7 +1429,7 @@ describe( 'getTemplateParameter(wikicode, templateName, parameterName)', () => {
 		const wikicode = '{{blah|11:39, 17 January 2022 (UTC)|nominator=[[User:Narutolovehinata5|<B><span style="color:#0038A8">Naruto</span><span style="color:#FCD116">love</span><span style="color:#CE1126">hinata</span>5</B>]] ([[User talk:Narutolovehinata5|talk]] · [[Special:Contributions/Narutolovehinata5|contributions]])|page=2|toPIc=Media and drama|status=onhold|note=}}';
 		const templateName = 'GA nominee';
 		const parameterName = 'topic';
-		const output = null;
+		const output = undefined;
 		expect( wg.getTemplateParameter( wikicode, templateName, parameterName ) ).toBe( output );
 	} );
 
@@ -1479,7 +1516,7 @@ describe( 'getFirstTemplateNameFromWikicode(wikicode)', () => {
 
 	test( 'Normal', () => {
 		const wikicode = 'Hi{{Test|hello}}';
-		const output = 'Test';
+		const output = 'Template:Test';
 		expect( wg.getFirstTemplateNameFromWikicode( wikicode ) ).toBe( output );
 	} );
 } );
@@ -1629,7 +1666,6 @@ describe( 'updateArticleHistory(talkWikicode, topic, nominationPageTitle, listed
 |action1date=6 June 2007
 |action1link=Wikipedia:Articles for deletion/Cow tipping
 |action1result=kept
-
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = Talk:Cow tipping/GA1
@@ -1662,7 +1698,6 @@ describe( 'updateArticleHistory(talkWikicode, topic, nominationPageTitle, listed
 |action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
 |action1result=failed
 |action1oldid=47350127
-
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = Talk:Agriculture/GA2
@@ -1808,7 +1843,6 @@ describe( 'updateArticleHistory(talkWikicode, topic, nominationPageTitle, listed
 |dykentry = ... that [[SpaceX]]'s reusable '''[[SpaceX Starship|Starship]]''' launch vehicle has twice as much thrust as the [[Apollo program]]'s [[Saturn&nbsp;V]]?
 |dyknom = Template:Did you know nominations/SpaceX Starship
 
-
 |action12 = GAN
 |action12date = ~~~~~
 |action12link = Talk:SpaceX Starship/GA2
@@ -1832,7 +1866,7 @@ describe( 'firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, code
 |action1result=failed
 |action1oldid=47350127
 }}`;
-		const templateNameRegExNoDelimiters = 'Article ?history';
+		const templateSelector = articleHistorySelector;
 		const codeToInsert =
 `|action2 = GAN
 |action2date = ~~~~~
@@ -1847,7 +1881,6 @@ describe( 'firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, code
 |action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
 |action1result=failed
 |action1oldid=47350127
-
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = Talk:Agriculture/GA2
@@ -1855,7 +1888,7 @@ describe( 'firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, code
 |currentstatus = GA
 |topic = Natural Sciences
 }}`;
-		expect( wg.firstTemplateInsertCode( wikicode, templateNameRegExNoDelimiters, codeToInsert ) ).toBe( output );
+		expect( wg.firstTemplateInsertCode( wikicode, templateSelector, codeToInsert ) ).toBe( output );
 	} );
 
 	test( 'should be case insensitive', () => {
@@ -1864,7 +1897,7 @@ describe( 'firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, code
 |topic = Physics and astronomy
 }}
 `;
-		const templateNameRegExNoDelimiters = 'Article ?history';
+		const templateSelector = articleHistorySelector;
 		const codeToInsert =
 `|action12 = GAN
 |action12date = ~~~~~
@@ -1874,7 +1907,6 @@ describe( 'firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, code
 		const output =
 `{{ArticleHistory
 |topic = Physics and astronomy
-
 |action12 = GAN
 |action12date = ~~~~~
 |action12link = Talk:SpaceX Starship/GA1
@@ -1882,7 +1914,7 @@ describe( 'firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, code
 |currentstatus = DGA
 }}
 `;
-		expect( wg.firstTemplateInsertCode( wikicode, templateNameRegExNoDelimiters, codeToInsert ) ).toBe( output );
+		expect( wg.firstTemplateInsertCode( wikicode, templateSelector, codeToInsert ) ).toBe( output );
 	} );
 } );
 
@@ -2144,7 +2176,7 @@ describe( 'firstTemplateGetParameterValue(wikicode, template, parameter)', () =>
 }}`;
 		const template = 'Article history';
 		const parameter = 'topic';
-		const output = null;
+		const output = undefined;
 		expect( wg.firstTemplateGetParameterValue( wikicode, template, parameter ) ).toBe( output );
 	} );
 } );
@@ -2317,35 +2349,5 @@ describe( 'addWikicodeAfterTemplates(wikicode, templates, codeToAdd)', () => {
 {{GA|18:28, 18 June 2022 (UTC)|topic=socsci|page=1}}
 `;
 		expect( wg.addWikicodeAfterTemplates( wikicode, templates, codeToAdd ) ).toBe( output );
-	} );
-} );
-
-describe( 'getEndOfStringPositionOfLastMatch(haystack, regex)', () => {
-	test( 'No match', () => {
-		const haystack = 'AAA BBB';
-		const regex = /ghi/ig;
-		const output = 0;
-		expect( wg.getEndOfStringPositionOfLastMatch( haystack, regex ) ).toBe( output );
-	} );
-
-	test( '1 match', () => {
-		const haystack = 'Abc def';
-		const regex = /Abc/ig;
-		const output = 3;
-		expect( wg.getEndOfStringPositionOfLastMatch( haystack, regex ) ).toBe( output );
-	} );
-
-	test( '2 matches', () => {
-		const haystack = 'Abc Abc def';
-		const regex = /Abc/ig;
-		const output = 7;
-		expect( wg.getEndOfStringPositionOfLastMatch( haystack, regex ) ).toBe( output );
-	} );
-
-	test( 'Case insensitive', () => {
-		const haystack = 'Abc Abc def';
-		const regex = /abc/ig;
-		const output = 7;
-		expect( wg.getEndOfStringPositionOfLastMatch( haystack, regex ) ).toBe( output );
 	} );
 } );
