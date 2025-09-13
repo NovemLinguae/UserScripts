@@ -11,7 +11,8 @@
 		"mw": "readonly"
 	},
 	"parserOptions": {
-		"sourceType": "module" // eslint-config-wikimedia default is "commonjs", but we need "module" for our unit tests
+		"sourceType": "module", // eslint-config-wikimedia default is "commonjs", but we need "module" for our unit tests
+		"ecmaVersion": "latest" // so that regex lookarounds don't cause syntax errors, which hides all the other linter errors in the file
 	},
 	"rules": {
 		// default rules we don't like
