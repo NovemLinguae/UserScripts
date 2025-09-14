@@ -1,4 +1,4 @@
-import { UserRightsDiffStringProcessor } from './UserRightsDiffStringProcessor';
+// import { UserRightsDiffStringProcessor } from './UserRightsDiffStringProcessor';
 
 export class UserRightsDiffHtmlProcessor {
 	constructor( $ ) {
@@ -46,10 +46,10 @@ export class UserRightsDiffHtmlProcessor {
 	}
 
 	checkLine( el ) {
-		let text = this.$( el ).text();
+		const text = this.$( el ).text();
 		let from, to;
 		try {
-			[ from, to ] = this.logStringToArrays( text );
+			[ from, to ] = this.logEntryStringToArrays( text );
 		} catch ( err ) {
 			throw new Error( 'UserRightsDiff.js error. Error was: ' + err + '. Input text was: ' + this.$( el ).text() );
 		}
@@ -67,13 +67,13 @@ export class UserRightsDiffHtmlProcessor {
 		this.$( el ).append( `<br />${ added } ${ removed } ${ noChange }` );
 	}
 
-	logStringToArrays( text ) {
+	/** Returns 2 arrays. For example: [ [ 'autopatrolled' ], [ 'sysop' ] ] */
+	logEntryStringToArrays( text ) {
 		text = this.deleteParenthesesAndTags( text );
 		text = this.deleteBeginningOfLogEntry( text );
 		const matches = / from (.*?) to (.*?)(?: \(.*)?$/.exec( text );
-		from = this.permStringToArray( matches[ 1 ] );
-		to = this.permStringToArray( matches[ 2 ] );
-		console.log( { from, to } );
+		const from = this.permStringToArray( matches[ 1 ] );
+		const to = this.permStringToArray( matches[ 2 ] );
 		return [ from, to ];
 	}
 
