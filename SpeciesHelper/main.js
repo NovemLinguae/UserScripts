@@ -488,11 +488,11 @@ $( async () => {
 		}
 
 		// REPLACE <references /> WITH {{Reflist}} ==========================
-		wikicodeBefore = wikicode2;
-		wikicode2 = f.replaceReferencesWithReflist( wikicode2 );
-		if ( wikicode2 !== wikicodeBefore ) {
-			editSummaryItems.push( '<references /> to {{Reflist}}' );
-		}
+		// wikicodeBefore = wikicode2;
+		// wikicode2 = f.replaceReferencesWithReflist( wikicode2 );
+		// if ( wikicode2 !== wikicodeBefore ) {
+		// 	editSummaryItems.push( '<references /> to {{Reflist}}' );
+		// }
 
 		// fix too many {{Uncategorized}} or {{Improve categories}} tags
 		const allCategoriesRegEx = new RegExp( `(?<=\\[\\[${ draftCategoryColon })Category:.+(?=\\]\\])`, 'gi' );
