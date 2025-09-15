@@ -18,6 +18,7 @@ This page was assembled from 5 files using my publish.php script. I also have an
 /* eslint-disable no-alert */
 
 const { SpeciesHelperFunctions } = require( './modules/SpeciesHelperFunctions.js' );
+const { SpeciesHelperData } = require( './modules/SpeciesHelperData.js' );
 const { ConvertToSpeciesBox } = require( './modules/ConvertToSpeciesBox.js' );
 const { MOSOrderPositionFinder } = require( './modules/MOSOrderPositionFinder.js' );
 
@@ -267,71 +268,8 @@ $( async () => {
 		}
 
 		// CHECK IF A BUNCH OF STUBS AND CATEGORIES EXIST ==================
-		const listOfNonLatinSpeciesCategories = {
-			// SENTENCE CASE AND SPACES PLEASE, usually plural
-			// latin (deprecated) -> non-latin (preferred)
-			Acoelomorpha: 'Acoelomorphs',
-			Amazona: 'Amazon parrots',
-			Aleyrodidae: 'Whiteflies',
-			Anguidae: 'Anguids',
-			Anisoptera: 'Dragonflies',
-			Annelida: 'Annelids',
-			Anura: 'Frogs',
-			Araneae: 'Spiders',
-			Bombus: 'Bumblebees',
-			Brachyura: 'Crabs',
-			Bryozoa: 'Bryozoans',
-			Caprini: 'Caprids',
-			Cebinae: 'Capuchin monkeys',
-			Cephalopoda: 'Cephalopods',
-			Cervidae: 'Deer',
-			Chilopoda: 'Centipedes',
-			Cirripedia: 'Barnacles',
-			Cnidaria: 'Cnidarians',
-			Coleoptera: 'Beetles',
-			Colubridae: 'Colubrids',
-			Ctenophora: 'Ctenophores',
-			Curculionoidea: 'Weevils',
-			Dactyloidae: 'Anoles',
-			Decapodiformes: 'Squid',
-			Delphinidae: 'Oceanic dolphins',
-			Dendrobatidae: 'Poison dart frogs',
-			Dicruridae: 'Drongos',
-			Didelphimorphia: 'Opossums',
-			Ephemeroptera: 'Mayflies',
-			Flavobacteriia: 'Flavobacteria',
-			Formicidae: 'Ants',
-			Gastropoda: 'Gastropods',
-			Heterokonta: 'Heterokonts',
-			Insecta: 'Insects',
-			Isoptera: 'Termites',
-			Licmetis: 'Corellas',
-			Lithodidae: 'King crabs',
-			Lorisoidea: 'Lorises and galagos',
-			Macropodidae: 'Macropods',
-			Macronaria: 'Macronarians',
-			Mammalia: 'Mammals',
-			Mammuthus: 'Mammoths',
-			Marmota: 'Marmots',
-			Mycobacterium: 'Mycobacteria',
-			Myotis: 'Mouse-eared bats',
-			Mysticeti: 'Baleen whale',
-			Nematoda: 'Nematodes',
-			Octopoda: 'Octopuses',
-			Onychophora: 'Onychophorans',
-			Paeonia: 'Peonies',
-			Pitheciinae: 'Sakis and uakaris',
-			Pseudacris: 'Chorus frogs',
-			Rangifer: 'Reindeer',
-			Rhinocerotidae: 'Rhinoceroses',
-			Rosa: 'Roses',
-			Sigmodon: 'Cotton rats',
-			Sitta: 'Nuthatches',
-			Syrphidae: 'Hoverflies',
-			Thysanoptera: 'Thrips',
-			Toxodontidae: 'Toxodonts',
-			Toxotes: 'Archerfish'
-		};
+		const data = new SpeciesHelperData();
+		const listOfNonLatinSpeciesCategories = data.getListOfNonLatinSpeciesCategories();
 		const pagesToCheck = f.getPagesToCheck( taxa, listOfNonLatinSpeciesCategories );
 		let listOfPages = await f.doPagesExist( pagesToCheck );
 		listOfPages = f.fixArrayOrder( pagesToCheck, listOfPages );
@@ -487,12 +425,14 @@ $( async () => {
 			editSummaryItems.push( 'stub' );
 		}
 
+		/* eslint-disable no-tabs */
 		// REPLACE <references /> WITH {{Reflist}} ==========================
 		// wikicodeBefore = wikicode2;
 		// wikicode2 = f.replaceReferencesWithReflist( wikicode2 );
 		// if ( wikicode2 !== wikicodeBefore ) {
 		// 	editSummaryItems.push( '<references /> to {{Reflist}}' );
 		// }
+		/* eslint-enable no-tabs */
 
 		// fix too many {{Uncategorized}} or {{Improve categories}} tags
 		const allCategoriesRegEx = new RegExp( `(?<=\\[\\[${ draftCategoryColon })Category:.+(?=\\]\\])`, 'gi' );
