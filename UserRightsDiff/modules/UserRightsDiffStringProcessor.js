@@ -25,16 +25,8 @@ export class UserRightsDiffStringProcessor {
 		}
 
 		string = string.replace( /^(.*) and (.*?$)/, '$1, $2' );
-		if ( string === '(none)' ) {
-			return [];
-		}
 
-		const array = string.split( ', ' ).map( ( str ) => {
-			str = str.trim();
-			// remove fragments of punctuation. can result when trying to delete nested parentheses. will delete fragments such as " .)"
-			str = str.replace( /[\s.,/#!$%^&*;:{}=\-_`~()]{2,}/g, '' );
-			return str;
-		} );
+		const array = string.split( ', ' ).map( ( str ) => str.trim() );
 
 		return array;
 	}
