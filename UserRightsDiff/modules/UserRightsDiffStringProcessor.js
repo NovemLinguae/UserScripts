@@ -23,11 +23,10 @@ export class UserRightsDiffStringProcessor {
 		if ( string === null ) {
 			return [];
 		}
-
+		// trim(), to get the space between the last perm and a parenthesis
+		string = string.trim();
 		string = string.replace( /^(.*) and (.*?$)/, '$1, $2' );
-
-		const array = string.split( ', ' ).map( ( str ) => str.trim() );
-
+		const array = string.split( ', ' );
 		return array;
 	}
 }
