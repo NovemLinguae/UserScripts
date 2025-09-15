@@ -1,7 +1,10 @@
 import { Inflect } from './Inflect';
-const { SpeciesHelperData } = require( './modules/SpeciesHelperData.js' );
 
 export class SpeciesHelperFunctions {
+	constructor( speciesHelperData ) {
+		this.data = speciesHelperData;
+	}
+
 	async getWikicodeOfDiff( diffID ) {
 		const pageIsDeleted = !mw.config.get( 'wgCurRevisionId' );
 		if ( pageIsDeleted ) {
@@ -140,8 +143,7 @@ export class SpeciesHelperFunctions {
 		}
 
 		// Replace any latin stubs that have non-latin equivalents, with the non-latin stub
-		const data = new SpeciesHelperData();
-		const listOfNonLatinSpeciesStubs = data.getListOfNonLatinSpeciesStubs();
+		const listOfNonLatinSpeciesStubs = this.data.getListOfNonLatinSpeciesStubs();
 		for ( const key in listOfNonLatinSpeciesStubs ) {
 			for ( const key2 in pagesToCheck ) {
 				const stubNameToCheck = 'Template:' + key + '-stub';
@@ -484,8 +486,7 @@ export class SpeciesHelperFunctions {
 	}
 
 	addSafelistedStubs( newStubs, wikicode2 ) {
-		const data = new SpeciesHelperData();
-		const stubSafelist = data.getStubSafelist();
+		const stubSafelist = this.data.getStubSafelist();
 		for ( const stub of stubSafelist ) {
 			const regexString = this.regExEscape( stub );
 			const isPresent = wikicode2.match( new RegExp( '\\{\\{' + regexString + '-stub\\}\\}', 'i' ) );

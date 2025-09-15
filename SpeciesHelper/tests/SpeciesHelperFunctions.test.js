@@ -1,6 +1,8 @@
 import { SpeciesHelperFunctions } from '../modules/SpeciesHelperFunctions.js';
+import { SpeciesHelperData } from '../modules/SpeciesHelperData.js';
 
-const f = new SpeciesHelperFunctions();
+const data = new SpeciesHelperData();
+const f = new SpeciesHelperFunctions( data );
 
 describe( 'countWords(wikicode)', () => {
 	test( 'simple', () => {

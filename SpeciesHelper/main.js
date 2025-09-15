@@ -24,7 +24,8 @@ const { MOSOrderPositionFinder } = require( './modules/MOSOrderPositionFinder.js
 
 // Wrapping this in a function so my linter doesn't throw a syntax error for "return not inside a function". Can remove this wrapper if I find a better way to do it. Or better yet, convert to a class.
 $( async () => {
-	const f = new SpeciesHelperFunctions();
+	const data = new SpeciesHelperData();
+	const f = new SpeciesHelperFunctions( data );
 
 	const title = mw.config.get( 'wgPageName' ); // includes namespace, underscores instead of spaces
 	if ( !f.shouldRunOnThisPage( title ) ) {
@@ -268,7 +269,6 @@ $( async () => {
 		}
 
 		// CHECK IF A BUNCH OF STUBS AND CATEGORIES EXIST ==================
-		const data = new SpeciesHelperData();
 		const listOfNonLatinSpeciesCategories = data.getListOfNonLatinSpeciesCategories();
 		const pagesToCheck = f.getPagesToCheck( taxa, listOfNonLatinSpeciesCategories );
 		let listOfPages = await f.doPagesExist( pagesToCheck );
