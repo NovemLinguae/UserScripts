@@ -1,9 +1,10 @@
 import { UserRightsDiffStringProcessor } from './UserRightsDiffStringProcessor';
 
 export class UserRightsDiffHtmlProcessor {
-	constructor( $ ) {
+	constructor( $, mw ) {
 		// eslint-disable-next-line no-jquery/variable-pattern
 		this.$ = $;
+		this.mw = mw;
 	}
 
 	execute() {
@@ -46,7 +47,9 @@ export class UserRightsDiffHtmlProcessor {
 	}
 
 	checkLine( el ) {
-		const text = this.$( el ).text();
+		let text = this.$( el ).text();
+		// We're going to write this text back to the browser window later. HTML escape it to prevent XSS.
+		text = this.mw.html.escape( text );
 		const stringProcessor = new UserRightsDiffStringProcessor();
 		let from, to;
 		try {

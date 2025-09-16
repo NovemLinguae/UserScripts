@@ -18,7 +18,7 @@ class DontForgetG12 {
 			return;
 		}
 
-		// Only run if 1) draft is submitted
+		// Only run if draft is submitted
 		const isDraftspaceOrUserspace = [ 118, 2 ].includes( this.namespace );
 		const draftIsSubmitted = this.wikicode.match( /(?:{{AfC submission}}|{{AfC submission\|}}|{{AfC submission\|\|)/i ) && isDraftspaceOrUserspace;
 		if ( draftIsSubmitted ) {
