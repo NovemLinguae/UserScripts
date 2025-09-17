@@ -196,7 +196,7 @@ export class SpeciesHelperFunctions {
 		return correctOrder.filter( ( str ) => incorrectOrder.includes( str ) );
 	}
 
-	// TODO: write unit test for this function. maybe move it to a class
+	// TODO: write unit test for this function
 	countWords( wikicode ) {
 		// convert {{Blockquote}} to text
 		wikicode = wikicode.replace( /\{\{Blockquote\s*\|([^}]*)\}\}/g, '$1' );

@@ -337,7 +337,8 @@ export class SpeciesHelperData {
 			// 'Squamata': 'Lizard', // paraphyletic
 			Testudines: 'Turtle',
 			Thysanoptera: 'Thrips',
-			Trochilidae: 'Hummingbird'
+			Trochilidae: 'Hummingbird',
+			Chilopoda: 'Centipede'
 		};
 	}
 
