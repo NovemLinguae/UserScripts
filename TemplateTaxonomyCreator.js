@@ -137,8 +137,9 @@ class TemplateTaxonomyCreator {
 
 	promptThenAddWikicode( websiteId ) {
 		/* eslint-disable no-alert */
-		let rank = prompt( "Enter this taxa's rank. For example, genus, tribe, or subfamily." );
-		rank = this.englishToLatin( rank );
+		const englishRank = prompt( "Enter this taxa's rank. For example, genus, tribe, or subfamily." );
+		const latinRank = this.englishToLatin( englishRank );
+		const needsItalics = this.needsItalics( latinRank );
 
 		let parent = prompt( "Enter this taxa's parent. For example, the parent of the genus homo is Hominina." );
 		// capitalize just the first letter
@@ -158,28 +159,45 @@ class TemplateTaxonomyCreator {
 		const date = new Date().toISOString().slice( 0, 10 ); // yyyy-mm-dd
 
 		// In the title, grab everything after the slash
-		const title = this.mw.config.get( 'wgPageName' );
-		const taxon = title.split( '/' ).pop();
+		const pageName = this.mw.config.get( 'wgPageName' );
+		const taxon = pageName.split( '/' ).pop();
 
-		let wikicode = `{{Don't edit this line {{{machine code|}}}\n|rank=${ rank }\n|link={{subst:#titleparts:{{subst:PAGENAME}}|2|2}}\n|parent=${ parent }\n|refs=`;
+		let wikicode =
+`{{Don't edit this line {{{machine code|}}}
+|rank=${ latinRank }
+|link={{subst:#titleparts:{{subst:PAGENAME}}|2|2}}
+|parent=${ parent }
+|refs=`;
 
 		// TODO: if title has parentheses, use the format |link=Example (parentheses)|Example
 		// TODO: italics only for genus
 
+		const citeTitle = needsItalics ? `''${ taxon }''` : taxon;
 		const refs = {
 			// Old: {{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[Catalogue of Life]]}}`,
-			'taxonomy-creator-catalogue-of-life': `{{Catalogue of Life |id=${ catalogueOfLifeId } |title=${ taxon } |access-date=${ date }}}`,
-			'taxonomy-creator-worms': `{{Cite WoRMS |title=''${ taxon }'' |id=${ wormsId } |access-date=${ date }}}`,
-			'taxonomy-creator-ncbi': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[NCBI]]}}`,
-			'taxonomy-creator-lpsn': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[LPSN]]}}`,
-			'taxonomy-creator-mycobank': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[MycoBank]]}}`,
-			'taxonomy-creator-index-fungorum': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[Index Fungorum]]}}`,
-			'taxonomy-creator-mindat': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[Mindat.org]]}}`,
-			'taxonomy-creator-other': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=}}`
+			'taxonomy-creator-catalogue-of-life':
+				`{{Catalogue of Life |id=${ catalogueOfLifeId } |title=${ citeTitle } |access-date=${ date }}}`,
+			'taxonomy-creator-worms':
+				`{{Cite WoRMS |title=''${ citeTitle }'' |id=${ wormsId } |access-date=${ date }}}`,
+			'taxonomy-creator-ncbi':
+				`{{Cite web |access-date=${ date } |url=${ url } |title=''${ citeTitle }'' |website=[[NCBI]]}}`,
+			'taxonomy-creator-lpsn':
+				`{{Cite web |access-date=${ date } |url=${ url } |title=''${ citeTitle }'' |website=[[LPSN]]}}`,
+			'taxonomy-creator-mycobank':
+				`{{Cite web |access-date=${ date } |url=${ url } |title=''${ citeTitle }'' |website=[[MycoBank]]}}`,
+			'taxonomy-creator-index-fungorum':
+				`{{Cite web |access-date=${ date } |url=${ url } |title=''${ citeTitle }'' |website=[[Index Fungorum]]}}`,
+			'taxonomy-creator-mindat':
+				`{{Cite web |access-date=${ date } |url=${ url } |title=''${ citeTitle }'' |website=[[Mindat.org]]}}`,
+			'taxonomy-creator-other':
+				`{{Cite web |access-date=${ date } |url=${ url } |title=''${ citeTitle }'' |website=}}`
 		};
 
 		wikicode += refs[ websiteId ];
-		wikicode += '\n}}\n';
+		wikicode +=
+`
+}}
+`;
 
 		// I did this in a more complicated way than normal, to enable support for CodeMirror. https://www.mediawiki.org/wiki/Extension:CodeMirror#Using_jQuery.textSelection
 		const $textarea = this.$( '#wpTextbox1' );
@@ -191,10 +209,15 @@ class TemplateTaxonomyCreator {
 
 		const isCreatingPage = this.$( '#firstHeading' ).html().startsWith( 'Creating' );
 		if ( isCreatingPage ) {
-			this.$( '#wpSummary' ).val( 'create ([[User:Novem Linguae/Scripts/TemplateTaxonomyCreator.js|TemplateTaxonomyCreator]])' );
+			this.$( '#wpSummary' ).val( 'create ([[User:Novem Linguae/Scripts/TemplateTaxonomyCreator|TemplateTaxonomyCreator]])' );
 		} else { // editing
-			this.$( '#wpSummary' ).val( 'edit ([[User:Novem Linguae/Scripts/TemplateTaxonomyCreator.js|TemplateTaxonomyCreator]])' );
+			this.$( '#wpSummary' ).val( 'edit ([[User:Novem Linguae/Scripts/TemplateTaxonomyCreator|TemplateTaxonomyCreator]])' );
 		}
+	}
+
+	needsItalics( latinRank ) {
+		// Italicize anything genus or below
+		return [ 'genus', 'subgenus', 'sectio', 'subsectio', 'series', 'subseries' ].includes( latinRank.toLowerCase().trim() );
 	}
 
 	englishToLatin( rank ) {
