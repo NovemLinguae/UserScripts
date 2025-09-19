@@ -7,7 +7,7 @@ Adds some buttons (Cite iNaturalist, Cite WoRMS, Cite NCBI, Cite Other) to the e
 // TODO: fix bug where button doesn't work sometimes when clicked
 // TODO: if no talk page, create talk page and add correct WikiProject templates: amphibians and reptiles, animals, arthropods, beetles, birds, diptera, fishes, fungi, gastropods, insects, lepidoptera, mammals, marine life, microbiology, paleontology, plants
 
-class TemplateTaxonomyAddCite {
+class TemplateTaxonomyCreator {
 	constructor( mw, $ ) {
 		this.mw = mw;
 		// eslint-disable-next-line no-jquery/variable-pattern
@@ -29,11 +29,11 @@ class TemplateTaxonomyAddCite {
 		let html = `
 			<style>
 
-			#TemplateTaxonomyAddCite {
+			#TemplateTaxonomyCreator {
 				margin: 1em 0;
 			}
 
-			#TemplateTaxonomyAddCite, #TemplateTaxonomyAddCite th, #TemplateTaxonomyAddCite td {
+			#TemplateTaxonomyCreator, #TemplateTaxonomyCreator th, #TemplateTaxonomyCreator td {
 				border: 1px solid black;
 				border-collapse: collapse;
 				padding: 0 5px;
@@ -41,7 +41,7 @@ class TemplateTaxonomyAddCite {
 			}
 			</style>
 
-			<table id="TemplateTaxonomyAddCite">
+			<table id="TemplateTaxonomyCreator">
 		`;
 
 		const websites = [
@@ -130,12 +130,12 @@ class TemplateTaxonomyAddCite {
 		// Listeners have to be added after the elements are placed on the page
 		for ( const website of websites ) {
 			this.$( '#' + website.id ).on( 'click', () => {
-				this.addCite( website.id );
+				this.promptThenAddWikicode( website.id );
 			} );
 		}
 	}
 
-	addCite( websiteId ) {
+	promptThenAddWikicode( websiteId ) {
 		/* eslint-disable no-alert */
 		let rank = prompt( "Enter this taxa's rank. For example, genus, tribe, or subfamily." );
 		rank = this.englishToLatin( rank );
@@ -191,9 +191,9 @@ class TemplateTaxonomyAddCite {
 
 		const isCreatingPage = this.$( '#firstHeading' ).html().startsWith( 'Creating' );
 		if ( isCreatingPage ) {
-			this.$( '#wpSummary' ).val( 'create ([[User:Novem Linguae/Scripts/TemplateTaxonomyAddCite.js|TemplateTaxonomyAddCite]])' );
+			this.$( '#wpSummary' ).val( 'create ([[User:Novem Linguae/Scripts/TemplateTaxonomyCreator.js|TemplateTaxonomyCreator]])' );
 		} else { // editing
-			this.$( '#wpSummary' ).val( 'add/edit citation ([[User:Novem Linguae/Scripts/TemplateTaxonomyAddCite.js|TemplateTaxonomyAddCite]])' );
+			this.$( '#wpSummary' ).val( 'edit ([[User:Novem Linguae/Scripts/TemplateTaxonomyCreator.js|TemplateTaxonomyCreator]])' );
 		}
 	}
 
@@ -329,7 +329,7 @@ class TemplateTaxonomyAddCite {
 }
 
 $( async () => {
-	await ( new TemplateTaxonomyAddCite( mw, $ ) ).addLinksAndListeners();
+	await ( new TemplateTaxonomyCreator( mw, $ ) ).addLinksAndListeners();
 } );
 
 // </nowiki>
