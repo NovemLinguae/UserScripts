@@ -47,7 +47,7 @@ class TemplateTaxonomyAddCite {
 		const websites = [
 			{
 				name: 'Catalogue of Life',
-				id: 'ttac-catalogue-of-life',
+				id: 'taxonomy-creator-catalogue-of-life',
 				description: 'All',
 				urlLeft: 'https://www.catalogueoflife.org/data/search?facet=rank&facet=issue&facet=status&facet=nomStatus&facet=nameType&facet=field&facet=authorship&facet=extinct&facet=environment&limit=50&offset=0&q=',
 				urlMiddle: taxon,
@@ -55,7 +55,7 @@ class TemplateTaxonomyAddCite {
 			},
 			{
 				name: 'WoRMS',
-				id: 'ttac-worms',
+				id: 'taxonomy-creator-worms',
 				description: 'Marine animals, gastropods (snails and slugs)',
 				urlLeft: 'https://www.marinespecies.org/aphia.php?p=taxlist&searchpar=0&tComp=begins&tName=',
 				urlMiddle: taxon,
@@ -63,7 +63,7 @@ class TemplateTaxonomyAddCite {
 			},
 			{
 				name: 'NCBI',
-				id: 'ttac-ncbi',
+				id: 'taxonomy-creator-ncbi',
 				description: 'Protozoa',
 				urlLeft: 'https://www.ncbi.nlm.nih.gov/taxonomy/?term=',
 				urlMiddle: taxon,
@@ -71,7 +71,7 @@ class TemplateTaxonomyAddCite {
 			},
 			{
 				name: 'LPSN',
-				id: 'ttac-lpsn',
+				id: 'taxonomy-creator-lpsn',
 				description: 'Bacteria',
 				urlLeft: 'https://lpsn.dsmz.de/search?word=',
 				urlMiddle: taxon,
@@ -80,7 +80,7 @@ class TemplateTaxonomyAddCite {
 			{
 				// AJAX-ish/App-ish website, can't custom search through URL
 				name: 'Index Fungorum',
-				id: 'ttac-index-fungorum',
+				id: 'taxonomy-creator-index-fungorum',
 				description: 'Fungi',
 				urlLeft: 'http://www.indexfungorum.org/names/names.asp',
 				urlMiddle: '',
@@ -89,7 +89,7 @@ class TemplateTaxonomyAddCite {
 			{
 				// AJAX-ish/App-ish website, can't custom search through URL, also doesn't give a unique URL for the genus
 				name: 'MycoBank',
-				id: 'ttac-mycobank',
+				id: 'taxonomy-creator-mycobank',
 				description: 'Fungi',
 				urlLeft: 'https://www.mycobank.org/page/Basic%20names%20search',
 				urlMiddle: '',
@@ -97,7 +97,7 @@ class TemplateTaxonomyAddCite {
 			},
 			{
 				name: 'Mindat.org',
-				id: 'ttac-mindat',
+				id: 'taxonomy-creator-mindat',
 				description: 'Protozoa, Parasites',
 				urlLeft: 'https://www.mindat.org/search.php?search=',
 				urlMiddle: taxon,
@@ -105,7 +105,7 @@ class TemplateTaxonomyAddCite {
 			},
 			{
 				name: 'Other',
-				id: 'ttac-other',
+				id: 'taxonomy-creator-other',
 				description: '',
 				urlLeft: '',
 				urlMiddle: '',
@@ -146,9 +146,9 @@ class TemplateTaxonomyAddCite {
 
 		const url = prompt( 'Enter the URL. For example, if this is a citation to Catalogue of Life, enter the catalogueoflife.org URL that has info on this taxa.' );
 		let wormsId, catalogueOfLifeId;
-		if ( websiteId === 'ttac-worms' ) {
+		if ( websiteId === 'taxonomy-creator-worms' ) {
 			wormsId = url.match( /id=(\d+)$/ )[ 1 ] || '';
-		} else if ( websiteId === 'ttac-catalogue-of-life' ) {
+		} else if ( websiteId === 'taxonomy-creator-catalogue-of-life' ) {
 			catalogueOfLifeId = url.match( /\/([^/]+)$/ )[ 1 ] || '';
 		}
 
@@ -168,14 +168,14 @@ class TemplateTaxonomyAddCite {
 
 		const refs = {
 			// Old: {{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[Catalogue of Life]]}}`,
-			'ttac-catalogue-of-life': `{{Catalogue of Life |id=${ catalogueOfLifeId } |title=${ taxon } |access-date=${ date }}}`,
-			'ttac-worms': `{{Cite WoRMS |title=''${ taxon }'' |id=${ wormsId } |access-date=${ date }}}`,
-			'ttac-ncbi': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[NCBI]]}}`,
-			'ttac-lpsn': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[LPSN]]}}`,
-			'ttac-mycobank': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[MycoBank]]}}`,
-			'ttac-index-fungorum': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[Index Fungorum]]}}`,
-			'ttac-mindat': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[Mindat.org]]}}`,
-			'ttac-other': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=}}`
+			'taxonomy-creator-catalogue-of-life': `{{Catalogue of Life |id=${ catalogueOfLifeId } |title=${ taxon } |access-date=${ date }}}`,
+			'taxonomy-creator-worms': `{{Cite WoRMS |title=''${ taxon }'' |id=${ wormsId } |access-date=${ date }}}`,
+			'taxonomy-creator-ncbi': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[NCBI]]}}`,
+			'taxonomy-creator-lpsn': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[LPSN]]}}`,
+			'taxonomy-creator-mycobank': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[MycoBank]]}}`,
+			'taxonomy-creator-index-fungorum': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[Index Fungorum]]}}`,
+			'taxonomy-creator-mindat': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=[[Mindat.org]]}}`,
+			'taxonomy-creator-other': `{{Cite web |access-date=${ date } |url=${ url } |title=''${ taxon }'' |website=}}`
 		};
 
 		wikicode += refs[ websiteId ];
