@@ -1,15 +1,26 @@
-I added most of my Wikipedia user scripts to this GitHub to make pull requests/collaboration easier.
+Novem Linguae's Wikipedia user scripts. A user script is custom JavaScript that a logged in Wikipedia user can install, and that JS will then run on every Wikipedia page they visit. The main use case is tools for power users.
 
-Keep in mind that the versions on Wikipedia may be slightly more up-to-date.
+My list of user scripts onwiki is located at https://en.wikipedia.org/wiki/User:Novem_Linguae/Templates/Scripts. Please visit this page to see a description of each user script, and the # of users that have installed it.
 
-# Folders
+# Files and folders
 
-User scripts in folders tend to contain some or all of the following:
+User scripts in the root directory as standalone files are simple and just use that one file.
 
-- Unit tests (needs npm packages: Jest, Babel)
-- PHP tools (meant to be run on localhost) that do something useful related to the script
-- publish.php script - compiles multiple files into one file and writes it to my userspace on Wikipedia, requires a publish.config.php file though. See example file publish.config.example.php
+User scripts in folders are more complex scripts usually spanning multiple files, have unit tests, and have a deploy script. These tools are all located in the folder. There may also be PHP or browser tools related to the user script.
+
+# Linter
+
+- Install the linter by running `npm update` from the root directory. The linter is not run in CI, and is mainly for your IDE.
 
 # Unit tests
 
-I like unit tests. Lots of Wikipedia user scripts can be broken into true functions that input 1 string (wikicode) and output 1 string (wikicode). So they are a perfect fit for unit tests. Userscripts with a lot of unit tests include GANReviewTool, DraftCleaner, and SpeciesHelper.
+- Install unit tests by running `npm update` in applicable subdirectories. Then run the tests with `npm test`. Unit tests are run in CI and should always be passing before merging to the master branch.
+
+# Deploying
+
+- For single file user scripts in the root directory, just copy paste them onwiki.
+- For folders, spin up a PHP localhost, create a publish.config.php file in that folder (see publish.config.example.php as an example), then in browser visit that folder's publish.php file. Then you can click a button to deploy.
+
+# Issues and pull requests
+
+Issues and pull requests are both accepted. Feel free to create some.
