@@ -143,7 +143,8 @@ class ANRFC {
 		$anrfcBox.css( {
 			margin: '16px 0',
 			padding: '16px',
-			'background-color': '#f3f3f3',
+			'background-color': 'var(--background-color-neutral-subtle, #f8f9fa)',
+			color: 'inherit',
 			border: '1px solid grey',
 			'font-size': '14px',
 			'font-family': 'sans-serif'
