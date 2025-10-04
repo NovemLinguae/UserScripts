@@ -36,6 +36,9 @@ CHANGES BY NOVEM LINGUAE:
 - Titles shouldn't have underscores
 - Fixed bug where the script would always give "signature not found" error if you had MediaWiki:Gadget-CommentsInLocalTime.js gadget installed
 
+CHANGES BY MATRIX
+- Fix in dark mode, use internal style sheet instead of inline styles
+
 NOVEM LINGUAE TODO:
 - test unicode titles
 - test titles with weird punctuation in section names, e.g. ending in ?
@@ -45,7 +48,40 @@ NOVEM LINGUAE TODO:
 
 // <nowiki>
 
-mw.loader.load('/w/index.php?title=User:NovemLinguae/anrfc-test.css&action=raw&ctype=text/css', 'text/css');
+const style = `.anrfc-box {
+	margin: 16px 0px;
+	padding: 16px;
+	background-color: var(--background-color-neutral-subtle, #f8f9fa);
+	color: inherit;
+	border: 1px solid #a2a9b1;
+	font-size: 14px;
+	font-family: sans-serif;
+}
+
+.anrfc-box h3 {
+	margin: 0 0 16px;
+}
+
+.anrfc-box .anrfc-box-margins {
+	margin-top: 8px;
+}
+
+.mw-ANRFC {
+	margin-left: 8px;
+	font-size: small;
+	font-family: sans-serif;
+}
+
+#ca-anrfc .anrfc-link-active {
+	color: var(--color-destructive, #bf3c2c);
+}
+
+#ca-anrfc .anrfc-link-active:hover {
+	color: var(--color-destructive--hover, #9f3526);
+}
+`;
+
+mw.util.addCSS(style);
 
 class ANRFC {
 	constructor( document, mw, $ ) {
@@ -88,10 +124,10 @@ class ANRFC {
 	toggle() {
 		const $anrfcListerLinkInMoreMenu = this.$( '#ca-anrfc a' );
 		if ( $anrfcListerLinkInMoreMenu.hasClass( 'anrfc-link-active' ) ) {
-			$anrfcListerLinkInMoreMenu.removeClass('anrfc-link-active')
+			$anrfcListerLinkInMoreMenu.removeClass('anrfc-link-active');
 			this.removeLabels();
 		} else {
-			$anrfcListerLinkInMoreMenu.addClass('anrfc-link-active')
+			$anrfcListerLinkInMoreMenu.addClass('anrfc-link-active');
 			this.addLabels();
 		}
 	}
