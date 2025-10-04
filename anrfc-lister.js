@@ -45,6 +45,8 @@ NOVEM LINGUAE TODO:
 
 // <nowiki>
 
+mw.loader.load('/w/index.php?title=User:NovemLinguae/anrfc-test.css&action=raw&ctype=text/css', 'text/css');
+
 class ANRFC {
 	constructor( document, mw, $ ) {
 		this.document = document;
@@ -85,11 +87,11 @@ class ANRFC {
 
 	toggle() {
 		const $anrfcListerLinkInMoreMenu = this.$( '#ca-anrfc a' );
-		if ( $anrfcListerLinkInMoreMenu.css( 'color' ) === 'rgb(255, 0, 0)' ) {
-			$anrfcListerLinkInMoreMenu.css( 'color', '' );
+		if ( $anrfcListerLinkInMoreMenu.hasClass( 'anrfc-link-active' ) ) {
+			$anrfcListerLinkInMoreMenu.removeClass('anrfc-link-active')
 			this.removeLabels();
 		} else {
-			$anrfcListerLinkInMoreMenu.css( 'color', 'red' );
+			$anrfcListerLinkInMoreMenu.addClass('anrfc-link-active')
 			this.addLabels();
 		}
 	}
@@ -115,7 +117,6 @@ class ANRFC {
 			that.$( 'a[indexkey="' + index + '"]' ).on( 'click', function () {
 				that.addForm( this );
 			} );
-			that.$( 'a.mw-ANRFC' ).css( { 'margin-left': '8px', 'font-size': 'small', 'font-family': 'sans-serif' } );
 		} );
 	}
 
@@ -137,17 +138,8 @@ class ANRFC {
 
 	getFormHtmlAndSetFormListeners( keyId ) {
 		const $anrfcBox = this.$( '<div>', {
-			id: keyId
-		} );
-
-		$anrfcBox.css( {
-			margin: '16px 0',
-			padding: '16px',
-			'background-color': 'var(--background-color-neutral-subtle, #f8f9fa)',
-			color: 'inherit',
-			border: '1px solid grey',
-			'font-size': '14px',
-			'font-family': 'sans-serif'
+			id: keyId,
+			class: "anrfc-box"
 		} );
 
 		const items = [];
@@ -185,21 +177,17 @@ class ANRFC {
 			label: 'Cancel'
 		} );
 
-		$anrfcBox.append( '<h3 style="margin: 0 0 16px;">List this discussion on <a href="/wiki/Wikipedia:Closure_requests" target="_blank">Wikipedia:Closure requests</a></h3>' );
+		$anrfcBox.append( '<h3>List this discussion on <a href="/wiki/Wikipedia:Closure_requests" target="_blank">Wikipedia:Closure requests</a></h3>' );
 		let wrapper = this.document.createElement( 'div' );
 		this.$( wrapper ).append( '<p>Under section: </p>' );
 		this.$( wrapper ).append( dropDown.$element );
 		$anrfcBox.append( wrapper );
 
 		wrapper = this.document.createElement( 'div' );
-		this.$( wrapper ).css( { 'margin-top': '8px' } );
+		this.$( wrapper ).addClass( 'anrfc-box-margins' );
 		this.$( wrapper ).append( messageInput.$element );
-		this.$( wrapper ).append( this.$( submitButton.$element ).css( {
-			'margin-top': '8px'
-		} ) );
-		this.$( wrapper ).append( this.$( cancelButton.$element ).css( {
-			'margin-top': '8px'
-		} ) );
+		this.$( wrapper ).append( this.$( submitButton.$element ).addClass( 'anrfc-box-margins' ));
+		this.$( wrapper ).append( this.$( cancelButton.$element ).addClass( 'anrfc-box-margins' ));
 		$anrfcBox.append( wrapper );
 
 		submitButton.on( 'click', () => {
