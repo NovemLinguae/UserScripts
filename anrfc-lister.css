@@ -1,0 +1,33 @@
+/* CSS styles for anrfc-lister script. Added by [[User:Matrix]]. */
+
+.anrfc-box {
+	margin: 16px 0px;
+	padding: 16px;
+	background-color: var(--background-color-neutral-subtle, #f8f9fa);
+	color: inherit;
+	border: 1px solid #a2a9b1;
+	font-size: 14px;
+	font-family: sans-serif;
+}
+
+.anrfc-box h3 {
+	margin: 0 0 16px;
+}
+
+.anrfc-box .anrfc-box-margins {
+	margin-top: 8px;
+}
+
+.mw-ANRFC {
+	margin-left: 8px;
+	font-size: small;
+	font-family: sans-serif;
+}
+
+#ca-anrfc .anrfc-link-active {
+	color: var(--color-destructive, #bf3c2c);
+}
+
+#ca-anrfc .anrfc-link-active:hover {
+	color: var(--color-destructive--hover, #9f3526);
+}
