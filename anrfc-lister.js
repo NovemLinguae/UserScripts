@@ -36,8 +36,8 @@ CHANGES BY NOVEM LINGUAE:
 - Titles shouldn't have underscores
 - Fixed bug where the script would always give "signature not found" error if you had MediaWiki:Gadget-CommentsInLocalTime.js gadget installed
 
-CHANGES BY MATRIX
-- Fix in dark mode, use internal style sheet instead of inline styles
+CHANGES BY OTHERS SINCE THIS WAS FORKED
+- Added dark mode support
 
 NOVEM LINGUAE TODO:
 - test unicode titles
