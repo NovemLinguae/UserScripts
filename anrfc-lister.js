@@ -58,7 +58,7 @@ const style = `.anrfc-box {
 	font-family: sans-serif;
 }
 
-.anrfc-box h3 {
+.anrfc-box > h3 {
 	margin: 0 0 16px;
 }
 
