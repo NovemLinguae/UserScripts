@@ -405,41 +405,6 @@ export class GANReviewWikicodeGenerator {
 		return templateFinder.firstTemplateGetParameterValue( templateRegEx, parameter );
 	}
 
-	/**
-	 * @param {RegExp} regex
-	 */
-	preg_position( regex, haystack ) {
-		const matches = [ ...haystack.matchAll( regex ) ];
-		const hasMatches = matches.length;
-		if ( hasMatches ) {
-			return matches[ 0 ].index;
-		}
-		return false;
-	}
-
-	findEndOfTemplate( wikicode, templateStartPosition ) {
-		// TODO: handle triple braces, handle <nowiki> tags
-		let nesting = 0;
-		let templateEndPosition = -1;
-		// +1 to skip the first {{, will throw off our nesting count
-		for ( let i = templateStartPosition + 1; i < wikicode.length; i++ ) {
-			const nextTwoChars = wikicode.slice( i, i + 2 );
-			if ( nextTwoChars === '{{' ) {
-				nesting++;
-				continue;
-			} else if ( nextTwoChars === '}}' ) {
-				if ( nesting > 0 ) {
-					nesting--;
-					continue;
-				} else {
-					templateEndPosition = i + 2;
-					break;
-				}
-			}
-		}
-		return templateEndPosition;
-	}
-
 	firstTemplateDeleteParameter( wikicode, templateRegEx, parameter ) {
 		const templateFinder = new TemplateFinder( wikicode );
 		templateFinder.firstTemplateDeleteParameter( templateRegEx, parameter );

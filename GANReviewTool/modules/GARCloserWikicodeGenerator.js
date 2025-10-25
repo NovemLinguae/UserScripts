@@ -658,17 +658,6 @@ __TOC__`;
 		return templateFinder.getWikitext();
 	}
 
-	/**
-	 * CC BY-SA 4.0, jAndy, https://stackoverflow.com/a/4364902/3480193
-	 */
-	insertStringIntoStringAtPosition( bigString, insertString, position ) {
-		return [
-			bigString.slice( 0, position ),
-			insertString,
-			bigString.slice( position )
-		].join( '' );
-	}
-
 	removeGAStatusFromWikiprojectBanners( wikicode ) {
 		return wikicode.replace( /(\|\s*class\s*=\s*)([^}|\s]*)/gi, '$1' );
 	}
