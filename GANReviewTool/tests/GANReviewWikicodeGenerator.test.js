@@ -88,7 +88,6 @@ describe( 'getPassWikicodeForTalkPage(talkWikicode, reviewTitle, gaSubpageShortT
 |action1result = failed
 |action1oldid = 1083301278
 
-
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = Thomas Carlyle (Millais)/GA1
@@ -1012,7 +1011,6 @@ describe( 'getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 |dykentry = ... that [[SpaceX]]'s reusable '''[[SpaceX Starship|Starship]]''' launch vehicle has twice as much thrust as the [[Apollo program]]'s [[Saturn&nbsp;V]]?
 |dyknom = Template:Did you know nominations/SpaceX Starship
 
-
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = SpaceX Starship/GA2
@@ -1051,7 +1049,6 @@ describe( 'getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 |action1link   = Talk:Cristiano Ronaldo/GA4
 |action1result = not listed
 |action1oldid  = 1036984152
-
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = Talk:Cristiano Ronaldo/GA5
@@ -1629,7 +1626,6 @@ describe( 'updateArticleHistory(talkWikicode, topic, nominationPageTitle, listed
 |action1date=6 June 2007
 |action1link=Wikipedia:Articles for deletion/Cow tipping
 |action1result=kept
-
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = Talk:Cow tipping/GA1
@@ -1662,7 +1658,6 @@ describe( 'updateArticleHistory(talkWikicode, topic, nominationPageTitle, listed
 |action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
 |action1result=failed
 |action1oldid=47350127
-
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = Talk:Agriculture/GA2
@@ -1808,7 +1803,6 @@ describe( 'updateArticleHistory(talkWikicode, topic, nominationPageTitle, listed
 |dykentry = ... that [[SpaceX]]'s reusable '''[[SpaceX Starship|Starship]]''' launch vehicle has twice as much thrust as the [[Apollo program]]'s [[Saturn&nbsp;V]]?
 |dyknom = Template:Did you know nominations/SpaceX Starship
 
-
 |action12 = GAN
 |action12date = ~~~~~
 |action12link = Talk:SpaceX Starship/GA2
@@ -1847,7 +1841,6 @@ describe( 'firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, code
 |action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
 |action1result=failed
 |action1oldid=47350127
-
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = Talk:Agriculture/GA2
@@ -1874,7 +1867,6 @@ describe( 'firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, code
 		const output =
 `{{ArticleHistory
 |topic = Physics and astronomy
-
 |action12 = GAN
 |action12date = ~~~~~
 |action12link = Talk:SpaceX Starship/GA1
