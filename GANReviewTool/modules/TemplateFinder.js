@@ -41,7 +41,7 @@ export class TemplateFinder {
 		if ( !template ) {
 			return null;
 		}
-		return template.getValue( parameter ) || null;
+		return template.getValue( parameter ) ?? null;
 	}
 
 	firstTemplateDeleteParameter( templateNameRegExOrArrayCaseInsensitive, parameter ) {
