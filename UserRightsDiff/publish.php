@@ -1,6 +1,6 @@
 <?php
 
-function apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $ABSOLUTE_PATH_TO_TEMP_DIRECTORY) {
+function apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, &$cookieJar) {
 	$apiData['format'] = 'json'; // always get return data in JSON format
 	if ( ! isset($apiData['action']) ) {
 		throw new Error('Action is required.');
@@ -15,8 +15,18 @@ function apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $ABSOLUTE_PATH_TO_TEMP_
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // don't echo the output
 	curl_setopt($ch, CURLOPT_URL, $url); // set the URL
 	curl_setopt($ch, CURLOPT_USERAGENT, "[[w:User:Novem Linguae]]'s publish.php script. Concatenates .js files together and writes them to .js pages onwiki."); // set user agent
-	curl_setopt($ch, CURLOPT_COOKIEJAR, $ABSOLUTE_PATH_TO_TEMP_DIRECTORY . '\\cookie.txt');
-	curl_setopt($ch, CURLOPT_COOKIEFILE, $ABSOLUTE_PATH_TO_TEMP_DIRECTORY . '\\cookie.txt');
+
+	// Use in-memory cookie handling
+	if (!empty($cookieJar)) {
+		curl_setopt($ch, CURLOPT_COOKIE, $cookieJar);
+	}
+	curl_setopt($ch, CURLOPT_HEADERFUNCTION, function($curl, $header) use (&$cookieJar) {
+		if (preg_match('/^Set-Cookie:\s*(.*?);/i', $header, $matches)) {
+			$cookieJar .= $matches[1] . '; ';
+		}
+		return strlen($header);
+	});
+
 	$result = curl_exec($ch);
 	curl_close($ch);
 	$resultJson = json_decode($result, true);
@@ -44,11 +54,8 @@ function deleteRequireFunctions($str) {
 	return preg_replace('/^.*require\(.*$\n/m', '', $str);
 }
 
-function writeWikitextToWikipedia($ABSOLUTE_PATH_TO_TEMP_DIRECTORY, $WIKIPEDIA_API_URL, $WIKIPEDIA_USERNAME, $WIKIPEDIA_PASSWORD) {
-	// clear cookies from last session
-	$file = fopen($ABSOLUTE_PATH_TO_TEMP_DIRECTORY . '\\cookie.txt', 'w') or die('Unable to open file!');
-	fwrite($file, '');
-	fclose($file);
+function writeWikitextToWikipedia($WIKIPEDIA_API_URL, $WIKIPEDIA_USERNAME, $WIKIPEDIA_PASSWORD) {
+	$cookieJar = '';
 
 	// get login token
 	$apiData = [
@@ -56,7 +63,7 @@ function writeWikitextToWikipedia($ABSOLUTE_PATH_TO_TEMP_DIRECTORY, $WIKIPEDIA_A
 		'meta' => 'tokens',
 		'type' => 'login',
 	];
-	$loginToken = apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $ABSOLUTE_PATH_TO_TEMP_DIRECTORY)['query']['tokens']['logintoken'];
+	$loginToken = apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $cookieJar)['query']['tokens']['logintoken'];
 
 	// log in to Wikipedia using bot key
 	$apiData = [
@@ -65,7 +72,7 @@ function writeWikitextToWikipedia($ABSOLUTE_PATH_TO_TEMP_DIRECTORY, $WIKIPEDIA_A
 		'lgpassword' => $WIKIPEDIA_PASSWORD,
 		'lgtoken' => $loginToken,
 	];
-	$result = apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $ABSOLUTE_PATH_TO_TEMP_DIRECTORY);
+	$result = apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $cookieJar);
 
 	// get edit token
 	$apiData = [
@@ -73,7 +80,7 @@ function writeWikitextToWikipedia($ABSOLUTE_PATH_TO_TEMP_DIRECTORY, $WIKIPEDIA_A
 		'meta' => 'tokens',
 		'type' => 'csrf',
 	];
-	$csrfToken = apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $ABSOLUTE_PATH_TO_TEMP_DIRECTORY)['query']['tokens']['csrftoken'];
+	$csrfToken = apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $cookieJar)['query']['tokens']['csrftoken'];
 
 	// make edit
 	$apiData = [
@@ -83,7 +90,7 @@ function writeWikitextToWikipedia($ABSOLUTE_PATH_TO_TEMP_DIRECTORY, $WIKIPEDIA_A
 		'summary' => $_POST['editSummary'] . " (publish.php)",
 		'token' => $csrfToken,
 	];
-	$result = apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $ABSOLUTE_PATH_TO_TEMP_DIRECTORY);
+	$result = apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $cookieJar);
 
 	echo "<h1>Success</h1>";
 }
@@ -127,7 +134,7 @@ require_once('publish.config.php');
 $formIsSubmitted = $_POST['submit'] ?? '';
 if ( $formIsSubmitted ) {
 	$ABSOLUTE_PATH_TO_TEMP_DIRECTORY = sys_get_temp_dir();
-	writeWikitextToWikipedia($ABSOLUTE_PATH_TO_TEMP_DIRECTORY, $WIKIPEDIA_API_URL, $WIKIPEDIA_USERNAME, $WIKIPEDIA_PASSWORD);
+	writeWikitextToWikipedia($WIKIPEDIA_API_URL, $WIKIPEDIA_USERNAME, $WIKIPEDIA_PASSWORD);
 	die;
 }
 
