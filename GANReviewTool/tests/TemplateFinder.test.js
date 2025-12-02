@@ -20,21 +20,22 @@ describe( 'getWikitext()', () => {
 describe( 'firstTemplate( templateNameRegExOrArrayCaseInsensitive )', () => {
 	test( 'No template', () => {
 		const wikitext = 'Hi';
+		const output = '';
 		const tf = new TemplateFinder( wikitext );
-		expect( () => tf.removePrefix( tf.firstTemplate( wikitext ) ) ).toThrow( 'getFirstTemplateNameFromwikitext: No template found in wikitext.' );
+		expect( () => TemplateFinder.removePrefix( tf.firstTemplate( wikitext ) ) ).toBe( output );
 	} );
 
 	test( 'Normal', () => {
 		const wikitext = 'Hi{{Test|hello}}';
 		const output = 'Test';
 		const tf = new TemplateFinder( wikitext );
-		expect( tf.removePrefix( tf.firstTemplate( wikitext ) ) ).toBe( output );
+		expect( TemplateFinder.removePrefix( tf.firstTemplate( wikitext ) ) ).toBe( output );
 	} );
 
 	test( 'Two templates', () => {
 		const wikitext = 'Test {{First}} Test {{Second}} Test';
 		const output = 'First';
 		const tf = new TemplateFinder( wikitext );
-		expect( tf.removePrefix( tf.firstTemplate( wikitext ) ) ).toBe( output );
+		expect( TemplateFinder.removePrefix( tf.firstTemplate( wikitext ) ) ).toBe( output );
 	} );
 } );
