@@ -3,7 +3,7 @@ import Parser from './Parser.js';
 
 export class TemplateFinder {
 	constructor( wikicode ) {
-		this.root = Parser.parse( wikicode, false, 2 );
+		this.wikiPage = Parser.parse( wikicode, false, 2 );
 	}
 
 	static removePrefix( templateName ) {
@@ -11,7 +11,7 @@ export class TemplateFinder {
 	}
 
 	getWikitext() {
-		return String( this.root );
+		return String( this.wikiPage );
 	}
 
 	firstTemplate( templateNameRegExOrArrayCaseInsensitive ) {
@@ -26,7 +26,7 @@ export class TemplateFinder {
 			const regEx = new RegExp( `^Template:${ templateNameRegExOrArrayCaseInsensitive }$`, 'i' );
 			filter = ( { name } ) => regEx.test( name.replace( /_/g, ' ' ) );
 		}
-		return this.root.querySelectorAll( 'template' ).find( filter );
+		return this.wikiPage.querySelectorAll( 'template' ).find( filter );
 	}
 
 	firstTemplateInsertCode( templateNameRegExOrArrayCaseInsensitive, codeToInsert ) {
@@ -41,7 +41,8 @@ export class TemplateFinder {
 		if ( !template ) {
 			return null;
 		}
-		return template.getValue( parameter ) ?? null;
+		const value = template.getValue( parameter );
+		return value === undefined ? null : value;
 	}
 
 	firstTemplateDeleteParameter( templateNameRegExOrArrayCaseInsensitive, parameter ) {
