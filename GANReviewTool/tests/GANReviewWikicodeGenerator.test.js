@@ -1479,6 +1479,12 @@ describe( 'getFirstTemplateNameFromWikicode(wikicode)', () => {
 		const output = 'Test';
 		expect( wg.getFirstTemplateNameFromWikicode( wikicode ) ).toBe( output );
 	} );
+
+	test( 'Two templates', () => {
+		const wikicode = 'Test {{First}} Test {{Second}} Test';
+		const output = 'First';
+		expect( wg.getFirstTemplateNameFromWikicode( wikicode ) ).toBe( output );
+	} );
 } );
 
 describe( 'addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd)', () => {
