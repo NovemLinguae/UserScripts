@@ -22,20 +22,20 @@ describe( 'firstTemplate( templateNameRegExOrArrayCaseInsensitive )', () => {
 		const wikitext = 'Hi';
 		const output = '';
 		const tf = new TemplateFinder( wikitext );
-		expect( TemplateFinder.removePrefix( tf.firstTemplate( wikitext ) ) ).toBe( output );
+		expect( TemplateFinder.removePrefix( tf.firstTemplate( wikitext ).name ) ).toBe( output );
 	} );
 
 	test( 'Normal', () => {
 		const wikitext = 'Hi{{Test|hello}}';
 		const output = 'Test';
 		const tf = new TemplateFinder( wikitext );
-		expect( TemplateFinder.removePrefix( tf.firstTemplate( wikitext ) ) ).toBe( output );
+		expect( TemplateFinder.removePrefix( tf.firstTemplate( wikitext ).name ) ).toBe( output );
 	} );
 
 	test( 'Two templates', () => {
 		const wikitext = 'Test {{First}} Test {{Second}} Test';
 		const output = 'First';
 		const tf = new TemplateFinder( wikitext );
-		expect( TemplateFinder.removePrefix( tf.firstTemplate( wikitext ) ) ).toBe( output );
+		expect( TemplateFinder.removePrefix( tf.firstTemplate( wikitext ).name ) ).toBe( output );
 	} );
 } );
