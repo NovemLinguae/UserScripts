@@ -22,7 +22,7 @@ describe( 'firstTemplate( templateNameRegExOrArrayCaseInsensitive )', () => {
 		const wikitext = 'Hi';
 		const output = '';
 		const tf = new TemplateFinder( wikitext );
-		expect( () => TemplateFinder.removePrefix( tf.firstTemplate( wikitext ) ) ).toBe( output );
+		expect( TemplateFinder.removePrefix( tf.firstTemplate( wikitext ) ) ).toBe( output );
 	} );
 
 	test( 'Normal', () => {
