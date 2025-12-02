@@ -2145,6 +2145,30 @@ describe( 'firstTemplateGetParameterValue(wikicode, template, parameter)', () =>
 		const output = null;
 		expect( wg.firstTemplateGetParameterValue( wikicode, template, parameter ) ).toBe( output );
 	} );
+
+	test( 'ignores templates wrapped in <nowiki>', () => {
+		const wikicode = '<nowiki>{{Article history|topic=test1}}</nowiki>{{Article history|topic=test2}}';
+		const template = 'Article history';
+		const parameter = 'topic';
+		const output = 'test2';
+		expect( wg.firstTemplateGetParameterValue( wikicode, template, parameter ) ).toBe( output );
+	} );
+
+	test( 'ignores {{{params}}}', () => {
+		const wikicode = '{{{Article history|topic=test1}}}{{Article history|topic=test2}}';
+		const template = 'Article history';
+		const parameter = 'topic';
+		const output = 'test2';
+		expect( wg.firstTemplateGetParameterValue( wikicode, template, parameter ) ).toBe( output );
+	} );
+
+	test( 'doesn\'t get confused by nested templates', () => {
+		const wikicode = '{{Article history|oldtopic={{Article history|topic=test1}}|topic=test2}}';
+		const template = 'Article history';
+		const parameter = 'topic';
+		const output = 'test2';
+		expect( wg.firstTemplateGetParameterValue( wikicode, template, parameter ) ).toBe( output );
+	} );
 } );
 
 describe( 'firstTemplateDeleteParameter(wikicode, template, parameter)', () => {
