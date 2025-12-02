@@ -55,10 +55,4 @@ export class TemplateFinder {
 			}
 		}
 	}
-
-	// getTemplateList()
-	// appendParameter()
-	// addWikitextAfterTemplate()
-
-	// appends/adds need to shift all the position variables by the length of the append/add
 }
