@@ -2,12 +2,12 @@
 import Parser from './Parser.js';
 
 export class TemplateFinder {
-	static removePrefix( templateName ) {
-		return templateName.replace( /^Template:/, '' );
-	}
-
 	constructor( wikicode ) {
 		this.root = Parser.parse( wikicode, false, 2 );
+	}
+
+	static removePrefix( templateName ) {
+		return templateName.replace( /^Template:/, '' );
 	}
 
 	getWikitext() {
