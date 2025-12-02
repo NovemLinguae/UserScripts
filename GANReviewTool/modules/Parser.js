@@ -1,5 +1,6 @@
 import Parser from 'wikiparser-template';
 
+// The parser needs to know all extension tags enabled on Wikipedia
 Parser.config = {
 	ext: [
 		'pre',
