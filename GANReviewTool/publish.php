@@ -92,7 +92,14 @@ function writeWikitextToWikipedia($WIKIPEDIA_API_URL, $WIKIPEDIA_USERNAME, $WIKI
 	];
 	$result = apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, $cookieJar);
 
-	echo "<h1>Success</h1>";
+	// Redirect to the diff page of the successful edit
+	if (isset($result['edit']['newrevid'])) {
+		$revisionId = $result['edit']['newrevid'];
+		$title = urlencode($_POST['pageTitle']);
+		header("Location: https://en.wikipedia.org/w/index.php?title=$title&diff=prev&oldid=$revisionId");
+	} else {
+		echo "<h1>Edit attempted, but onwiki code already matches the code we just attempted to write</h1>";
+	}
 }
 
 function generateWikitext($MAIN_FILE_PATH, $CLASSES_FOLDER_PATH) {
