@@ -18,24 +18,51 @@ describe( 'getWikitext()', () => {
 } );
 
 describe( 'firstTemplate( templateNameRegExOrArrayCaseInsensitive )', () => {
-	test( 'No template', () => {
+	test( 'Find any template - No template', () => {
 		const wikitext = 'Hi';
-		const output = '';
+		const templateNameRegExOrArrayCaseInsensitive = '';
+		const output = undefined;
 		const tf = new TemplateFinder( wikitext );
-		expect( TemplateFinder.removePrefix( tf.firstTemplate( wikitext ).name ) ).toBe( output );
+		expect( tf.firstTemplate( templateNameRegExOrArrayCaseInsensitive ) ).toBe( output );
 	} );
 
-	test( 'Normal', () => {
-		const wikitext = 'Hi{{Test|hello}}';
-		const output = 'Test';
-		const tf = new TemplateFinder( wikitext );
-		expect( TemplateFinder.removePrefix( tf.firstTemplate( wikitext ).name ) ).toBe( output );
-	} );
-
-	test( 'Two templates', () => {
-		const wikitext = 'Test {{First}} Test {{Second}} Test';
+	test( 'Find any template - Normal', () => {
+		const wikitext = 'Hi{{First|hello}}';
+		const templateNameRegExOrArrayCaseInsensitive = '';
 		const output = 'First';
 		const tf = new TemplateFinder( wikitext );
-		expect( TemplateFinder.removePrefix( tf.firstTemplate( wikitext ).name ) ).toBe( output );
+		expect( TemplateFinder.removePrefix( ( tf.firstTemplate( templateNameRegExOrArrayCaseInsensitive ) ).name ) ).toBe( output );
+	} );
+
+	test( 'Find any template - Two templates', () => {
+		const wikitext = 'Test {{First}} Test {{Second}} Test';
+		const templateNameRegExOrArrayCaseInsensitive = '';
+		const output = 'First';
+		const tf = new TemplateFinder( wikitext );
+		expect( TemplateFinder.removePrefix( ( tf.firstTemplate( templateNameRegExOrArrayCaseInsensitive ) ).name ) ).toBe( output );
+	} );
+
+	test( 'Find specific template - No template', () => {
+		const wikitext = 'Hi';
+		const templateNameRegExOrArrayCaseInsensitive = 'First';
+		const output = undefined;
+		const tf = new TemplateFinder( wikitext );
+		expect( tf.firstTemplate( templateNameRegExOrArrayCaseInsensitive ) ).toBe( output );
+	} );
+
+	test( 'Find specific template - Normal', () => {
+		const wikitext = 'Hi{{First|hello}}';
+		const templateNameRegExOrArrayCaseInsensitive = 'First';
+		const output = 'First';
+		const tf = new TemplateFinder( wikitext );
+		expect( TemplateFinder.removePrefix( ( tf.firstTemplate( templateNameRegExOrArrayCaseInsensitive ) ).name ) ).toBe( output );
+	} );
+
+	test( 'Find specific template - Two templates', () => {
+		const wikitext = 'Test {{First}} Test {{Second}} Test';
+		const templateNameRegExOrArrayCaseInsensitive = 'Second';
+		const output = 'Second';
+		const tf = new TemplateFinder( wikitext );
+		expect( TemplateFinder.removePrefix( ( tf.firstTemplate( templateNameRegExOrArrayCaseInsensitive ) ).name ) ).toBe( output );
 	} );
 } );
