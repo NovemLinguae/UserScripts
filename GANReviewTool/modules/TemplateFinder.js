@@ -14,14 +14,13 @@ export class TemplateFinder {
 		return String( this.root );
 	}
 
-	/** @returns {import('wikiparser-template').TranscludeToken} */
 	firstTemplate( templateNameRegExOrArrayCaseInsensitive ) {
 		let filter;
 		if ( !templateNameRegExOrArrayCaseInsensitive ) {
 			filter = () => true;
 		} else if ( Array.isArray( templateNameRegExOrArrayCaseInsensitive ) ) {
 			const templateNameArray = templateNameRegExOrArrayCaseInsensitive
-				.map( name => name.toLowerCase().replace( /\s/g, '_' ) );
+				.map( ( name ) => name.toLowerCase().replace( /\s/g, '_' ) );
 			filter = ( { name } ) => templateNameArray.includes( TemplateFinder.removePrefix( name ).toLowerCase() );
 		} else {
 			const regEx = new RegExp( `^Template:${ templateNameRegExOrArrayCaseInsensitive }$`, 'i' );
@@ -42,7 +41,7 @@ export class TemplateFinder {
 		if ( !template ) {
 			return null;
 		}
-		return template.getValue( parameter ) ?? null;
+		return template.getValue( parameter ) || null;
 	}
 
 	firstTemplateDeleteParameter( templateNameRegExOrArrayCaseInsensitive, parameter ) {
