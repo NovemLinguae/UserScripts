@@ -314,7 +314,8 @@ export class DraftCleaner {
 	// if in draftspace, and draft has categories, disable the categories
 	disableCategoriesInDraftspace( wikicode, namespace ) {
 		const draft = ( namespace == 118 );
-		if ( draft ) {
+		const hasDraftCategoriesTemplate = wikicode.match( /\{\{Draft categories/i );
+		if ( draft && !hasDraftCategoriesTemplate ) {
 			wikicode = wikicode.replace( /:?(\[\[)(Category:[^\]]*\]\])/gm, '$1:$2' );
 		}
 		wikicode = wikicode.replace( /\[\[:Category:Created via preloaddraft\]\]/gi, '[[Category:Created via preloaddraft]]' );

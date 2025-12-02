@@ -1104,6 +1104,20 @@ describe( 'disableCategoriesInDraftspace(wikicode, namespace)', () => {
 [[:Category:Test2]]`;
 		expect( dc.disableCategoriesInDraftspace( wikicode, namespace ) ).toBe( output );
 	} );
+
+	test( 'Skip disabling categories if {{Draft categories}} template is present', () => {
+		// Adding a colon to categories wrapped in {{Draft categories}} doesn't break anything, but generated a user request to turn this off. See https://en.wikipedia.org/wiki/User_talk:Novem_Linguae/Scripts/DraftCleaner.js#Category_escaping
+		const namespace = 118;
+		const wikicode =
+`{{draft categories|
+[[Category:20th-century British rappers]]
+}}`;
+		const output =
+`{{draft categories|
+[[Category:20th-century British rappers]]
+}}`;
+		expect( dc.disableCategoriesInDraftspace( wikicode, namespace ) ).toBe( output );
+	} );
 } );
 
 describe( 'deleteSomeHTMLTags(wikicode)', () => {
