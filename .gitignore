@@ -8,7 +8,6 @@ gitignore/
 jsconfig.json
 Morebits/
 node_modules
-package-lock.json
 publish_old.php
 publish.config.php
 RequestedArticleSifter

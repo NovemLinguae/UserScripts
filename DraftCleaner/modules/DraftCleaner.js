@@ -44,6 +44,7 @@ export class DraftCleaner {
 		wikicode = this.removeExtraAFCSubmissionTemplates( wikicode );
 		wikicode = this.moveAFCSubmissionTemplatesToTop( wikicode );
 
+		/* eslint-disable indent */
 		// all ==sections== should start with a capital letter
 		// after swap, if citation has no spaces on either side, and is not touching two other citations, add a space on the right
 		// strip [[File: from infobox's image field
@@ -62,6 +63,7 @@ export class DraftCleaner {
 		// delete ©®™
 		// convert all <references /> to {{Reflist}}. <references /> doesn't use two column format and looks weird with a large # of references
 		// remove px from images, should use default
+		/* eslint-enable indent */
 
 		// convert refs toward the end. we want deleteSomeHTMLTags() to run first, to get rid of <nowiki> tags around URLs
 		wikicode = this.bareURLToRef( wikicode );
@@ -314,7 +316,8 @@ export class DraftCleaner {
 	// if in draftspace, and draft has categories, disable the categories
 	disableCategoriesInDraftspace( wikicode, namespace ) {
 		const draft = ( namespace == 118 );
-		if ( draft ) {
+		const hasDraftCategoriesTemplate = wikicode.match( /\{\{Draft categories/i );
+		if ( draft && !hasDraftCategoriesTemplate ) {
 			wikicode = wikicode.replace( /:?(\[\[)(Category:[^\]]*\]\])/gm, '$1:$2' );
 		}
 		wikicode = wikicode.replace( /\[\[:Category:Created via preloaddraft\]\]/gi, '[[Category:Created via preloaddraft]]' );
@@ -544,11 +547,13 @@ export class DraftCleaner {
 		const matches = wikicode.match( /==\s*References\s*==/gi );
 		if ( matches !== null && matches.length > 1 ) {
 			// run regexes that are likely to delete the extra section
+			/* eslint-disable indent */
 			const attempt = wikicode.replace(
 `== References ==
 <!-- Inline citations added to your article will automatically display here. See en.wikipedia.org/wiki/WP:REFB for instructions on how to add citations. -->
 {{reflist}}`
 			, '' );
+			/* eslint-enable indent */
 			const matches2 = attempt.match( /==\s*References\s*==/gi );
 			if ( matches2.length === 1 ) {
 				wikicode = attempt.trim();

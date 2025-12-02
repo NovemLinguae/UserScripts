@@ -81,7 +81,7 @@ const style = `.anrfc-box {
 }
 `;
 
-mw.util.addCSS(style);
+mw.util.addCSS( style );
 
 class ANRFC {
 	constructor( document, mw, $ ) {
@@ -124,10 +124,10 @@ class ANRFC {
 	toggle() {
 		const $anrfcListerLinkInMoreMenu = this.$( '#ca-anrfc a' );
 		if ( $anrfcListerLinkInMoreMenu.hasClass( 'anrfc-link-active' ) ) {
-			$anrfcListerLinkInMoreMenu.removeClass('anrfc-link-active');
+			$anrfcListerLinkInMoreMenu.removeClass( 'anrfc-link-active' );
 			this.removeLabels();
 		} else {
-			$anrfcListerLinkInMoreMenu.addClass('anrfc-link-active');
+			$anrfcListerLinkInMoreMenu.addClass( 'anrfc-link-active' );
 			this.addLabels();
 		}
 	}
@@ -175,7 +175,7 @@ class ANRFC {
 	getFormHtmlAndSetFormListeners( keyId ) {
 		const $anrfcBox = this.$( '<div>', {
 			id: keyId,
-			class: "anrfc-box"
+			class: 'anrfc-box'
 		} );
 
 		const items = [];
@@ -222,8 +222,8 @@ class ANRFC {
 		wrapper = this.document.createElement( 'div' );
 		this.$( wrapper ).addClass( 'anrfc-box-margins' );
 		this.$( wrapper ).append( messageInput.$element );
-		this.$( wrapper ).append( this.$( submitButton.$element ).addClass( 'anrfc-box-margins' ));
-		this.$( wrapper ).append( this.$( cancelButton.$element ).addClass( 'anrfc-box-margins' ));
+		this.$( wrapper ).append( this.$( submitButton.$element ).addClass( 'anrfc-box-margins' ) );
+		this.$( wrapper ).append( this.$( cancelButton.$element ).addClass( 'anrfc-box-margins' ) );
 		$anrfcBox.append( wrapper );
 
 		submitButton.on( 'click', () => {
