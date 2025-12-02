@@ -1,5 +1,5 @@
 {
 	"devDependencies": {
-		"eslint-config-wikimedia": "^0.30.0"
+		"eslint-config-wikimedia": "^0.32.3"
 	}
 }
