@@ -3,6 +3,7 @@
 Changes:
 * linted/refactored
 * added ? to end of question in popup
+* added proxy block
 */
 
 // <nowiki>
