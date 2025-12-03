@@ -3,9 +3,9 @@
 		"wikiparser-template": "^1.24.1"
 	},
 	"devDependencies": {
+		"@babel/plugin-transform-modules-commonjs": "^7.16.0",
 		"jest": "^28.1.0",
 		"types-mediawiki": "github:wikimedia-gadgets/types-mediawiki",
-		"@babel/plugin-transform-modules-commonjs": "^7.16.0"
 	},
 	"scripts": {
 		"test": "jest"

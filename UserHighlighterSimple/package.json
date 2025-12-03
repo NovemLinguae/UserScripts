@@ -1,5 +1,6 @@
 {
-	"dependencies": {
+	"devDependencies": {
+		"@babel/plugin-transform-modules-commonjs": "^7.16.0",
 		"jest": "^27.4.3",
 		"jquery": "^3.6.0",
 		"mock-mediawiki": "^1.4.0",
@@ -7,8 +8,5 @@
 	},
 	"scripts": {
 		"test": "jest"
-	},
-	"devDependencies": {
-		"@babel/plugin-transform-modules-commonjs": "^7.16.0"
 	}
 }
