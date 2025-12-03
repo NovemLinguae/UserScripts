@@ -1554,105 +1554,6 @@ describe( 'convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)',
 	} );
 } );
 
-describe( 'getStrPosOfEndOfFirstTemplateFound(wikicode, templateName)', () => {
-	it( 'should handle needle template being 1st template on the page', () => {
-		const wikicode =
-'{{Good topic box}}';
-		const templateNameArrayCaseInsensitive = 'good topic box';
-		const output = 18;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-
-	it( 'should handle needle template being 1st template on the page', () => {
-		const wikicode =
-'Test{{Good topic box}}';
-		const templateNameArrayCaseInsensitive = 'good topic box';
-		const output = 22;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-
-	it( 'should handle needle template being 1st template on the page', () => {
-		const wikicode =
-`Test
-{{Good topic box}}`;
-		const templateNameArrayCaseInsensitive = 'good topic box';
-		const output = 23;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-
-	it( 'should handle needle template being 1st template on the page', () => {
-		const wikicode =
-`Test
-{{Good topic box
-| algo                = old(120d)
-| archive             = Wikipedia talk:Featured and good topic candidates/%(year)d
-| archiveheader       = {{Automatic archive navigator}}
-| minthreadstoarchive = 1
-| minthreadsleft      = 4
-}}
-{{tmbox
-|text= '''Questions about a topic you are working on or about the process in general should be asked at [[Wikipedia talk:Featured and good topic questions|Featured and good topic questions]].'''  This page is primarily for discussion on proposals regarding the FTC process.
-}}`;
-		const templateNameArrayCaseInsensitive = 'good topic box';
-		const output = 249;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-
-	it( 'should handle needle template being 2nd template on the page', () => {
-		const wikicode =
-`Test
-{{tmbox
-|text= '''Questions about a topic you are working on or about the process in general should be asked at [[Wikipedia talk:Featured and good topic questions|Featured and good topic questions]].'''  This page is primarily for discussion on proposals regarding the FTC process.
-}}
-{{Good topic box
-| algo                = old(120d)
-| archive             = Wikipedia talk:Featured and good topic candidates/%(year)d
-| archiveheader       = {{Automatic archive navigator}}
-| minthreadstoarchive = 1
-| minthreadsleft      = 4
-}}`;
-		const templateNameArrayCaseInsensitive = 'good topic box';
-		const output = 534;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-
-	it( 'should handle template not found', () => {
-		const wikicode =
-`{{User:MiszaBot/config
-| algo                = old(120d)
-| archive             = Wikipedia talk:Featured and good topic candidates/%(year)d
-| archiveheader       = {{Automatic archive navigator}}
-| minthreadstoarchive = 1
-| minthreadsleft      = 4
-}}
-{{tmbox
-|text= '''Questions about a topic you are working on or about the process in general should be asked at [[Wikipedia talk:Featured and good topic questions|Featured and good topic questions]].'''  This page is primarily for discussion on proposals regarding the FTC process.
-}}`;
-		const templateNameArrayCaseInsensitive = 'good topic box';
-		const output = null;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-
-	it( 'should handle nested templates', () => {
-		const wikicode =
-`{{GAR/link|17:09, 22 February 2022 (UTC)|page=2|GARpage=1|status= }}
-{{ArticleHistory
-|action1=GAN
-|action1date=04:22, 26 December 2011 (UTC)
-|action1link=Talk:Royce White/GA1
-|action1result=listed
-|action1oldid=467699196
-|dykdate=13 December 2011
-|dykentry=... that during '''[[Royce White]]'''{{\`s}} two-and-a-half-year hiatus from competitive [[basketball]], he spent time on his music career and learned how to play the [[piano]]?
-|currentstatus=GA
-|topic=sports
-}}`;
-		const templateNameArrayCaseInsensitive = 'ArticleHistory';
-		const output = 469;
-		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
-	} );
-} );
-
 // Note that GARCloserWikicodeGenerator.updateArticleHistory() and GANReviewWikicodeGenerator.updateArticleHistory() are different. They take different parameters and output different wikitext.
 describe( 'updateArticleHistory( keepOrDelist, wikicode, garPageTitle, oldid )', () => {
 	test( 'kept', () => {
@@ -1675,7 +1576,6 @@ describe( 'updateArticleHistory( keepOrDelist, wikicode, garPageTitle, oldid )',
 |action1result=listed
 |action1oldid=220708372
 |topic=Biology
-
 |action2 = GAR
 |action2date = ~~~~~
 |action2link = Wikipedia:Good article reassessment/Archaeoraptor/1
@@ -1712,7 +1612,6 @@ describe( 'firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, code
 |action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
 |action1result=failed
 |action1oldid=47350127
-
 |action2 = GAN
 |action2date = ~~~~~
 |action2link = Talk:Agriculture/GA2
@@ -1739,7 +1638,6 @@ describe( 'firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, code
 		const output =
 `{{ArticleHistory
 |topic = Physics and astronomy
-
 |action12 = GAN
 |action12date = ~~~~~
 |action12link = Talk:SpaceX Starship/GA1
