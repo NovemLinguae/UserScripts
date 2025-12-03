@@ -1553,3 +1553,315 @@ describe( 'convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)',
 		expect( wg.convertGATemplateToArticleHistoryIfPresent( talkPageTitle, wikicode ) ).toBe( output );
 	} );
 } );
+
+describe( 'getStrPosOfEndOfFirstTemplateFound(wikicode, templateName)', () => {
+	it( 'should handle needle template being 1st template on the page', () => {
+		const wikicode =
+'{{Good topic box}}';
+		const templateNameArrayCaseInsensitive = 'good topic box';
+		const output = 18;
+		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
+	} );
+
+	it( 'should handle needle template being 1st template on the page', () => {
+		const wikicode =
+'Test{{Good topic box}}';
+		const templateNameArrayCaseInsensitive = 'good topic box';
+		const output = 22;
+		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
+	} );
+
+	it( 'should handle needle template being 1st template on the page', () => {
+		const wikicode =
+`Test
+{{Good topic box}}`;
+		const templateNameArrayCaseInsensitive = 'good topic box';
+		const output = 23;
+		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
+	} );
+
+	it( 'should handle needle template being 1st template on the page', () => {
+		const wikicode =
+`Test
+{{Good topic box
+| algo                = old(120d)
+| archive             = Wikipedia talk:Featured and good topic candidates/%(year)d
+| archiveheader       = {{Automatic archive navigator}}
+| minthreadstoarchive = 1
+| minthreadsleft      = 4
+}}
+{{tmbox
+|text= '''Questions about a topic you are working on or about the process in general should be asked at [[Wikipedia talk:Featured and good topic questions|Featured and good topic questions]].'''  This page is primarily for discussion on proposals regarding the FTC process.
+}}`;
+		const templateNameArrayCaseInsensitive = 'good topic box';
+		const output = 249;
+		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
+	} );
+
+	it( 'should handle needle template being 2nd template on the page', () => {
+		const wikicode =
+`Test
+{{tmbox
+|text= '''Questions about a topic you are working on or about the process in general should be asked at [[Wikipedia talk:Featured and good topic questions|Featured and good topic questions]].'''  This page is primarily for discussion on proposals regarding the FTC process.
+}}
+{{Good topic box
+| algo                = old(120d)
+| archive             = Wikipedia talk:Featured and good topic candidates/%(year)d
+| archiveheader       = {{Automatic archive navigator}}
+| minthreadstoarchive = 1
+| minthreadsleft      = 4
+}}`;
+		const templateNameArrayCaseInsensitive = 'good topic box';
+		const output = 534;
+		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
+	} );
+
+	it( 'should handle template not found', () => {
+		const wikicode =
+`{{User:MiszaBot/config
+| algo                = old(120d)
+| archive             = Wikipedia talk:Featured and good topic candidates/%(year)d
+| archiveheader       = {{Automatic archive navigator}}
+| minthreadstoarchive = 1
+| minthreadsleft      = 4
+}}
+{{tmbox
+|text= '''Questions about a topic you are working on or about the process in general should be asked at [[Wikipedia talk:Featured and good topic questions|Featured and good topic questions]].'''  This page is primarily for discussion on proposals regarding the FTC process.
+}}`;
+		const templateNameArrayCaseInsensitive = 'good topic box';
+		const output = null;
+		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
+	} );
+
+	it( 'should handle nested templates', () => {
+		const wikicode =
+`{{GAR/link|17:09, 22 February 2022 (UTC)|page=2|GARpage=1|status= }}
+{{ArticleHistory
+|action1=GAN
+|action1date=04:22, 26 December 2011 (UTC)
+|action1link=Talk:Royce White/GA1
+|action1result=listed
+|action1oldid=467699196
+|dykdate=13 December 2011
+|dykentry=... that during '''[[Royce White]]'''{{\`s}} two-and-a-half-year hiatus from competitive [[basketball]], he spent time on his music career and learned how to play the [[piano]]?
+|currentstatus=GA
+|topic=sports
+}}`;
+		const templateNameArrayCaseInsensitive = 'ArticleHistory';
+		const output = 469;
+		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
+	} );
+} );
+
+// Note that GARCloserWikicodeGenerator.updateArticleHistory() and GANReviewWikicodeGenerator.updateArticleHistory() are different. They take different parameters and output different wikitext.
+describe( 'updateArticleHistory( keepOrDelist, wikicode, garPageTitle, oldid )', () => {
+	test( 'kept', () => {
+		const keepOrDelist = 'keep';
+		const wikicode =
+`{{ArticleHistory|action1=GAN
+|action1date=04:56, 21 June 2008
+|action1link=Talk:Archaeoraptor/GA1
+|action1result=listed
+|action1oldid=220708372
+|currentstatus=GA
+|topic=Biology
+}}`;
+		const garPageTitle = 'Wikipedia:Good article reassessment/Archaeoraptor/1';
+		const oldid = 1111;
+		const output =
+`{{ArticleHistory|action1=GAN
+|action1date=04:56, 21 June 2008
+|action1link=Talk:Archaeoraptor/GA1
+|action1result=listed
+|action1oldid=220708372
+|topic=Biology
+
+|action2 = GAR
+|action2date = ~~~~~
+|action2link = Wikipedia:Good article reassessment/Archaeoraptor/1
+|action2result = kept
+|action2oldid = 1111
+|currentstatus = GA
+}}`;
+		expect( wg.updateArticleHistory( keepOrDelist, wikicode, garPageTitle, oldid, oldid ) ).toBe( output );
+	} );
+} );
+
+describe( 'firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert)', () => {
+	test( '{{Article history}}', () => {
+		const wikicode =
+`{{Article history
+|action1=FAC
+|action1date=14 January 2004
+|action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
+|action1result=failed
+|action1oldid=47350127
+}}`;
+		const templateNameRegExNoDelimiters = 'Article ?history';
+		const codeToInsert =
+`|action2 = GAN
+|action2date = ~~~~~
+|action2link = Talk:Agriculture/GA2
+|action2result = listed
+|currentstatus = GA
+|topic = Natural Sciences`;
+		const output =
+`{{Article history
+|action1=FAC
+|action1date=14 January 2004
+|action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
+|action1result=failed
+|action1oldid=47350127
+
+|action2 = GAN
+|action2date = ~~~~~
+|action2link = Talk:Agriculture/GA2
+|action2result = listed
+|currentstatus = GA
+|topic = Natural Sciences
+}}`;
+		expect( wg.firstTemplateInsertCode( wikicode, templateNameRegExNoDelimiters, codeToInsert ) ).toBe( output );
+	} );
+
+	test( 'should be case insensitive', () => {
+		const wikicode =
+`{{ArticleHistory
+|topic = Physics and astronomy
+}}
+`;
+		const templateNameRegExNoDelimiters = 'Article ?history';
+		const codeToInsert =
+`|action12 = GAN
+|action12date = ~~~~~
+|action12link = Talk:SpaceX Starship/GA1
+|action12result = failed
+|currentstatus = DGA`;
+		const output =
+`{{ArticleHistory
+|topic = Physics and astronomy
+
+|action12 = GAN
+|action12date = ~~~~~
+|action12link = Talk:SpaceX Starship/GA1
+|action12result = failed
+|currentstatus = DGA
+}}
+`;
+		expect( wg.firstTemplateInsertCode( wikicode, templateNameRegExNoDelimiters, codeToInsert ) ).toBe( output );
+	} );
+} );
+
+describe( 'firstTemplateGetParameterValue(wikicode, template, parameter)', () => {
+	test( 'param exists', () => {
+		const wikicode =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+
+|action2=GAN
+|action2date=~~~~~
+|action2link=Talk:Cow tipping/GA1
+|action2result=listed
+|currentstatus=GA
+|topic=agriculture
+}}`;
+		const template = 'Article history';
+		const parameter = 'topic';
+		const output = 'agriculture';
+		expect( wg.firstTemplateGetParameterValue( wikicode, template, parameter ) ).toBe( output );
+	} );
+
+	test( 'param does not exist', () => {
+		const wikicode =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+}}`;
+		const template = 'Article history';
+		const parameter = 'topic';
+		const output = null;
+		expect( wg.firstTemplateGetParameterValue( wikicode, template, parameter ) ).toBe( output );
+	} );
+} );
+
+describe( 'firstTemplateDeleteParameter(wikicode, template, parameter)', () => {
+	test( 'param exists', () => {
+		const wikicode =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+
+|action2=GAN
+|action2date=~~~~~
+|action2link=Talk:Cow tipping/GA1
+|action2result=listed
+|currentstatus=GA
+|topic=agriculture
+}}`;
+		const template = 'Article history';
+		const parameter = 'topic';
+		const output =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+
+|action2=GAN
+|action2date=~~~~~
+|action2link=Talk:Cow tipping/GA1
+|action2result=listed
+|currentstatus=GA
+}}`;
+		expect( wg.firstTemplateDeleteParameter( wikicode, template, parameter ) ).toBe( output );
+	} );
+
+	test( 'param does not exist', () => {
+		const wikicode =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+}}`;
+		const template = 'Article history';
+		const parameter = 'topic';
+		const output =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+}}`;
+		expect( wg.firstTemplateDeleteParameter( wikicode, template, parameter ) ).toBe( output );
+	} );
+
+	test( 'edge case', () => {
+		const wikicode =
+`{{Article history
+|action1=FAC
+|action1date=14 January 2004
+|action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
+|action1result=failed
+|action1oldid=47350127
+|currentstatus=FFAC
+}}`;
+		const template = 'Article history';
+		const parameter = 'currentstatus';
+		const output =
+`{{Article history
+|action1=FAC
+|action1date=14 January 2004
+|action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
+|action1result=failed
+|action1oldid=47350127
+}}`;
+		expect( wg.firstTemplateDeleteParameter( wikicode, template, parameter ) ).toBe( output );
+	} );
+} );

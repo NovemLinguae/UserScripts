@@ -219,14 +219,14 @@ export class DraftCleaner {
 
 	// TOOL - swap ref period with period ref
 	swapRefPeriodWithPeriodRef( wikicode ) {
-		wikicode = wikicode.replace( /((?:<ref[^>]*?>[^>]*?<\/ref>){1,})\. /gm, '.$1 ' );
-		wikicode = wikicode.replace( /((?:<ref[^>]*?>[^>]*?<\/ref>){1,})\.\n/gm, '.$1\n' );
+		wikicode = wikicode.replace( /((?:<ref[^>]*?>[^>]*?<\/ref>){1,})\s*\. /gm, '.$1 ' );
+		wikicode = wikicode.replace( /((?:<ref[^>]*?>[^>]*?<\/ref>){1,})\s*\.\n/gm, '.$1\n' );
 		return wikicode;
 	}
 
 	swapRefCommaWithCommaRef( wikicode ) {
-		wikicode = wikicode.replace( /((?:<ref[^>]*?>[^>]*?<\/ref>){1,}), /gm, ',$1 ' );
-		wikicode = wikicode.replace( /((?:<ref[^>]*?>[^>]*?<\/ref>){1,}),\n/gm, ',$1\n' );
+		wikicode = wikicode.replace( /((?:<ref[^>]*?>[^>]*?<\/ref>){1,})\s*, /gm, ',$1 ' );
+		wikicode = wikicode.replace( /((?:<ref[^>]*?>[^>]*?<\/ref>){1,})\s*,\n/gm, ',$1\n' );
 		return wikicode;
 	}
 

@@ -1611,6 +1611,7 @@ describe( 'determineNextActionNumber(talkWikicode)', () => {
 	} );
 } );
 
+// Note that GARCloserWikicodeGenerator.updateArticleHistory() and GANReviewWikicodeGenerator.updateArticleHistory() are different. They take different parameters and output different wikitext.
 describe( 'updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed)', () => {
 	test( 'listed, GA', () => {
 		const talkWikicode =

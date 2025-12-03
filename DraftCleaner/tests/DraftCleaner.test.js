@@ -1388,6 +1388,12 @@ describe( 'swapRefPeriodWithPeriodRef(wikicode2)', () => {
 		const output = '[[WMO]].<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>\n';
 		expect( dc.swapRefPeriodWithPeriodRef( wikicode2 ) ).toBe( output );
 	} );
+
+	test( 'Whitespace mixed in', () => {
+		const wikicode2 = '[[WMO]]<ref>Test</ref><ref>Test2</ref> .\n';
+		const output = '[[WMO]].<ref>Test</ref><ref>Test2</ref>\n';
+		expect( dc.swapRefPeriodWithPeriodRef( wikicode2 ) ).toBe( output );
+	} );
 } );
 
 describe( 'swapRefCommaWithCommaRef(wikicode2)', () => {
@@ -1406,6 +1412,12 @@ describe( 'swapRefCommaWithCommaRef(wikicode2)', () => {
 	test.skip( '<ref name="test" /> style refs', () => {
 		const wikicode2 = '[[WMO]]<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>,\n';
 		const output = '[[WMO]],<ref name=":0" /><ref>{{Cite web |date=2018-06-06 |title=Public-Private Engagement (PPE) |url=https://public.wmo.int/en/our-mandate/how-we-do-it/public-private-engagement-ppe |access-date=2022-03-29 |website=public.wmo.int |language=en}}</ref>\n';
+		expect( dc.swapRefCommaWithCommaRef( wikicode2 ) ).toBe( output );
+	} );
+
+	test( 'Whitespace mixed in', () => {
+		const wikicode2 = '[[WMO]]<ref>Test</ref><ref>Test2</ref> ,\n';
+		const output = '[[WMO]],<ref>Test</ref><ref>Test2</ref>\n';
 		expect( dc.swapRefCommaWithCommaRef( wikicode2 ) ).toBe( output );
 	} );
 } );
