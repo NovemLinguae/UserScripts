@@ -1,10 +1,9 @@
-version: '3.8'
 services:
   php:
-    image: php:8.4-apache
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8082:80" # https://localhost:8082
     volumes:
       - .:/var/www/html
-      - ./docker/apache/dir-listing.conf:/etc/apache2/conf-available/dir-listing.conf:ro # needed to turn on viewing directory listings. else it 403s. `:ro` means "read only"
-    command: bash -lc "a2enmod autoindex && a2enconf dir-listing && apache2-foreground"
