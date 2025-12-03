@@ -1482,6 +1482,12 @@ describe( 'getFirstTemplateNameFromWikicode(wikicode)', () => {
 		const output = 'Test';
 		expect( wg.getFirstTemplateNameFromWikicode( wikicode ) ).toBe( output );
 	} );
+
+	test( 'Two templates', () => {
+		const wikicode = 'Test {{First}} Test {{Second}} Test';
+		const output = 'First';
+		expect( wg.getFirstTemplateNameFromWikicode( wikicode ) ).toBe( output );
+	} );
 } );
 
 describe( 'addTemplateInCorrectMOSTalkOrderPosition(talkWikicode, codeToAdd)', () => {
@@ -1608,6 +1614,7 @@ describe( 'determineNextActionNumber(talkWikicode)', () => {
 	} );
 } );
 
+// Note that GARCloserWikicodeGenerator.updateArticleHistory() and GANReviewWikicodeGenerator.updateArticleHistory() are different. They take different parameters and output different wikitext.
 describe( 'updateArticleHistory(talkWikicode, topic, nominationPageTitle, listedOrFailed)', () => {
 	test( 'listed, GA', () => {
 		const talkWikicode =

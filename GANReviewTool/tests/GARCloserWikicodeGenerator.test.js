@@ -1661,3 +1661,216 @@ describe( 'getStrPosOfEndOfFirstTemplateFound(wikicode, templateName)', () => {
 		expect( wg.getStrPosOfEndOfFirstTemplateFound( wikicode, templateNameArrayCaseInsensitive ) ).toBe( output );
 	} );
 } );
+
+// Note that GARCloserWikicodeGenerator.updateArticleHistory() and GANReviewWikicodeGenerator.updateArticleHistory() are different. They take different parameters and output different wikitext.
+describe( 'updateArticleHistory( keepOrDelist, wikicode, garPageTitle, oldid )', () => {
+	test( 'kept', () => {
+		const keepOrDelist = 'keep';
+		const wikicode =
+`{{ArticleHistory|action1=GAN
+|action1date=04:56, 21 June 2008
+|action1link=Talk:Archaeoraptor/GA1
+|action1result=listed
+|action1oldid=220708372
+|currentstatus=GA
+|topic=Biology
+}}`;
+		const garPageTitle = 'Wikipedia:Good article reassessment/Archaeoraptor/1';
+		const oldid = 1111;
+		const output =
+`{{ArticleHistory|action1=GAN
+|action1date=04:56, 21 June 2008
+|action1link=Talk:Archaeoraptor/GA1
+|action1result=listed
+|action1oldid=220708372
+|topic=Biology
+
+|action2 = GAR
+|action2date = ~~~~~
+|action2link = Wikipedia:Good article reassessment/Archaeoraptor/1
+|action2result = kept
+|action2oldid = 1111
+|currentstatus = GA
+}}`;
+		expect( wg.updateArticleHistory( keepOrDelist, wikicode, garPageTitle, oldid, oldid ) ).toBe( output );
+	} );
+} );
+
+describe( 'firstTemplateInsertCode(wikicode, templateNameRegExNoDelimiters, codeToInsert)', () => {
+	test( '{{Article history}}', () => {
+		const wikicode =
+`{{Article history
+|action1=FAC
+|action1date=14 January 2004
+|action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
+|action1result=failed
+|action1oldid=47350127
+}}`;
+		const templateNameRegExNoDelimiters = 'Article ?history';
+		const codeToInsert =
+`|action2 = GAN
+|action2date = ~~~~~
+|action2link = Talk:Agriculture/GA2
+|action2result = listed
+|currentstatus = GA
+|topic = Natural Sciences`;
+		const output =
+`{{Article history
+|action1=FAC
+|action1date=14 January 2004
+|action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
+|action1result=failed
+|action1oldid=47350127
+
+|action2 = GAN
+|action2date = ~~~~~
+|action2link = Talk:Agriculture/GA2
+|action2result = listed
+|currentstatus = GA
+|topic = Natural Sciences
+}}`;
+		expect( wg.firstTemplateInsertCode( wikicode, templateNameRegExNoDelimiters, codeToInsert ) ).toBe( output );
+	} );
+
+	test( 'should be case insensitive', () => {
+		const wikicode =
+`{{ArticleHistory
+|topic = Physics and astronomy
+}}
+`;
+		const templateNameRegExNoDelimiters = 'Article ?history';
+		const codeToInsert =
+`|action12 = GAN
+|action12date = ~~~~~
+|action12link = Talk:SpaceX Starship/GA1
+|action12result = failed
+|currentstatus = DGA`;
+		const output =
+`{{ArticleHistory
+|topic = Physics and astronomy
+
+|action12 = GAN
+|action12date = ~~~~~
+|action12link = Talk:SpaceX Starship/GA1
+|action12result = failed
+|currentstatus = DGA
+}}
+`;
+		expect( wg.firstTemplateInsertCode( wikicode, templateNameRegExNoDelimiters, codeToInsert ) ).toBe( output );
+	} );
+} );
+
+describe( 'firstTemplateGetParameterValue(wikicode, template, parameter)', () => {
+	test( 'param exists', () => {
+		const wikicode =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+
+|action2=GAN
+|action2date=~~~~~
+|action2link=Talk:Cow tipping/GA1
+|action2result=listed
+|currentstatus=GA
+|topic=agriculture
+}}`;
+		const template = 'Article history';
+		const parameter = 'topic';
+		const output = 'agriculture';
+		expect( wg.firstTemplateGetParameterValue( wikicode, template, parameter ) ).toBe( output );
+	} );
+
+	test( 'param does not exist', () => {
+		const wikicode =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+}}`;
+		const template = 'Article history';
+		const parameter = 'topic';
+		const output = null;
+		expect( wg.firstTemplateGetParameterValue( wikicode, template, parameter ) ).toBe( output );
+	} );
+} );
+
+describe( 'firstTemplateDeleteParameter(wikicode, template, parameter)', () => {
+	test( 'param exists', () => {
+		const wikicode =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+
+|action2=GAN
+|action2date=~~~~~
+|action2link=Talk:Cow tipping/GA1
+|action2result=listed
+|currentstatus=GA
+|topic=agriculture
+}}`;
+		const template = 'Article history';
+		const parameter = 'topic';
+		const output =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+
+|action2=GAN
+|action2date=~~~~~
+|action2link=Talk:Cow tipping/GA1
+|action2result=listed
+|currentstatus=GA
+}}`;
+		expect( wg.firstTemplateDeleteParameter( wikicode, template, parameter ) ).toBe( output );
+	} );
+
+	test( 'param does not exist', () => {
+		const wikicode =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+}}`;
+		const template = 'Article history';
+		const parameter = 'topic';
+		const output =
+`{{Article history
+|action1=AFD
+|action1date=6 June 2007
+|action1link=Wikipedia:Articles for deletion/Cow tipping
+|action1result=kept
+}}`;
+		expect( wg.firstTemplateDeleteParameter( wikicode, template, parameter ) ).toBe( output );
+	} );
+
+	test( 'edge case', () => {
+		const wikicode =
+`{{Article history
+|action1=FAC
+|action1date=14 January 2004
+|action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
+|action1result=failed
+|action1oldid=47350127
+|currentstatus=FFAC
+}}`;
+		const template = 'Article history';
+		const parameter = 'currentstatus';
+		const output =
+`{{Article history
+|action1=FAC
+|action1date=14 January 2004
+|action1link=Wikipedia:Featured_article_candidates/Archived_nominations/Index/June_2003_to_January_2004#Bacteria
+|action1result=failed
+|action1oldid=47350127
+}}`;
+		expect( wg.firstTemplateDeleteParameter( wikicode, template, parameter ) ).toBe( output );
+	} );
+} );
