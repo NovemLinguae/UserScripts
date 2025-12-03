@@ -1,13 +1,13 @@
 {
 	"dependencies": {
+		"wikiparser-template": "^1.24.1"
+	},
+	"devDependencies": {
 		"jest": "^28.1.0",
 		"types-mediawiki": "github:wikimedia-gadgets/types-mediawiki",
-		"wikiparser-template": "^1.24.1"
+		"@babel/plugin-transform-modules-commonjs": "^7.16.0"
 	},
 	"scripts": {
 		"test": "jest"
-	},
-	"devDependencies": {
-		"@babel/plugin-transform-modules-commonjs": "^7.16.0"
 	}
 }
