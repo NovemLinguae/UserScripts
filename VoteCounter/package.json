@@ -1,13 +1,11 @@
 {
 	"dependencies": {
+		"@babel/plugin-transform-modules-commonjs": "^7.16.0",
 		"jest": "^28.1.0",
 		"jest-when": "^3.5.1",
 		"types-mediawiki": "github:wikimedia-gadgets/types-mediawiki"
 	},
 	"scripts": {
 		"test": "jest"
-	},
-	"devDependencies": {
-		"@babel/plugin-transform-modules-commonjs": "^7.16.0"
 	}
 }
