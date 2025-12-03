@@ -1,4 +1,3 @@
-// TODO: A couple of recent bugs will require a lexer or template parser type class to solve.
 import Parser from './Parser.js';
 
 export class TemplateFinder {
