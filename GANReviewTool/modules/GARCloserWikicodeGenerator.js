@@ -1,3 +1,5 @@
+import { TemplateFinder } from './TemplateFinder.js';
+
 export class GARCloserWikicodeGenerator {
 	processKeepForGARPage( garPageWikicode, message, isCommunityAssessment ) {
 		return this.processGARPage( garPageWikicode, message, isCommunityAssessment, 'Kept.', 'green' );
@@ -583,15 +585,15 @@ __TOC__`;
 			throw new Error( 'InvalidArgumentException' );
 		}
 
-		const topic = this.firstTemplateGetParameterValue( wikicode, 'Artricle history', 'topic' );
+		const topic = this.firstTemplateGetParameterValue( wikicode, 'Article ?history', 'topic' );
 		let topicString = '';
 		if ( !topic ) {
 			topicString = `\n|topic = ${ topic }`;
 		}
 
 		// https://en.wikipedia.org/wiki/Template:Article_history#How_to_use_in_practice
-		const existingStatus = this.firstTemplateGetParameterValue( wikicode, 'Artricle history', 'currentstatus' );
-		wikicode = this.firstTemplateDeleteParameter( wikicode, 'Article history', 'currentstatus' );
+		const existingStatus = this.firstTemplateGetParameterValue( wikicode, 'Article ?history', 'currentstatus' );
+		wikicode = this.firstTemplateDeleteParameter( wikicode, 'Article ?history', 'currentstatus' );
 		const currentStatusString = this.getArticleHistoryNewStatus( existingStatus, keepOrDelist );
 
 		const result = this.getKeepOrDelistPastTense( keepOrDelist );
@@ -634,21 +636,9 @@ __TOC__`;
 		}
 	}
 
-	firstTemplateGetParameterValue( wikicode, template, parameter ) {
-		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
-		// new algorithm:
-			// find start of template. use regex /i (ignore case)
-			// iterate using loops until end of template found
-				// handle <nowiki>
-				// handle triple {{{
-				// handle nested
-
-		const regex = new RegExp( `\\|\\s*${ parameter }\\s*=\\s*([^\\n\\|\\}]*)\\s*`, '' );
-		const result = wikicode.match( regex );
-		if ( wikicode.match( regex ) === null ) {
-			return null;
-		}
-		return result[ 1 ];
+	firstTemplateGetParameterValue( wikicode, templateRegEx, parameter ) {
+		const templateFinder = new TemplateFinder( wikicode );
+		return templateFinder.firstTemplateGetParameterValue( templateRegEx, parameter );
 	}
 
 	getArticleHistoryNewStatus( existingStatus, keepOrDelist ) {
@@ -663,54 +653,9 @@ __TOC__`;
 	 * @param {Array} templateNameArrayCaseInsensitive
 	 */
 	firstTemplateInsertCode( wikicode, templateNameArrayCaseInsensitive, codeToInsert ) {
-		for ( const templateName of templateNameArrayCaseInsensitive ) {
-			const strPosOfEndOfFirstTemplate = this.getStrPosOfEndOfFirstTemplateFound( wikicode, templateName );
-			if ( strPosOfEndOfFirstTemplate !== null ) {
-				const insertPosition = strPosOfEndOfFirstTemplate - 2; // 2 characters from the end, right before }}
-				const result = this.insertStringIntoStringAtPosition( wikicode, `\n${ codeToInsert }\n`, insertPosition );
-				return result;
-			}
-		}
-	}
-
-	/**
-	 * CC BY-SA 4.0, jAndy, https://stackoverflow.com/a/4364902/3480193
-	 */
-	insertStringIntoStringAtPosition( bigString, insertString, position ) {
-		return [
-			bigString.slice( 0, position ),
-			insertString,
-			bigString.slice( position )
-		].join( '' );
-	}
-
-	/**
-	 * Grabs string position of the END of first {{template}} contained in wikicode. Case insensitive. Returns null if no template found. Handles nested templates.
-	 *
-	 * @return {number|null}
-	 */
-	getStrPosOfEndOfFirstTemplateFound( wikicode, templateName ) {
-		const starting_position = wikicode.toLowerCase().indexOf( '{{' + templateName.toLowerCase() );
-		if ( starting_position === -1 ) {
-			return null;
-		}
-		let counter = 0;
-		const length = wikicode.length;
-		for ( let i = starting_position + 2; i < length; i++ ) {
-			const next_two = wikicode.substr( i, 2 );
-			if ( next_two == '{{' ) {
-				counter++;
-				continue;
-			} else if ( next_two == '}}' ) {
-				if ( counter == 0 ) {
-					return i + 2; // +2 to account for next_two being }} (2 characters)
-				} else {
-					counter--;
-					continue;
-				}
-			}
-		}
-		return null;
+		const templateFinder = new TemplateFinder( wikicode );
+		templateFinder.firstTemplateInsertCode( templateNameArrayCaseInsensitive, codeToInsert );
+		return templateFinder.getWikitext();
 	}
 
 	removeGAStatusFromWikiprojectBanners( wikicode ) {
@@ -718,8 +663,8 @@ __TOC__`;
 	}
 
 	firstTemplateDeleteParameter( wikicode, template, parameter ) {
-		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
-		const regex = new RegExp( `\\|\\s*${ parameter }\\s*=\\s*([^\\n\\|\\}]*)\\s*`, '' );
-		return wikicode.replace( regex, '' );
+		const templateFinder = new TemplateFinder( wikicode );
+		templateFinder.firstTemplateDeleteParameter( template, parameter );
+		return templateFinder.getWikitext();
 	}
 }
