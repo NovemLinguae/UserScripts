@@ -7,3 +7,7 @@ services:
       - "8082:80" # https://localhost:8082
     volumes:
       - .:/var/www/html
+    environment:
+      PHP_IDE_CONFIG: "serverName=Docker"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # Required for Xdebug to connect back to host
