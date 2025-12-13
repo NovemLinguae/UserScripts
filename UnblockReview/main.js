@@ -8,6 +8,7 @@ Many additional bugs fixed.
 ( async function () {
 	const UNBLOCK_REQ_COLOR_PRE_2025 = 'rgb(235, 244, 255)';
 	const UNBLOCK_REQ_COLOR_POST_2025 = 'var(--background-color-progressive-subtle, #EBF4FF)';
+	const UNBLOCK_SPAMUN_COLOR = 'var(--background-color-progressive-subtle, #f1f4fd)';
 	const DEFAULT_DECLINE_REASON = '{{subst:Decline reason here}}';
 	const ADVERT = ' ([[User:Novem Linguae/Scripts/UnblockReview.js|unblock-review]])';
 
@@ -30,16 +31,15 @@ Many additional bugs fixed.
 			const userBlockBoxes = document.querySelectorAll( 'div.user-block' );
 			for ( let i = 0, n = userBlockBoxes.length; i < n; i++ ) {
 				if (
-					userBlockBoxes[ i ].style[ 'background-color' ] !== UNBLOCK_REQ_COLOR_PRE_2025 &&
-					userBlockBoxes[ i ].style.background !== UNBLOCK_REQ_COLOR_POST_2025
+					userBlockBoxes[ i ].style[ 'background-color' ] === UNBLOCK_REQ_COLOR_PRE_2025 ||
+					userBlockBoxes[ i ].style.background === UNBLOCK_REQ_COLOR_POST_2025 ||
+					userBlockBoxes[ i ].style.background === UNBLOCK_SPAMUN_COLOR
 				) {
-					continue;
+					// We now have a pending unblock request - add UI
+					const unblockDiv = userBlockBoxes[ i ];
+					const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
+					await listenForAcceptAndDecline( container, hrEl );
 				}
-
-				// We now have a pending unblock request - add UI
-				const unblockDiv = userBlockBoxes[ i ];
-				const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
-				await listenForAcceptAndDecline( container, hrEl );
 			}
 		} );
 	}
