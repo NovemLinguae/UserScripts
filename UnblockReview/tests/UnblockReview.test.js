@@ -131,7 +131,7 @@ describe( 'processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReaso
 		const paramsAndReason = `Your reason here `;
 		const acceptDeclineReason = `Insufficient. ~~~~`;
 		const acceptOrDecline = `decline`;
-		const expected = `Test {{unblock reviewed|decline=Insufficient. ~~~~|Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}} Test`;
+		const expected = `Test {{unblock reviewed|decline=Insufficient. ~~~~|1=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}} Test`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
 
@@ -140,7 +140,7 @@ describe( 'processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReaso
 		const paramsAndReason = `Your reason here `;
 		const acceptDeclineReason = `Insufficient. ~~~~`;
 		const acceptOrDecline = `decline`;
-		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}}`;
+		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}}`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
 
@@ -149,7 +149,7 @@ describe( 'processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReaso
 		const paramsAndReason = `Your reason here `;
 		const acceptDeclineReason = `Insufficient. ~~~~`;
 		const acceptOrDecline = `decline`;
-		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}}`;
+		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}}`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
 
@@ -169,7 +169,7 @@ I would somewhat disagree with you there sir. `;
 		const expected =
 `==Unblock request==
 
-{{unblock reviewed|decline=Insufficient. ~~~~|"Clearly not here to build an encyclopedia"
+{{unblock reviewed|decline=Insufficient. ~~~~|1="Clearly not here to build an encyclopedia"
 
 I would somewhat disagree with you there sir. [[User:Jean Zboncak|Jean Zboncak]] ([[User talk:Jean Zboncak#top|talk]]) 22:54, 30 October 2024 (UTC)}}
 Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
@@ -188,7 +188,7 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		const expected =
 `<div class="user-block" style="padding: 5px; margin-bottom: 0.5em; border: 1px solid var(--border-color-base, #a2ab91); background-color: var(--background-color-warning-subtle, #fef6e7); color:inherit; min-height: 40px">[[File:Stop x nuvola.svg|40px|left|alt=Stop icon]]<div style="margin-left:45px">You have been '''[[WP:Blocking policy|blocked]]''' '''[[Wikipedia:Blocking_policy#Indefinite_blocks|indefinitely]]''' from editing for [[Wikipedia:Sockpuppetry|abusing multiple accounts]]. Note that multiple accounts are [[Wikipedia:Sockpuppetry#Legitimate uses|allowed]], but '''not for ''[[Wikipedia:Sockpuppetry#Inappropriate uses of alternative accounts|illegitimate]]'' reasons''', and any contributions made while evading blocks or bans  may be [[Wikipedia:Banning policy#Edits by and on behalf of banned editors|reverted]] or [[Wikipedia:Criteria for speedy deletion#G5|deleted]].   </div><div style="margin-left:45px">If you think there are good reasons for being unblocked, please review Wikipedia's [[WP:Guide to appealing blocks|guide to appealing blocks]], then add the following text to the bottom of your talk page: <!-- Copy the text as it appears on your page, not as it appears in this edit area. --><code><nowiki>{{unblock|reason=Your reason here ~~~~}}</nowiki></code>. &nbsp;[[User:Ponyo|<span style="color: Navy;">'''Ponyo'''</span>]]<sup>[[User talk:Ponyo|<span style="color: Navy;">''bons mots''</span>]]</sup> 18:18, 25 October 2024 (UTC)</div></div><!-- Template:uw-sockblock -->
 
-{{unblock reviewed|decline=Insufficient. ~~~~|Your reason here [[User:Rathoremohanrathore|Rathoremohanrathore]] ([[User talk:Rathoremohanrathore#top|talk]]) 12:12, 30 October 2024 (UTC)}}
+{{unblock reviewed|decline=Insufficient. ~~~~|1=Your reason here [[User:Rathoremohanrathore|Rathoremohanrathore]] ([[User talk:Rathoremohanrathore#top|talk]]) 12:12, 30 October 2024 (UTC)}}
 `;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
@@ -205,7 +205,7 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		const expected =
 `{{unblock reviewed |1=Your reason here [[User:Rathoremohanrathore|Rathoremohanrathore]] ([[User talk:Rathoremohanrathore#top|talk]]) 12:06, 30 October 2024 (UTC) |decline = One open unblock request at a time, please. {{confirmed}} sockpuppetry to {{np|Lalmohanlal}}. You are now considered [[WP:CBAN|banned by the community]] under [[WP:3X]] due to your chronic [[WP:EVADE|block evasion]]. [[User:Yamla|Yamla]] ([[User talk:Yamla|talk]]) 12:10, 30 October 2024 (UTC)}}
 
-{{unblock reviewed|decline=Insufficient. ~~~~|Your reason here [[User:Rathoremohanrathore|Rathoremohanrathore]] ([[User talk:Rathoremohanrathore#top|talk]]) 12:12, 30 October 2024 (UTC)}}
+{{unblock reviewed|decline=Insufficient. ~~~~|1=Your reason here [[User:Rathoremohanrathore|Rathoremohanrathore]] ([[User talk:Rathoremohanrathore#top|talk]]) 12:12, 30 October 2024 (UTC)}}
 `;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
@@ -218,7 +218,7 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		const acceptDeclineReason = `Insufficient. ~~~~`;
 		const acceptOrDecline = `decline`;
 		const expected =
-`{{unblock reviewed|decline=Insufficient. ~~~~|}} why
+`{{unblock reviewed|decline=Insufficient. ~~~~|1=}} why
 `;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
@@ -231,8 +231,19 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		const acceptDeclineReason = `I accept. ~~~~`;
 		const acceptOrDecline = `accept`;
 		const expected =
-`{{unblock-spamun reviewed|accept=I accept. ~~~~|AlexWhisker|Test}}
+`{{unblock-spamun reviewed|accept=I accept. ~~~~|AlexWhisker|2=Test}}
 `;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Handle an unescaped equals sign (handle by making sure the parameter starts with 1= or 2=)', () => {
+		const wikitext =
+`{{unblock|1=I was blocked a few days ago for... <span style="font-family:'Courier New', monospace;">[[User:Test]]</span>}}`;
+		const paramsAndReason = `I was blocked a few days ago for...`;
+		const acceptDeclineReason = `Please use your other account.`;
+		const acceptOrDecline = `decline`;
+		const expected =
+`{{unblock reviewed|decline=Please use your other account. ~~~~|1=I was blocked a few days ago for... <span style="font-family:'Courier New', monospace;">[[User:Test]]</span>}}`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
 } );

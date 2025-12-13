@@ -40,8 +40,22 @@ export class UnblockReview {
 		const templateName = initialText.match( /^\{\{([A-Za-z-]+)/i )[ 1 ];
 		let wikitext2 = wikitext.replace(
 			regEx,
-			'{{' + templateName + ' reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|' + paramsAndReason
+			// Always add 1=. That way if there's an unescaped equals sign after it, it won't break things.
+			'{{' + templateName + ' reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + paramsAndReason
 		);
+
+		// {{Unblock-spamun}} has an extra parameter for the new username. Example:
+		// {{Unblock-spamun|NewUsername|Your reason here}}
+		// So the output need to have a 2= instead of a 1=. Example:
+		// {{Unblock-spamun reviewed|accept=I accept. ~~~~|NewUsername|2=Your reason here}}
+		const hasExtraUsernameParameter = templateName.toLowerCase() === 'unblock-spamun';
+		if ( hasExtraUsernameParameter ) {
+			// delete the first 1=
+			wikitext2 = wikitext2.replace( '|1=', '|' );
+			// add a 2= after the third pipe
+			const thirdPipePos = this.getPosition( wikitext2, '|', 3 );
+			wikitext2 = wikitext2.slice( 0, thirdPipePos ) + '|2=' + wikitext2.slice( thirdPipePos + 1 );
+		}
 
 		if ( wikitext === wikitext2 ) {
 			throw new Error( 'Replacing text with unblock message failed!' );
@@ -51,6 +65,13 @@ export class UnblockReview {
 		wikitext2 = wikitext2.replace( /^[#*: ]{1,}(\{\{\s*unblock)/mi, '$1' );
 
 		return wikitext2;
+	}
+
+	/**
+	 * @copyright Denys Seguret, CC BY-SA 4.0, https://stackoverflow.com/a/14480366/3480193
+	 */
+	getPosition( haystack, needle, nthOccurrence ) {
+		return haystack.split( needle, nthOccurrence ).join( needle ).length;
 	}
 
 	/**
