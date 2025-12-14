@@ -36,24 +36,6 @@ function apiSendAndReceive($apiData, $WIKIPEDIA_API_URL, &$cookieJar) {
 	return $resultJson;
 }
 
-function deleteImportStatements($str) {
-	return preg_replace('/import .*\n/m', '', $str);
-}
-
-function deleteExportStatements($str) {
-	return preg_replace('/^export /m', '', $str);
-}
-
-function deleteNoWikiTags($str) {
-	$str = preg_replace('/<nowiki>/', '', $str);
-	$str = preg_replace('/<\/nowiki>/', '', $str);
-	return $str;
-}
-
-function deleteRequireFunctions($str) {
-	return preg_replace('/^.*require\(.*$\n/m', '', $str);
-}
-
 function writeWikitextToWikipedia($WIKIPEDIA_API_URL, $WIKIPEDIA_USERNAME, $WIKIPEDIA_PASSWORD) {
 	$cookieJar = '';
 
@@ -103,30 +85,9 @@ function writeWikitextToWikipedia($WIKIPEDIA_API_URL, $WIKIPEDIA_USERNAME, $WIKI
 }
 
 function generateWikitext($MAIN_FILE_PATH, $CLASSES_FOLDER_PATH) {
-	$wikitext = "// === Compiled with Novem Linguae's publish.php script ======================";
+	$wikitext = "// === Compiled with esbuild and Novem Linguae's publish.php script ======================\n\n";
 
-	$files = scandir($CLASSES_FOLDER_PATH);
-	foreach ( $files as $fileName ) {
-		if ( $fileName === '.' ) {
-			continue;
-		}
-		if ( $fileName === '..' ) {
-			continue;
-		}
-		$path = $CLASSES_FOLDER_PATH . $fileName;
-		$classText = file_get_contents($path);
-		$wikitext .= "\n\n// === $path ======================================================\n\n" . $classText;
-	}
-
-	$wikitext .= "$(async function() {\n\n// === $MAIN_FILE_PATH ======================================================\n\n";
 	$wikitext .= file_get_contents($MAIN_FILE_PATH);
-
-	$wikitext .= "\n\n});";
-
-	$wikitext = deleteNoWikiTags($wikitext);
-	$wikitext = deleteImportStatements($wikitext);
-	$wikitext = deleteExportStatements($wikitext);
-	$wikitext = deleteRequireFunctions($wikitext);
 
 	$wikitext = "// <nowiki>\n\n" . $wikitext . "\n\n// </nowiki>";
 

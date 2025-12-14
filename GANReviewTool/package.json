@@ -9,7 +9,7 @@
 		"types-mediawiki": "github:wikimedia-gadgets/types-mediawiki"
 	},
 	"scripts": {
-		"build": "esbuild GANReviewTool.js --charset=utf8 --bundle --format=esm --outdir=dist",
+		"build": "esbuild GANReviewTool.js --charset=utf8 --bundle --target=es2017 --format=iife --outdir=dist",
 		"test": "jest"
 	}
 }
