@@ -13,6 +13,14 @@ class CiteHighlighter {
 	}
 
 	async execute() {
+		// Things like deleted pages, special pages, etc. don't have parser output.
+		// Things like diffs, previews, and a regular page do have parser output.
+		// Let's exit early if there's no parser output.
+		const hasParserOutput = this.$( '.mw-parser-output' ).length > 0;
+		if ( !hasParserOutput ) {
+			return;
+		}
+		this.wikicode = await this.getWikicodeVariable();
 		this.sources = await this.getListOfSourcesAndRatings();
 		this.unreliableWordsForOrangeHighlighting = this.getUnreliableWords();
 		this.setConfigVariableDefaultsIfNeeded();
@@ -25,11 +33,20 @@ class CiteHighlighter {
 		this.preventWikipediaFalsePositives();
 		this.colors = this.getColors();
 		this.writeCSS();
-		this.wikicode = await this.getWikicode( this.articleTitle );
 		// Note: Any wikicode containing a lot of domain names included in CiteHighlighter will be slow, unless added to isSlowPage(). This is because addHTMLClassesToRefs() checks the wikicode before trying to add classes to CSS.
 		this.addHTMLClassesToRefs();
 		this.addHTMLClassesForUnreliableWords();
 		this.observeAndAddClassesToTooltips();
+	}
+
+	async getWikicodeVariable() {
+		// Is it a preview page or a regular page? This will determine where we get our wikicode from. A preview page will contain both parser output and a textarea.
+		const isPreviewPage = this.$( '#mw-content-text textarea' ).length > 0;
+		if ( isPreviewPage ) {
+			return this.$( '#mw-content-text textarea' ).val();
+		} else {
+			return await this.getWikicodeFromApi( this.mw.config.get( 'wgRevisionId' ) );
+		}
 	}
 
 	getUnreliableWords() {
@@ -130,9 +147,7 @@ class CiteHighlighter {
 			'Wikipedia:Redirects for discussion',
 			'User:Novem Linguae/Scripts/CiteHighlighter/SourcesJSON.js'
 		].map( ( title ) => title.replace( / /g, '_' ) );
-		const isHistory = this.mw.config.get( 'wgAction' ) === 'history';
-		const isDiff = this.mw.config.get( 'wgDiffNewId' );
-		return isHistory || isDiff || slowPages.includes( this.articleTitle );
+		return slowPages.includes( this.articleTitle );
 	}
 
 	/**
@@ -372,21 +387,17 @@ class CiteHighlighter {
 		return haystack;
 	}
 
-	async getWikicode( title ) {
-		const pageIsDeleted = !this.mw.config.get( 'wgCurRevisionId' );
-		if ( pageIsDeleted ) {
-			return '';
-		}
-
+	async getWikicodeFromApi( revisionId ) {
 		const api = new this.mw.Api();
 		const response = await api.get( {
-			action: 'parse',
-			page: title,
-			prop: 'wikitext',
+			action: 'query',
+			format: 'json',
+			prop: 'revisions',
+			revids: revisionId,
 			formatversion: '2',
-			format: 'json'
+			rvprop: 'content'
 		} );
-		return response.parse.wikitext;
+		return response.query.pages[ 0 ].revisions[ 0 ].content;
 	}
 
 	async getWikicodeFromCache( title ) {
@@ -408,24 +419,19 @@ class CiteHighlighter {
 	}
 }
 
-// Fire after wiki content is added to the DOM, such as when first loading a page, or when a gadget such as the XTools gadget loads.
-mw.hook( 'wikipage.content' ).add( async () => {
+async function executeCiteHighlighter() {
 	await mw.loader.using(
 		[ 'mediawiki.util', 'mediawiki.api' ],
 		async () => {
 			await ( new CiteHighlighter( window, $, mw ) ).execute();
 		}
 	);
-} );
+}
+
+// Fire after wiki content is added to the DOM, such as when first loading a page, when loading a diff, or when a gadget such as the XTools gadget loads.
+mw.hook( 'wikipage.content' ).add( executeCiteHighlighter );
 
 // Fire after an edit is successfully saved via JavaScript, such as edits by the Visual Editor and HotCat.
-mw.hook( 'postEdit' ).add( async () => {
-	await mw.loader.using(
-		[ 'mediawiki.util', 'mediawiki.api' ],
-		async () => {
-			await ( new CiteHighlighter( window, $, mw ) ).execute();
-		}
-	);
-} );
+mw.hook( 'postEdit' ).add( executeCiteHighlighter );
 
 // </nowiki>
