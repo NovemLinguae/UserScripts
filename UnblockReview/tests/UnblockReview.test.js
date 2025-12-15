@@ -291,3 +291,29 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
 } );
+
+describe( 'hasSignature( text )', () => {
+	test( 'No signature', () => {
+		const text = `Testing 123`;
+		const expected = false;
+		expect( unblockReview.hasSignature( text ) ).toBe( expected );
+	} );
+
+	test( 'Signature', () => {
+		const text = `Testing 123. ~~~~`;
+		const expected = true;
+		expect( unblockReview.hasSignature( text ) ).toBe( expected );
+	} );
+
+	test( 'Signature inside of <nowiki> tags', () => {
+		const text = `Testing 123. <nowiki>~~~~</nowiki>`;
+		const expected = false;
+		expect( unblockReview.hasSignature( text ) ).toBe( expected );
+	} );
+
+	test( 'Signature inside of <nowiki> tags and outside of nowiki tags', () => {
+		const text = `Testing 123. <nowiki>~~~~</nowiki> ~~~~`;
+		const expected = true;
+		expect( unblockReview.hasSignature( text ) ).toBe( expected );
+	} );
+} );
