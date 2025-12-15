@@ -119,10 +119,15 @@ export class UnblockReview {
 				continue;
 			}
 
+			// Don't match already reviewed templates. These are marked with the word "reviewed". Example: {{unblock-spamun reviewed|
+			if ( initialText.match( /\s+reviewed\s*\|/ ) ) {
+				continue;
+			}
+
 			return initialText;
 		}
 
-		throw new Error( 'Searching backwards failed!' );
+		throw new Error( 'Failed to find left half of unblock template in the wikicode' );
 	}
 
 	/**

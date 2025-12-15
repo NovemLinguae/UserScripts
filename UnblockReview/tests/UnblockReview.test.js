@@ -123,6 +123,15 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 		const expected = `{{unblock|reason=`;
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
 	} );
+
+	test( `Don't match {{unblock-spamun reviewed}}`, () => {
+		const wikitext =
+`{{unblock-spamun reviewed|Kadenwithacat|Test 1}}
+{{unblock-spamun|Kadenwithacat|Test 2}}`;
+		const appealReason = `Kadenwithacat`;
+		const expected = `{{unblock-spamun|`;
+		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
+	} );
 } );
 
 describe( 'processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline )', () => {
