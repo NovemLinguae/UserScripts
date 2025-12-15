@@ -153,6 +153,19 @@ describe( 'processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReaso
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
 
+	test( 'Colons in front of 2 {{Unblock}}', () => {
+		const wikitext =
+`:{{unblock|reason=Test1}}
+:{{unblock|reason=Test2}}`;
+		const paramsAndReason = `Test2`;
+		const acceptDeclineReason = `Insufficient. ~~~~`;
+		const acceptOrDecline = `decline`;
+		const expected =
+`{{unblock|reason=Test1}}
+{{unblock reviewed|decline=Insufficient. ~~~~|1=Test2}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
 	test( 'Bulleted list and colon in front of {{Unblock}}', () => {
 		const wikitext = `*:{{unblock|reason=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}}`;
 		const paramsAndReason = `Your reason here `;
