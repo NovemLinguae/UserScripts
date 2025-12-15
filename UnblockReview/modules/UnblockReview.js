@@ -161,14 +161,16 @@ export class UnblockReview {
 
 		// if there's a literal signature and no nowiki elements,
 		// there must be a real signature
-		if ( !text.includes( '<nowiki>' ) ) {
+		// eslint-disable-next-line no-useless-concat
+		if ( !text.includes( '<no' + 'wiki>' ) ) {
 			return true;
 		}
 
 		// Save all nowiki spans
 		const nowikiSpanStarts = []; // list of ignored span beginnings
 		const nowikiSpanLengths = []; // list of ignored span lengths
-		const NOWIKI_RE = /<nowiki>.*?<\/nowiki>/g;
+		// eslint-disable-next-line no-useless-concat
+		const NOWIKI_RE = new RegExp( '<no' + 'wiki>.*?</no' + 'wiki>', 'g' );
 		let spanMatch;
 		do {
 			spanMatch = NOWIKI_RE.exec( text );
