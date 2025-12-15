@@ -79,12 +79,11 @@ Many additional bugs fixed.
 				return;
 			}
 
-			const title = mw.config.get( 'wgPageName' );
-			const wikitext = await getWikitext( title );
-
 			// change wikitext
 			// eslint-disable-next-line no-undef
 			const unblockReview = new UnblockReview();
+			const title = mw.config.get( 'wgPageName' );
+			const wikitext = await getWikitext( title );
 			const acceptDeclineReason = reasonArea.value;
 			let wikitext2;
 			try {

@@ -70,7 +70,7 @@ const { DraftCleaner } = require( './modules/DraftCleaner.js' );
 		const wgServer = mw.config.get( 'wgServer' );
 		const wgScriptPath = mw.config.get( 'wgScriptPath' );
 		const baseURL = wgServer + wgScriptPath + '/';
-		// https://stackoverflow.com/a/12464290/3480193
+		// @copyright devside, CC BY-SA 4.0, https://stackoverflow.com/a/12464290/3480193
 		$( `<form action="${ baseURL }index.php?title=${ titleEncoded }&action=submit" method="POST"/>` )
 			.append( $( '<input type="hidden" name="wpTextbox1">' ).val( wikicode ) )
 			.append( $( '<input type="hidden" name="wpSummary">' ).val( editSummary ) )

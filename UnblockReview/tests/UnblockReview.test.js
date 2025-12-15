@@ -255,4 +255,26 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 `{{unblock reviewed|decline=Please use your other account. ~~~~|1=I was blocked a few days ago for... <span style="font-family:'Courier New', monospace;">[[User:Test]]</span>}}`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
+
+	test( 'Add {{subst:Decline reason here}} when declining with a blank reason', () => {
+		const wikitext =
+`{{unblock|1=I was blocked a few days ago for... <span style="font-family:'Courier New', monospace;">[[User:Test]]</span>}}`;
+		const paramsAndReason = `I was blocked a few days ago for...`;
+		const acceptDeclineReason = ``;
+		const acceptOrDecline = `decline`;
+		const expected =
+`{{unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=I was blocked a few days ago for... <span style="font-family:'Courier New', monospace;">[[User:Test]]</span>}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( `Don't add {{subst:Decline reason here}} when accepting with a blank reason`, () => {
+		const wikitext =
+`{{unblock|1=I was blocked a few days ago for... <span style="font-family:'Courier New', monospace;">[[User:Test]]</span>}}`;
+		const paramsAndReason = `I was blocked a few days ago for...`;
+		const acceptDeclineReason = ``;
+		const acceptOrDecline = `accept`;
+		const expected =
+`{{unblock reviewed|accept=~~~~|1=I was blocked a few days ago for... <span style="font-family:'Courier New', monospace;">[[User:Test]]</span>}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
 } );

@@ -28,10 +28,22 @@ export class UnblockReview {
 			initialText = this.getLeftHalfOfUnblockTemplate( wikitext, paramsAndReason );
 		}
 
-		if ( !acceptDeclineReason.trim() ) {
-			acceptDeclineReason = DEFAULT_DECLINE_REASON + ' ' + this.SIGNATURE;
-		} else if ( !this.hasSignature( acceptDeclineReason ) ) {
-			acceptDeclineReason = acceptDeclineReason + ' ' + this.SIGNATURE;
+		// if reason is blank, use the default decline reason
+		if ( !acceptDeclineReason.trim() && acceptOrDecline === 'decline' ) {
+			acceptDeclineReason = DEFAULT_DECLINE_REASON;
+		}
+
+		// if someone accepts using the default decline reason, blank it.
+		// we can't combine this line with the above because the default decline reason can also be entered by the user, and this is common because it's the default reason in the HTML form.
+		if ( acceptOrDecline === 'accept' && acceptDeclineReason === DEFAULT_DECLINE_REASON ) {
+			acceptDeclineReason = '';
+		}
+
+		// add signature if not present, including if the reason is blank
+		if ( acceptDeclineReason && !this.hasSignature( acceptDeclineReason ) ) {
+			acceptDeclineReason += ' ' + this.SIGNATURE;
+		} else if ( !acceptDeclineReason ) {
+			acceptDeclineReason = this.SIGNATURE;
 		}
 
 		// eslint-disable-next-line no-useless-concat
