@@ -37,7 +37,7 @@ Many additional bugs fixed.
 		mw.util.addCSS( `
 			.unblock-review td { padding: 0 }
 			td.reason-container { padding-right: 1em; width: 30em }
-			#unblock-review-autoadd-template { width: 30em; background-color: white; }
+			#unblock-review-autoadd-template { width: 31em; background-color: white; border: 1px solid black; }
 			.unblock-review-reason { height: 5em }
 		` );
 
