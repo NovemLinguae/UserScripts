@@ -17,50 +17,69 @@ Many additional bugs fixed.
 			return;
 		}
 
-		$.when( $.ready, mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ) ).then( async () => {
-			// add styles
-			mw.util.addCSS(
-				'.unblock-review td { padding: 0 }' +
-				'td.reason-container { padding-right: 1em; width: 30em }' +
-				'.unblock-review-reason { height: 5em }' );
-
-			// look for user-block HTML class, which will correspond to {{Unblock}} requests
-			const userBlockBoxes = document.querySelectorAll( 'div.user-block' );
-			for ( let i = 0, n = userBlockBoxes.length; i < n; i++ ) {
-				if (
-					userBlockBoxes[ i ].style[ 'background-color' ] === UNBLOCK_REQ_COLOR_PRE_2025 ||
-					userBlockBoxes[ i ].style.background === UNBLOCK_REQ_COLOR_POST_2025 ||
-					userBlockBoxes[ i ].style.background === UNBLOCK_SPAMUN_COLOR
-				) {
-					// We now have a pending unblock request - add UI
-					const unblockDiv = userBlockBoxes[ i ];
-					const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
-					await listenForAcceptAndDecline( container, hrEl );
-				}
+		// look for user-block HTML class, which will correspond to {{Unblock}} requests
+		const userBlockBoxes = document.querySelectorAll( 'div.user-block' );
+		for ( let i = 0, n = userBlockBoxes.length; i < n; i++ ) {
+			if (
+				userBlockBoxes[ i ].style[ 'background-color' ] === UNBLOCK_REQ_COLOR_PRE_2025 ||
+				userBlockBoxes[ i ].style.background === UNBLOCK_REQ_COLOR_POST_2025 ||
+				userBlockBoxes[ i ].style.background === UNBLOCK_SPAMUN_COLOR
+			) {
+				// We now have a pending unblock request - add UI
+				const unblockDiv = userBlockBoxes[ i ];
+				const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
+				await listenForAcceptAndDecline( container, hrEl );
 			}
-		} );
+		}
 	}
 
 	function addTextBoxAndButtons( unblockDiv ) {
+		mw.util.addCSS( `
+			.unblock-review td { padding: 0 }
+			td.reason-container { padding-right: 1em; width: 30em }
+			#unblock-review-autoadd-template { width: 30em; background-color: white; }
+			.unblock-review-reason { height: 5em }
+		` );
+
 		const container = document.createElement( 'table' );
 		container.className = 'unblock-review';
 		// Note: The innerHtml of the button is sensitive. Is used to figure out which accept/decline wikitext to use. Don't add whitespace to it.
 		container.innerHTML = `
 			<tr>
-				<td class='reason-container' rowspan='2'>
-					<textarea class='unblock-review-reason mw-ui-input' placeholder='Reason for accepting/declining here'>${ DEFAULT_DECLINE_REASON }</textarea>
+				<td class="reason-container" rowspan="2">
+					<textarea class="unblock-review-reason mw-ui-input" placeholder="Reason for accepting/declining here">${ DEFAULT_DECLINE_REASON }</textarea>
 				</td>
 				<td>
-					<button class='unblock-review-accept mw-ui-button mw-ui-progressive'>Accept</button>
+					<button class="unblock-review-accept mw-ui-button mw-ui-progressive">Accept</button>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<button class='unblock-review-decline mw-ui-button mw-ui-destructive'>Decline</button>
+					<button class="unblock-review-decline mw-ui-button mw-ui-destructive">Decline</button>
 				</td>
-			</tr>`;
+			</tr>
+			<select id="unblock-review-autoadd-template">
+				<option value="default" selected disabled>Select one of these templates to auto-add it above...</option>
+				<option>{{subst:2nd chance}}</option>
+				<option>{{subst:2nd chance autoload}}</option>
+				<option>{{subst:2nd chance autoload/editintro}}</option>
+				<option>{{subst:Decline reason here}}</option>
+				<option>{{subst:Decline spam unblock request}}</option>
+				<option>{{subst:Decline stale}}</option>
+				<option>{{subst:Decline-ai}}</option>
+				<option>{{subst:Declined unblock request for range block text}}</option>
+			</select>
+			`;
 		const hrEl = unblockDiv.querySelector( 'hr' );
 		unblockDiv.insertBefore( container, hrEl.previousElementSibling );
+
+		// When a template is selected from the dropdown, insert its display text into the reason textarea.
+		$( container ).find( '#unblock-review-autoadd-template' ).on( 'change', function () {
+			// eslint-disable-next-line no-jquery/no-sizzle
+			const templateText = $( this ).find( 'option:selected' ).text() || $( this ).val() || '';
+			$( container ).find( '.unblock-review-reason' ).val( templateText );
+		} );
+
 		return [ container, hrEl ];
 	}
 
@@ -131,8 +150,10 @@ Many additional bugs fixed.
 		} );
 	}
 
-	mw.loader.using( 'mediawiki.ui.button', 'mediawiki.ui.input' ).then( async () => {
-		await execute();
+	$( async () => {
+		await mw.loader.using( [ 'mediawiki.api', 'mediawiki.util', 'mediawiki.ui.button', 'mediawiki.ui.input' ] ).then( async () => {
+			await execute();
+		} );
 	} );
 }() );
 // </nowiki>
