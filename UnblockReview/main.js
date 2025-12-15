@@ -3,7 +3,6 @@ Forked from [[User:Enterprisey/unblock-review.js]] on Oct 31, 2024.
 Many additional bugs fixed.
 */
 
-/* global importStylesheet */
 // <nowiki>
 ( async function () {
 	const UNBLOCK_REQ_COLOR_PRE_2025 = 'rgb(235, 244, 255)';
