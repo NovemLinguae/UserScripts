@@ -24,8 +24,6 @@ Many additional bugs fixed.
 				'.unblock-review td { padding: 0 }' +
 				'td.reason-container { padding-right: 1em; width: 30em }' +
 				'.unblock-review-reason { height: 5em }' );
-			importStylesheet( 'User:Enterprisey/mw-ui-button.css' );
-			importStylesheet( 'User:Enterprisey/mw-ui-input.css' );
 
 			// look for user-block HTML class, which will correspond to {{Unblock}} requests
 			const userBlockBoxes = document.querySelectorAll( 'div.user-block' );
@@ -134,6 +132,8 @@ Many additional bugs fixed.
 		} );
 	}
 
-	await execute();
+	mw.loader.using( 'mediawiki.ui.button', 'mediawiki.ui.input' ).then( async () => {
+		await execute();
+	} );
 }() );
 // </nowiki>
