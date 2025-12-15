@@ -95,7 +95,7 @@ export class UnblockReview {
 		matches = [ ...matches ];
 
 		if ( matches.length === 0 ) {
-			throw new Error( 'Searching for target text failed!' );
+			throw new Error( 'Searching for target text failed' );
 		}
 
 		// Loop through all the potential matches, trying to find an {{Unblock template. If found, return the beginning of the template.

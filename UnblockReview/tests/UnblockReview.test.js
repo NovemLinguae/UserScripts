@@ -94,21 +94,21 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 		const wikitext = `No target text`;
 		const appealReason = `Your reason here `;
 		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( Error );
-		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( "Searching for target text failed!" );
+		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( "Searching for target text failed" );
 	} );
 
 	test( 'No start of template', () => {
 		const wikitext = `Test Your reason here Test`;
 		const appealReason = `Your reason here `;
 		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( Error );
-		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( "Searching backwards failed!" );
+		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( "Failed to find left half of unblock template in the wikicode" );
 	} );
 
 	test( 'Skip <nowiki>{{unblock}}', () => {
 		const wikitext = `Test <code><nowiki>{{unblock|reason=Your reason here ~~~~}}</nowiki></code> Test`;
 		const appealReason = `Your reason here `;
 		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( Error );
-		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( "Searching for target text failed!" );
+		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( "Searching for target text failed" );
 	} );
 
 	test( '{{AAA}}AAAblock', () => {
