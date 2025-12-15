@@ -75,7 +75,7 @@ Many additional bugs fixed.
 			const appealReason = hrEl.nextElementSibling.nextElementSibling.childNodes[ 0 ].textContent;
 			// FIXME: should handle this case (|reason=\nText, https://github.com/NovemLinguae/UserScripts/issues/240) instead of throwing an error
 			if ( appealReason === '\n' ) {
-				mw.notify( 'UnblockReview error 1: unable to find decline reason by scanning HTML', { type: 'error' } );
+				mw.notify( 'UnblockReview error: unable to find decline reason by scanning HTML', { type: 'error' } );
 				return;
 			}
 
@@ -86,15 +86,22 @@ Many additional bugs fixed.
 			// eslint-disable-next-line no-undef
 			const unblockReview = new UnblockReview();
 			const acceptDeclineReason = reasonArea.value;
-			const wikitext2 = unblockReview.processAcceptOrDecline(
-				wikitext,
-				appealReason,
-				acceptDeclineReason,
-				DEFAULT_DECLINE_REASON,
-				acceptOrDecline
-			);
+			let wikitext2;
+			try {
+				wikitext2 = unblockReview.processAcceptOrDecline(
+					wikitext,
+					appealReason,
+					acceptDeclineReason,
+					DEFAULT_DECLINE_REASON,
+					acceptOrDecline
+				);
+			} catch ( e ) {
+				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
+				return;
+			}
+
 			if ( wikitext === wikitext2 ) {
-				mw.notify( 'UnblockReview error 2: unable to determine write location.', { type: 'error' } );
+				mw.notify( 'UnblockReview error: unable to determine write location.', { type: 'error' } );
 				return;
 			}
 

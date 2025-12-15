@@ -37,6 +37,11 @@ export class UnblockReview {
 		// eslint-disable-next-line no-useless-concat
 		const negativeLookbehinds = '(?<!<' + 'nowiki>)';
 		const regEx = new RegExp( negativeLookbehinds + this.escapeRegExp( initialText + paramsAndReason ), 'g' );
+		const count = ( wikitext.match( regEx ) || [] ).length;
+		if ( count > 1 ) {
+			throw new Error( 'Too many matching unblock templates found' );
+		}
+
 		const templateName = initialText.match( /^\{\{([A-Za-z-]+)/i )[ 1 ];
 		let wikitext2 = wikitext.replace(
 			regEx,
@@ -58,7 +63,7 @@ export class UnblockReview {
 		}
 
 		if ( wikitext === wikitext2 ) {
-			throw new Error( 'Replacing text with unblock message failed!' );
+			throw new Error( 'Replacing text with unblock message failed' );
 		}
 
 		// get rid of any [#*:] in front of {{unblock X}} templates. indentation messes up the background color and border of the unblock template.
