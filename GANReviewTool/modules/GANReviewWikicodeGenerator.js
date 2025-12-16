@@ -1,4 +1,5 @@
 /* eslint-disable indent */
+import { TemplateFinder } from './TemplateFinder.js';
 
 export class GANReviewWikicodeGenerator {
 	getPassWikicodeForGANPage( reviewWikicode ) {
@@ -255,11 +256,12 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	getFirstTemplateNameFromWikicode( wikicode ) {
-		const match = wikicode.match( /(?<=\{\{)[^|}]+/ );
-		if ( !match ) {
+		const templateFinder = new TemplateFinder( wikicode );
+		const template = templateFinder.firstTemplate();
+		if ( !template ) {
 			throw new Error( 'getFirstTemplateNameFromWikicode: No template found in Wikicode.' );
 		}
-		return match[ 0 ];
+		return TemplateFinder.removePrefix( template.name );
 	}
 
 	/**
@@ -350,7 +352,7 @@ export class GANReviewWikicodeGenerator {
 		const topicString = `\n|topic = ${ topic }`;
 
 		// https://en.wikipedia.org/wiki/Template:Article_history#How_to_use_in_practice
-		const existingStatus = this.firstTemplateGetParameterValue( talkWikicode, 'Artricle history', 'currentstatus' );
+		const existingStatus = this.firstTemplateGetParameterValue( talkWikicode, 'Article ?history', 'currentstatus' );
 		talkWikicode = this.firstTemplateDeleteParameter( talkWikicode, 'Article ?history', 'currentstatus' );
 		const currentStatusString = this.getArticleHistoryNewStatus( existingStatus, listedOrFailed );
 
@@ -393,84 +395,20 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	firstTemplateInsertCode( wikicode, templateNameRegExNoDelimiters, codeToInsert ) {
-		// TODO: handle nested templates
-		const regex = new RegExp( `(\\{\\{${ templateNameRegExNoDelimiters }[^\\}]*)(\\}\\})`, 'i' );
-		return wikicode.replace( regex, `$1\n${ codeToInsert }\n$2` );
+		const templateFinder = new TemplateFinder( wikicode );
+		templateFinder.firstTemplateInsertCode( templateNameRegExNoDelimiters, codeToInsert );
+		return templateFinder.getWikitext();
 	}
 
-	firstTemplateGetParameterValue( wikicode, template, parameter ) {
-		// TODO: rewrite to be more robust. currently using a simple algorithm that is prone to failure
-		// new algorithm:
-			// find start of template. use regex /i (ignore case)
-			// iterate using loops until end of template found
-				// handle <nowiki>
-				// handle triple {{{
-				// handle nested
-
-		const regex = new RegExp( `\\|\\s*${ parameter }\\s*=\\s*([^\\n\\|\\}]*)\\s*`, '' );
-		const result = wikicode.match( regex );
-		if ( wikicode.match( regex ) === null ) {
-			return null;
-		}
-		return result[ 1 ];
-	}
-
-	/**
-	 * @param {RegExp} regex
-	 */
-	preg_position( regex, haystack ) {
-		const matches = [ ...haystack.matchAll( regex ) ];
-		const hasMatches = matches.length;
-		if ( hasMatches ) {
-			return matches[ 0 ].index;
-		}
-		return false;
-	}
-
-	findEndOfTemplate( wikicode, templateStartPosition ) {
-		// TODO: handle triple braces, handle <nowiki> tags
-		let nesting = 0;
-		let templateEndPosition = -1;
-		// +1 to skip the first {{, will throw off our nesting count
-		for ( let i = templateStartPosition + 1; i < wikicode.length; i++ ) {
-			const nextTwoChars = wikicode.slice( i, i + 2 );
-			if ( nextTwoChars === '{{' ) {
-				nesting++;
-				continue;
-			} else if ( nextTwoChars === '}}' ) {
-				if ( nesting > 0 ) {
-					nesting--;
-					continue;
-				} else {
-					templateEndPosition = i + 2;
-					break;
-				}
-			}
-		}
-		return templateEndPosition;
+	firstTemplateGetParameterValue( wikicode, templateRegEx, parameter ) {
+		const templateFinder = new TemplateFinder( wikicode );
+		return templateFinder.firstTemplateGetParameterValue( templateRegEx, parameter );
 	}
 
 	firstTemplateDeleteParameter( wikicode, templateRegEx, parameter ) {
-		// templateStartPosition
-		const regex = new RegExp( '{{' + templateRegEx, 'gi' );
-		const templateStartPosition = this.preg_position( regex, wikicode );
-
-		// templateEndPosition
-		const templateEndPosition = this.findEndOfTemplate( wikicode, templateStartPosition );
-
-		// slice
-		const firstPiece = wikicode.slice( 0, templateStartPosition );
-		let secondPiece = wikicode.slice( templateStartPosition, templateEndPosition );
-		const thirdPiece = wikicode.slice( templateEndPosition );
-
-		// replace only inside the slice
-		const regex2 = new RegExp( `\\|\\s*${ parameter }\\s*=\\s*([^\\n\\|\\}]*)\\s*`, '' );
-		secondPiece = secondPiece.replace( regex2, '' );
-
-		// glue back together
-		wikicode = firstPiece + secondPiece + thirdPiece;
-
-		return wikicode;
+		const templateFinder = new TemplateFinder( wikicode );
+		templateFinder.firstTemplateDeleteParameter( templateRegEx, parameter );
+		return templateFinder.getWikitext();
 	}
 
 	removeFormattingThatInterferesWithSort( str ) {

@@ -1,10 +1,15 @@
 {
+	"dependencies": {
+		"wikiparser-template": "^1.24.1"
+	},
 	"devDependencies": {
 		"@babel/plugin-transform-modules-commonjs": "^7.16.0",
+		"esbuild": "^0.25.12",
 		"jest": "^28.1.0",
 		"types-mediawiki": "github:wikimedia-gadgets/types-mediawiki"
 	},
 	"scripts": {
+		"build": "esbuild GANReviewTool.js --charset=utf8 --bundle --target=es2017 --format=iife --outdir=dist",
 		"test": "jest"
 	}
 }
