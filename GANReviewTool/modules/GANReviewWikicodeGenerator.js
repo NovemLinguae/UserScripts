@@ -101,20 +101,27 @@ export class GANReviewWikicodeGenerator {
 
 	changeGANomineeTemplateStatus( talkWikicode, newStatus ) {
 		// already has correct status
-		const regex = new RegExp( `({{GA nominee[^\\}]*\\|\\s*status\\s*=\\s*${ newStatus })`, 'i' );
-		const alreadyHasCorrectStatus = talkWikicode.match( regex );
+		const templateFinder = new TemplateFinder( talkWikicode );
+		const templates = templateFinder.getTemplates( 'GA nominee' );
+		const templatesWithStatus = templates.filter( ( template ) => template.getArgs().size );
+		const alreadyHasCorrectStatus = templatesWithStatus.some( ( template ) => {
+			const value = template.getValue( 'status' );
+			return value && value.toLowerCase() === newStatus.toLowerCase();
+		} );
 		if ( alreadyHasCorrectStatus ) {
 			return talkWikicode;
 		}
 
 		// has a status, but needs to be changed
-		const hasStatus = talkWikicode.match( /({{GA nominee[^}]*\|\s*status\s*=\s*)[^}|]*/i );
+		const hasStatus = templatesWithStatus.length > 0;
 		if ( hasStatus ) {
-			return talkWikicode.replace( /({{GA nominee[^}]*\|\s*status\s*=\s*)[^}|]*/i, `$1${ newStatus }` );
+			templatesWithStatus[ 0 ].setValue( 'status', newStatus );
+			return templateFinder.getWikitext();
 		}
 
 		// if no old status, insert new status
-		return talkWikicode.replace( /({{GA nominee[^}]*)(}})/i, `$1|status=${ newStatus }$2` );
+		templates[ 0 ].setValue( 'status', newStatus );
+		return templateFinder.getWikitext();
 	}
 
 	getLogMessageToAppend( username, action, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error ) {
@@ -185,12 +192,9 @@ export class GANReviewWikicodeGenerator {
 | status = 
 | result = ${ result }
 }}`;
-		const hasH2 = wikicode.match( /^==[^=]+==$/m );
-		if ( hasH2 ) {
-			wikicode = wikicode.replace( /^(.*?==[^=]+==\n)(.*)$/s, '$1' + prependText + '\n$2' );
-		} else {
-			wikicode = prependText + '\n' + wikicode;
-		}
+		const templateFinder = new TemplateFinder( wikicode );
+		templateFinder.placeATOP( prependText, [ 2 ] );
+		wikicode = templateFinder.getWikitext();
 
 		// place bottom piece at end
 		const appendText = '{{abot}}';
@@ -209,15 +213,16 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	getTemplateParameter( wikicode, templateName, parameterName ) {
-		templateName = this.regExEscape( templateName );
-		parameterName = this.regExEscape( parameterName );
-		const regex = new RegExp( `\\{\\{${ templateName }[^\\}]+\\|\\s*${ parameterName }\\s*=\\s*([^\\}\\|]+)\\s*[^\\}]*\\}\\}`, 'i' );
-		const parameterValue = wikicode.match( regex );
-		if ( Array.isArray( parameterValue ) && parameterValue[ 1 ] !== undefined ) {
-			return parameterValue[ 1 ].trim();
-		} else {
-			return null;
+		const templateFinder = new TemplateFinder( wikicode );
+		const templates = templateFinder.getTemplates( templateName );
+		parameterName = parameterName.toLowerCase();
+		for (const template of templates ) {
+			const parameter = template.getAllArgs().find( ( { name } ) => name.toLowerCase() === parameterName );
+			if ( parameter ) {
+				return parameter.getValue();
+			}
 		}
+		return null;
 	}
 
 	/**
@@ -228,7 +233,9 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	deleteGANomineeTemplate( talkWikicode ) {
-		return talkWikicode.replace( /\{\{GA nominee[^}]+\}\}\n?/i, '' );
+		const templateFinder = new TemplateFinder( talkWikicode );
+		templateFinder.deleteTemplate( 'GA nominee' );
+		return templateFinder.getWikitext();
 	}
 
 	addGATemplate( talkWikicode, topic, gaPageNumber, oldid ) {
@@ -272,51 +279,9 @@ export class GANReviewWikicodeGenerator {
 	 * @param {string} codeToAdd
 	 */
 	addWikicodeAfterTemplates( wikicode, templates, codeToAdd ) {
-		/* Started to write a lexer that would solve the edge case of putting the {{GA}} template too low when the [[MOS:TALKORDER]] is incorrect. It's a lot of work though. Pausing for now.
-
-		// Note: the MOS:TALKORDER $templates variable is fed to us as a parameter
-		let whitespace = ["\t", "\n", " "];
-		let lastTemplateNameBuffer = '';
-		let currentTemplateNameBuffer = '';
-		let templateNestingCount = 0;
-		for ( i = 0; i < wikicode.length; i++ ) {
-			let toCheck = wikicode.slice(i);
-			if ( toCheck.startsWith('{{') {
-				templateNestingCount++;
-			} else if ( toCheck.startsWith('}}') ) {
-				templateNestingCount--;
-			}
-			// TODO: need to build the templateNameBuffer. need to look for termination characters | or }
-		*/
-
-		let insertPosition = 0;
-		for ( const template of templates ) {
-			// TODO: handle nested templates
-			const regex = new RegExp( `{{${ this.regExEscape( template ) }[^\\}]*}}\\n`, 'ig' );
-			const endOfTemplatePosition = this.getEndOfStringPositionOfLastMatch( wikicode, regex );
-			if ( endOfTemplatePosition > insertPosition ) {
-				insertPosition = endOfTemplatePosition;
-			}
-		}
-		return this.insertStringIntoStringAtPosition( wikicode, codeToAdd, insertPosition );
-	}
-
-	/**
-	 * @param {string} haystack
-	 * @param {RegExp} regex /g flag must be set
-	 * @return {number} endOfStringPosition Returns zero if not found
-	 */
-	getEndOfStringPositionOfLastMatch( haystack, regex ) {
-		const matches = [ ...haystack.matchAll( regex ) ];
-		const hasMatches = matches.length;
-		if ( hasMatches ) {
-			const lastMatch = matches[ matches.length - 1 ];
-			const lastMatchStartPosition = lastMatch.index;
-			const lastMatchStringLength = lastMatch[ 0 ].length;
-			const lastMatchEndPosition = lastMatchStartPosition + lastMatchStringLength;
-			return lastMatchEndPosition;
-		}
-		return 0;
+		const templateFinder = new TemplateFinder( wikicode );
+		templateFinder.addWikicodeAfterTemplates( templates, codeToAdd );
+		return templateFinder.getWikitext();
 	}
 
 	changeWikiProjectArticleClassToGA( talkWikicode ) {
@@ -581,6 +546,7 @@ export class GANReviewWikicodeGenerator {
 	}
 
 	hasArticleHistoryTemplate( wikicode ) {
-		return Boolean( wikicode.match( /\{\{Article ?history/i ) );
+		const templateFinder = new TemplateFinder( wikicode );
+		return templateFinder.hasTemplate( 'Article ?history' );
 	}
 }

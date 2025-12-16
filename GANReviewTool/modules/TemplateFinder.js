@@ -54,4 +54,55 @@ export class TemplateFinder {
 			}
 		}
 	}
+
+	placeATOP( prependText, levels ) {
+		const heading = this.wikiPage.querySelectorAll( 'heading' )
+			.find( ( { level } ) => levels.includes( level ) );
+		if ( heading ) {
+			heading.after( `\n${ prependText }` );
+			const { lastChild } = heading.lastChild;
+			if ( lastChild && lastChild.type === 'text' ) {
+				lastChild.replaceData( lastChild.data.replace( /\n+$/, '' ) );
+			}
+		} else {
+			this.wikiPage.insertAt( prependText + '\n', 0 );
+		}
+	}
+
+	getTemplates( templateNameCaseInsensitive ) {
+		const templateName = `template:${ templateNameCaseInsensitive.toLowerCase().replace( / /g, '_' ) }`;
+		return this.wikiPage.querySelectorAll( 'template' )
+			.filter( ( { name } ) => name.toLowerCase() === templateName );
+	}
+
+	deleteTemplate( templateNameRegExOrArrayCaseInsensitive ) {
+		const template = this.firstTemplate( templateNameRegExOrArrayCaseInsensitive );
+		if ( template ) {
+			const { nextSibling } = template;
+			if ( nextSibling && nextSibling.type === 'text' && nextSibling.data.startsWith( '\n' ) ) {
+				nextSibling.deleteData( 0, 1 );
+			}
+			template.remove();
+		}
+	}
+
+	addWikicodeAfterTemplates( templates, codeToAdd ) {
+		const templateNameArray = templates.map( ( name ) => name.toLowerCase().replace( /\s/g, '_' ) );
+		const filter = ( { name } ) => templateNameArray.includes( TemplateFinder.removePrefix( name ).toLowerCase() );
+		const tokens = this.wikiPage.querySelectorAll( 'template' ).filter( filter );
+		if ( tokens.length === 0 ) {
+			this.wikiPage.insertAt( codeToAdd, 0 );
+		} else {
+			const last = tokens[ tokens.length - 1 ];
+			const { nextSibling } = last;
+			if ( nextSibling.type === 'text' && nextSibling.data.startsWith( '\n' ) ) {
+				nextSibling.deleteData( 0, 1 );
+			}
+			last.after( `\n${ codeToAdd }` );
+		}
+	}
+
+	hasTemplate( templateNameRegExOrArrayCaseInsensitive ) {
+		return Boolean( this.firstTemplate( templateNameRegExOrArrayCaseInsensitive ) );
+	}
 }

@@ -354,12 +354,9 @@ __TOC__`;
 		const resultText = result ? `\n| result = ${ result }\n` : '';
 		const prependText =
 `{{atop${ colorCode }${ resultText }}}`;
-		const hasH2OrH3 = wikicode.match( /^===?[^=]+===?$/m );
-		if ( hasH2OrH3 ) {
-			wikicode = wikicode.replace( /^(.*?===?[^=]+===?\n)\n*(.*)$/s, '$1' + prependText + '\n$2' );
-		} else {
-			wikicode = prependText + '\n' + wikicode;
-		}
+		const templateFinder = new TemplateFinder( wikicode );
+		templateFinder.placeATOP( prependText, [ 2, 3 ] );
+		wikicode = templateFinder.getWikitext();
 
 		// place bottom piece at end
 		const appendText = '{{abot}}';
@@ -393,12 +390,13 @@ __TOC__`;
 	 * There's a {{GA}} template that some people use instead of {{Article history}}. If this is present, replace it with {{Article history}}.
 	 */
 	convertGATemplateToArticleHistoryIfPresent( talkPageTitle, wikicode ) {
-		const hasArticleHistory = Boolean( wikicode.match( /\{\{Article ?history([^}]*)\}\}/gi ) );
+		const templateFinder = new TemplateFinder( wikicode );
+		const hasArticleHistory = templateFinder.hasTemplate( 'Article ?history' );
 		const gaTemplateWikicode = this.regexGetFirstMatchString( /(\{\{GA[^}]*\}\})/i, wikicode );
 		if ( !hasArticleHistory && gaTemplateWikicode ) {
 			// delete {{ga}} template
-			wikicode = wikicode.replace( /\{\{GA[^}]*\}\}\n?/i, '' );
-			wikicode = wikicode.trim();
+			templateFinder.deleteTemplate( 'GA' );
+			wikicode = templateFinder.getWikitext().trim();
 
 			// parse its parameters
 			// example: |21:00, 12 March 2017 (UTC)|topic=Sports and recreation|page=1|oldid=769997774
