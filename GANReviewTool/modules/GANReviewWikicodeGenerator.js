@@ -103,7 +103,7 @@ export class GANReviewWikicodeGenerator {
 		// already has correct status
 		const templateFinder = new TemplateFinder( talkWikicode );
 		const templates = templateFinder.getTemplates( 'GA nominee' );
-		const templatesWithStatus = templates.filter( ( template ) => template.getArgs().size );
+		const templatesWithStatus = templates.filter( ( template ) => template.getArgs( 'status' ).size );
 		const alreadyHasCorrectStatus = templatesWithStatus.some( ( template ) => {
 			const value = template.getValue( 'status' );
 			return value && value.toLowerCase() === newStatus.toLowerCase();
