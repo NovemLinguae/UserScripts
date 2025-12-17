@@ -95,7 +95,7 @@ export class TemplateFinder {
 		} else {
 			const last = tokens[ tokens.length - 1 ];
 			const { nextSibling } = last;
-			if ( nextSibling.type === 'text' && nextSibling.data.startsWith( '\n' ) ) {
+			if ( nextSibling && nextSibling.type === 'text' && nextSibling.data.startsWith( '\n' ) ) {
 				nextSibling.deleteData( 0, 1 );
 			}
 			last.after( `\n${ codeToAdd }` );
