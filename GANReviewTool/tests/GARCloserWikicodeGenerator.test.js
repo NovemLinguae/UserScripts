@@ -1763,3 +1763,101 @@ describe( 'firstTemplateDeleteParameter(wikicode, template, parameter)', () => {
 		expect( wg.firstTemplateDeleteParameter( wikicode, template, parameter ) ).toBe( output );
 	} );
 } );
+
+describe( 'placeATOP(wikicode, result, color)', () => {
+	test( 'h2 present', () => {
+		const result = 'Passed';
+		const color = 'green';
+		const wikicode =
+`
+
+== Test ==
+
+
+== Test ==
+
+test
+
+blah`;
+		const output =
+`== Test ==
+{{atopg
+| result = Passed
+}}
+== Test ==
+
+test
+
+blah
+{{abot}}
+`;
+		expect( wg.placeATOP( wikicode, result, color ) ).toBe( output );
+	} );
+
+	test( 'h3 present', () => {
+		const result = 'Passed';
+		const color = 'green';
+		const wikicode =
+`
+
+=== Test ===
+
+
+== Test ==
+
+test
+
+blah`;
+		const output =
+`=== Test ===
+{{atopg
+| result = Passed
+}}
+== Test ==
+
+test
+
+blah
+{{abot}}
+`;
+		expect( wg.placeATOP( wikicode, result, color ) ).toBe( output );
+	} );
+
+	test( 'h2/h3 absent', () => {
+		const result = 'Passed';
+		const color = 'green';
+		const wikicode =
+`test
+
+blah`;
+		const output =
+`{{atopg
+| result = Passed
+}}
+test
+
+blah
+{{abot}}
+`;
+		expect( wg.placeATOP( wikicode, result, color ) ).toBe( output );
+	} );
+
+	test( 'failed instead of passed', () => {
+		const result = 'Failed';
+		const color = 'red';
+		const wikicode =
+`test
+
+blah`;
+		const output =
+`{{atopr
+| result = Failed
+}}
+test
+
+blah
+{{abot}}
+`;
+		expect( wg.placeATOP( wikicode, result, color ) ).toBe( output );
+	} );
+} );
