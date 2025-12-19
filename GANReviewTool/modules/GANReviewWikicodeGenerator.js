@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import { TemplateFinder } from './TemplateFinder.js';
 
 export class GANReviewWikicodeGenerator {
@@ -216,7 +215,7 @@ export class GANReviewWikicodeGenerator {
 		const templateFinder = new TemplateFinder( wikicode );
 		const templates = templateFinder.getTemplates( templateName );
 		parameterName = parameterName.toLowerCase();
-		for (const template of templates ) {
+		for ( const template of templates ) {
 			const parameter = template.getAllArgs().find( ( { name } ) => name.toLowerCase() === parameterName );
 			if ( parameter ) {
 				return parameter.getValue();
