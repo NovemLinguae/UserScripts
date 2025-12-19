@@ -1234,14 +1234,13 @@ describe( 'getParametersFromTemplateWikicode(wikicodeOfSingleTemplate)', () => {
 	test( '', () => {
 		const wikicodeOfSingleTemplate =
 '{{GAR/link|13:56, 16 March 2022 (UTC)|page=1|GARpage=1|status= }}';
-		const { firstChild } = new TemplateFinder( wikicodeOfSingleTemplate ).wikiPage;
 		const output = {
 			1: '13:56, 16 March 2022 (UTC)',
 			page: '1',
 			garpage: '1',
 			status: ''
 		};
-		expect( wg.getParametersFromTemplateWikicode( firstChild ) ).toStrictEqual( output );
+		expect( wg.getParametersFromTemplateWikicode( wikicodeOfSingleTemplate ) ).toStrictEqual( output );
 	} );
 } );
 

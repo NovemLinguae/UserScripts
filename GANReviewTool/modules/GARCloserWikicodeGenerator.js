@@ -558,6 +558,10 @@ __TOC__`;
 	 * @return {Object} Parameters, with keys being equivalent to the template parameter names. Unnamed parameters will be 1, 2, 3, etc.
 	 */
 	getParametersFromTemplateWikicode( template ) {
+		if ( typeof template === 'string' ) {
+			const templateFinder = new TemplateFinder( template );
+			template = templateFinder.wikiPage.firstChild;
+		}
 		const parameters = {};
 		for ( const parameter of template.getAllArgs() ) {
 			parameters[ parameter.name.toLowerCase() ] = parameter.getValue();

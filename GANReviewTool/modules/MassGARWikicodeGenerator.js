@@ -17,7 +17,11 @@ export class MassGARWikicodeGenerator {
 		const templateFinder = new TemplateFinder( talkPageWikicode );
 		const aliases = [ 'Articlehistory', 'Article milestones', 'Articlemilestones', 'Article History', 'ArticleHistory' ];
 		const articleHistoryTemplate = templateFinder.firstTemplate( aliases );
-		return Boolean(articleHistoryTemplate) && articleHistoryTemplate.getValue( 'currentstatus' )?.toUpperCase() === 'GA';
+		if ( !articleHistoryTemplate ) {
+			return false;
+		}
+		const value = articleHistoryTemplate.getValue( 'currentstatus' );
+		return Boolean( value ) && value.toUpperCase() === 'GA';
 	}
 
 	hasOpenGAR( talkPageWikicode ) {
