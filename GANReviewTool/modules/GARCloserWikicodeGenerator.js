@@ -494,7 +494,7 @@ __TOC__`;
 		let pos = insertPosition <= 0 ? 0 : insertPosition - 1;
 		let i = 1;
 		while ( pos != 0 ) {
-			const char = talkPageWikicode.substr( pos, 1 );
+			const char = talkPageWikicode.slice( pos, pos + 1 );
 			if ( char == '\n' ) {
 				if ( i != 1 && i != 2 ) { // skip first two \n, those are OK to keep
 					// @ts-ignore
@@ -515,8 +515,8 @@ __TOC__`;
 		}
 
 		const lengthOfRightHalf = talkPageWikicode.length - insertPosition;
-		const leftHalf = talkPageWikicode.substr( 0, insertPosition );
-		const rightHalf = talkPageWikicode.substr( insertPosition, lengthOfRightHalf );
+		const leftHalf = talkPageWikicode.slice( 0, insertPosition );
+		const rightHalf = talkPageWikicode.slice( insertPosition, insertPosition + lengthOfRightHalf );
 
 		if ( insertPosition == 0 ) {
 			return wikicodeToAdd + '\n' + talkPageWikicode;
@@ -538,8 +538,8 @@ __TOC__`;
 	}
 
 	deleteMiddleOfString( string, deleteStartPosition, deleteEndPosition ) {
-		const part1 = string.substr( 0, deleteStartPosition );
-		const part2 = string.substr( deleteEndPosition );
+		const part1 = string.slice( 0, deleteStartPosition );
+		const part2 = string.slice( deleteEndPosition );
 		const final_str = part1 + part2;
 		return final_str;
 	}

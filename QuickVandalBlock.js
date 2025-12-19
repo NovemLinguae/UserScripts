@@ -75,7 +75,6 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 	}
 
 	function block( username, duration, logReason, templateName, templateParams ) {
-		// eslint-disable-next-line no-alert
 		if ( confirm( 'Block ' + username + '?' ) ) {
 			new mw.Api().postWithToken( 'csrf', {
 				action: 'block',

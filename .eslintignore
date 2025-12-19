@@ -1,0 +1,17 @@
+.vscode
+*.json
+*.yml
+/*.docx
+/=*.*
+/=*/
+cookie.txt
+coverage
+dist
+gitignore/
+Morebits/
+node_modules
+publish_old.php
+publish.config.php
+RequestedArticleSifter
+sandbox*.*
+test*.*

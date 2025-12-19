@@ -136,7 +136,6 @@ class TemplateTaxonomyCreator {
 	}
 
 	promptThenAddWikicode( websiteId ) {
-		/* eslint-disable no-alert */
 		const englishRank = prompt( "Enter this taxa's rank. For example, genus, tribe, or subfamily." );
 		const latinRank = this.englishToLatin( englishRank );
 		const needsItalics = this.needsItalics( latinRank );

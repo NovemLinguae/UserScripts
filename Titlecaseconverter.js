@@ -1,7 +1,5 @@
 // Forked from https://en.wikipedia.org/wiki/User:ZKang123/Titlecaseconverter.js
 
-/* eslint-disable no-alert, no-console */
-
 $( () => {
 	/**
 	 * Convert titles to title case

@@ -16,6 +16,7 @@
 	},
 	"rules": {
 		// default rules we don't like
+		"compat/compat": "off",
 		"es-x/no-class-fields": "off",
 		"es-x/no-optional-catch-binding": "off",
 		"es-x/no-regexp-lookbehind-assertions": "off",
@@ -28,6 +29,8 @@
 		"jsdoc/require-returns": "off",
 		"max-len": "off", // annoying
 		"mediawiki/class-doc": "off",
+		"no-alert": "off",
+		"no-console": "off",
 		"no-jquery/no-class-state": "off",
 		"no-jquery/no-extend": "off", // autofix is buggy
 		"no-jquery/no-global-selector": "off",
@@ -43,8 +46,8 @@
 		"no-nested-ternary": "error",
 
 		// rules we should probably fix someday
-		"camelcase": "warn",
-		"eqeqeq": "warn",
-		"no-console": "warn"
+		"camelcase": "off",
+		"eqeqeq": "off",
+		"jsdoc/check-param-names": "off"
 	}
 }

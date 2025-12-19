@@ -41,6 +41,7 @@ class Tool {
 
 	/** evaluate if a string is a positive integer */
 	isPositiveInteger( n ) {
+		// eslint-disable-next-line no-bitwise
 		return n >>> 0 === parseFloat( n );
 	}
 }

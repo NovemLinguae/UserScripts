@@ -1,5 +1,3 @@
-/* eslint-disable quotes, block-spacing, brace-style, max-statements-per-line */
-
 import { UserHighlighterSimple } from '../modules/UserHighlighterSimple.js';
 
 // Babel is required to use ES6 module syntax

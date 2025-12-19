@@ -15,8 +15,6 @@ Got a bug report or feature request? Please let me know on my talk page.
 This page was assembled from 5 files using my publish.php script. I also have an offline test suite with around 175 unit tests.
 */
 
-/* eslint-disable no-alert */
-
 const { SpeciesHelperFunctions } = require( './modules/SpeciesHelperFunctions.js' );
 const { SpeciesHelperData } = require( './modules/SpeciesHelperData.js' );
 const { ConvertToSpeciesBox } = require( './modules/ConvertToSpeciesBox.js' );
