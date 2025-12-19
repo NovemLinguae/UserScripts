@@ -1,5 +1,8 @@
 {
 	"devDependencies": {
 		"eslint-config-wikimedia": "^0.32.3"
+	},
+	"scripts": {
+		"lint": "eslint . --max-warnings=0"
 	}
 }
