@@ -560,7 +560,7 @@ __TOC__`;
 	getParametersFromTemplateWikicode( template ) {
 		if ( typeof template === 'string' ) {
 			const templateFinder = new TemplateFinder( template );
-			template = templateFinder.wikiPage.firstChild;
+			template = templateFinder.firstTemplate();
 		}
 		if ( template.type !== 'template' ) {
 			throw new Error( `InvalidArgumentException: ${ template.type }
