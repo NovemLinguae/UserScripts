@@ -9,7 +9,7 @@ mw.hook( 'wikipage.content' ).add( async () => {
 
 // Fire after an edit is successfully saved via JavaScript, such as edits by the Visual Editor and HotCat.
 mw.hook( 'postEdit' ).add( async () => {
-	await mw.loader.using( [ 'mediawiki.util', 'mediawiki.Title' ], async () => {
+	await mw.loader.using( [ 'mediawiki.util', 'mediawiki.Title', 'mw.ForeignApi' ], async () => {
 		await ( new UserHighlighterSimple( $, mw, window ) ).execute();
 	} );
 } );
