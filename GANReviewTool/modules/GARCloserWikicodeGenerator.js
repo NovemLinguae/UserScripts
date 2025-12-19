@@ -563,7 +563,8 @@ __TOC__`;
 			template = templateFinder.wikiPage.firstChild;
 		}
 		if ( template.type !== 'template' ) {
-			throw new Error( 'InvalidArgumentException: Not a template' );
+			throw new Error( `InvalidArgumentException: ${ template.type }
+${ template }` );
 		}
 		const parameters = {};
 		for ( const parameter of template.getAllArgs() ) {
