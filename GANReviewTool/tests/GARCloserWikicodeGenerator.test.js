@@ -1,5 +1,4 @@
 const { GARCloserWikicodeGenerator } = require( '../modules/GARCloserWikicodeGenerator.js' );
-const { TemplateFinder } = require( '../modules/TemplateFinder.js' );
 
 let wg;
 beforeEach( () => {
