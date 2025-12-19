@@ -2384,42 +2384,47 @@ describe( 'changeGANomineeTemplateStatus( talkWikicode, newStatus )', () => {
 	test( 'already has correct status', () => {
 		const talkWikicode =
 '{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}';
+		const newStatus = 'onhold';
 		const output =
 '{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}';
-		expect( wg.changeGANomineeTemplateStatus( talkWikicode, 'onhold' ) ).toBe( output );
+		expect( wg.changeGANomineeTemplateStatus( talkWikicode, newStatus ) ).toBe( output );
 	} );
 
 	test( 'has a blank status', () => {
 		const talkWikicode =
 '{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=|note=}}';
+		const newStatus = 'onhold';
 		const output =
 '{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}';
-		expect( wg.changeGANomineeTemplateStatus( talkWikicode, 'onhold' ) ).toBe( output );
+		expect( wg.changeGANomineeTemplateStatus( talkWikicode, newStatus ) ).toBe( output );
 	} );
 
 	test( 'has a status, but needs to be changed', () => {
 		const talkWikicode =
 '{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=2ndopinion|note=}}';
+		const newStatus = 'onhold';
 		const output =
 '{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}';
-		expect( wg.changeGANomineeTemplateStatus( talkWikicode, 'onhold' ) ).toBe( output );
+		expect( wg.changeGANomineeTemplateStatus( talkWikicode, newStatus ) ).toBe( output );
 	} );
 
 	test( 'no old status, insert new status', () => {
 		const talkWikicode =
 '{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|note=}}';
+		const newStatus = 'onhold';
 		const output =
 '{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|note=|status=onhold}}';
-		expect( wg.changeGANomineeTemplateStatus( talkWikicode, 'onhold' ) ).toBe( output );
+		expect( wg.changeGANomineeTemplateStatus( talkWikicode, newStatus ) ).toBe( output );
 	} );
 
 	test( 'Should handle nested templates (#209)', () => {
 		const talkWikicode =
 `{{GA nominee|05:34, 10 September 2023 (UTC)|nominator={{colored link|#198754|User:Jake-jakubowski|Jake Jakubowski}} <sup>{{colored link|#0d6efd|User_talk:Jake-jakubowski|Talk}}</sup>|page=2|subtopic=Transport|status=onreview|note=|shortdesc=Road bridge in Maine, US}}
 {{FailedGA|22:33, 29 August 2023 (UTC)|topic=Transport|page=1|oldid=1171806123}}`;
+		const newStatus = 'onhold';
 		const output =
 `{{GA nominee|05:34, 10 September 2023 (UTC)|nominator={{colored link|#198754|User:Jake-jakubowski|Jake Jakubowski}} <sup>{{colored link|#0d6efd|User_talk:Jake-jakubowski|Talk}}</sup>|page=2|subtopic=Transport|status=onhold|note=|shortdesc=Road bridge in Maine, US}}
 {{FailedGA|22:33, 29 August 2023 (UTC)|topic=Transport|page=1|oldid=1171806123}}`;
-		expect( wg.changeGANomineeTemplateStatus( talkWikicode, 'onhold' ) ).toBe( output );
+		expect( wg.changeGANomineeTemplateStatus( talkWikicode, newStatus ) ).toBe( output );
 	} );
 } );
