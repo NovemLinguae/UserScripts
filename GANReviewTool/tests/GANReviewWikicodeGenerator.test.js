@@ -1,6 +1,8 @@
 // import * as service from "../modules/GANReviewWikicodeGenerator.js";
 const { GANReviewWikicodeGenerator } = require( '../modules/GANReviewWikicodeGenerator.js' );
 
+/* eslint-disable quotes */
+
 // Babel is required to use ES6 module syntax
 // Copy package.json and .babelrc from a project that already has this working
 // Babel tutorial: https://www.sitepoint.com/babel-beginners-guide/
@@ -1227,13 +1229,13 @@ describe( 'getAskSecondOpinionWikicodeForTalkPage(talkWikicode)', () => {
 		expect( wg.getAskSecondOpinionWikicodeForTalkPage( talkWikicode ) ).toBe( output );
 	} );
 
-	test('Should handle nested templates', () => {
-		let talkWikicode =
+	test( 'Should handle nested templates', () => {
+		const talkWikicode =
 `{{GA nominee|14:41, 19 October 2022 (UTC)|nominator=––[[User:FormalDude|<span style="color: #0151D2; font-family: Microsoft Sans Serif; letter-spacing: -.3px;">'''Formal'''{{color|black|'''Dude'''}}</span>]] [[User talk:FormalDude|<span style="color:#0151D2;font-family: Microsoft Sans Serif;font-size:90%;">'''(talk)'''</span>]]|page=1|subtopic=Politics and government|status=|note=}}`;
-		let output =
+		const output =
 `{{GA nominee|14:41, 19 October 2022 (UTC)|nominator=––[[User:FormalDude|<span style="color: #0151D2; font-family: Microsoft Sans Serif; letter-spacing: -.3px;">'''Formal'''{{color|black|'''Dude'''}}</span>]] [[User talk:FormalDude|<span style="color:#0151D2;font-family: Microsoft Sans Serif;font-size:90%;">'''(talk)'''</span>]]|page=1|subtopic=Politics and government|status=2ndopinion|note=}}`;
-		expect(wg.getAskSecondOpinionWikicodeForTalkPage(talkWikicode)).toBe(output);
-	});
+		expect( wg.getAskSecondOpinionWikicodeForTalkPage( talkWikicode ) ).toBe( output );
+	} );
 } );
 
 describe( 'getAnswerSecondOpinionWikicodeForTalkPage(talkWikicode)', () => {
