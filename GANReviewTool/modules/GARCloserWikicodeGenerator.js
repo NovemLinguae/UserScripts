@@ -97,16 +97,27 @@ __TOC__`;
 
 	processDelistForArticle( wikicode ) {
 		const gaTemplateNames = [ 'ga icon', 'ga article', 'good article' ];
+		const templateFinder = new TemplateFinder( wikicode );
 		for ( const templateName of gaTemplateNames ) {
+			const template = templateFinder.firstTemplate( templateName );
+			if ( !template ) {
+				continue;
+			}
+			const { previousSibling, nextSibling } = template;
+			template.remove();
 			// handle lots of line breaks: \n\n{{templateName}}\n\n -> \n\n
-			let regex = new RegExp( '\\n\\n\\{\\{' + templateName + '\\}\\}\\n\\n', 'i' );
-			wikicode = wikicode.replace( regex, '\n\n' );
+			if (
+				previousSibling && previousSibling.type === 'text' && previousSibling.data.endsWith( '\n\n' ) &&
+				nextSibling && nextSibling.type === 'text' && nextSibling.data.startsWith( '\n\n' )
+			) {
+				nextSibling.deleteData( 0, 2 );
 
-			// handle normal: {{templateName}}\n -> '', {{templateName}} -> ''
-			regex = new RegExp( '\\{\\{' + templateName + '\\}\\}\\n?', 'i' );
-			wikicode = wikicode.replace( regex, '' );
+				// handle normal: {{templateName}}\n -> '', {{templateName}} -> ''
+			} else if ( nextSibling && nextSibling.type === 'text' && nextSibling.data.startsWith( '\n' ) ) {
+				nextSibling.deleteData( 0, 1 );
+			}
 		}
-		return wikicode;
+		return templateFinder.getWikitext();
 	}
 
 	processDelistForGAList( wikicode, articleToRemove ) {
@@ -288,8 +299,14 @@ __TOC__`;
 			'weapons and buildings': 'Wikipedia:Good articles/Warfare',
 			weapons: 'Wikipedia:Good articles/Warfare'
 		};
-		let topic = wikicode.match( /(?:\{\{Article ?history|\{\{GA\s*(?=\|)).*?\|\s*(?:sub)?topic\s*=\s*([^|}\n]+)/is )[ 1 ];
-		topic = topic.toLowerCase().trim();
+		const templateFinder = new TemplateFinder( wikicode );
+		const templates = templateFinder.getTemplates( [ 'Article history', 'Articlehistory', 'GA' ] );
+		const template = templates.find( ( t ) => t.getArgs( 'topic' ).size || t.getArgs( 'subtopic' ).size );
+		let topic = template.getValue( 'topic' );
+		if ( topic === undefined ) {
+			topic = template.getValue( 'subtopic' );
+		}
+		topic = topic.toLowerCase();
 		const gaListTitle = dictionary[ topic ];
 		// throw the error a little later rather than now. that way it doesn't interrupt modifying the article talk page.
 		return gaListTitle;
@@ -374,16 +391,9 @@ __TOC__`;
 	}
 
 	removeTemplate( templateName, wikicode ) {
-		const regex = new RegExp( `\\{\\{${ this.regExEscape( templateName ) }[^\\}]*\\}\\}\\n?`, 'i' );
-		return wikicode.replace( regex, '' );
-	}
-
-	regexGetFirstMatchString( regex, haystack ) {
-		const matches = haystack.match( regex );
-		if ( matches !== null && matches[ 1 ] !== undefined ) {
-			return matches[ 1 ];
-		}
-		return null;
+		const templateFinder = new TemplateFinder( wikicode );
+		templateFinder.deleteTemplate( templateName );
+		return templateFinder.getWikitext();
 	}
 
 	/**
@@ -392,15 +402,15 @@ __TOC__`;
 	convertGATemplateToArticleHistoryIfPresent( talkPageTitle, wikicode ) {
 		const templateFinder = new TemplateFinder( wikicode );
 		const hasArticleHistory = templateFinder.hasTemplate( 'Article ?history' );
-		const gaTemplateWikicode = this.regexGetFirstMatchString( /(\{\{GA[^}]*\}\})/i, wikicode );
-		if ( !hasArticleHistory && gaTemplateWikicode ) {
+		const gaTemplate = templateFinder.firstTemplate( 'GA' );
+		if ( !hasArticleHistory && gaTemplate ) {
 			// delete {{ga}} template
 			templateFinder.deleteTemplate( 'GA' );
 			wikicode = templateFinder.getWikitext().trim();
 
 			// parse its parameters
 			// example: |21:00, 12 March 2017 (UTC)|topic=Sports and recreation|page=1|oldid=769997774
-			const parameters = this.getParametersFromTemplateWikicode( gaTemplateWikicode );
+			const parameters = this.getParametersFromTemplateWikicode( gaTemplate );
 
 			// if no page specified, assume page is 1. so then the good article review link will be parsed as /GA1
 			const noPageSpecified = parameters.page === undefined;
@@ -547,28 +557,10 @@ __TOC__`;
 	/**
 	 * @return {Object} Parameters, with keys being equivalent to the template parameter names. Unnamed parameters will be 1, 2, 3, etc.
 	 */
-	getParametersFromTemplateWikicode( wikicodeOfSingleTemplate ) {
-		wikicodeOfSingleTemplate = wikicodeOfSingleTemplate.slice( 2, -2 ); // remove {{ and }}
-		// TODO: explode without exploding | inside of inner templates
-		const strings = wikicodeOfSingleTemplate.split( '|' );
+	getParametersFromTemplateWikicode( template ) {
 		const parameters = {};
-		let unnamedParameterCount = 1;
-		let i = 0;
-		for ( const string of strings ) {
-			i++;
-			if ( i == 1 ) {
-				continue; // skip the template name, this is not a parameter
-			}
-			const hasEquals = string.indexOf( '=' );
-			if ( hasEquals === -1 ) {
-				parameters[ unnamedParameterCount ] = string;
-				unnamedParameterCount++;
-			} else {
-				const matches = string.match( /^([^=]*)=(.*)/s ); // isolate param name and param value by looking for first equals sign
-				const paramName = matches[ 1 ].trim().toLowerCase();
-				const paramValue = matches[ 2 ].trim();
-				parameters[ paramName ] = paramValue;
-			}
+		for ( const parameter of template.getAllArgs() ) {
+			parameters[ parameter.name.toLowerCase() ] = parameter.getValue();
 		}
 		return parameters;
 	}

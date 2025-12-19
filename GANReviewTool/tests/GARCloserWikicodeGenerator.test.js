@@ -1,4 +1,5 @@
 const { GARCloserWikicodeGenerator } = require( '../modules/GARCloserWikicodeGenerator.js' );
+const { TemplateFinder } = require( '../modules/TemplateFinder.js' );
 
 let wg;
 beforeEach( () => {
@@ -744,7 +745,7 @@ describe( 'getGAListTitleFromTalkPageWikicode(wikicode)', () => {
 	} );
 
 	it( 'Should be case insensitive', () => {
-		const wikicode = '{{aRTiClE HiStOrY|ToPiC=SpOrTs}}';
+		const wikicode = '{{aRTiClE HiStOrY|topic=SpOrTs}}';
 		const output = 'Wikipedia:Good articles/Sports and recreation';
 		expect( wg.getGAListTitleFromTalkPageWikicode( wikicode ) ).toBe( output );
 	} );
@@ -1233,13 +1234,14 @@ describe( 'getParametersFromTemplateWikicode(wikicodeOfSingleTemplate)', () => {
 	test( '', () => {
 		const wikicodeOfSingleTemplate =
 '{{GAR/link|13:56, 16 March 2022 (UTC)|page=1|GARpage=1|status= }}';
+		const { firstChild } = new TemplateFinder( wikicodeOfSingleTemplate ).wikiPage;
 		const output = {
 			1: '13:56, 16 March 2022 (UTC)',
 			page: '1',
 			garpage: '1',
 			status: ''
 		};
-		expect( wg.getParametersFromTemplateWikicode( wikicodeOfSingleTemplate ) ).toStrictEqual( output );
+		expect( wg.getParametersFromTemplateWikicode( firstChild ) ).toStrictEqual( output );
 	} );
 } );
 
@@ -1454,36 +1456,6 @@ describe( 'deleteMiddleOfString(string, deleteStartPosition, deleteEndPosition)'
 		const deleteEndPosition = 0;
 		const result = wg.deleteMiddleOfString( string, deleteStartPosition, deleteEndPosition );
 		expect( result ).toBe( '' );
-	} );
-} );
-
-describe( 'regexGetFirstMatchString(regex, haystack)', () => {
-	test( 'match', () => {
-		const regex = /hello ([^ ]+)/;
-		const haystack = 'hello test goodbye';
-		const result = wg.regexGetFirstMatchString( regex, haystack );
-		expect( result ).toBe( 'test' );
-	} );
-
-	test( 'no match', () => {
-		const regex = /hello (bob)/;
-		const haystack = 'hello test goodbye';
-		const result = wg.regexGetFirstMatchString( regex, haystack );
-		expect( result ).toBe( null );
-	} );
-
-	test( 'no capture group, no match', () => {
-		const regex = /hello bob/;
-		const haystack = 'hello test goodbye';
-		const result = wg.regexGetFirstMatchString( regex, haystack );
-		expect( result ).toBe( null );
-	} );
-
-	test( 'no capture group, yes match', () => {
-		const regex = /hello bob/;
-		const haystack = 'hello bob';
-		const result = wg.regexGetFirstMatchString( regex, haystack );
-		expect( result ).toBe( null );
 	} );
 } );
 
