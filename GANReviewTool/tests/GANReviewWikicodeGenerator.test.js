@@ -1,6 +1,8 @@
 // import * as service from "../modules/GANReviewWikicodeGenerator.js";
 const { GANReviewWikicodeGenerator } = require( '../modules/GANReviewWikicodeGenerator.js' );
 
+/* eslint-disable quotes */
+
 // Babel is required to use ES6 module syntax
 // Copy package.json and .babelrc from a project that already has this working
 // Babel tutorial: https://www.sitepoint.com/babel-beginners-guide/
@@ -1060,6 +1062,28 @@ describe( 'getFailWikicodeForTalkPage(talkWikicode, reviewTitle)', () => {
 `;
 		expect( wg.getFailWikicodeForTalkPage( talkWikicode, reviewTitle, oldid ) ).toBe( output );
 	} );
+
+	test( 'Should handle nested templates (#209)', () => {
+		const talkWikicode =
+`{{GA nominee|05:47, 28 December 2024 (UTC)|nominator=~{{Smallcaps|[[User:CtasACT|CtasACT]]}}<sup>[[User_talkCtasACT|Talk]]{{nbsp}}•{{nbsp}}[[Special:Contributions/CtasACT|Contribs]]</sup>|page=1|subtopic=Magazines and print journalism|status=onreview|note=|shortdesc=20th century Ethiopian writer and journalist}}
+{{WikiProject banner shell|class=C|blp=no|listas=Girma|
+{{WikiProject Biography|needs-photo=yes}}
+{{WikiProject Articles for creation|ts=20140219040153|reviewer=Kvng}}
+{{WikiProject Ethiopia}}
+{{WikiProject Journalism}}
+}}`;
+		const reviewTitle = 'Talk:Baalu Girma';
+		const oldid = 1267462501;
+		const output =
+`{{FailedGA|~~~~~|topic=Magazines and print journalism|page=1|oldid=1267462501}}
+{{WikiProject banner shell|class=C|blp=no|listas=Girma|
+{{WikiProject Biography|needs-photo=yes}}
+{{WikiProject Articles for creation|ts=20140219040153|reviewer=Kvng}}
+{{WikiProject Ethiopia}}
+{{WikiProject Journalism}}
+}}`;
+		expect( wg.getFailWikicodeForTalkPage( talkWikicode, reviewTitle, oldid ) ).toBe( output );
+	} );
 } );
 
 describe( 'getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error)', () => {
@@ -1184,6 +1208,16 @@ describe( 'getOnHoldWikicodeForTalkPage(talkWikicode)', () => {
 '{{Talk header}}{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}{{WikiProject Football}}';
 		expect( wg.getOnHoldWikicodeForTalkPage( talkWikicode ) ).toBe( output );
 	} );
+
+	test( 'Should handle nested templates (#209)', () => {
+		const talkWikicode =
+`{{GA nominee|05:34, 10 September 2023 (UTC)|nominator={{colored link|#198754|User:Jake-jakubowski|Jake Jakubowski}} <sup>{{colored link|#0d6efd|User_talk:Jake-jakubowski|Talk}}</sup>|page=2|subtopic=Transport|status=onreview|note=|shortdesc=Road bridge in Maine, US}}
+{{FailedGA|22:33, 29 August 2023 (UTC)|topic=Transport|page=1|oldid=1171806123}}`;
+		const output =
+`{{GA nominee|05:34, 10 September 2023 (UTC)|nominator={{colored link|#198754|User:Jake-jakubowski|Jake Jakubowski}} <sup>{{colored link|#0d6efd|User_talk:Jake-jakubowski|Talk}}</sup>|page=2|subtopic=Transport|status=onhold|note=|shortdesc=Road bridge in Maine, US}}
+{{FailedGA|22:33, 29 August 2023 (UTC)|topic=Transport|page=1|oldid=1171806123}}`;
+		expect( wg.getOnHoldWikicodeForTalkPage( talkWikicode ) ).toBe( output );
+	} );
 } );
 
 describe( 'getAskSecondOpinionWikicodeForTalkPage(talkWikicode)', () => {
@@ -1195,15 +1229,13 @@ describe( 'getAskSecondOpinionWikicodeForTalkPage(talkWikicode)', () => {
 		expect( wg.getAskSecondOpinionWikicodeForTalkPage( talkWikicode ) ).toBe( output );
 	} );
 
-	/*
-	test('Should handle nested templates', () => {
-		let talkWikicode =
+	test( 'Should handle nested templates', () => {
+		const talkWikicode =
 `{{GA nominee|14:41, 19 October 2022 (UTC)|nominator=––[[User:FormalDude|<span style="color: #0151D2; font-family: Microsoft Sans Serif; letter-spacing: -.3px;">'''Formal'''{{color|black|'''Dude'''}}</span>]] [[User talk:FormalDude|<span style="color:#0151D2;font-family: Microsoft Sans Serif;font-size:90%;">'''(talk)'''</span>]]|page=1|subtopic=Politics and government|status=|note=}}`;
-		let output =
+		const output =
 `{{GA nominee|14:41, 19 October 2022 (UTC)|nominator=––[[User:FormalDude|<span style="color: #0151D2; font-family: Microsoft Sans Serif; letter-spacing: -.3px;">'''Formal'''{{color|black|'''Dude'''}}</span>]] [[User talk:FormalDude|<span style="color:#0151D2;font-family: Microsoft Sans Serif;font-size:90%;">'''(talk)'''</span>]]|page=1|subtopic=Politics and government|status=2ndopinion|note=}}`;
-		expect(wg.getAskSecondOpinionWikicodeForTalkPage(talkWikicode)).toBe(output);
-	});
-	*/
+		expect( wg.getAskSecondOpinionWikicodeForTalkPage( talkWikicode ) ).toBe( output );
+	} );
 } );
 
 describe( 'getAnswerSecondOpinionWikicodeForTalkPage(talkWikicode)', () => {
@@ -1239,8 +1271,6 @@ blah`;
 | status = 
 | result = Passed
 }}
-
-
 == Test ==
 
 test
@@ -1356,6 +1386,15 @@ describe( 'deleteGANomineeTemplate(talkWikicode)', () => {
 		const output =
 `{{Test}}
 {{Test2}}`;
+		expect( wg.deleteGANomineeTemplate( talkWikicode ) ).toBe( output );
+	} );
+
+	test( 'brackets in the signature (#214)', () => {
+		const talkWikicode =
+`{{GA nominee|08:24, 7 January 2024 (UTC)|nominator=<b>[[User talk:Praseodymium-141|<span style="color:#028A0F"><sup>141</sup></span>]][[User:Praseodymium-141|<span style="color:#A32CC4">Pr</span>]] {[[Special:Contributions/Praseodymium-141|contribs]]}</b>|page=2|subtopic=Chemistry and materials science|status=onreview|note=|shortdesc=}}
+{{Failed GA|17:02, 7 June 2022 (UTC)|page=1|subtopic=Chemistry and materials science}}`;
+		const output =
+'{{Failed GA|17:02, 7 June 2022 (UTC)|page=1|subtopic=Chemistry and materials science}}';
 		expect( wg.deleteGANomineeTemplate( talkWikicode ) ).toBe( output );
 	} );
 } );
@@ -2343,32 +2382,51 @@ describe( 'addWikicodeAfterTemplates(wikicode, templates, codeToAdd)', () => {
 	} );
 } );
 
-describe( 'getEndOfStringPositionOfLastMatch(haystack, regex)', () => {
-	test( 'No match', () => {
-		const haystack = 'AAA BBB';
-		const regex = /ghi/ig;
-		const output = 0;
-		expect( wg.getEndOfStringPositionOfLastMatch( haystack, regex ) ).toBe( output );
+describe( 'changeGANomineeTemplateStatus( talkWikicode, newStatus )', () => {
+	test( 'already has correct status', () => {
+		const talkWikicode =
+'{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}';
+		const newStatus = 'onhold';
+		const output =
+'{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}';
+		expect( wg.changeGANomineeTemplateStatus( talkWikicode, newStatus ) ).toBe( output );
 	} );
 
-	test( '1 match', () => {
-		const haystack = 'Abc def';
-		const regex = /Abc/ig;
-		const output = 3;
-		expect( wg.getEndOfStringPositionOfLastMatch( haystack, regex ) ).toBe( output );
+	test( 'has a blank status', () => {
+		const talkWikicode =
+'{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=|note=}}';
+		const newStatus = 'onhold';
+		const output =
+'{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}';
+		expect( wg.changeGANomineeTemplateStatus( talkWikicode, newStatus ) ).toBe( output );
 	} );
 
-	test( '2 matches', () => {
-		const haystack = 'Abc Abc def';
-		const regex = /Abc/ig;
-		const output = 7;
-		expect( wg.getEndOfStringPositionOfLastMatch( haystack, regex ) ).toBe( output );
+	test( 'has a status, but needs to be changed', () => {
+		const talkWikicode =
+'{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=2ndopinion|note=}}';
+		const newStatus = 'onhold';
+		const output =
+'{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|status=onhold|note=}}';
+		expect( wg.changeGANomineeTemplateStatus( talkWikicode, newStatus ) ).toBe( output );
 	} );
 
-	test( 'Case insensitive', () => {
-		const haystack = 'Abc Abc def';
-		const regex = /abc/ig;
-		const output = 7;
-		expect( wg.getEndOfStringPositionOfLastMatch( haystack, regex ) ).toBe( output );
+	test( 'no old status, insert new status', () => {
+		const talkWikicode =
+'{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|note=}}';
+		const newStatus = 'onhold';
+		const output =
+'{{GA nominee|23:46, 28 June 2022 (UTC)|nominator=[[User:TonyTheTiger|TonyTheTiger]] <small>([[User talk:TonyTheTiger|T]] / [[Special:Contributions/TonyTheTiger|C]] / [[WP:FOUR]] / [[WP:CHICAGO]] / [[WP:WAWARD]])</small>|page=1|subtopic=Sports and recreation|note=|status=onhold}}';
+		expect( wg.changeGANomineeTemplateStatus( talkWikicode, newStatus ) ).toBe( output );
+	} );
+
+	test( 'Should handle nested templates (#209)', () => {
+		const talkWikicode =
+`{{GA nominee|05:34, 10 September 2023 (UTC)|nominator={{colored link|#198754|User:Jake-jakubowski|Jake Jakubowski}} <sup>{{colored link|#0d6efd|User_talk:Jake-jakubowski|Talk}}</sup>|page=2|subtopic=Transport|status=onreview|note=|shortdesc=Road bridge in Maine, US}}
+{{FailedGA|22:33, 29 August 2023 (UTC)|topic=Transport|page=1|oldid=1171806123}}`;
+		const newStatus = 'onhold';
+		const output =
+`{{GA nominee|05:34, 10 September 2023 (UTC)|nominator={{colored link|#198754|User:Jake-jakubowski|Jake Jakubowski}} <sup>{{colored link|#0d6efd|User_talk:Jake-jakubowski|Talk}}</sup>|page=2|subtopic=Transport|status=onhold|note=|shortdesc=Road bridge in Maine, US}}
+{{FailedGA|22:33, 29 August 2023 (UTC)|topic=Transport|page=1|oldid=1171806123}}`;
+		expect( wg.changeGANomineeTemplateStatus( talkWikicode, newStatus ) ).toBe( output );
 	} );
 } );
