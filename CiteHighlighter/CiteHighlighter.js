@@ -421,7 +421,7 @@ class CiteHighlighter {
 
 async function executeCiteHighlighter() {
 	await mw.loader.using(
-		[ 'mediawiki.util', 'mediawiki.api', 'mw.ForeignApi' ],
+		[ 'mediawiki.util', 'mediawiki.api', 'mediawiki.ForeignApi' ],
 		async () => {
 			await ( new CiteHighlighter( window, $, mw ) ).execute();
 		}
