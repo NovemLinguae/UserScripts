@@ -1,5 +1,7 @@
 const { GARCloserWikicodeGenerator } = require( '../modules/GARCloserWikicodeGenerator.js' );
 
+/* eslint-disable quotes */
+
 let wg;
 beforeEach( () => {
 	wg = new GARCloserWikicodeGenerator();
@@ -1859,5 +1861,38 @@ blah
 {{abot}}
 `;
 		expect( wg.placeATOP( wikicode, result, color ) ).toBe( output );
+	} );
+} );
+
+describe( 'removeTemplate( templateName, wikicode )', () => {
+	it( '0 templates', () => {
+		const templateName = 'GA';
+		const wikicode = `Test`;
+		const expected = `Test`;
+		expect( wg.removeTemplate( templateName, wikicode ) ).toBe( expected );
+	} );
+
+	it( '1 template', () => {
+		const templateName = 'GA';
+		const wikicode = `Test {{GA}}`;
+		const expected = `Test `;
+		expect( wg.removeTemplate( templateName, wikicode ) ).toBe( expected );
+	} );
+
+	it( '1 template with params', () => {
+		const templateName = 'GA';
+		const wikicode = `Test {{GA|date=2025-12-20}}`;
+		const expected = `Test `;
+		expect( wg.removeTemplate( templateName, wikicode ) ).toBe( expected );
+	} );
+
+	it( '1 template with params, multi line', () => {
+		const templateName = 'GA';
+		const wikicode =
+`Test {{GA
+|date=2025-12-20
+}}`;
+		const expected = `Test `;
+		expect( wg.removeTemplate( templateName, wikicode ) ).toBe( expected );
 	} );
 } );
