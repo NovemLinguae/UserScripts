@@ -69,6 +69,9 @@ export class TemplateFinder {
 		}
 	}
 
+	/**
+	 * @param {string|Array} templateNamesCaseInsensitive
+	 */
 	getTemplates( templateNamesCaseInsensitive ) {
 		if ( typeof templateNamesCaseInsensitive === 'string' ) {
 			templateNamesCaseInsensitive = [ templateNamesCaseInsensitive ];
