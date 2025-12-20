@@ -41,8 +41,6 @@
 		"security/detect-unsafe-regex": "off",
 
 		// non-default rules we do like
-		"jsdoc/check-alignment": "error",
-		"jsdoc/tag-lines": "error",
 		"no-nested-ternary": "error",
 
 		// rules we should probably fix someday
