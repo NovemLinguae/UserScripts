@@ -1,5 +1,7 @@
 const { MassGARWikicodeGenerator } = require( '../modules/MassGARWikicodeGenerator.js' );
 
+/* eslint-disable quotes */
+
 let wg;
 beforeEach( () => {
 	wg = new MassGARWikicodeGenerator();
@@ -263,5 +265,42 @@ Test
 `;
 		const output = true;
 		expect( wg.hasOpenGAR( wikicode ) ).toBe( output );
+	} );
+} );
+
+describe( '_wikicodeHasTemplate( wikicode, listOfTemplates )', () => {
+	it( '0 templates in haystack, 0 templates to search for', () => {
+		const wikicode = `Test`;
+		const listOfTemplates = [];
+		const expected = false;
+		expect( wg._wikicodeHasTemplate( wikicode, listOfTemplates ) ).toBe( expected );
+	} );
+
+	it( '1 template in haystack, 1 template to search for', () => {
+		const wikicode = `Test {{GA}}`;
+		const listOfTemplates = [ 'GA' ];
+		const expected = true;
+		expect( wg._wikicodeHasTemplate( wikicode, listOfTemplates ) ).toBe( expected );
+	} );
+
+	it( '1 template in haystack, 2 templates to search for #1', () => {
+		const wikicode = `Test {{GA}}`;
+		const listOfTemplates = [ 'GA', 'FA' ];
+		const expected = true;
+		expect( wg._wikicodeHasTemplate( wikicode, listOfTemplates ) ).toBe( expected );
+	} );
+
+	it( '1 template in haystack, 2 templates to search for #2', () => {
+		const wikicode = `Test {{GA}} {{FA}}`;
+		const listOfTemplates = [ 'GA', 'FA' ];
+		const expected = true;
+		expect( wg._wikicodeHasTemplate( wikicode, listOfTemplates ) ).toBe( expected );
+	} );
+
+	it( '1 template in haystack, 2 templates to search for #3', () => {
+		const wikicode = `Test {{FA}}`;
+		const listOfTemplates = [ 'GA', 'FA' ];
+		const expected = true;
+		expect( wg._wikicodeHasTemplate( wikicode, listOfTemplates ) ).toBe( expected );
 	} );
 } );

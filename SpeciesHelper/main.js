@@ -12,7 +12,16 @@ Got a bug report or feature request? Please let me know on my talk page.
 - script deterimes genus+species from title or from {{Speciesbox}}
 - Hotkey support: alt+A to run the script, alt+shift+S to save the page
 
-This page was assembled from 5 files using my publish.php script. I also have an offline test suite with around 175 unit tests.
+Developer notes:
+- New article list, for testing: https://en.wikipedia.org/wiki/User:AlexNewArtBot/PlantsSearchResult
+- TODO:
+	- If in mainspace, and no "en" entry in wikidata, add it to wikidata
+	- If there's a category in the article that doesn't exist, remove it. [[WP:CATREDLINK]]
+	- Handle articles that are higher up in the tree of life than genus+species.
+		- Need to check genus+species with that API invoke query right away.
+		- If it isn't a genus, then assume it's higher up. Use {{Automatic taxobox}} instead of {{Speciesbox}}
+- New pages feeds to test things out
+	- https://en.wikipedia.org/wiki/User:AlexNewArtBot#Biology_and_medicine
 */
 
 const { SpeciesHelperFunctions } = require( './modules/SpeciesHelperFunctions.js' );
@@ -20,36 +29,38 @@ const { SpeciesHelperData } = require( './modules/SpeciesHelperData.js' );
 const { ConvertToSpeciesBox } = require( './modules/ConvertToSpeciesBox.js' );
 const { MOSOrderPositionFinder } = require( './modules/MOSOrderPositionFinder.js' );
 
-// Wrapping this in a function so my linter doesn't throw a syntax error for "return not inside a function". Can remove this wrapper if I find a better way to do it. Or better yet, convert to a class.
-$( async () => {
-	const data = new SpeciesHelperData();
-	const f = new SpeciesHelperFunctions( data );
+class SpeciesHelper {
+	async execute() {
+		this.data = new SpeciesHelperData();
+		this.f = new SpeciesHelperFunctions( this.data );
 
-	const title = mw.config.get( 'wgPageName' ); // includes namespace, underscores instead of spaces
-	if ( !f.shouldRunOnThisPage( title ) ) {
-		return;
+		const title = mw.config.get( 'wgPageName' ); // includes namespace, underscores instead of spaces
+		if ( !this.f.shouldRunOnThisPage( title ) ) {
+			return;
+		}
+
+		mw.util.addPortletLink(
+			'p-navigation',
+			'#',
+			'Run SpeciesHelper',
+			'SpeciesHelper',
+			// can't put comma here, silent error
+			'[Alt+A]'
+		);
+
+		$( '#SpeciesHelper' ).on( 'click', async () => await this.improveSpeciesArticle( title ) );
+
+		document.addEventListener( 'keydown', async ( event ) => {
+			if ( event.altKey /* && event.shiftKey */ && event.key === 'a' ) {
+				return await this.improveSpeciesArticle( title );
+			}
+		} );
 	}
 
-	mw.util.addPortletLink(
-		'p-navigation',
-		'#',
-		'Run SpeciesHelper',
-		'SpeciesHelper',
-		// can't put comma here, silent error
-		'[Alt+A]'
-	);
-
-	$( '#SpeciesHelper' ).on( 'click', async () => await speciesHelper( title ) );
-
-	document.addEventListener( 'keydown', async ( event ) => {
-		if ( event.altKey /* && event.shiftKey */ && event.key === 'a' ) {
-			return await speciesHelper( title );
-		}
-	} );
-
-	async function speciesHelper( title ) {
+	async improveSpeciesArticle( title ) {
+		// set variables
 		const diffID = mw.config.get( 'wgRevisionId' );
-		const wikicode = await f.getWikicodeOfDiff( diffID );
+		const wikicode = await this.f.getWikicodeOfDiff( diffID );
 		let wikicode2 = wikicode;
 
 		let draftCategoryColon = '';
@@ -63,20 +74,20 @@ $( async () => {
 		wikicode2 += '\n';
 
 		// SKIP DISAMBIGUATION PAGES ===============================================
-		if ( f.isDisambiguationPage( wikicode2 ) ) {
+		if ( this.f.isDisambiguationPage( wikicode2 ) ) {
 			alert( 'No changes needed. (Disambiguation pages skipped)' );
 			return;
 		}
 
 		// SKIP REDIRECTS FOR NOW, MAY ADD LATER ===================================
 		// TODO: support redirects. if it's good to add {{Taxonbar}} or {{Italic title}} to them, could do that. Could also check the target and see if it's a genus, and add {{R from species to genus}}. There's also a series of {{R from alternate scientific name}} templates (e.g. {{R from alternate scientific name|algae}}), could ask if that's what we want added, then add the correct one.
-		if ( f.isRedirectPage( wikicode2 ) ) {
+		if ( this.f.isRedirectPage( wikicode2 ) ) {
 			alert( 'No changes needed. (Redirect pages currently skipped)' );
 			return;
 		}
 
 		// SKIP SUBSCPECIES FOR NOW ================================================
-		if ( f.isSubSpecies( title, wikicode2 ) ) {
+		if ( this.f.isSubSpecies( title, wikicode2 ) ) {
 			alert( 'No changes needed. (Subspecies currently skipped)' );
 			return;
 		}
@@ -112,42 +123,42 @@ $( async () => {
 
 		// DraftCleaner: remove {{Draft}} tag if not in draftspace ================
 		let wikicodeBefore = wikicode2;
-		wikicode2 = f.removeDraftTagIfNotDraftspace( wikicode2, isDraft );
+		wikicode2 = this.f.removeDraftTagIfNotDraftspace( wikicode2, isDraft );
 		if ( wikicode2 !== wikicodeBefore ) {
 			editSummaryItems.push( '-{{Draft}}' );
 		}
 
 		// REMOVE ITALICTITLE IF SPECIESBOX PRESENT ===============================
 		wikicodeBefore = wikicode2;
-		wikicode2 = f.removeItalicTitleIfSpeciesBoxPresent( wikicode2 );
+		wikicode2 = this.f.removeItalicTitleIfSpeciesBoxPresent( wikicode2 );
 		if ( wikicode2 !== wikicodeBefore ) {
 			editSummaryItems.push( '-{{Italic title}}' );
 		}
 
 		// FIX {{Speciesbox |genus=A |species=A B}} ===============================
 		wikicodeBefore = wikicode2;
-		wikicode2 = f.fixSpeciesParameterThatContainsGenus( wikicode2 );
+		wikicode2 = this.f.fixSpeciesParameterThatContainsGenus( wikicode2 );
 		if ( wikicode2 !== wikicodeBefore ) {
 			editSummaryItems.push( 'fix species parameter' );
 		}
 
 		// REMOVE WHITESPACE IN CATEGORIES =========================================
 		wikicodeBefore = wikicode2;
-		wikicode2 = f.fixWhitespaceInCategories( wikicode2 );
+		wikicode2 = this.f.fixWhitespaceInCategories( wikicode2 );
 		if ( wikicode2 !== wikicodeBefore ) {
 			editSummaryItems.push( 'fix whitespace in categories' );
 		}
 
 		// TURN ON CATEGORIES IF NOT DRAFTSPACE ====================================
 		wikicodeBefore = wikicode2;
-		wikicode2 = f.enableCategories( wikicode2, isDraft );
+		wikicode2 = this.f.enableCategories( wikicode2, isDraft );
 		if ( wikicode2 !== wikicodeBefore ) {
 			editSummaryItems.push( 'enable categories' );
 		}
 
 		// TURN OFF CATEGORIES IF NOT DRAFTSPACE ====================================
 		wikicodeBefore = wikicode2;
-		wikicode2 = f.disableCategories( wikicode2, isDraft );
+		wikicode2 = this.f.disableCategories( wikicode2, isDraft );
 		if ( wikicode2 !== wikicodeBefore ) {
 			editSummaryItems.push( 'disable categories' );
 		}
@@ -164,12 +175,12 @@ $( async () => {
 		// try to get genus+species from {{Speciesbox |parent= |taxon= }}
 		// Rare edge case used sometimes when disambiguating a genus
 		// Example: {{Speciesbox | parent = Pilophorus (fungus) | taxon = Pilophorus acicularis}}
-		const hasSpeciesboxTaxonAndParentParameters = f.getSpeciesboxTaxonAndParentParameters( wikicode2 );
+		const hasSpeciesboxTaxonAndParentParameters = this.f.getSpeciesboxTaxonAndParentParameters( wikicode2 );
 		if ( !taxa && hasSpeciesboxTaxonAndParentParameters ) {
 			taxonomyTemplateGenus = hasSpeciesboxTaxonAndParentParameters.taxonomyTemplateGenus;
 			genusForAlert = hasSpeciesboxTaxonAndParentParameters.genusForAlert;
 			species = hasSpeciesboxTaxonAndParentParameters.species;
-			taxa = await f.getTaxa( taxonomyTemplateGenus );
+			taxa = await this.f.getTaxa( taxonomyTemplateGenus );
 		}
 
 		// try to get genus+species from {{Speciesbox |genus= |species= }}
@@ -180,15 +191,15 @@ $( async () => {
 				taxonomyTemplateGenus = taxonomyTemplateGenus[ 1 ];
 				genusForAlert = taxonomyTemplateGenus;
 				species = species[ 1 ];
-				taxa = await f.getTaxa( taxonomyTemplateGenus );
+				taxa = await this.f.getTaxa( taxonomyTemplateGenus );
 			}
 		}
 
-		let titleNoNamespace = f.getTitleNoNamespace( title );
+		let titleNoNamespace = this.f.getTitleNoNamespace( title );
 
 		// try to get genus+species from the article title
 		if ( !taxa ) {
-			if ( f.isSandbox( title ) ) {
+			if ( this.f.isSandbox( title ) ) {
 				// get bolded title
 				const match = wikicode.match( /'{3,}(.*?)'{3,}/ )[ 1 ];
 				titleNoNamespace = match.replace( ' ', '_' );
@@ -198,7 +209,7 @@ $( async () => {
 				taxonomyTemplateGenus = matches[ 1 ];
 				genusForAlert = genusForAlert || taxonomyTemplateGenus;
 				species = matches[ 2 ];
-				taxa = await f.getTaxa( taxonomyTemplateGenus );
+				taxa = await this.f.getTaxa( taxonomyTemplateGenus );
 			}
 		}
 
@@ -208,7 +219,7 @@ $( async () => {
 			taxonomyTemplateGenus = hasTaxonParameter[ 1 ];
 			genusForAlert = taxonomyTemplateGenus;
 			species = hasTaxonParameter[ 2 ];
-			taxa = await f.getTaxa( taxonomyTemplateGenus );
+			taxa = await this.f.getTaxa( taxonomyTemplateGenus );
 		}
 
 		if ( !genusForAlert ) {
@@ -228,7 +239,7 @@ $( async () => {
 		const displayGenus = taxonomyTemplateGenus.replace( / \([^)]+\)/, '' );
 
 		try {
-			taxa = f.taxaStringToArray( taxa );
+			taxa = this.f.taxaStringToArray( taxa );
 		} catch ( e ) {
 			alert( `Garbled response received from {{#invoke:Autotaxobox|listAll|${ taxonomyTemplateGenus }}}. Is the page [[Template:Taxonomy/${ taxonomyTemplateGenus }]] formatted correctly? Does its wikicode contain {{Don't edit this line}} and match what other Template:Taxonomy/* pages look like?` );
 			return;
@@ -246,10 +257,10 @@ $( async () => {
 		const hasSpeciesBoxOrTaxoBox = wikicode2.match( /\{\{(?:Speciesbox|Species[ _]box|Automatic[ _]taxobox|Taxobox|Subspeciesbox|Infraspeciesbox|Hybridbox|Virusbox)/i );
 		if ( !hasSpeciesBoxOrTaxoBox ) {
 			const toAdd =
-	`{{Speciesbox
-	| genus = ${ taxonomyTemplateGenus }
-	| species = ${ species }
-	}}`;
+`{{Speciesbox
+| genus = ${ taxonomyTemplateGenus }
+| species = ${ species }
+}}`;
 			wikicode2 = mopf.insertAtSection( wikicode2, toAdd, 'infoboxes' );
 			editSummaryItems.push( '+{{Speciesbox}}' );
 		}
@@ -258,7 +269,7 @@ $( async () => {
 		// valid taxonbar templates: 'Taxonbar', 'Taxon-bar', 'Taxobar', 'TaxonIDs', 'Taxon identifiers', 'Taxon bar',
 		const hasTaxonBar = wikicode2.match( /\{\{(?:Taxonbar|Taxon-bar|Taxobar|TaxonIDs|Taxon[ _]identifiers|Taxon[ _]bar)/i );
 		if ( !hasTaxonBar ) {
-			const wikidataID = await f.getWikidataID( `${ displayGenus } ${ species }` );
+			const wikidataID = await this.f.getWikidataID( `${ displayGenus } ${ species }` );
 			if ( wikidataID ) {
 				const toAdd = `{{Taxonbar|from=${ wikidataID }}}`;
 				wikicode2 = mopf.insertAtSection( wikicode2, toAdd, 'taxonBar' );
@@ -267,28 +278,28 @@ $( async () => {
 		}
 
 		// CHECK IF A BUNCH OF STUBS AND CATEGORIES EXIST ==================
-		const listOfNonLatinSpeciesCategories = data.getListOfNonLatinSpeciesCategories();
-		const pagesToCheck = f.getPagesToCheck( taxa, listOfNonLatinSpeciesCategories );
-		let listOfPages = await f.doPagesExist( pagesToCheck );
-		listOfPages = f.fixArrayOrder( pagesToCheck, listOfPages );
+		const listOfNonLatinSpeciesCategories = this.data.getListOfNonLatinSpeciesCategories();
+		const pagesToCheck = this.f.getPagesToCheck( taxa, listOfNonLatinSpeciesCategories );
+		let listOfPages = await this.f.doPagesExist( pagesToCheck );
+		listOfPages = this.f.fixArrayOrder( pagesToCheck, listOfPages );
 
 		// DELETE [[Category:Genus| ]] =============================================
 		// so we can regenerate it correctly
 		const genusCategoryToCheck = listOfNonLatinSpeciesCategories[ taxonomyTemplateGenus ] ? listOfNonLatinSpeciesCategories[ taxonomyTemplateGenus ] : taxonomyTemplateGenus;
-		wikicode2 = f.deleteGenusCategoryWithSpaceDisambiguator( wikicode2, genusCategoryToCheck, draftCategoryColon );
+		wikicode2 = this.f.deleteGenusCategoryWithSpaceDisambiguator( wikicode2, genusCategoryToCheck, draftCategoryColon );
 
 		// CATEGORY ================================================================
-		const suggestedCategory = f.parseListOfPages( listOfPages, 'category' );
-		const categoryGenusRegEx = new RegExp( `\\[\\[${ draftCategoryColon }Category:` + f.regExEscape( genusCategoryToCheck ), 'i' );
+		const suggestedCategory = this.f.parseListOfPages( listOfPages, 'category' );
+		const categoryGenusRegEx = new RegExp( `\\[\\[${ draftCategoryColon }Category:` + this.f.regExEscape( genusCategoryToCheck ), 'i' );
 		const hasGenusParameterCategory = wikicode2.match( categoryGenusRegEx ); // so basically, don't run if genus category is already present. importantly, includes genuses with parentheses, e.g. [[Category:Saara (lizard)]]
 		if ( suggestedCategory && !hasGenusParameterCategory ) {
 			const wikicodeBeforeCategoryChanges = wikicode2;
 
 			// build list of categories currently in the article
-			const categoriesInArticle = f.getListOfCategoriesFromWikitext( wikicode2 );
+			const categoriesInArticle = this.f.getListOfCategoriesFromWikitext( wikicode2 );
 
 			// check categories in the article as a batch, see if their taxonomy templates exist
-			let categoriesWithTaxonomy = categoriesInArticle ? await f.doPagesExist( categoriesInArticle.map( ( v ) => {
+			let categoriesWithTaxonomy = categoriesInArticle ? await this.f.doPagesExist( categoriesInArticle.map( ( v ) => {
 				v = v.replace( 'Category:', '' );
 				return 'Template:Taxonomy/' + v;
 			} ) ) : [];
@@ -297,7 +308,7 @@ $( async () => {
 				return 'Category:' + v;
 			} );
 
-			const categoriesToDelete = f.getAllTaxaCategories( listOfPages );
+			const categoriesToDelete = this.f.getAllTaxaCategories( listOfPages );
 			// if existing categories have taxonomy templates, add them to the list of categories to delete to avoid [[WP:OVERCAT]]
 			for ( const cat of categoriesWithTaxonomy ) {
 				categoriesToDelete.push( cat );
@@ -310,7 +321,7 @@ $( async () => {
 
 			// delete all taxonomy related categories, to avoid [[WP:OVERCAT]]
 			for ( const cat of categoriesToDelete ) {
-				const regEx = new RegExp( '\\[\\[:?' + f.regExEscape( cat ) + '(?:\\|[^\\]]+)?\\]\\] {0,}\\n', 'gi' );
+				const regEx = new RegExp( '\\[\\[:?' + this.f.regExEscape( cat ) + '(?:\\|[^\\]]+)?\\]\\] {0,}\\n', 'gi' );
 				wikicode2 = wikicode2.replace( regEx, '' );
 			}
 
@@ -323,8 +334,8 @@ $( async () => {
 			}
 			wikicode2 = mopf.insertAtSection( wikicode2, toAdd, 'categories' );
 
-			const categoriesInArticle2 = f.getListOfCategoriesFromWikitext( wikicode2 );
-			const categoryListsAreIdentical = f.arraysHaveSameValuesCaseInsensitive( categoriesInArticle, categoriesInArticle2 );
+			const categoriesInArticle2 = this.f.getListOfCategoriesFromWikitext( wikicode2 );
+			const categoryListsAreIdentical = this.f.arraysHaveSameValuesCaseInsensitive( categoriesInArticle, categoriesInArticle2 );
 
 			if ( wikicodeBeforeCategoryChanges !== wikicode2 && !categoryListsAreIdentical ) {
 				editSummaryItems.push( 'category' );
@@ -351,8 +362,8 @@ $( async () => {
 		}
 
 		// STUB ==================================================================
-		const suggestedStubName = f.parseListOfPages( listOfPages, 'stub' );
-		const shouldBeStub = f.countWords( wikicode2 ) < 150; // I've been reverted for stub tagging an article with a word count of 175 before. so setting this kind of low.
+		const suggestedStubName = this.f.parseListOfPages( listOfPages, 'stub' );
+		const shouldBeStub = this.f.countWords( wikicode2 ) < 150; // I've been reverted for stub tagging an article with a word count of 175 before. so setting this kind of low.
 		const hasStubTags = wikicode2.match( /\{\{.+-stub\}\}\n/gi );
 		// these stubs are kind of fuzzy for various reasons. not worth messing with them
 		const stubsThatTriggerSkip = [
@@ -381,7 +392,7 @@ $( async () => {
 		) {
 			let newStubs = [ '{{' + suggestedStubName + '}}' ];
 
-			newStubs = f.addSafelistedStubs( newStubs, wikicode2 );
+			newStubs = this.f.addSafelistedStubs( newStubs, wikicode2 );
 
 			// build oldStubs array
 			const oldStubs = [];
@@ -390,13 +401,13 @@ $( async () => {
 				oldStubs.push( matches[ key ] );
 			}
 
-			if ( !f.arraysHaveSameValuesCaseInsensitive( oldStubs, newStubs ) ) {
+			if ( !this.f.arraysHaveSameValuesCaseInsensitive( oldStubs, newStubs ) ) {
 				// put proposed stub changes into "buffer" variable. if we decide to commit, commit it later
 				let buffer = wikicode2;
 
 				// delete all stubs, in preparation for writing ours
 				// handle this edge case: {{-stub}}
-				buffer = f.deleteAllStubs( buffer );
+				buffer = this.f.deleteAllStubs( buffer );
 
 				// convert newStubs to toAdd string
 				let toAdd = '';
@@ -407,7 +418,7 @@ $( async () => {
 
 				buffer = mopf.insertAtSection( buffer, toAdd, 'stubTemplates' );
 
-				if ( !f.isMinorChange( wikicode2, buffer ) ) {
+				if ( !this.f.isMinorChange( wikicode2, buffer ) ) {
 					editSummaryItems.push( 'stub' );
 
 					// commit buffer
@@ -418,7 +429,7 @@ $( async () => {
 
 		// DELETE {{Stub}} IF ANY OTHER STUBS PRESENT
 		wikicodeBefore = wikicode2;
-		wikicode2 = f.deleteStubTemplateIfAnyOtherStubsPresent( wikicode2 );
+		wikicode2 = this.f.deleteStubTemplateIfAnyOtherStubsPresent( wikicode2 );
 		if ( wikicode2 !== wikicodeBefore && !editSummaryItems.includes( 'stub' ) ) {
 			editSummaryItems.push( 'stub' );
 		}
@@ -426,7 +437,7 @@ $( async () => {
 		/* eslint-disable no-tabs */
 		// REPLACE <references /> WITH {{Reflist}} ==========================
 		// wikicodeBefore = wikicode2;
-		// wikicode2 = f.replaceReferencesWithReflist( wikicode2 );
+		// wikicode2 = this.f.replaceReferencesWithReflist( wikicode2 );
 		// if ( wikicode2 !== wikicodeBefore ) {
 		// 	editSummaryItems.push( '<references /> to {{Reflist}}' );
 		// }
@@ -455,7 +466,7 @@ $( async () => {
 		// add {{Short description}} if missing and the script has a good guess
 		const hasShortDescription = wikicode2.match( /\{\{(?:Short[ _]description|Shortdesc|Shortdescription|Short desc)/i );
 		if ( !hasShortDescription ) {
-			const suggestedShortDescription = f.suggestShortDescriptionFromWikicode( wikicode2, taxa );
+			const suggestedShortDescription = this.f.suggestShortDescriptionFromWikicode( wikicode2, taxa );
 			if ( suggestedShortDescription ) {
 				wikicode2 = mopf.insertAtSection( wikicode2, suggestedShortDescription, 'shortDescription' );
 				editSummaryItems.push( '+{{Short description}}' );
@@ -464,7 +475,7 @@ $( async () => {
 
 		// DraftCleaner: convert H1 to H2
 		wikicodeBefore = wikicode2;
-		wikicode2 = f.convertH1ToH2( wikicode2 );
+		wikicode2 = this.f.convertH1ToH2( wikicode2 );
 		if ( wikicode2 !== wikicodeBefore ) {
 			editSummaryItems.push( '<h1> to <h2>' );
 		}
@@ -485,26 +496,26 @@ $( async () => {
 		// remove {{Default sort}} identical to article title
 		wikicodeBefore = wikicode2;
 		const titleNoNamespaceNoUnderscores = titleNoNamespace.replace( '_', ' ' );
-		wikicode2 = f.removeEmptyDefaultSort( wikicode2 );
-		wikicode2 = f.removeDefaultSortIdenticalToTitle( wikicode2, titleNoNamespaceNoUnderscores );
+		wikicode2 = this.f.removeEmptyDefaultSort( wikicode2 );
+		wikicode2 = this.f.removeDefaultSortIdenticalToTitle( wikicode2, titleNoNamespaceNoUnderscores );
 		if ( wikicode2 !== wikicodeBefore ) {
 			editSummaryItems.push( '-{{Default sort}}' );
 		}
 
 		// if the only change was a change in capitalization or in # of enters, rollback the change, not worth such a minor edit
-		if ( f.isMinorChange( wikicode, wikicode2 ) ) {
+		if ( this.f.isMinorChange( wikicode, wikicode2 ) ) {
 			wikicode2 = wikicode;
 		}
 
 		// DraftCleaner: fix extra whitespace/newlines, especially above ==References== section. Count it as a major change, force it no matter what.
 		wikicodeBefore = wikicode2;
-		wikicode2 = f.deleteMoreThanTwoEntersInARowBeforeReferences( wikicode2, mopf );
+		wikicode2 = this.f.deleteMoreThanTwoEntersInARowBeforeReferences( wikicode2, mopf );
 		if ( wikicode2 !== wikicodeBefore ) {
 			editSummaryItems.push( 'fix whitespace' );
 		}
 
 		// DraftCleaner: fix extra whitespace/newlines everywhere. count it as a minor change, can be skipped if no other changes
-		wikicode2 = f.deleteMoreThanTwoEntersInARow( wikicode2 );
+		wikicode2 = this.f.deleteMoreThanTwoEntersInARow( wikicode2 );
 
 		if ( wikicode.trim() === wikicode2.trim() || editSummaryItems.length === 0 ) {
 			alert( 'No changes needed.' );
@@ -519,20 +530,12 @@ $( async () => {
 		}
 		editSummary = editSummary.slice( 0, -2 ); // delete , at end of string
 		editSummary += ' ([[User:Novem Linguae/Scripts/SpeciesHelper|SpeciesHelper]])';
-		f.goToShowChangesScreen( title, wikicode2, editSummary );
+		this.f.goToShowChangesScreen( title, wikicode2, editSummary );
 	}
+}
+
+$( async () => {
+	await mw.loader.using( [ 'mediawiki.api', 'mediawiki.ForeignApi', 'mediawiki.util' ], async () => {
+		await ( new SpeciesHelper() ).execute();
+	} );
 } );
-
-/*
-- New article list, for testing: https://en.wikipedia.org/wiki/User:AlexNewArtBot/PlantsSearchResult
-
-- TODO:
-	- If in mainspace, and no "en" entry in wikidata, add it to wikidata
-	- If there's a category in the article that doesn't exist, remove it. [[WP:CATREDLINK]]
-	- Handle articles that are higher up in the tree of life than genus+species.
-		- Need to check genus+species with that API invoke query right away.
-		- If it isn't a genus, then assume it's higher up. Use {{Automatic taxobox}} instead of {{Speciesbox}}
-
-- New pages feeds to test things out
-	- https://en.wikipedia.org/wiki/User:AlexNewArtBot#Biology_and_medicine
-*/
