@@ -1865,4 +1865,11 @@ describe( 'removeTemplate( templateName, wikicode )', () => {
 		const expected = `Test `;
 		expect( wg.removeTemplate( templateName, wikicode ) ).toBe( expected );
 	} );
+
+	it( '1 template with params + nested template', () => {
+		const templateName = 'GA';
+		const wikicode = `Test {{GA|date={{formatdate|2025-12-20}}}}`;
+		const expected = `Test `;
+		expect( wg.removeTemplate( templateName, wikicode ) ).toBe( expected );
+	} );
 } );

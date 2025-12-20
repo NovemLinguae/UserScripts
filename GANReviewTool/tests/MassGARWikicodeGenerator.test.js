@@ -276,6 +276,13 @@ describe( '_wikicodeHasTemplate( wikicode, listOfTemplates )', () => {
 		expect( wg._wikicodeHasTemplate( wikicode, listOfTemplates ) ).toBe( expected );
 	} );
 
+	it( '1 template in haystack, 0 templates to search for', () => {
+		const wikicode = `Test {{GA}}`;
+		const listOfTemplates = [];
+		const expected = false;
+		expect( wg._wikicodeHasTemplate( wikicode, listOfTemplates ) ).toBe( expected );
+	} );
+
 	it( '1 template in haystack, 1 template to search for', () => {
 		const wikicode = `Test {{GA}}`;
 		const listOfTemplates = [ 'GA' ];
