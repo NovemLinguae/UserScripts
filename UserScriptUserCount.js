@@ -42,6 +42,7 @@ class UserScriptUserCount {
 			const $link = this.$( $scriptLinks[ i ] );
 			const href = $link.attr( 'href' );
 			const scriptTitle = decodeURIComponent( href.replace( '/wiki/', '' ) );
+			// serial instead of parallel to follow API etiquette
 			const count = await this.getUserCount( scriptTitle );
 			const countHtml = ` <span style="background-color: lightgray; padding: 2px 4px; border-radius: 4px; font-size: 90%; font-weight: normal !important;">${ count } ${ count === 1 ? 'user' : 'users' }</span>`;
 			$link.after( countHtml );
