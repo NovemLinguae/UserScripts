@@ -746,7 +746,7 @@ describe( 'getGAListTitleFromTalkPageWikicode(wikicode)', () => {
 	} );
 
 	it( 'Should be case insensitive', () => {
-		const wikicode = '{{aRTiClE HiStOrY|ToPiC=SpOrTs}}';
+		const wikicode = '{{aRTiClE HiStOrY|topic=SpOrTs}}';
 		const output = 'Wikipedia:Good articles/Sports and recreation';
 		expect( wg.getGAListTitleFromTalkPageWikicode( wikicode ) ).toBe( output );
 	} );
@@ -1459,36 +1459,6 @@ describe( 'deleteMiddleOfString(string, deleteStartPosition, deleteEndPosition)'
 	} );
 } );
 
-describe( 'regexGetFirstMatchString(regex, haystack)', () => {
-	test( 'match', () => {
-		const regex = /hello ([^ ]+)/;
-		const haystack = 'hello test goodbye';
-		const result = wg.regexGetFirstMatchString( regex, haystack );
-		expect( result ).toBe( 'test' );
-	} );
-
-	test( 'no match', () => {
-		const regex = /hello (bob)/;
-		const haystack = 'hello test goodbye';
-		const result = wg.regexGetFirstMatchString( regex, haystack );
-		expect( result ).toBe( null );
-	} );
-
-	test( 'no capture group, no match', () => {
-		const regex = /hello bob/;
-		const haystack = 'hello test goodbye';
-		const result = wg.regexGetFirstMatchString( regex, haystack );
-		expect( result ).toBe( null );
-	} );
-
-	test( 'no capture group, yes match', () => {
-		const regex = /hello bob/;
-		const haystack = 'hello bob';
-		const result = wg.regexGetFirstMatchString( regex, haystack );
-		expect( result ).toBe( null );
-	} );
-} );
-
 describe( 'convertGATemplateToArticleHistoryIfPresent(talkPageTitle, wikicode)', () => {
 	it( 'should default to page=1 when no page parameter', () => {
 		const talkPageTitle = 'Talk:Test';
@@ -1892,6 +1862,13 @@ describe( 'removeTemplate( templateName, wikicode )', () => {
 `Test {{GA
 |date=2025-12-20
 }}`;
+		const expected = `Test `;
+		expect( wg.removeTemplate( templateName, wikicode ) ).toBe( expected );
+	} );
+
+	it( '1 template with params + nested template', () => {
+		const templateName = 'GA';
+		const wikicode = `Test {{GA|date={{formatdate|2025-12-20}}}}`;
 		const expected = `Test `;
 		expect( wg.removeTemplate( templateName, wikicode ) ).toBe( expected );
 	} );

@@ -69,10 +69,18 @@ export class TemplateFinder {
 		}
 	}
 
-	getTemplates( templateNameCaseInsensitive ) {
-		const templateName = `template:${ templateNameCaseInsensitive.toLowerCase().replace( / /g, '_' ) }`;
+	/**
+	 * @param {string|Array} templateNamesCaseInsensitive
+	 */
+	getTemplates( templateNamesCaseInsensitive ) {
+		if ( typeof templateNamesCaseInsensitive === 'string' ) {
+			templateNamesCaseInsensitive = [ templateNamesCaseInsensitive ];
+		}
+		const templateNames = templateNamesCaseInsensitive.map(
+			( t ) => `template:${ t.toLowerCase().replace( / /g, '_' ) }`
+		);
 		return this.wikiPage.querySelectorAll( 'template' )
-			.filter( ( { name } ) => name.toLowerCase() === templateName );
+			.filter( ( { name } ) => templateNames.includes( name.toLowerCase() ) );
 	}
 
 	deleteTemplate( templateNameRegExOrArrayCaseInsensitive ) {
