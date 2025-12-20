@@ -10,7 +10,7 @@ User scripts in folders are more complex scripts usually spanning multiple files
 
 # Linter
 
-- Install the linter by running `npm update` from the root directory. The linter is not run in CI, and is mainly for your IDE.
+- Install the linter by running `npm update` from the root directory. The linter is run in CI and should always be passing before merging to the master branch. We use MediaWiki's JavaScript linting rules, with some turned off.
 
 # Unit tests
 
