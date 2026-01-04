@@ -62,7 +62,7 @@ export class GANReviewController {
 			} else if ( this.action === 'answerSecondOpinion' ) {
 				await this.answerSecondOpinion();
 			}
-			await this.writeToLog();
+			// await this.writeToLog();
 			this.pushStatus( 'Script complete. Refreshing page.' );
 			// TODO: 1 second delay?
 			location.reload();

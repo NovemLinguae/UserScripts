@@ -119,6 +119,7 @@ $wikitext = generateWikitext($MAIN_FILE_PATH, $CLASSES_FOLDER_PATH);
 	</head>
 	<body>
 		<form method="post">
+			<h1>Don't forget to run `npm run build` and refresh before publishing!</h1>
 			<p>
 				Page Title:<br />
 				<input type="text" name="pageTitle" value="<?php echo htmlentities($PAGE_TITLE); ?>" />

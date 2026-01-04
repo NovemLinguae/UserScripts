@@ -64,7 +64,7 @@ export class GARCloserController {
 				await this.makeCommunityAssessmentLogEntry();
 				await this.makeSureCategoryPageHasWikitext();
 			}
-			await this.makeScriptLogEntry( 'keep' );
+			// await this.makeScriptLogEntry( 'keep' );
 			this.pushStatus( 'Done! Reloading...' );
 			location.reload();
 		} catch ( err ) {
@@ -91,7 +91,7 @@ export class GARCloserController {
 				await this.makeCommunityAssessmentLogEntry();
 				await this.makeSureCategoryPageHasWikitext();
 			}
-			await this.makeScriptLogEntry( 'delist' );
+			// await this.makeScriptLogEntry( 'delist' );
 			if ( !this.apiMode ) {
 				this.pushStatus( 'Done! Reloading...' );
 				location.reload();
