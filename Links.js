@@ -52,8 +52,6 @@ class Links {
 	}
 
 	createBottomLeftMenuContainer() {
-		// Works as expected in vector, modern, monobook, timeless. Is in right menu instead of left menu in vector-2022. Doesn't show up at all in minerva.
-		// Could fix in those skins by adding it before an existing nearby portlet, then using the p.parentNode.appendChild( p ); trick.
 		this.mw.util.addPortlet( 'p-links', 'More tools', '#p-tb' );
 	}
 
