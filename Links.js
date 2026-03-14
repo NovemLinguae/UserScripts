@@ -29,10 +29,9 @@
 			- modern
 			- monobook
 			- timeless
+			- minerva (TODO: make less ugly)
 		- right menu (tools menu)
 			- vector-2022
-		- not displayed at all
-			- minerva
 */
 
 class Links {
@@ -52,7 +51,11 @@ class Links {
 	}
 
 	createBottomLeftMenuContainer() {
-		this.mw.util.addPortlet( 'p-links', 'More tools', '#p-tb' );
+		if ( this.mw.config.get( 'skin' ) === 'minerva' ) {
+			this.mw.util.addPortlet( 'p-links', 'More tools', '#p-navigation' );
+		} else {
+			this.mw.util.addPortlet( 'p-links', 'More tools', '#p-tb' );
+		}
 	}
 
 	async generateUserspaceLinks() {
