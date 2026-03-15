@@ -293,7 +293,7 @@ class ANRFC {
 			action: 'edit',
 			title: 'Wikipedia:Closure_requests',
 			text: wikitext,
-			summary: 'Listing new discussion using [[User:Novem Linguae/Scripts/anrfc-lister.js|anrfc-lister]]',
+			summary: 'Listing ' + pageName + ' discussion using [[User:Novem Linguae/Scripts/anrfc-lister.js|anrfc-lister]]',
 			nocreate: true
 		} );
 
