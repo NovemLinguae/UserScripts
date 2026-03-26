@@ -251,6 +251,7 @@ class ANRFC {
 		}
 
 		// Grab what the user typed into the form.
+		// For the targetSection dropdown list, the values are 0, 1, 2, etc.
 		const targetSection = dropDown.getMenu().findSelectedItem().getData();
 		const message = messageInput.getValue();
 
@@ -293,7 +294,7 @@ class ANRFC {
 			action: 'edit',
 			title: 'Wikipedia:Closure_requests',
 			text: wikitext,
-			summary: 'Listing ' + pageName + ' discussion using [[User:Novem Linguae/Scripts/anrfc-lister.js|anrfc-lister]]',
+			summary: 'Listing [[' + pageName + '#' + sectionTitle + ']] using [[User:Novem Linguae/Scripts/anrfc-lister.js|anrfc-lister]]',
 			nocreate: true
 		} );
 
