@@ -294,7 +294,7 @@ class ANRFC {
 			action: 'edit',
 			title: 'Wikipedia:Closure_requests',
 			text: wikitext,
-			summary: 'Listing [[' + pageName + '#' + sectionTitle + ']] using [[User:Novem Linguae/Scripts/anrfc-lister.js|anrfc-lister]]',
+			summary: '/* ' + this.sections[ targetSection ] + ' */ Listing [[' + pageName + '#' + sectionTitle + ']] using [[User:Novem Linguae/Scripts/anrfc-lister.js|anrfc-lister]]',
 			nocreate: true
 		} );
 
