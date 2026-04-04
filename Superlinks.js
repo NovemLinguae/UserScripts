@@ -1,3 +1,5 @@
+/* eslint-disable no-var, no-irregular-whitespace, no-jquery/no-constructor-attributes, no-use-before-define, block-scoped-var, no-redeclare, no-jquery/no-done-fail, no-jquery/no-each-util, no-jquery/variable-pattern, unicorn/prefer-string-slice */
+
 ( function ( $, mw ) {
 	'use strict';
 
@@ -308,7 +310,7 @@
 						app.$content.find( '.mw-collapsible' ).makeCollapsible();
 					} catch ( e ) {}
 				}
-				function loadcheck( response, status, xhr ) {
+				function loadcheck( response, status ) {
 					if ( status == 'success' ) {
 						afterLoad();
 					} else {

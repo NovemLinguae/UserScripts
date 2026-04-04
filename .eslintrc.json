@@ -8,7 +8,8 @@
 		"jest": true
 	},
 	"globals": {
-		"mw": "readonly"
+		"mw": "readonly",
+		"mediaWiki": "readonly"
 	},
 	"parserOptions": {
 		"sourceType": "module", // eslint-config-wikimedia default is "commonjs", but we need "module" for our unit tests
