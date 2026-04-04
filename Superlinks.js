@@ -1,3 +1,5 @@
+// Forked from https://en.wikipedia.org/w/index.php?title=User:Bradv/Scripts/Superlinks.js&oldid=1171577516, with thanks to the author of that user script, Bradv.
+
 /* eslint-disable no-var, no-irregular-whitespace, no-jquery/no-constructor-attributes, no-use-before-define, no-redeclare, no-jquery/no-done-fail, no-jquery/no-each-util, unicorn/prefer-string-slice */
 
 ( function ( $, mw ) {
@@ -316,7 +318,7 @@
 			<div id='empty'>
 				The page does not exist or could not be loaded.
 				<div id='empty-sub'>
-					Report this error <a href='/wiki/User_talk:Bradv/Scripts/Superlinks' target='_blank'>here</a>.
+					Report this error <a href='/wiki/User_talk:Novem_Linguae/Scripts/Superlinks.js' target='_blank'>here</a>.
 				</div>
 			</div>
 		` ) );
