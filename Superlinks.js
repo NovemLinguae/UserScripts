@@ -1,6 +1,4 @@
-// Looks like this only works with skin Vector 2010.
-
-/* eslint-disable no-var, no-irregular-whitespace, no-jquery/no-constructor-attributes, no-use-before-define, block-scoped-var, no-redeclare, no-jquery/no-done-fail, no-jquery/no-each-util, no-jquery/variable-pattern, unicorn/prefer-string-slice */
+/* eslint-disable no-var, no-irregular-whitespace, no-jquery/no-constructor-attributes, no-use-before-define, no-redeclare, no-jquery/no-done-fail, no-jquery/no-each-util, no-jquery/variable-pattern, unicorn/prefer-string-slice */
 
 ( function ( $, mw ) {
 	var app = {
@@ -8,12 +6,12 @@
 	};
 
 	function execute() {
+		// Looks like this user script only works with skin Vector 2010
 		if ( mw.config.get( 'skin' ) !== 'vector' ) {
 			return;
 		}
-
 		loadCss();
-		init();
+		placeHtmlAndClickListeners();
 	}
 
 	function loadCss() {
@@ -156,27 +154,115 @@
 		` );
 	}
 
-	function init() {
-		function mk( caption, group ) {
-			const $link = $( '<a>', { href: '#' } ).text( caption );
-			if ( group ) {
-				group.append( $link );
+	function makeLink( caption, group ) {
+		const $link = $( '<a>', { href: '#' } ).text( caption );
+		if ( group ) {
+			group.append( $link );
+		} else {
+			$( '#superlinks-links' ).append( $link );
+		}
+		$link.on( 'click', ( e ) => {
+			handleClick( e );
+		} );
+		return $link[ 0 ];
+	}
+
+	function makeLinkGroup( caption ) {
+		if ( caption ) {
+			$( '#superlinks-links' ).append( $( '<label/>' ).text( caption ) );
+		}
+		return $( '<span/>' ).appendTo( $( '#superlinks-links' ) );
+	}
+
+	function makeSpecialPageLinks() {
+		const cspn = mw.config.get( 'wgCanonicalSpecialPageName' );
+		app.links.userpage = makeLink( 'User', usergrp );
+		var usergrp = makeLinkGroup();
+		app.links.usertalk = makeLink( 'Talk', usergrp );
+		if ( cspn != 'Contributions' ) {
+			app.links.contribs = makeLink( 'Contribs', usergrp );
+		}
+		if ( mw.config.get( 'wgUserGroups' ).includes( 'sysop' ) && cspn != 'DeletedContributions' ) {
+			app.links.deleted = makeLink( 'Deleted', usergrp );
+		}
+		app.links.actions = makeLink( 'Actions', usergrp );
+		app.links.userFilter = makeLink( 'Filter', usergrp );
+		app.links.rights = makeLink( 'Rights', usergrp );
+		app.links.blocklog = makeLink( 'Blocks', usergrp );
+		if ( mw.config.get( 'wgWikiID' ) == 'enwiki' ) {
+			app.links.dsalerts = makeLink( 'DS Alerts', usergrp );
+			app.links.restrict = makeLink( 'Restrictions', usergrp );
+		}
+		if ( mw.config.get( 'wgUserGroups' ).includes( 'checkuser' ) ) {
+			app.links.culog = makeLink( 'checks', usergrp );
+		}
+	}
+
+	function makeArticleOrArticleHistoryLinks() {
+		if ( !app.articleElement.hasClass( 'new' ) ) {
+			if ( app.historyElement.hasClass( 'selected' ) ) { // on history page
+				app.links.article = makeLink( app.articleElement.find( 'a' ).text() );
+			}
+			if ( app.historyElement.length && ( !app.historyElement.hasClass( 'selected' ) ) ) { // not on history page (but it exists)
+				app.links.history = makeLink( 'History' );
+			}
+		}
+		app.links.logs = makeLink( 'Log' );
+		app.links.filter = makeLink( 'Filter' );
+		if ( !app.talkElement.hasClass( 'new' ) ) { // talk exists
+			app.links.talk = makeLink( 'Talk' );
+		}
+		app.links.notice = makeLink( 'Page Notice' );
+	}
+
+	function makeTalkOrTalkHistoryLinks() {
+		let pagegrp, talkgrp;
+		if ( !app.articleElement.hasClass( 'new' ) ) { // article exists
+			app.links.article = makeLink( app.articleElement.find( 'a' ).text() );
+			pagegrp = makeLinkGroup();
+			app.links.articleHistory = makeLink( 'History', pagegrp );
+		} else {
+			pagegrp = makeLinkGroup( app.articleElement.find( 'a' ).text() );
+		}
+		app.links.articleLogs = makeLink( 'Log', pagegrp );
+		app.links.articleFilter = makeLink( 'Filter', pagegrp );
+		app.links.notice = makeLink( 'Page Notice', pagegrp );
+
+		if ( !app.talkElement.hasClass( 'new' ) ) { // talk exists
+			if ( app.historyElement.hasClass( 'selected' ) ) { // on history page
+				app.links.talk = makeLink( 'Talk' );
+				talkgrp = makeLinkGroup();
 			} else {
-				$( '#superlinks-links' ).append( $link );
+				talkgrp = makeLinkGroup( 'Talk' );
+				app.links.history = makeLink( 'History', talkgrp );
 			}
-			$link.on( 'click', ( e ) => {
-				click( e );
-			} );
-			return $link[ 0 ];
-
+		} else {
+			talkgrp = makeLinkGroup( 'Talk' );
 		}
-		function mkgroup( caption ) {
-			if ( caption ) {
-				$( '#superlinks-links' ).append( $( '<label/>' ).text( caption ) );
-			}
-			return $( '<span/>' ).appendTo( $( '#superlinks-links' ) );
-		}
+		app.links.logs = makeLink( 'Log', talkgrp );
+		app.links.filter = makeLink( 'Filter', talkgrp );
+	}
 
+	function makeUserLinks() {
+		var usergrp = makeLinkGroup( 'User' );
+		app.links.contribs = makeLink( 'Contribs', usergrp );
+		if ( mw.config.get( 'wgUserGroups' ).includes( 'sysop' ) ) {
+			app.links.deleted = makeLink( 'Deleted', usergrp );
+		}
+		app.links.actions = makeLink( 'Actions', usergrp );
+		app.links.userFilter = makeLink( 'Filter', usergrp );
+		app.links.rights = makeLink( 'Rights', usergrp );
+		app.links.blocklog = makeLink( 'Blocks', usergrp );
+		if ( mw.config.get( 'wgWikiID' ) == 'enwiki' ) {
+			app.links.dsalerts = makeLink( 'DS Alerts', usergrp );
+			app.links.restrict = makeLink( 'Restrictions', usergrp );
+		}
+		if ( mw.config.get( 'wgUserGroups' ).includes( 'checkuser' ) ) {
+			app.links.culog = makeLink( 'checks', usergrp );
+		}
+	}
+
+	function placeHtmlAndClickListeners() {
 		app.$root = $( '<div>', { id: 'superlinks' } ).text( '[' ).append( $( '<span>', { id: 'superlinks-links' } ) );
 		app.$root.prependTo( $( 'div.mw-indicators' ) );
 
@@ -190,165 +276,91 @@
 
 		if ( app.articleElement.attr( 'id' ) == 'ca-nstab-special' ) { // on special page, like contribs
 			if ( app.relevantUser ) {
-				const cspn = mw.config.get( 'wgCanonicalSpecialPageName' );
-				app.links.userpage = mk( 'User', usergrp );
-				var usergrp = mkgroup();
-				app.links.usertalk = mk( 'Talk', usergrp );
-				if ( cspn != 'Contributions' ) {
-					app.links.contribs = mk( 'Contribs', usergrp );
-				}
-				if ( mw.config.get( 'wgUserGroups' ).includes( 'sysop' ) && cspn != 'DeletedContributions' ) {
-					app.links.deleted = mk( 'Deleted', usergrp );
-				}
-				app.links.actions = mk( 'Actions', usergrp );
-				app.links.userFilter = mk( 'Filter', usergrp );
-				app.links.rights = mk( 'Rights', usergrp );
-				app.links.blocklog = mk( 'Blocks', usergrp );
-				if ( mw.config.get( 'wgWikiID' ) == 'enwiki' ) {
-					app.links.dsalerts = mk( 'DS Alerts', usergrp );
-					app.links.restrict = mk( 'Restrictions', usergrp );
-				}
-				if ( mw.config.get( 'wgUserGroups' ).includes( 'checkuser' ) ) {
-					app.links.culog = mk( 'checks', usergrp );
-				}
+				makeSpecialPageLinks();
 			}
 		} else {
 			if ( app.articleElement.hasClass( 'selected' ) ) { // on article or article history
-				if ( !app.articleElement.hasClass( 'new' ) ) {
-					if ( app.historyElement.hasClass( 'selected' ) ) { // on history page
-						app.links.article = mk( app.articleElement.find( 'a' ).text() );
-					}
-					if ( app.historyElement.length && ( !app.historyElement.hasClass( 'selected' ) ) ) { // not on history page (but it exists)
-						app.links.history = mk( 'History' );
-					}
-				}
-				app.links.logs = mk( 'Log' );
-				app.links.filter = mk( 'Filter' );
-				if ( !app.talkElement.hasClass( 'new' ) ) { // talk exists
-					app.links.talk = mk( 'Talk' );
-				}
-				app.links.notice = mk( 'Page Notice' );
+				makeArticleOrArticleHistoryLinks();
 			} else { // on talk or talk history
-				let pagegrp, talkgrp;
-				if ( !app.articleElement.hasClass( 'new' ) ) { // article exists
-					app.links.article = mk( app.articleElement.find( 'a' ).text() );
-					pagegrp = mkgroup();
-					app.links.articleHistory = mk( 'History', pagegrp );
-				} else {
-					pagegrp = mkgroup( app.articleElement.find( 'a' ).text() );
-				}
-				app.links.articleLogs = mk( 'Log', pagegrp );
-				app.links.articleFilter = mk( 'Filter', pagegrp );
-				app.links.notice = mk( 'Page Notice', pagegrp );
-
-				if ( !app.talkElement.hasClass( 'new' ) ) { // talk exists
-					if ( app.historyElement.hasClass( 'selected' ) ) { // on history page
-						app.links.talk = mk( 'Talk' );
-						talkgrp = mkgroup();
-					} else {
-						talkgrp = mkgroup( 'Talk' );
-						app.links.history = mk( 'History', talkgrp );
-					}
-				} else {
-					talkgrp = mkgroup( 'Talk' );
-				}
-				app.links.logs = mk( 'Log', talkgrp );
-				app.links.filter = mk( 'Filter', talkgrp );
+				makeTalkOrTalkHistoryLinks();
 			}
 
 			if ( app.relevantUser ) {
-				var usergrp = mkgroup( 'User' );
-				app.links.contribs = mk( 'Contribs', usergrp );
-				if ( mw.config.get( 'wgUserGroups' ).includes( 'sysop' ) ) {
-					app.links.deleted = mk( 'Deleted', usergrp );
-				}
-				app.links.actions = mk( 'Actions', usergrp );
-				app.links.userFilter = mk( 'Filter', usergrp );
-				app.links.rights = mk( 'Rights', usergrp );
-				app.links.blocklog = mk( 'Blocks', usergrp );
-				if ( mw.config.get( 'wgWikiID' ) == 'enwiki' ) {
-					app.links.dsalerts = mk( 'DS Alerts', usergrp );
-					app.links.restrict = mk( 'Restrictions', usergrp );
-				}
-				if ( mw.config.get( 'wgUserGroups' ).includes( 'checkuser' ) ) {
-					app.links.culog = mk( 'checks', usergrp );
-				}
+				makeUserLinks();
 			}
 
 			console.log( mw.loader.getState( 'ext.pageTriage.util' ) );
 			const ns = mw.config.get( 'wgNamespaceNumber' );
 			if ( mw.config.get( 'wgWikiID' ) == 'enwiki' && ns == 0 && mw.loader.getState( 'ext.pageTriage.util' ) != 'registered' ) {
-				app.links.nppflowchart = mk( 'NPP Flowchart' );
+				app.links.nppflowchart = makeLink( 'NPP Flowchart' );
 			}
 
 			if ( mw.config.get( 'wgWikiID' ) == 'enwiki' && mw.config.get( 'wgCategories' ).includes( 'Pending AfC submissions' ) ) {
-				app.links.afcflowchart = mk( 'AfC Flowchart' );
+				app.links.afcflowchart = makeLink( 'AfC Flowchart' );
 			}
 		}
 
 		app.$root.append( ']' );
 	}
 
-	function click( e ) {
-		function msg( text ) { // blank for loading icon
-			app.$content.empty();
-			const $div = $( '<div>', { id: 'empty' } );
-			if ( text ) {
-				$div.text( text );
-			} else {
-				$div.append( $( '<img>', { src: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Chromiumthrobber.svg' } ) );
-			}
-			app.$content.append( $div );
+	function putMessageInPanel( text ) { // blank for loading icon
+		app.$content.empty();
+		const $div = $( '<div>', { id: 'empty' } );
+		if ( text ) {
+			$div.text( text );
+		} else {
+			$div.append( $( '<img>', { src: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Chromiumthrobber.svg' } ) );
 		}
-		function msgErr() {
-			app.$content.empty().append( $( `
-				<div id='empty'>
-					The page does not exist or could not be loaded.
-					<div id='empty-sub'>
-						Report this error <a href='/wiki/User_talk:Bradv/Scripts/Superlinks' target='_blank'>here</a>.
-					</div>
-				</div>
-			` ) );
-		}
-		function afterLoad() {
-			if ( app.$content.children().length === 0 ) {
-				msg( 'No results' );
-			}
-			app.$content.find( 'a[href]' ).not( '[href^="#"]' ).attr( 'target', '_blank' );
-			/* app.$content.find("a[href]").filter('[href^="#"]').click(function(e) {
-				e.preventDefault();
-				href = $(this).attr('href');
-				console.log(href);
-				app.$content.scrollTop($($(this).attr('href')).position().top);
-			}); */
-			app.$content.find( 'input' ).remove();
-			try {
-				app.$content.find( '.mw-collapsible' ).makeCollapsible();
-			} catch ( e ) {}
-		}
-		function loadcheck( response, status ) {
-			if ( status == 'success' ) {
-				afterLoad();
-			} else {
-				msgErr();
-			}
-		}
-		function loadpopout( url ) {
-			app.$root.find( '#superlinks-popout' ).remove();
-			if ( url ) {
-				app.$root.find( '#superlinks-icons' ).append(
-					$( '<a>', { id: 'superlinks-popout', href: url, target: '_blank' } ).append(
-						$( '<img>', { src: 'https://upload.wikimedia.org/wikipedia/commons/e/eb/OOjs_UI_icon_newWindow-ltr.svg' } )
-					)
-				);
-			}
-		}
+		app.$content.append( $div );
+	}
 
+	function putErrorMessageInPanel() {
+		app.$content.empty().append( $( `
+			<div id='empty'>
+				The page does not exist or could not be loaded.
+				<div id='empty-sub'>
+					Report this error <a href='/wiki/User_talk:Bradv/Scripts/Superlinks' target='_blank'>here</a>.
+				</div>
+			</div>
+		` ) );
+	}
+
+	function doFinalPanelLoadingTasks() {
+		if ( app.$content.children().length === 0 ) {
+			putMessageInPanel( 'No results' );
+		}
+		app.$content.find( 'a[href]' ).not( '[href^="#"]' ).attr( 'target', '_blank' );
+		app.$content.find( 'input' ).remove();
+		try {
+			app.$content.find( '.mw-collapsible' ).makeCollapsible();
+		} catch ( e ) {}
+	}
+
+	function checkForErrors( response, status ) {
+		if ( status == 'success' ) {
+			doFinalPanelLoadingTasks();
+		} else {
+			putErrorMessageInPanel();
+		}
+	}
+
+	function openPanel( url ) {
+		app.$root.find( '#superlinks-popout' ).remove();
+		if ( url ) {
+			app.$root.find( '#superlinks-icons' ).append(
+				$( '<a>', { id: 'superlinks-popout', href: url, target: '_blank' } ).append(
+					$( '<img>', { src: 'https://upload.wikimedia.org/wikipedia/commons/e/eb/OOjs_UI_icon_newWindow-ltr.svg' } )
+				)
+			);
+		}
+	}
+
+	function handleClick( e ) {
 		e.preventDefault();
 		if ( app.active == e.target ) {
-			close( e );
+			closePanel( e );
 		} else {
-			close( e );
+			closePanel( e );
 			app.active = e.target;
 			$( app.active ).addClass( 'active' );
 
@@ -363,104 +375,104 @@
 					.append(
 						$( '<a>', { href: '#' } )
 							.text( 'close' )
-							.on( 'click', ( e ) => close( e ) )
+							.on( 'click', ( e ) => closePanel( e ) )
 					)
 			);
 
 			app.$content = $( '<div>', { id: 'superlinks-content' } ).appendTo( app.$wnd );
-			msg();
+			putMessageInPanel();
 
 			switch ( e.target ) {
 				case app.links.userpage:
 					var url = '/w/index.php?action=render&title=User:' + app.relevantUser;
-					app.$content.load( url, loadcheck );
-					loadpopout( '/wiki/User:' + app.relevantUser );
+					app.$content.load( url, checkForErrors );
+					openPanel( '/wiki/User:' + app.relevantUser );
 					break;
 				case app.links.usertalk:
 					var url = '/w/index.php?action=render&title=User_talk:' + app.relevantUser;
-					app.$content.load( url, loadcheck );
-					loadpopout( '/wiki/User_talk:' + app.relevantUser );
+					app.$content.load( url, checkForErrors );
+					openPanel( '/wiki/User_talk:' + app.relevantUser );
 					break;
 				case app.links.article:
 					var url = app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=' );
-					app.$content.load( url, loadcheck );
-					loadpopout( app.articleElement.find( 'a' )[ 0 ].href );
+					app.$content.load( url, checkForErrors );
+					openPanel( app.articleElement.find( 'a' )[ 0 ].href );
 					break;
 				case app.links.articleHistory:
 					var url = app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=history&safemode=1&limit=100&title=' );
-					app.$content.load( url + ' #pagehistory', loadcheck );
-					loadpopout( app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=history&title=' ) );
+					app.$content.load( url + ' #pagehistory', checkForErrors );
+					openPanel( app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=history&title=' ) );
 					break;
 				case app.links.talk:
 					var url = $( '#ca-talk > a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=' );
-					app.$content.load( url, loadcheck );
-					loadpopout( $( '#ca-talk > a' )[ 0 ].href );
+					app.$content.load( url, checkForErrors );
+					openPanel( $( '#ca-talk > a' )[ 0 ].href );
 					break;
 				case app.links.history:
 					var url = $( '#ca-history > a' )[ 0 ].href + '&safemode=1&limit=100';
-					app.$content.load( url + ' #pagehistory', loadcheck );
-					loadpopout( $( '#ca-history > a' )[ 0 ].href );
+					app.$content.load( url + ' #pagehistory', checkForErrors );
+					openPanel( $( '#ca-history > a' )[ 0 ].href );
 					break;
 				case app.links.articleLogs:
 					var url = app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:Log?wpfilters%5B%5D=patrol&safemode=1&limit=100&page=' );
-					app.$content.load( url + ' #mw-content-text ul', loadcheck );
-					loadpopout( app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:Log?wpfilters%5B%5D=patrol&page=' ) );
+					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
+					openPanel( app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:Log?wpfilters%5B%5D=patrol&page=' ) );
 					break;
 				case app.links.logs:
 					var url = '/w/index.php?title=Special:Log&wpfilters%5B%5D=patrol&page=' + mw.config.get( 'wgPageName' ) + '&safemode=1&limit=100';
-					app.$content.load( url + ' #mw-content-text ul', loadcheck );
-					loadpopout( '/w/index.php?title=Special:Log&wpfilters%5B%5D=patrol&page=' + mw.config.get( 'wgPageName' ) );
+					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
+					openPanel( '/w/index.php?title=Special:Log&wpfilters%5B%5D=patrol&page=' + mw.config.get( 'wgPageName' ) );
 					break;
 				case app.links.notice:
 					var url = app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=Template:Editnotices/Page/' );
 					console.log( url );
-					app.$content.load( url, loadcheck );
-					loadpopout( url.replace( 'action=render&', '' ) );
+					app.$content.load( url, checkForErrors );
+					openPanel( url.replace( 'action=render&', '' ) );
 					break;
 				case app.links.contribs:
 					var url = '/w/index.php?title=Special:Contributions/' + app.relevantUser + '&safemode=1&limit=100';
-					app.$content.load( url + ' #mw-content-text ul.mw-contributions-list', loadcheck );
-					loadpopout( '/w/index.php?title=Special:Contributions/' + app.relevantUser );
+					app.$content.load( url + ' #mw-content-text ul.mw-contributions-list', checkForErrors );
+					openPanel( '/w/index.php?title=Special:Contributions/' + app.relevantUser );
 					break;
 				case app.links.deleted:
 					var url = '/w/index.php?title=Special:DeletedContributions/' + app.relevantUser + '&safemode=1&limit=100';
-					app.$content.load( url + ' #mw-content-text > section', loadcheck );
-					loadpopout( '/w/index.php?title=Special:DeletedContributions/' + app.relevantUser );
+					app.$content.load( url + ' #mw-content-text > section', checkForErrors );
+					openPanel( '/w/index.php?title=Special:DeletedContributions/' + app.relevantUser );
 					break;
 				case app.links.actions:
 					var url = '/wiki/Special:Log/' + app.relevantUser;
-					app.$content.load( url + ' #mw-content-text ul', loadcheck );
-					loadpopout( '/wiki/Special:Log/' + app.relevantUser );
+					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
+					openPanel( '/wiki/Special:Log/' + app.relevantUser );
 					break;
 				case app.links.blocklog:
 					var url = '/w/index.php?title=Special:Log/block&page=' + app.relevantUser + '&safemode=1';
-					app.$content.load( url + ' #mw-content-text ul', loadcheck );
-					loadpopout( '/w/index.php?title=Special:Log/block&page=' + app.relevantUser );
+					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
+					openPanel( '/w/index.php?title=Special:Log/block&page=' + app.relevantUser );
 					break;
 				case app.links.filter:
 					var url = '/w/index.php?title=Special:AbuseLog&wpSearchTitle=' + mw.config.get( 'wgPageName' ) + '&safemode=1';
-					app.$content.load( url + ' #mw-content-text ul', loadcheck );
-					loadpopout( '/w/index.php?title=Special:AbuseLog&wpSearchTitle=' + mw.config.get( 'wgPageName' ) );
+					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
+					openPanel( '/w/index.php?title=Special:AbuseLog&wpSearchTitle=' + mw.config.get( 'wgPageName' ) );
 					break;
 				case app.links.articleFilter:
 					var url = app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:AbuseLog?safemode=1&wpSearchTitle=' );
-					app.$content.load( url + ' #mw-content-text ul', loadcheck );
-					loadpopout( app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:AbuseLog?wpSearchTitle=' ) );
+					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
+					openPanel( app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:AbuseLog?wpSearchTitle=' ) );
 					break;
 				case app.links.userFilter:
 					var url = '/w/index.php?title=Special:AbuseLog&wpSearchUser=' + app.relevantUser + '&safemode=1';
-					app.$content.load( url + ' #mw-content-text ul', loadcheck );
-					loadpopout( '/w/index.php?title=Special:AbuseLog&wpSearchUser=' + app.relevantUser );
+					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
+					openPanel( '/w/index.php?title=Special:AbuseLog&wpSearchUser=' + app.relevantUser );
 					break;
 				case app.links.rights:
 					var url = '/w/index.php?title=Special:UserRights&user=' + app.relevantUser + '&safemode=1';
-					app.$content.load( url + ' #mw-content-text > ul', loadcheck );
-					loadpopout( '/wiki/Special:UserRights/' + app.relevantUser );
+					app.$content.load( url + ' #mw-content-text > ul', checkForErrors );
+					openPanel( '/wiki/Special:UserRights/' + app.relevantUser );
 					break;
 				case app.links.culog:
 					var url = '/w/index.php?title=Special:CheckUserLog&cuSearchType=target&cuSearch=' + app.relevantUser;
-					app.$content.load( url + ' #mw-content-text > ul', loadcheck );
-					loadpopout( '/w/index.php?title=Special:CheckUserLog&cuSearchType=target&cuSearch=' + app.relevantUser );
+					app.$content.load( url + ' #mw-content-text > ul', checkForErrors );
+					openPanel( '/w/index.php?title=Special:CheckUserLog&cuSearchType=target&cuSearch=' + app.relevantUser );
 					break;
 				case app.links.nppflowchart:
 					var obj = $( '<object>', {
@@ -480,140 +492,142 @@
 					);
 					break;
 				case app.links.dsalerts:
-					loadpopout( '/wiki/Special:AbuseLog?wpSearchTitle=User_talk%3A' + app.relevantUser + '&wpSearchFilter=602' );
-					$.getJSON( '/w/api.php', {
-						action: 'query',
-						format: 'json',
-						list: 'abuselog',
-						afldir: 'older',
-						afltitle: 'User talk:' + app.relevantUser,
-						aflfilter: 602
-					} )
-						.done( ( data ) => {
-							app.$content.empty();
-							if ( data.query.abuselog.filter( ( item ) => ( item.revid ) ).length ) {
-								$.each( data.query.abuselog, ( i, item ) => {
-									if ( item.result == 'tag' && item.revid ) {
-										const $item = $( '<div>' ).appendTo( app.$content );
-										$.getJSON( '/w/api.php', {
-											action: 'compare',
-											format: 'json',
-											fromrev: item.revid,
-											torelative: 'prev',
-											prop: 'user|comment|diff'
-										} )
-											.done( ( comparedata ) => {
-												console.log( comparedata );
-												let ts = new Date( item.timestamp ).toUTCString();
-												ts = ts.substring( 5, ts.indexOf( 'GMT' ) - 1 );
-												const sum = ts + ' [[User:' + comparedata.compare.touser + '|' + comparedata.compare.touser + ']] ([[Special:Diff/' + item.revid + '|diff]])\n';
-
-												let diff = '';
-												$( comparedata.compare[ '*' ] ).find( 'td.diff-addedline > div' ).each( ( i, item ) => {
-													diff += $( item ).html() + '\n';
-												} );
-
-												diff = $( '<textarea/>' ).html( diff ).text();
-												diff = diff + "<div style='text-align:right'>" + sum + '</div>\n{{hr}}';
-												$.getJSON( '/w/api.php', { action: 'parse', format: 'json', contentmodel: 'wikitext', text: diff } )
-													.done( ( parsedata ) => {
-														$item.append( parsedata.parse.text[ '*' ] );
-														$item.find( '.mw-editsection' ).remove();
-														afterLoad();
-													} );
-											} );
-									}
-								} );
-							} else {
-								afterLoad();
-							}
-						} )
-						.fail( () => {
-							msgErr();
-						} );
+					openDsAlertPanel();
 					break;
 				case app.links.restrict:
-					//                            loadpopout('/w/index.php?search=User%3A' + app.relevantUser +
-					//                                '&prefix=Wikipedia%3AEditing+restrictions%2F&title=Special%3ASearch&profile=advanced&fulltext=1&advancedSearch-current=%7B%7D&ns4=1');
-					var $er = $( '<div>' ).appendTo( app.$content );
-					$.getJSON( '/w/api.php', {
-						action: 'query',
-						format: 'json',
-						list: 'search',
-						srsearch: 'User:' + app.relevantUser + ' prefix:Wikipedia:Editing restrictions/',
-						srnamespace: 4
-					} )
-						.done( ( data ) => {
-							app.$content.find( '#empty' ).remove();
-							if ( data.query.search.length ) {
-								$er.append( $( '<h2/>' )
-									.append( '<span/>', { class: 'mw-headline' } )
-									.text( 'Search results: Wikipedia:Editing restrictions' ) );
-								$.each( data.query.search, ( i, result ) => {
-									$er.append( $( '<p style="font-weight:bold"/>' )
-										.append( $( '<a/>', {
-											href: '/wiki/' + result.title.replace( / /g, '_' ) + '#:~:text=' + app.relevantUser,
-											title: result.title
-										} ).text( result.title ) ) );
-									$er.append( $( '<p class="snippet">' + result.snippet + '</p>' ) );
-									$er.append( $( '<hr/>' ) );
-								} );
-							} else {
-								$er.remove();
-							}
-							afterLoad();
-						} )
-						.fail( () => {
-							msgErr();
-						} );
-
-					//                            loadpopout('/w/index.php?search=User%3A' + app.relevantUser +
-					//                                '&prefix=Wikipedia%3AArbitration+enforcement+log%2F&title=Special%3ASearch&profile=advanced&fulltext=1&advancedSearch-current=%7B%7D&ns4=1');
-
-					var $ae = $( '<div>' ).appendTo( app.$content );
-					$.getJSON( '/w/api.php', {
-						action: 'query',
-						format: 'json',
-						list: 'search',
-						srsearch: 'User:' + app.relevantUser + ' prefix:Wikipedia:Arbitration enforcement log/',
-						srnamespace: 4
-					} )
-						.done( ( data ) => {
-							app.$content.find( '#empty' ).remove();
-							if ( data.query.search.length ) {
-								$ae.append( $( '<h2/>' )
-									.append( '<span/>', { class: 'mw-headline' } )
-									.text( 'Search results: Wikipedia:Arbitration enforcement log' ) );
-								$.each( data.query.search, ( i, result ) => {
-									$ae.append( $( '<p style="font-weight:bold"/>' )
-										.append( $( '<a/>', {
-											href: '/wiki/' + result.title.replace( / /g, '_' ) + '#:~:text=' + app.relevantUser,
-											title: result.title
-										} ).text( result.title ) ) );
-									$ae.append( $( '<p class="snippet">' + result.snippet + '</p>' ) );
-									$ae.append( $( '<hr/>' ) );
-								} );
-							} else {
-								$ae.remove();
-							}
-							afterLoad();
-						} )
-						.fail( () => {
-							msgErr();
-						} );
-
+					openEditingRestrictionsPanel();
 					break;
 			}
 
 			app.keyup = $( 'body' ).on( 'keyup', ( event ) => {
 				if ( event.which == 27 ) {
-					close( event );
+					closePanel( event );
 				}
 			} );
 		}
 	}
 
-	function close( e ) {
+	function openEditingRestrictionsPanel() {
+		var $er = $( '<div>' ).appendTo( app.$content );
+		$.getJSON( '/w/api.php', {
+			action: 'query',
+			format: 'json',
+			list: 'search',
+			srsearch: 'User:' + app.relevantUser + ' prefix:Wikipedia:Editing restrictions/',
+			srnamespace: 4
+		} )
+			.done( ( data ) => {
+				app.$content.find( '#empty' ).remove();
+				if ( data.query.search.length ) {
+					$er.append( $( '<h2/>' )
+						.append( '<span/>', { class: 'mw-headline' } )
+						.text( 'Search results: Wikipedia:Editing restrictions' ) );
+					$.each( data.query.search, ( i, result ) => {
+						$er.append( $( '<p style="font-weight:bold"/>' )
+							.append( $( '<a/>', {
+								href: '/wiki/' + result.title.replace( / /g, '_' ) + '#:~:text=' + app.relevantUser,
+								title: result.title
+							} ).text( result.title ) ) );
+						$er.append( $( '<p class="snippet">' + result.snippet + '</p>' ) );
+						$er.append( $( '<hr/>' ) );
+					} );
+				} else {
+					$er.remove();
+				}
+				doFinalPanelLoadingTasks();
+			} )
+			.fail( () => {
+				putErrorMessageInPanel();
+			} );
+
+		var $ae = $( '<div>' ).appendTo( app.$content );
+		$.getJSON( '/w/api.php', {
+			action: 'query',
+			format: 'json',
+			list: 'search',
+			srsearch: 'User:' + app.relevantUser + ' prefix:Wikipedia:Arbitration enforcement log/',
+			srnamespace: 4
+		} )
+			.done( ( data ) => {
+				app.$content.find( '#empty' ).remove();
+				if ( data.query.search.length ) {
+					$ae.append( $( '<h2/>' )
+						.append( '<span/>', { class: 'mw-headline' } )
+						.text( 'Search results: Wikipedia:Arbitration enforcement log' ) );
+					$.each( data.query.search, ( i, result ) => {
+						$ae.append( $( '<p style="font-weight:bold"/>' )
+							.append( $( '<a/>', {
+								href: '/wiki/' + result.title.replace( / /g, '_' ) + '#:~:text=' + app.relevantUser,
+								title: result.title
+							} ).text( result.title ) ) );
+						$ae.append( $( '<p class="snippet">' + result.snippet + '</p>' ) );
+						$ae.append( $( '<hr/>' ) );
+					} );
+				} else {
+					$ae.remove();
+				}
+				doFinalPanelLoadingTasks();
+			} )
+			.fail( () => {
+				putErrorMessageInPanel();
+			} );
+	}
+
+	function openDsAlertPanel() {
+		openPanel( '/wiki/Special:AbuseLog?wpSearchTitle=User_talk%3A' + app.relevantUser + '&wpSearchFilter=602' );
+		$.getJSON( '/w/api.php', {
+			action: 'query',
+			format: 'json',
+			list: 'abuselog',
+			afldir: 'older',
+			afltitle: 'User talk:' + app.relevantUser,
+			aflfilter: 602
+		} )
+			.done( ( data ) => {
+				app.$content.empty();
+				if ( data.query.abuselog.filter( ( item ) => ( item.revid ) ).length ) {
+					$.each( data.query.abuselog, ( i, item ) => {
+						if ( item.result == 'tag' && item.revid ) {
+							const $item = $( '<div>' ).appendTo( app.$content );
+							$.getJSON( '/w/api.php', {
+								action: 'compare',
+								format: 'json',
+								fromrev: item.revid,
+								torelative: 'prev',
+								prop: 'user|comment|diff'
+							} )
+								.done( ( comparedata ) => {
+									console.log( comparedata );
+									let ts = new Date( item.timestamp ).toUTCString();
+									ts = ts.substring( 5, ts.indexOf( 'GMT' ) - 1 );
+									const sum = ts + ' [[User:' + comparedata.compare.touser + '|' + comparedata.compare.touser + ']] ([[Special:Diff/' + item.revid + '|diff]])\n';
+
+									let diff = '';
+									$( comparedata.compare[ '*' ] ).find( 'td.diff-addedline > div' ).each( ( i, item ) => {
+										diff += $( item ).html() + '\n';
+									} );
+
+									diff = $( '<textarea/>' ).html( diff ).text();
+									diff = diff + "<div style='text-align:right'>" + sum + '</div>\n{{hr}}';
+									$.getJSON( '/w/api.php', { action: 'parse', format: 'json', contentmodel: 'wikitext', text: diff } )
+										.done( ( parsedata ) => {
+											$item.append( parsedata.parse.text[ '*' ] );
+											$item.find( '.mw-editsection' ).remove();
+											doFinalPanelLoadingTasks();
+										} );
+								} );
+						}
+					} );
+				} else {
+					doFinalPanelLoadingTasks();
+				}
+			} )
+			.fail( () => {
+				putErrorMessageInPanel();
+			} );
+	}
+
+	function closePanel( e ) {
 		if ( e ) {
 			e.preventDefault();
 		}
