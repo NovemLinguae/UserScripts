@@ -3,18 +3,17 @@
 /* eslint-disable no-var, no-irregular-whitespace, no-jquery/no-constructor-attributes, no-use-before-define, block-scoped-var, no-redeclare, no-jquery/no-done-fail, no-jquery/no-each-util, no-jquery/variable-pattern, unicorn/prefer-string-slice */
 
 ( function ( $, mw ) {
+	var app = {
+		links: {}
+	};
+
 	function execute() {
 		if ( mw.config.get( 'skin' ) !== 'vector' ) {
 			return;
 		}
 
 		loadCss();
-
-		var app = {
-			links: {}
-		};
-
-		init( app );
+		init();
 	}
 
 	function loadCss() {
@@ -157,7 +156,7 @@
 		` );
 	}
 
-	function init( app ) {
+	function init() {
 		function mk( caption, group ) {
 			const $link = $( '<a>', { href: '#' } ).text( caption );
 			if ( group ) {
@@ -166,7 +165,7 @@
 				$( '#superlinks-links' ).append( $link );
 			}
 			$link.on( 'click', ( e ) => {
-				click( app, e );
+				click( e );
 			} );
 			return $link[ 0 ];
 
@@ -290,7 +289,7 @@
 		app.$root.append( ']' );
 	}
 
-	function click( app, e ) {
+	function click( e ) {
 		function msg( text ) { // blank for loading icon
 			app.$content.empty();
 			const $div = $( '<div>', { id: 'empty' } );
@@ -347,9 +346,9 @@
 
 		e.preventDefault();
 		if ( app.active == e.target ) {
-			close( app, e );
+			close( e );
 		} else {
-			close( app, e );
+			close( e );
 			app.active = e.target;
 			$( app.active ).addClass( 'active' );
 
@@ -364,7 +363,7 @@
 					.append(
 						$( '<a>', { href: '#' } )
 							.text( 'close' )
-							.on( 'click', ( e ) => close( app, e ) )
+							.on( 'click', ( e ) => close( e ) )
 					)
 			);
 
@@ -608,13 +607,13 @@
 
 			app.keyup = $( 'body' ).on( 'keyup', ( event ) => {
 				if ( event.which == 27 ) {
-					close( app, event );
+					close( event );
 				}
 			} );
 		}
 	}
 
-	function close( app, e ) {
+	function close( e ) {
 		if ( e ) {
 			e.preventDefault();
 		}
