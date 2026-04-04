@@ -357,9 +357,9 @@
 	function handleClick( e ) {
 		e.preventDefault();
 		if ( app.active == e.target ) {
-			closePanel( e );
+			closeAllPanels( e );
 		} else {
-			closePanel( e );
+			closeAllPanels( e );
 			app.active = e.target;
 			$( app.active ).addClass( 'active' );
 
@@ -367,20 +367,23 @@
 
 			const el = $( e.target )[ 0 ];
 			const pos = el.offsetParent.offsetWidth - el.offsetLeft - ( el.offsetWidth / 2 );
-			app.sstemp = mw.util.addCSS( '#superlinks-window:before {right: ' + pos + 'px} #superlinks-window:after {right: ' + pos + 'px}' );
+			app.styleSheetFragment = mw.util.addCSS( '#superlinks-window:before {right: ' + pos + 'px} #superlinks-window:after {right: ' + pos + 'px}' );
 
+			// Draw the outline of the panel
 			app.$window.append(
 				$( '<span>', { id: 'superlinks-icons' } )
 					.append(
 						$( '<a>', { href: '#' } )
 							.text( 'close' )
-							.on( 'click', ( e ) => closePanel( e ) )
+							.on( 'click', ( e ) => closeAllPanels( e ) )
 					)
 			);
 
+			// Draw the inside of the panel, including a spinner
 			app.$content = $( '<div>', { id: 'superlinks-content' } ).appendTo( app.$window );
 			putMessageInPanel();
 
+			// Run the API query and put real content in the panel
 			switch ( e.target ) {
 				case app.links.userpage:
 					var url = '/w/index.php?action=render&title=User:' + app.relevantUser;
@@ -499,7 +502,7 @@
 
 			app.$keyup = $( 'body' ).on( 'keyup', ( event ) => {
 				if ( event.which == 27 ) {
-					closePanel( event );
+					closeAllPanels( event );
 				}
 			} );
 		}
@@ -624,14 +627,14 @@
 			} );
 	}
 
-	function closePanel( e ) {
+	function closeAllPanels( e ) {
 		if ( e ) {
 			e.preventDefault();
 		}
 		$( 'body' ).off( 'keyup', app.$keyup );
-		if ( app.sstemp ) {
-			$( app.sstemp.ownerNode ).remove();
-			app.sstemp = null;
+		if ( app.styleSheetFragment ) {
+			$( app.styleSheetFragment.ownerNode ).remove();
+			app.styleSheetFragment = null;
 		}
 		$( app.$window ).remove();
 		$( app.active ).removeClass( 'active' );
