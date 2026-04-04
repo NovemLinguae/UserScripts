@@ -1,6 +1,6 @@
 // Forked from https://en.wikipedia.org/w/index.php?title=User:Bradv/Scripts/Superlinks.js&oldid=1171577516, with thanks to the author of that user script, Bradv.
 
-/* eslint-disable no-var, no-irregular-whitespace, no-jquery/no-constructor-attributes, no-redeclare, no-jquery/no-done-fail, no-jquery/no-each-util, unicorn/prefer-string-slice */
+/* eslint-disable no-irregular-whitespace, no-jquery/no-constructor-attributes, no-jquery/no-done-fail, no-jquery/no-each-util */
 
 ( function ( $, mw ) {
 	const app = {
@@ -404,99 +404,100 @@
 			putMessageInPanel();
 
 			// Run the API query and put real content in the panel
+			let url, $obj;
 			switch ( e.target ) {
 				case app.links.userpage:
-					var url = '/w/index.php?action=render&title=User:' + app.relevantUser;
+					url = '/w/index.php?action=render&title=User:' + app.relevantUser;
 					app.$content.load( url, checkForErrors );
 					openPanel( '/wiki/User:' + app.relevantUser );
 					break;
 				case app.links.usertalk:
-					var url = '/w/index.php?action=render&title=User_talk:' + app.relevantUser;
+					url = '/w/index.php?action=render&title=User_talk:' + app.relevantUser;
 					app.$content.load( url, checkForErrors );
 					openPanel( '/wiki/User_talk:' + app.relevantUser );
 					break;
 				case app.links.article:
-					var url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=' );
+					url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=' );
 					app.$content.load( url, checkForErrors );
 					openPanel( app.$articleElement.find( 'a' )[ 0 ].href );
 					break;
 				case app.links.articleHistory:
-					var url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=history&safemode=1&limit=100&title=' );
+					url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=history&safemode=1&limit=100&title=' );
 					app.$content.load( url + ' #pagehistory', checkForErrors );
 					openPanel( app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=history&title=' ) );
 					break;
 				case app.links.talk:
-					var url = $( '#ca-talk > a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=' );
+					url = $( '#ca-talk > a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=' );
 					app.$content.load( url, checkForErrors );
 					openPanel( $( '#ca-talk > a' )[ 0 ].href );
 					break;
 				case app.links.history:
-					var url = $( '#ca-history > a' )[ 0 ].href + '&safemode=1&limit=100';
+					url = $( '#ca-history > a' )[ 0 ].href + '&safemode=1&limit=100';
 					app.$content.load( url + ' #pagehistory', checkForErrors );
 					openPanel( $( '#ca-history > a' )[ 0 ].href );
 					break;
 				case app.links.articleLogs:
-					var url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:Log?wpfilters%5B%5D=patrol&safemode=1&limit=100&page=' );
+					url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:Log?wpfilters%5B%5D=patrol&safemode=1&limit=100&page=' );
 					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
 					openPanel( app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:Log?wpfilters%5B%5D=patrol&page=' ) );
 					break;
 				case app.links.logs:
-					var url = '/w/index.php?title=Special:Log&wpfilters%5B%5D=patrol&page=' + mw.config.get( 'wgPageName' ) + '&safemode=1&limit=100';
+					url = '/w/index.php?title=Special:Log&wpfilters%5B%5D=patrol&page=' + mw.config.get( 'wgPageName' ) + '&safemode=1&limit=100';
 					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
 					openPanel( '/w/index.php?title=Special:Log&wpfilters%5B%5D=patrol&page=' + mw.config.get( 'wgPageName' ) );
 					break;
 				case app.links.notice:
-					var url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=Template:Editnotices/Page/' );
+					url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=Template:Editnotices/Page/' );
 					app.$content.load( url, checkForErrors );
 					openPanel( url.replace( 'action=render&', '' ) );
 					break;
 				case app.links.contribs:
-					var url = '/w/index.php?title=Special:Contributions/' + app.relevantUser + '&safemode=1&limit=100';
+					url = '/w/index.php?title=Special:Contributions/' + app.relevantUser + '&safemode=1&limit=100';
 					app.$content.load( url + ' #mw-content-text ul.mw-contributions-list', checkForErrors );
 					openPanel( '/w/index.php?title=Special:Contributions/' + app.relevantUser );
 					break;
 				case app.links.deleted:
-					var url = '/w/index.php?title=Special:DeletedContributions/' + app.relevantUser + '&safemode=1&limit=100';
+					url = '/w/index.php?title=Special:DeletedContributions/' + app.relevantUser + '&safemode=1&limit=100';
 					app.$content.load( url + ' #mw-content-text > section', checkForErrors );
 					openPanel( '/w/index.php?title=Special:DeletedContributions/' + app.relevantUser );
 					break;
 				case app.links.actions:
-					var url = '/wiki/Special:Log/' + app.relevantUser;
+					url = '/wiki/Special:Log/' + app.relevantUser;
 					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
 					openPanel( '/wiki/Special:Log/' + app.relevantUser );
 					break;
 				case app.links.blocklog:
-					var url = '/w/index.php?title=Special:Log/block&page=' + app.relevantUser + '&safemode=1';
+					url = '/w/index.php?title=Special:Log/block&page=' + app.relevantUser + '&safemode=1';
 					app.$content.load( url + ' #mw-log-deleterevision-submit ul', checkForErrors );
 					openPanel( '/w/index.php?title=Special:Log/block&page=' + app.relevantUser );
 					break;
 				case app.links.filter:
-					var url = '/w/index.php?title=Special:AbuseLog&wpSearchTitle=' + mw.config.get( 'wgPageName' ) + '&safemode=1';
+					url = '/w/index.php?title=Special:AbuseLog&wpSearchTitle=' + mw.config.get( 'wgPageName' ) + '&safemode=1';
 					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
 					openPanel( '/w/index.php?title=Special:AbuseLog&wpSearchTitle=' + mw.config.get( 'wgPageName' ) );
 					break;
 				case app.links.articleFilter:
-					var url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:AbuseLog?safemode=1&wpSearchTitle=' );
+					url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:AbuseLog?safemode=1&wpSearchTitle=' );
 					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
 					openPanel( app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:AbuseLog?wpSearchTitle=' ) );
 					break;
 				case app.links.userFilter:
-					var url = '/w/index.php?title=Special:AbuseLog&wpSearchUser=' + app.relevantUser + '&safemode=1';
+					url = '/w/index.php?title=Special:AbuseLog&wpSearchUser=' + app.relevantUser + '&safemode=1';
 					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
 					openPanel( '/w/index.php?title=Special:AbuseLog&wpSearchUser=' + app.relevantUser );
 					break;
 				case app.links.rights:
-					var url = '/w/index.php?title=Special:UserRights&user=' + app.relevantUser + '&safemode=1';
+					url = '/w/index.php?title=Special:UserRights&user=' + app.relevantUser + '&safemode=1';
 					app.$content.load( url + ' #mw-content-text > ul', checkForErrors );
 					openPanel( '/wiki/Special:UserRights/' + app.relevantUser );
 					break;
 				case app.links.culog:
-					var url = '/w/index.php?title=Special:CheckUserLog&cuSearchType=target&cuSearch=' + app.relevantUser;
+					url = '/w/index.php?title=Special:CheckUserLog&cuSearchType=target&cuSearch=' + app.relevantUser;
 					app.$content.load( url + ' #mw-content-text > ul', checkForErrors );
 					openPanel( '/w/index.php?title=Special:CheckUserLog&cuSearchType=target&cuSearch=' + app.relevantUser );
 					break;
 				case app.links.nppflowchart:
-					var $obj = $( '<object>', {
+					$obj = $( '<object>', {
 						id: 'nppsvg',
 						type: 'image/svg+xml',
 						style: 'width: 100%'
@@ -513,7 +514,7 @@
 					);
 					break;
 				case app.links.dsalerts:
-					openDsAlertPanel();
+					openCtopAlertPanel();
 					break;
 				case app.links.restrict:
 					openEditingRestrictionsPanel();
@@ -595,7 +596,7 @@
 			} );
 	}
 
-	function openDsAlertPanel() {
+	function openCtopAlertPanel() {
 		openPanel( '/wiki/Special:AbuseLog?wpSearchTitle=User_talk%3A' + app.relevantUser + '&wpSearchFilter=602' );
 		$.getJSON( '/w/api.php', {
 			action: 'query',
@@ -620,7 +621,7 @@
 							} )
 								.done( ( comparedata ) => {
 									let ts = new Date( item.timestamp ).toUTCString();
-									ts = ts.substring( 5, ts.indexOf( 'GMT' ) - 1 );
+									ts = ts.slice( 5, ts.indexOf( 'GMT' ) - 1 );
 									const sum = ts + ' [[User:' + comparedata.compare.touser + '|' + comparedata.compare.touser + ']] ([[Special:Diff/' + item.revid + '|diff]])\n';
 
 									let diff = '';
