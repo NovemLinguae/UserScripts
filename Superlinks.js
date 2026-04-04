@@ -476,7 +476,7 @@
 					break;
 				case app.links.blocklog:
 					var url = '/w/index.php?title=Special:Log/block&page=' + app.relevantUser + '&safemode=1';
-					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
+					app.$content.load( url + ' #mw-log-deleterevision-submit ul', checkForErrors );
 					openPanel( '/w/index.php?title=Special:Log/block&page=' + app.relevantUser );
 					break;
 				case app.links.filter:
@@ -530,7 +530,8 @@
 			}
 
 			app.$keyup = $( 'body' ).on( 'keyup', ( event ) => {
-				if ( event.which == 27 ) {
+				const escapeKey = 27;
+				if ( event.which == escapeKey ) {
 					closeAllPanels( event );
 				}
 			} );
