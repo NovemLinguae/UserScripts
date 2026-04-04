@@ -174,30 +174,6 @@
 		return $( '<span/>' ).appendTo( $( '#superlinks-links' ) );
 	}
 
-	function makeSpecialPageLinks() {
-		const cspn = mw.config.get( 'wgCanonicalSpecialPageName' );
-		app.links.userpage = makeLink( 'User' );
-		var usergrp = makeLinkGroup();
-		app.links.usertalk = makeLink( 'Talk', usergrp );
-		if ( cspn != 'Contributions' ) {
-			app.links.contribs = makeLink( 'Contribs', usergrp );
-		}
-		if ( mw.config.get( 'wgUserGroups' ).includes( 'sysop' ) && cspn != 'DeletedContributions' ) {
-			app.links.deleted = makeLink( 'Deleted', usergrp );
-		}
-		app.links.actions = makeLink( 'Actions', usergrp );
-		app.links.userFilter = makeLink( 'Filter', usergrp );
-		app.links.rights = makeLink( 'Rights', usergrp );
-		app.links.blocklog = makeLink( 'Blocks', usergrp );
-		if ( mw.config.get( 'wgWikiID' ) == 'enwiki' ) {
-			app.links.dsalerts = makeLink( 'CTOP Alerts', usergrp );
-			app.links.restrict = makeLink( 'Restrictions', usergrp );
-		}
-		if ( mw.config.get( 'wgUserGroups' ).includes( 'checkuser' ) ) {
-			app.links.culog = makeLink( 'checks', usergrp );
-		}
-	}
-
 	function makeArticleOrArticleHistoryLinks() {
 		if ( !app.$articleElement.hasClass( 'new' ) ) {
 			if ( app.$historyElement.hasClass( 'selected' ) ) { // on history page
@@ -241,6 +217,30 @@
 		}
 		app.links.logs = makeLink( 'Log', talkgrp );
 		app.links.filter = makeLink( 'Filter', talkgrp );
+	}
+
+	function makeSpecialPageLinks() {
+		const specialPageName = mw.config.get( 'wgCanonicalSpecialPageName' );
+		app.links.userpage = makeLink( 'User' );
+		var usergrp = makeLinkGroup();
+		app.links.usertalk = makeLink( 'Talk', usergrp );
+		if ( specialPageName != 'Contributions' ) {
+			app.links.contribs = makeLink( 'Contribs', usergrp );
+		}
+		if ( mw.config.get( 'wgUserGroups' ).includes( 'sysop' ) && specialPageName != 'DeletedContributions' ) {
+			app.links.deleted = makeLink( 'Deleted', usergrp );
+		}
+		app.links.actions = makeLink( 'Actions', usergrp );
+		app.links.userFilter = makeLink( 'Filter', usergrp );
+		app.links.rights = makeLink( 'Rights', usergrp );
+		app.links.blocklog = makeLink( 'Blocks', usergrp );
+		if ( mw.config.get( 'wgWikiID' ) == 'enwiki' ) {
+			app.links.dsalerts = makeLink( 'CTOP Alerts', usergrp );
+			app.links.restrict = makeLink( 'Restrictions', usergrp );
+		}
+		if ( mw.config.get( 'wgUserGroups' ).includes( 'checkuser' ) ) {
+			app.links.culog = makeLink( 'checks', usergrp );
+		}
 	}
 
 	function makeUserLinks() {
