@@ -8,10 +8,14 @@
 	};
 
 	function execute() {
-		const allowedSkins = [ 'vector', 'vector-2022' ];
+		// It shows up in modern, but in the top right (hard to see), and in the panel the text is hard to read. Color problems. Disabling in modern for now.
+		// It doesn't show up at all in minerva. No mw-indicators element perhaps?
+		// It shows up in CologneBlue. The panels are an inch too high. Going to leave it enabled though. It mostly works.
+		const allowedSkins = [ 'vector', 'vector-2022', 'monobook', 'timeless', 'cologneblue' ];
 		if ( !allowedSkins.includes( mw.config.get( 'skin' ) ) ) {
 			return;
 		}
+
 		loadCss();
 		placeHtmlAndClickListeners();
 	}
@@ -267,11 +271,7 @@
 	}
 
 	function placeHtmlAndClickListeners() {
-		app.$articleElement = $( '#p-associated-pages ul > li:first-child' );
-		if ( app.$articleElement.attr( 'id' ) === 'ca-homepage' ) {
-			// We don't want the homepage tab (placed there for some users by Extension:GrowthExperiments). Get the user tab instead.
-			app.$articleElement = $( '#ca-user' );
-		}
+		app.$articleElement = $( '#ca-user, [id^="ca-nstab-"]' ).first();
 		app.$talkElement = $( '#ca-talk' );
 		app.$historyElement = $( '#ca-history' );
 		app.relevantUser = mw.config.get( 'wgRelevantUserName' );
@@ -280,7 +280,7 @@
 		}
 
 		// don't run on special pages that aren't associated with a specific user
-		const isSpecialPage = app.$articleElement.attr( 'id' ) == 'ca-nstab-special';
+		const isSpecialPage = $( '[class^="mw-special-"]' ).length > 0;
 		if ( isSpecialPage && !app.relevantUser ) {
 			return;
 		}
