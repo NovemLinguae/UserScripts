@@ -3,7 +3,7 @@
 /* eslint-disable no-var, no-irregular-whitespace, no-jquery/no-constructor-attributes, no-redeclare, no-jquery/no-done-fail, no-jquery/no-each-util, unicorn/prefer-string-slice */
 
 ( function ( $, mw ) {
-	var app = {
+	const app = {
 		links: {}
 	};
 
@@ -244,14 +244,14 @@
 
 	function makeSpecialPageLinks() {
 		app.links.userpage = makeLink( 'User' );
-		var $usergrp = makeLinkGroup();
+		const $usergrp = makeLinkGroup();
 		app.links.usertalk = makeLink( 'Talk', $usergrp );
 		makeUserLinksFragment( $usergrp );
 
 	}
 
 	function makeUserLinks() {
-		var $usergrp = makeLinkGroup( 'User' );
+		const $usergrp = makeLinkGroup( 'User' );
 		makeUserLinksFragment( $usergrp );
 	}
 
@@ -530,7 +530,7 @@
 	}
 
 	function openEditingRestrictionsPanel() {
-		var $er = $( '<div>' ).appendTo( app.$content );
+		const $editingRestrictions = $( '<div>' ).appendTo( app.$content );
 		$.getJSON( '/w/api.php', {
 			action: 'query',
 			format: 'json',
@@ -541,20 +541,20 @@
 			.done( ( data ) => {
 				app.$content.find( '#empty' ).remove();
 				if ( data.query.search.length ) {
-					$er.append( $( '<h2/>' )
+					$editingRestrictions.append( $( '<h2/>' )
 						.append( '<span/>', { class: 'mw-headline' } )
 						.text( 'Search results: Wikipedia:Editing restrictions' ) );
 					$.each( data.query.search, ( i, result ) => {
-						$er.append( $( '<p style="font-weight:bold"/>' )
+						$editingRestrictions.append( $( '<p style="font-weight:bold"/>' )
 							.append( $( '<a/>', {
 								href: '/wiki/' + result.title.replace( / /g, '_' ) + '#:~:text=' + app.relevantUser,
 								title: result.title
 							} ).text( result.title ) ) );
-						$er.append( $( '<p class="snippet">' + result.snippet + '</p>' ) );
-						$er.append( $( '<hr/>' ) );
+						$editingRestrictions.append( $( '<p class="snippet">' + result.snippet + '</p>' ) );
+						$editingRestrictions.append( $( '<hr/>' ) );
 					} );
 				} else {
-					$er.remove();
+					$editingRestrictions.remove();
 				}
 				doFinalPanelLoadingTasks();
 			} )
@@ -562,7 +562,7 @@
 				putErrorMessageInPanel();
 			} );
 
-		var $ae = $( '<div>' ).appendTo( app.$content );
+		const $arbitrationEnforcement = $( '<div>' ).appendTo( app.$content );
 		$.getJSON( '/w/api.php', {
 			action: 'query',
 			format: 'json',
@@ -573,20 +573,20 @@
 			.done( ( data ) => {
 				app.$content.find( '#empty' ).remove();
 				if ( data.query.search.length ) {
-					$ae.append( $( '<h2/>' )
+					$arbitrationEnforcement.append( $( '<h2/>' )
 						.append( '<span/>', { class: 'mw-headline' } )
 						.text( 'Search results: Wikipedia:Arbitration enforcement log' ) );
 					$.each( data.query.search, ( i, result ) => {
-						$ae.append( $( '<p style="font-weight:bold"/>' )
+						$arbitrationEnforcement.append( $( '<p style="font-weight:bold"/>' )
 							.append( $( '<a/>', {
 								href: '/wiki/' + result.title.replace( / /g, '_' ) + '#:~:text=' + app.relevantUser,
 								title: result.title
 							} ).text( result.title ) ) );
-						$ae.append( $( '<p class="snippet">' + result.snippet + '</p>' ) );
-						$ae.append( $( '<hr/>' ) );
+						$arbitrationEnforcement.append( $( '<p class="snippet">' + result.snippet + '</p>' ) );
+						$arbitrationEnforcement.append( $( '<hr/>' ) );
 					} );
 				} else {
-					$ae.remove();
+					$arbitrationEnforcement.remove();
 				}
 				doFinalPanelLoadingTasks();
 			} )
