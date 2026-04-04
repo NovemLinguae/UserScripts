@@ -8,8 +8,8 @@
 	};
 
 	function execute() {
-		// Looks like this user script only works with skin Vector 2010
-		if ( mw.config.get( 'skin' ) !== 'vector' ) {
+		const allowedSkins = [ 'vector', 'vector-2022' ];
+		if ( !allowedSkins.includes( mw.config.get( 'skin' ) ) ) {
 			return;
 		}
 		loadCss();
@@ -18,6 +18,10 @@
 
 	function loadCss() {
 		mw.util.addCSS( `
+			.vector-body-before-content {
+				/* needed for vector-2022, since .vector-body-before-content is overflow: hidden */
+				overflow: visible;
+			}
 			#superlinks {
 				display:inline-block;
 				line-height: 24px;
