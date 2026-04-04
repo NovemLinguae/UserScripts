@@ -176,7 +176,7 @@
 
 	function makeSpecialPageLinks() {
 		const cspn = mw.config.get( 'wgCanonicalSpecialPageName' );
-		app.links.userpage = makeLink( 'User', usergrp );
+		app.links.userpage = makeLink( 'User' );
 		var usergrp = makeLinkGroup();
 		app.links.usertalk = makeLink( 'Talk', usergrp );
 		if ( cspn != 'Contributions' ) {
@@ -263,9 +263,6 @@
 	}
 
 	function placeHtmlAndClickListeners() {
-		app.$root = $( '<div>', { id: 'superlinks' } ).text( '[' ).append( $( '<span>', { id: 'superlinks-links' } ) );
-		app.$root.prependTo( $( 'div.mw-indicators' ) );
-
 		app.$articleElement = $( '#p-associated-pages ul > li:first-child' );
 		app.$talkElement = $( '#ca-talk' );
 		app.$historyElement = $( '#ca-history' );
@@ -274,8 +271,17 @@
 			app.relevantUser = mw.util.wikiUrlencode( app.relevantUser );
 		}
 
-		if ( app.$articleElement.attr( 'id' ) == 'ca-nstab-special' ) { // on special page, like contribs
-			if ( app.relevantUser ) {
+		// don't run on special pages that aren't associated with a specific user
+		const isSpecialPage = app.$articleElement.attr( 'id' ) == 'ca-nstab-special';
+		if ( isSpecialPage && !app.relevantUser ) {
+			return;
+		}
+
+		app.$root = $( '<div>', { id: 'superlinks' } ).text( '[' ).append( $( '<span>', { id: 'superlinks-links' } ) );
+		app.$root.prependTo( $( 'div.mw-indicators' ) );
+
+		if ( isSpecialPage ) { // on special page, like contribs
+			if ( app.relevantUser ) { // on a page associated with a specific user, such as Special:Contributions/TheirName
 				makeSpecialPageLinks();
 			}
 		} else {
