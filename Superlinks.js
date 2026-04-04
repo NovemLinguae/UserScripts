@@ -285,8 +285,8 @@
 			app.relevantUser = mw.util.wikiUrlencode( app.relevantUser );
 		}
 
-		// don't run on special pages that aren't associated with a specific user
-		const isSpecialPage = $( '[class^="mw-special-"], [class^="growthexperiments-homepage-"]' ).length > 0;
+		// Don't run on special pages that aren't associated with a specific user. So for example, don't run on Special:FakePage, Special:FlaggedRevs, or Special:Homepage (doesn't have a relevant user for some reason), Special:Contributions, or Special:DeletedContributions. But do run on Special:Contributions/TheirName (has a relevant user) and Special:DeleteContributions/TheirName.
+		const isSpecialPage = mw.config.get( 'wgCanonicalSpecialPageName' );
 		if ( isSpecialPage && !app.relevantUser ) {
 			return;
 		}
