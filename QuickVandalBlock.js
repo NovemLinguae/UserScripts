@@ -1,9 +1,15 @@
-// Copied content from https://en.wikipedia.org/wiki/User:Enterprisey/quick-vand-block.js. Please see that page's history for attribution.
+// Forked from https://en.wikipedia.org/wiki/User:Enterprisey/quick-vand-block.js, with thanks to the original creator, Enterprisey.
+
+// This is a script to help admins process [[WP:AIV]] requests quickly.
+
+// In diffs and filter logs, places ( indef ) links next to usernames, and ( 31h | indef ) links next to IPs. Clicking one of these will prompt you "are you sure you want to block X?", then will block them for that duration, and leave vandalism-related talk page notifications and edit summaries. Note that clicking "proxy" will skip leaving a talk page notification.
+
 /*
 Changes:
 * linted/refactored
 * added ? to end of question in popup
 * added proxy block
+* fixed the indef button to work with temporary accounts
 */
 
 // <nowiki>
@@ -17,17 +23,19 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 			let $linkAndListener;
 
 			if ( isIp ) {
-				$linkAndListener = $( '<a>' ).attr( 'href', '#' )
+				$linkAndListener = $( '<a>' )
+					.attr( 'href', '#' )
 					.text( '31h' )
 					.on( 'click', function () {
 						const username = $( this ).parent().get( 0 ).previousElementSibling.textContent;
 						const duration = '31 hours';
 						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
 						const templateName = 'uw-vblock';
-						const templateParams = {};
-						templateParams.anon = 'yes';
-						templateParams.time = '31 hours';
-						templateParams.sig = 'yes';
+						const templateParams = {
+							anon: 'yes',
+							time: '31 hours',
+							sig: 'yes'
+						};
 						const isMainspaceSpecialOrMedia = mw.config.get( 'wgNamespaceNumber' ) < 1;
 						if ( !isMainspaceSpecialOrMedia ) {
 							templateParams.page = mw.config.get( 'wgPageName' );
@@ -36,7 +44,8 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 					} );
 				$( element ).contents().last().before( ' | ', $linkAndListener );
 
-				$linkAndListener = $( '<a>' ).attr( 'href', '#' )
+				$linkAndListener = $( '<a>' )
+					.attr( 'href', '#' )
 					.text( 'proxy' )
 					.on( 'click', function () {
 						const username = $( this ).parent().get( 0 ).previousElementSibling.textContent;
@@ -53,16 +62,18 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 					} );
 				$( element ).contents().last().before( ' | ', $linkAndListener );
 			} else {
-				$linkAndListener = $( '<a>' ).attr( 'href', '#' )
+				$linkAndListener = $( '<a>' )
+					.attr( 'href', '#' )
 					.text( 'indef' )
 					.on( 'click', function () {
-						const username = $( this ).parent().get( 0 ).previousElementSibling.textContent;
+						const username = $( this ).parent().siblings( '.mw-userlink' ).find( 'bdi' ).text();
 						const duration = 'never';
 						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
 						const templateName = 'uw-vblock';
-						const templateParams = {};
-						templateParams.indef = 'yes';
-						templateParams.sig = 'yes';
+						const templateParams = {
+							indef: 'yes',
+							sig: 'yes'
+						};
 						const isMainspaceSpecialOrMedia = mw.config.get( 'wgNamespaceNumber' ) < 1;
 						if ( !isMainspaceSpecialOrMedia ) {
 							templateParams.page = mw.config.get( 'wgPageName' );
