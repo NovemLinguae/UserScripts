@@ -5,142 +5,142 @@
 	if ( mw.config.get( 'skin' ) == 'vector' ) {
 		var app = {
 			styleSheet: mw.util.addCSS( `
-                .mw-indicators {
-                    z-index: 1 !important;
-                }
-                #superlinks {
-                    display:inline-block; 
-                    line-height: 24px
-                }
-                #superlinks-links {
-                    font-size: 0.75em; 
-                    color:#555;
-                }
-                #superlinks-links label {
-                    padding: 0 0.2em;
-                }
-                #superlinks-links > span:before {
-                    content: '('
-                }
-                #superlinks-links > span:after {
-                    content: ') '
-                }
-                #superlinks-links > span > a {
-                    text-transform: lowercase; 
-                }
-                #superlinks-links a {
-                    padding: 0 0.2em; 
-                    color: #0645ad !important; 
-                    text-decoration: none !important; 
-                }
-                #superlinks-links a.active, 
-                #superlinks-links a:hover {
-                    border-bottom: 2px solid #a7d7f9
-                }
-                #superlinks-window {
-                    position: absolute; 
-                    top: 48px; 
-                    right: 5px; 
-                    border: 2px solid #a7d7f9; 
-                    width: 45vw; 
-                    height: 75vh; 
-                    box-shadow: 0px 0px 4px 2px #eee 
-                }
-                #superlinks-window:before {
-                    content: ''; 
-                    position: absolute; 
-                    top: -20px; 
-                    width: 0; 
-                    height: 0; 
-                    border: 10px solid transparent; 
-                    border-bottom-color: #a7d7f9; 
-                    margin-right: -16px
-                }
-                #superlinks-window:after {
-                    content: ''; 
-                    position: absolute; 
-                    top: -17px; 
-                    width: 0; 
-                    height: 0; 
-                    border: 10px solid transparent; 
-                    border-bottom-color: transparent; 
-                    margin-right: -16px;
-                }
-                #superlinks-icons {
-                    position:absolute; 
-                    left:-2px; 
-                    top:-14px; 
-                    font-size:10px; 
-                    line-height:10px; 
-                    background-color:#a7d7f9; 
-                    padding: 2px 8px; 
-                }
-                #superlinks-icons a:not(:first-child) {
-                    margin-left: 20px
-                }
-                #superlinks-icons img {
-                    height: 8px; 
-                    margin-top: -1px;
-                }
-                #superlinks-content {
-                    overflow: auto; 
-                    height: calc(100% - 10px); 
-                    width: calc(100% - 10px); 
-                    font-size: 90%; 
-                    padding:5px; 
-                    background-color: #f6fbfe;
-                }
-                #superlinks-content > ul#pagehistory > li > input {
-                    display: none
-                }
-                #superlinks-content > #empty {
-                    position:absolute; 
-                    top: 50%; 
-                    left: 50%; 
-                    transform: translate(-50%, -50%); 
-                    color: #a7d7f9; 
-                    font-size: 1.5em; 
-                    font-weight: bold; 
-                    text-align:center
-                }
-                #superlinks-content > #empty img {
-                    width: 30px; 
-                    height: 30px; 
-                    opacity:0.5;
-                }
-                #superlinks-content > #empty #empty-sub {
-                    font-size: 0.8em; 
-                    font-weight: normal; 
-                    padding-top: 1em;
-                }
-                #superlinks-content > #empty #empty-sub a {
-                    opacity: 0.5
-                }
-                #superlinks-content .mw-changeslist-separator:empty:before {
-                    content: '. .'
-                }
-                #superlinks-content .mw-changeslist-links {
-                    display: inline-block; 
-                    margin: 0; 
-                    padding: 0
-                }
-                #superlinks-content .mw-changeslist-links:before {
-                    content: '('
-                }
-                #superlinks-content .mw-changeslist-links:after {
-                    content: ')'
-                }
-                #superlinks-content .mw-changeslist-links > span:not(:first-child):before {
-                    content: ' | '
-                }
-                #superlinks-content .snippet {
-                    line-height: 1.5em; 
-                    margin-bottom: 1.5em
-                }
-                #superlinks-content .searchmatch {
-                    font-weight: bold
-                }
-            ` ),
+				.mw-indicators {
+					z-index: 1 !important;
+				}
+				#superlinks {
+					display:inline-block; 
+					line-height: 24px
+				}
+				#superlinks-links {
+					font-size: 0.75em; 
+					color:#555;
+				}
+				#superlinks-links label {
+					padding: 0 0.2em;
+				}
+				#superlinks-links > span:before {
+					content: '('
+				}
+				#superlinks-links > span:after {
+					content: ') '
+				}
+				#superlinks-links > span > a {
+					text-transform: lowercase; 
+				}
+				#superlinks-links a {
+					padding: 0 0.2em; 
+					color: #0645ad !important; 
+					text-decoration: none !important; 
+				}
+				#superlinks-links a.active, 
+				#superlinks-links a:hover {
+					border-bottom: 2px solid #a7d7f9
+				}
+				#superlinks-window {
+					position: absolute; 
+					top: 48px; 
+					right: 5px; 
+					border: 2px solid #a7d7f9; 
+					width: 45vw; 
+					height: 75vh; 
+					box-shadow: 0px 0px 4px 2px #eee 
+				}
+				#superlinks-window:before {
+					content: ''; 
+					position: absolute; 
+					top: -20px; 
+					width: 0; 
+					height: 0; 
+					border: 10px solid transparent; 
+					border-bottom-color: #a7d7f9; 
+					margin-right: -16px
+				}
+				#superlinks-window:after {
+					content: ''; 
+					position: absolute; 
+					top: -17px; 
+					width: 0; 
+					height: 0; 
+					border: 10px solid transparent; 
+					border-bottom-color: transparent; 
+					margin-right: -16px;
+				}
+				#superlinks-icons {
+					position:absolute; 
+					left:-2px; 
+					top:-14px; 
+					font-size:10px; 
+					line-height:10px; 
+					background-color:#a7d7f9; 
+					padding: 2px 8px; 
+				}
+				#superlinks-icons a:not(:first-child) {
+					margin-left: 20px
+				}
+				#superlinks-icons img {
+					height: 8px; 
+					margin-top: -1px;
+				}
+				#superlinks-content {
+					overflow: auto; 
+					height: calc(100% - 10px); 
+					width: calc(100% - 10px); 
+					font-size: 90%; 
+					padding:5px; 
+					background-color: #f6fbfe;
+				}
+				#superlinks-content > ul#pagehistory > li > input {
+					display: none
+				}
+				#superlinks-content > #empty {
+					position:absolute; 
+					top: 50%; 
+					left: 50%; 
+					transform: translate(-50%, -50%); 
+					color: #a7d7f9; 
+					font-size: 1.5em; 
+					font-weight: bold; 
+					text-align:center
+				}
+				#superlinks-content > #empty img {
+					width: 30px; 
+					height: 30px; 
+					opacity:0.5;
+				}
+				#superlinks-content > #empty #empty-sub {
+					font-size: 0.8em; 
+					font-weight: normal; 
+					padding-top: 1em;
+				}
+				#superlinks-content > #empty #empty-sub a {
+					opacity: 0.5
+				}
+				#superlinks-content .mw-changeslist-separator:empty:before {
+					content: '. .'
+				}
+				#superlinks-content .mw-changeslist-links {
+					display: inline-block; 
+					margin: 0; 
+					padding: 0
+				}
+				#superlinks-content .mw-changeslist-links:before {
+					content: '('
+				}
+				#superlinks-content .mw-changeslist-links:after {
+					content: ')'
+				}
+				#superlinks-content .mw-changeslist-links > span:not(:first-child):before {
+					content: ' | '
+				}
+				#superlinks-content .snippet {
+					line-height: 1.5em; 
+					margin-bottom: 1.5em
+				}
+				#superlinks-content .searchmatch {
+					font-weight: bold
+				}
+			` ),
 			links: {},
 			init: function () {
 				function mk( caption, group ) {
@@ -150,7 +150,7 @@
 					} else {
 						$( '#superlinks-links' ).append( $link );
 					}
-					$link.click( app.click );
+					$link.on( 'click', app.click );
 					return $link[ 0 ];
 
 				}
@@ -264,7 +264,7 @@
 						app.links.nppflowchart = mk( 'NPP Flowchart' );
 					}
 
-					if ( mw.config.get( 'wgWikiID' ) == 'enwiki' && mw.config.get( 'wgCategories' ).indexOf( 'Pending AfC submissions' ) > -1 ) {
+					if ( mw.config.get( 'wgWikiID' ) == 'enwiki' && mw.config.get( 'wgCategories' ).includes( 'Pending AfC submissions' ) ) {
 						app.links.afcflowchart = mk( 'AfC Flowchart' );
 					}
 				}
@@ -284,13 +284,13 @@
 				}
 				function msgErr() {
 					app.$content.empty().append( $( `
-                        <div id='empty'>
-                            The page does not exist or could not be loaded.
-                            <div id='empty-sub'>
-                                Report this error <a href='/wiki/User_talk:Bradv/Scripts/Superlinks' target='_blank'>here</a>.
-                            </div>
-                        </div>
-                    ` ) );
+						<div id='empty'>
+							The page does not exist or could not be loaded.
+							<div id='empty-sub'>
+								Report this error <a href='/wiki/User_talk:Bradv/Scripts/Superlinks' target='_blank'>here</a>.
+							</div>
+						</div>
+					` ) );
 				}
 				function afterLoad() {
 					if ( app.$content.children().length === 0 ) {
@@ -298,11 +298,11 @@
 					}
 					app.$content.find( 'a[href]' ).not( '[href^="#"]' ).attr( 'target', '_blank' );
 					/* app.$content.find("a[href]").filter('[href^="#"]').click(function(e) {
-                        e.preventDefault();
-                        href = $(this).attr('href');
-                        console.log(href);
-                        app.$content.scrollTop($($(this).attr('href')).position().top);
-                    }); */
+						e.preventDefault();
+						href = $(this).attr('href');
+						console.log(href);
+						app.$content.scrollTop($($(this).attr('href')).position().top);
+					}); */
 					app.$content.find( 'input' ).remove();
 					try {
 						app.$content.find( '.mw-collapsible' ).makeCollapsible();
@@ -345,7 +345,7 @@
 							.append(
 								$( '<a>', { href: '#' } )
 									.text( 'close' )
-									.click( app.close )
+									.on( 'click', app.close )
 							)
 					);
 
@@ -473,7 +473,7 @@
 							} )
 								.done( ( data ) => {
 									app.$content.empty();
-									if ( data.query.abuselog.filter( item => ( item.revid ) ).length ) {
+									if ( data.query.abuselog.filter( ( item ) => ( item.revid ) ).length ) {
 										$.each( data.query.abuselog, ( i, item ) => {
 											if ( item.result == 'tag' && item.revid ) {
 												const $item = $( '<div>' ).appendTo( app.$content );
