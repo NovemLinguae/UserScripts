@@ -264,7 +264,7 @@
 		app.$root = $( '<div>', { id: 'superlinks' } ).text( '[' ).append( $( '<span>', { id: 'superlinks-links' } ) );
 		app.$root.prependTo( $( 'div.mw-indicators' ) );
 
-		app.$articleElement = $( '#p-namespaces ul > li:first-child' );
+		app.$articleElement = $( '#p-associated-pages ul > li:first-child' );
 		app.$talkElement = $( '#ca-talk' );
 		app.$historyElement = $( '#ca-history' );
 		app.relevantUser = mw.config.get( 'wgRelevantUserName' );
