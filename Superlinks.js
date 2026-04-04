@@ -162,19 +162,34 @@
 		` );
 	}
 
-	function makeLink( caption, group ) {
-		const $link = $( '<a>', { href: '#' } ).text( caption );
-		if ( group ) {
-			group.append( $link );
+	function makeLink( caption, $group ) {
+		let htmlClass = 'superlinks-link-';
+		if ( $group ) {
+			htmlClass += $group.prev().text().toLowerCase().replace( /\s/g, '-' ) + '-';
+		}
+		htmlClass += caption.toLowerCase().replace( /\s/g, '-' );
+
+		const $link = $( '<a>', {
+			href: '#',
+			class: htmlClass
+		} ).text( caption );
+
+		if ( $group ) {
+			$group.append( $link );
 		} else {
 			$( '#superlinks-links' ).append( $link );
 		}
+
 		$link.on( 'click', ( e ) => {
 			handleClick( e );
 		} );
+
 		return $link[ 0 ];
 	}
 
+	/**
+	 * @return {jQuery}
+	 */
 	function makeLinkGroup( caption ) {
 		if ( caption ) {
 			$( '#superlinks-links' ).append( $( '<label/>' ).text( caption ) );
@@ -200,73 +215,73 @@
 	}
 
 	function makeTalkOrTalkHistoryLinks() {
-		let pagegrp, talkgrp;
+		let $pagegrp, $talkgrp;
 		if ( !app.$articleElement.hasClass( 'new' ) ) { // article exists
 			app.links.article = makeLink( app.$articleElement.find( 'a' ).text() );
-			pagegrp = makeLinkGroup();
-			app.links.articleHistory = makeLink( 'History', pagegrp );
+			$pagegrp = makeLinkGroup();
+			app.links.articleHistory = makeLink( 'History', $pagegrp );
 		} else {
-			pagegrp = makeLinkGroup( app.$articleElement.find( 'a' ).text() );
+			$pagegrp = makeLinkGroup( app.$articleElement.find( 'a' ).text() );
 		}
-		app.links.articleLogs = makeLink( 'Log', pagegrp );
-		app.links.articleFilter = makeLink( 'Filter', pagegrp );
-		app.links.notice = makeLink( 'Page Notice', pagegrp );
+		app.links.articleLogs = makeLink( 'Log', $pagegrp );
+		app.links.articleFilter = makeLink( 'Filter', $pagegrp );
+		app.links.notice = makeLink( 'Page Notice', $pagegrp );
 
 		if ( !app.$talkElement.hasClass( 'new' ) ) { // talk exists
 			if ( app.$historyElement.hasClass( 'selected' ) ) { // on history page
 				app.links.talk = makeLink( 'Talk' );
-				talkgrp = makeLinkGroup();
+				$talkgrp = makeLinkGroup();
 			} else {
-				talkgrp = makeLinkGroup( 'Talk' );
-				app.links.history = makeLink( 'History', talkgrp );
+				$talkgrp = makeLinkGroup( 'Talk' );
+				app.links.history = makeLink( 'History', $talkgrp );
 			}
 		} else {
-			talkgrp = makeLinkGroup( 'Talk' );
+			$talkgrp = makeLinkGroup( 'Talk' );
 		}
-		app.links.logs = makeLink( 'Log', talkgrp );
-		app.links.filter = makeLink( 'Filter', talkgrp );
+		app.links.logs = makeLink( 'Log', $talkgrp );
+		app.links.filter = makeLink( 'Filter', $talkgrp );
 	}
 
 	function makeSpecialPageLinks() {
 		const specialPageName = mw.config.get( 'wgCanonicalSpecialPageName' );
 		app.links.userpage = makeLink( 'User' );
-		var usergrp = makeLinkGroup();
-		app.links.usertalk = makeLink( 'Talk', usergrp );
+		var $usergrp = makeLinkGroup();
+		app.links.usertalk = makeLink( 'Talk', $usergrp );
 		if ( specialPageName != 'Contributions' ) {
-			app.links.contribs = makeLink( 'Contribs', usergrp );
+			app.links.contribs = makeLink( 'Contribs', $usergrp );
 		}
 		if ( mw.config.get( 'wgUserGroups' ).includes( 'sysop' ) && specialPageName != 'DeletedContributions' ) {
-			app.links.deleted = makeLink( 'Deleted', usergrp );
+			app.links.deleted = makeLink( 'Deleted', $usergrp );
 		}
-		app.links.actions = makeLink( 'Actions', usergrp );
-		app.links.userFilter = makeLink( 'Filter', usergrp );
-		app.links.rights = makeLink( 'Rights', usergrp );
-		app.links.blocklog = makeLink( 'Blocks', usergrp );
+		app.links.actions = makeLink( 'Actions', $usergrp );
+		app.links.userFilter = makeLink( 'Filter', $usergrp );
+		app.links.rights = makeLink( 'Rights', $usergrp );
+		app.links.blocklog = makeLink( 'Blocks', $usergrp );
 		if ( mw.config.get( 'wgWikiID' ) == 'enwiki' ) {
-			app.links.dsalerts = makeLink( 'CTOP Alerts', usergrp );
-			app.links.restrict = makeLink( 'Restrictions', usergrp );
+			app.links.dsalerts = makeLink( 'CTOP Alerts', $usergrp );
+			app.links.restrict = makeLink( 'Restrictions', $usergrp );
 		}
 		if ( mw.config.get( 'wgUserGroups' ).includes( 'checkuser' ) ) {
-			app.links.culog = makeLink( 'checks', usergrp );
+			app.links.culog = makeLink( 'checks', $usergrp );
 		}
 	}
 
 	function makeUserLinks() {
-		var usergrp = makeLinkGroup( 'User' );
-		app.links.contribs = makeLink( 'Contribs', usergrp );
+		var $usergrp = makeLinkGroup( 'User' );
+		app.links.contribs = makeLink( 'Contribs', $usergrp );
 		if ( mw.config.get( 'wgUserGroups' ).includes( 'sysop' ) ) {
-			app.links.deleted = makeLink( 'Deleted', usergrp );
+			app.links.deleted = makeLink( 'Deleted', $usergrp );
 		}
-		app.links.actions = makeLink( 'Actions', usergrp );
-		app.links.userFilter = makeLink( 'Filter', usergrp );
-		app.links.rights = makeLink( 'Rights', usergrp );
-		app.links.blocklog = makeLink( 'Blocks', usergrp );
+		app.links.actions = makeLink( 'Actions', $usergrp );
+		app.links.userFilter = makeLink( 'Filter', $usergrp );
+		app.links.rights = makeLink( 'Rights', $usergrp );
+		app.links.blocklog = makeLink( 'Blocks', $usergrp );
 		if ( mw.config.get( 'wgWikiID' ) == 'enwiki' ) {
-			app.links.dsalerts = makeLink( 'CTOP Alerts', usergrp );
-			app.links.restrict = makeLink( 'Restrictions', usergrp );
+			app.links.dsalerts = makeLink( 'CTOP Alerts', $usergrp );
+			app.links.restrict = makeLink( 'Restrictions', $usergrp );
 		}
 		if ( mw.config.get( 'wgUserGroups' ).includes( 'checkuser' ) ) {
-			app.links.culog = makeLink( 'checks', usergrp );
+			app.links.culog = makeLink( 'checks', $usergrp );
 		}
 	}
 
