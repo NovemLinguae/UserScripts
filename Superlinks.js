@@ -1,6 +1,6 @@
 // Forked from https://en.wikipedia.org/w/index.php?title=User:Bradv/Scripts/Superlinks.js&oldid=1171577516, with thanks to the author of that user script, Bradv.
 
-/* eslint-disable no-var, no-irregular-whitespace, no-jquery/no-constructor-attributes, no-use-before-define, no-redeclare, no-jquery/no-done-fail, no-jquery/no-each-util, unicorn/prefer-string-slice */
+/* eslint-disable no-var, no-irregular-whitespace, no-jquery/no-constructor-attributes, no-redeclare, no-jquery/no-done-fail, no-jquery/no-each-util, unicorn/prefer-string-slice */
 
 ( function ( $, mw ) {
 	var app = {
@@ -264,6 +264,10 @@
 
 	function placeHtmlAndClickListeners() {
 		app.$articleElement = $( '#p-associated-pages ul > li:first-child' );
+		if ( app.$articleElement.attr( 'id' ) === 'ca-homepage' ) {
+			// We don't want the homepage tab (placed there for some users by Extension:GrowthExperiments). Get the user tab instead.
+			app.$articleElement = $( '#ca-user' );
+		}
 		app.$talkElement = $( '#ca-talk' );
 		app.$historyElement = $( '#ca-history' );
 		app.relevantUser = mw.config.get( 'wgRelevantUserName' );
@@ -324,7 +328,7 @@
 			<div id='empty'>
 				The page does not exist or could not be loaded.
 				<div id='empty-sub'>
-					Report this error <a href='/wiki/User_talk:Novem_Linguae/Scripts/Superlinks.js' target='_blank'>here</a>.
+					If this is an error, you can report it <a href='/wiki/User_talk:Novem_Linguae/Scripts/Superlinks.js' target='_blank'>here</a>.
 				</div>
 			</div>
 		` ) );
