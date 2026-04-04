@@ -2,7 +2,7 @@
 
 // This is a script to help admins process [[WP:AIV]] requests quickly.
 
-// In diffs and filter logs, places ( indef ) links next to usernames, and ( 31h | indef ) links next to IPs. Clicking one of these will prompt you "are you sure you want to block X?", then will block them for that duration, and leave vandalism-related talk page notifications and edit summaries. Note that clicking "proxy" will skip leaving a talk page notification.
+// In diffs and filter logs, places ( indef ) links next to usernames, and ( 31h | proxy ) links next to IPs. Clicking one of these will prompt you "are you sure you want to block X?", then will block them for that duration, and leave vandalism-related talk page notifications and edit summaries. Note that clicking "proxy" will skip leaving a talk page notification.
 
 /*
 Changes:
