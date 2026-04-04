@@ -1,4 +1,4 @@
-/* eslint-disable no-var, no-irregular-whitespace, no-jquery/no-constructor-attributes, no-use-before-define, no-redeclare, no-jquery/no-done-fail, no-jquery/no-each-util, no-jquery/variable-pattern, unicorn/prefer-string-slice */
+/* eslint-disable no-var, no-irregular-whitespace, no-jquery/no-constructor-attributes, no-use-before-define, no-redeclare, no-jquery/no-done-fail, no-jquery/no-each-util, unicorn/prefer-string-slice */
 
 ( function ( $, mw ) {
 	var app = {
@@ -199,17 +199,17 @@
 	}
 
 	function makeArticleOrArticleHistoryLinks() {
-		if ( !app.articleElement.hasClass( 'new' ) ) {
-			if ( app.historyElement.hasClass( 'selected' ) ) { // on history page
-				app.links.article = makeLink( app.articleElement.find( 'a' ).text() );
+		if ( !app.$articleElement.hasClass( 'new' ) ) {
+			if ( app.$historyElement.hasClass( 'selected' ) ) { // on history page
+				app.links.article = makeLink( app.$articleElement.find( 'a' ).text() );
 			}
-			if ( app.historyElement.length && ( !app.historyElement.hasClass( 'selected' ) ) ) { // not on history page (but it exists)
+			if ( app.$historyElement.length && ( !app.$historyElement.hasClass( 'selected' ) ) ) { // not on history page (but it exists)
 				app.links.history = makeLink( 'History' );
 			}
 		}
 		app.links.logs = makeLink( 'Log' );
 		app.links.filter = makeLink( 'Filter' );
-		if ( !app.talkElement.hasClass( 'new' ) ) { // talk exists
+		if ( !app.$talkElement.hasClass( 'new' ) ) { // talk exists
 			app.links.talk = makeLink( 'Talk' );
 		}
 		app.links.notice = makeLink( 'Page Notice' );
@@ -217,19 +217,19 @@
 
 	function makeTalkOrTalkHistoryLinks() {
 		let pagegrp, talkgrp;
-		if ( !app.articleElement.hasClass( 'new' ) ) { // article exists
-			app.links.article = makeLink( app.articleElement.find( 'a' ).text() );
+		if ( !app.$articleElement.hasClass( 'new' ) ) { // article exists
+			app.links.article = makeLink( app.$articleElement.find( 'a' ).text() );
 			pagegrp = makeLinkGroup();
 			app.links.articleHistory = makeLink( 'History', pagegrp );
 		} else {
-			pagegrp = makeLinkGroup( app.articleElement.find( 'a' ).text() );
+			pagegrp = makeLinkGroup( app.$articleElement.find( 'a' ).text() );
 		}
 		app.links.articleLogs = makeLink( 'Log', pagegrp );
 		app.links.articleFilter = makeLink( 'Filter', pagegrp );
 		app.links.notice = makeLink( 'Page Notice', pagegrp );
 
-		if ( !app.talkElement.hasClass( 'new' ) ) { // talk exists
-			if ( app.historyElement.hasClass( 'selected' ) ) { // on history page
+		if ( !app.$talkElement.hasClass( 'new' ) ) { // talk exists
+			if ( app.$historyElement.hasClass( 'selected' ) ) { // on history page
 				app.links.talk = makeLink( 'Talk' );
 				talkgrp = makeLinkGroup();
 			} else {
@@ -266,20 +266,20 @@
 		app.$root = $( '<div>', { id: 'superlinks' } ).text( '[' ).append( $( '<span>', { id: 'superlinks-links' } ) );
 		app.$root.prependTo( $( 'div.mw-indicators' ) );
 
-		app.articleElement = $( '#p-namespaces ul > li:first-child' );
-		app.talkElement = $( '#ca-talk' );
-		app.historyElement = $( '#ca-history' );
+		app.$articleElement = $( '#p-namespaces ul > li:first-child' );
+		app.$talkElement = $( '#ca-talk' );
+		app.$historyElement = $( '#ca-history' );
 		app.relevantUser = mw.config.get( 'wgRelevantUserName' );
 		if ( app.relevantUser ) {
 			app.relevantUser = mw.util.wikiUrlencode( app.relevantUser );
 		}
 
-		if ( app.articleElement.attr( 'id' ) == 'ca-nstab-special' ) { // on special page, like contribs
+		if ( app.$articleElement.attr( 'id' ) == 'ca-nstab-special' ) { // on special page, like contribs
 			if ( app.relevantUser ) {
 				makeSpecialPageLinks();
 			}
 		} else {
-			if ( app.articleElement.hasClass( 'selected' ) ) { // on article or article history
+			if ( app.$articleElement.hasClass( 'selected' ) ) { // on article or article history
 				makeArticleOrArticleHistoryLinks();
 			} else { // on talk or talk history
 				makeTalkOrTalkHistoryLinks();
@@ -289,7 +289,6 @@
 				makeUserLinks();
 			}
 
-			console.log( mw.loader.getState( 'ext.pageTriage.util' ) );
 			const ns = mw.config.get( 'wgNamespaceNumber' );
 			if ( mw.config.get( 'wgWikiID' ) == 'enwiki' && ns == 0 && mw.loader.getState( 'ext.pageTriage.util' ) != 'registered' ) {
 				app.links.nppflowchart = makeLink( 'NPP Flowchart' );
@@ -364,13 +363,13 @@
 			app.active = e.target;
 			$( app.active ).addClass( 'active' );
 
-			app.$wnd = $( '<div>', { id: 'superlinks-window' } ).appendTo( app.$root );
+			app.$window = $( '<div>', { id: 'superlinks-window' } ).appendTo( app.$root );
 
 			const el = $( e.target )[ 0 ];
 			const pos = el.offsetParent.offsetWidth - el.offsetLeft - ( el.offsetWidth / 2 );
 			app.sstemp = mw.util.addCSS( '#superlinks-window:before {right: ' + pos + 'px} #superlinks-window:after {right: ' + pos + 'px}' );
 
-			app.$wnd.append(
+			app.$window.append(
 				$( '<span>', { id: 'superlinks-icons' } )
 					.append(
 						$( '<a>', { href: '#' } )
@@ -379,7 +378,7 @@
 					)
 			);
 
-			app.$content = $( '<div>', { id: 'superlinks-content' } ).appendTo( app.$wnd );
+			app.$content = $( '<div>', { id: 'superlinks-content' } ).appendTo( app.$window );
 			putMessageInPanel();
 
 			switch ( e.target ) {
@@ -394,14 +393,14 @@
 					openPanel( '/wiki/User_talk:' + app.relevantUser );
 					break;
 				case app.links.article:
-					var url = app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=' );
+					var url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=' );
 					app.$content.load( url, checkForErrors );
-					openPanel( app.articleElement.find( 'a' )[ 0 ].href );
+					openPanel( app.$articleElement.find( 'a' )[ 0 ].href );
 					break;
 				case app.links.articleHistory:
-					var url = app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=history&safemode=1&limit=100&title=' );
+					var url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=history&safemode=1&limit=100&title=' );
 					app.$content.load( url + ' #pagehistory', checkForErrors );
-					openPanel( app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=history&title=' ) );
+					openPanel( app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=history&title=' ) );
 					break;
 				case app.links.talk:
 					var url = $( '#ca-talk > a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=' );
@@ -414,9 +413,9 @@
 					openPanel( $( '#ca-history > a' )[ 0 ].href );
 					break;
 				case app.links.articleLogs:
-					var url = app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:Log?wpfilters%5B%5D=patrol&safemode=1&limit=100&page=' );
+					var url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:Log?wpfilters%5B%5D=patrol&safemode=1&limit=100&page=' );
 					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
-					openPanel( app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:Log?wpfilters%5B%5D=patrol&page=' ) );
+					openPanel( app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:Log?wpfilters%5B%5D=patrol&page=' ) );
 					break;
 				case app.links.logs:
 					var url = '/w/index.php?title=Special:Log&wpfilters%5B%5D=patrol&page=' + mw.config.get( 'wgPageName' ) + '&safemode=1&limit=100';
@@ -424,8 +423,7 @@
 					openPanel( '/w/index.php?title=Special:Log&wpfilters%5B%5D=patrol&page=' + mw.config.get( 'wgPageName' ) );
 					break;
 				case app.links.notice:
-					var url = app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=Template:Editnotices/Page/' );
-					console.log( url );
+					var url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/w/index.php?action=render&title=Template:Editnotices/Page/' );
 					app.$content.load( url, checkForErrors );
 					openPanel( url.replace( 'action=render&', '' ) );
 					break;
@@ -455,9 +453,9 @@
 					openPanel( '/w/index.php?title=Special:AbuseLog&wpSearchTitle=' + mw.config.get( 'wgPageName' ) );
 					break;
 				case app.links.articleFilter:
-					var url = app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:AbuseLog?safemode=1&wpSearchTitle=' );
+					var url = app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:AbuseLog?safemode=1&wpSearchTitle=' );
 					app.$content.load( url + ' #mw-content-text ul', checkForErrors );
-					openPanel( app.articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:AbuseLog?wpSearchTitle=' ) );
+					openPanel( app.$articleElement.find( 'a' )[ 0 ].href.replace( '/wiki/', '/wiki/Special:AbuseLog?wpSearchTitle=' ) );
 					break;
 				case app.links.userFilter:
 					var url = '/w/index.php?title=Special:AbuseLog&wpSearchUser=' + app.relevantUser + '&safemode=1';
@@ -475,13 +473,13 @@
 					openPanel( '/w/index.php?title=Special:CheckUserLog&cuSearchType=target&cuSearch=' + app.relevantUser );
 					break;
 				case app.links.nppflowchart:
-					var obj = $( '<object>', {
+					var $obj = $( '<object>', {
 						id: 'nppsvg',
 						type: 'image/svg+xml',
 						style: 'width: 100%'
 					} );
-					app.$content.empty().append( obj );
-					obj.attr( 'data', 'https://upload.wikimedia.org/wikipedia/commons/f/f4/NPP_flowchart.svg' );
+					app.$content.empty().append( $obj );
+					$obj.attr( 'data', 'https://upload.wikimedia.org/wikipedia/commons/f/f4/NPP_flowchart.svg' );
 					break;
 				case app.links.afcflowchart:
 					app.$content.empty().append(
@@ -499,7 +497,7 @@
 					break;
 			}
 
-			app.keyup = $( 'body' ).on( 'keyup', ( event ) => {
+			app.$keyup = $( 'body' ).on( 'keyup', ( event ) => {
 				if ( event.which == 27 ) {
 					closePanel( event );
 				}
@@ -597,7 +595,6 @@
 								prop: 'user|comment|diff'
 							} )
 								.done( ( comparedata ) => {
-									console.log( comparedata );
 									let ts = new Date( item.timestamp ).toUTCString();
 									ts = ts.substring( 5, ts.indexOf( 'GMT' ) - 1 );
 									const sum = ts + ' [[User:' + comparedata.compare.touser + '|' + comparedata.compare.touser + ']] ([[Special:Diff/' + item.revid + '|diff]])\n';
@@ -631,12 +628,12 @@
 		if ( e ) {
 			e.preventDefault();
 		}
-		$( 'body' ).off( 'keyup', app.keyup );
+		$( 'body' ).off( 'keyup', app.$keyup );
 		if ( app.sstemp ) {
 			$( app.sstemp.ownerNode ).remove();
 			app.sstemp = null;
 		}
-		$( app.$wnd ).remove();
+		$( app.$window ).remove();
 		$( app.active ).removeClass( 'active' );
 		app.active = null;
 	}
