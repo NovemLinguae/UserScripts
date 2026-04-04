@@ -190,7 +190,7 @@
 		app.links.rights = makeLink( 'Rights', usergrp );
 		app.links.blocklog = makeLink( 'Blocks', usergrp );
 		if ( mw.config.get( 'wgWikiID' ) == 'enwiki' ) {
-			app.links.dsalerts = makeLink( 'DS Alerts', usergrp );
+			app.links.dsalerts = makeLink( 'CTOP Alerts', usergrp );
 			app.links.restrict = makeLink( 'Restrictions', usergrp );
 		}
 		if ( mw.config.get( 'wgUserGroups' ).includes( 'checkuser' ) ) {
@@ -254,7 +254,7 @@
 		app.links.rights = makeLink( 'Rights', usergrp );
 		app.links.blocklog = makeLink( 'Blocks', usergrp );
 		if ( mw.config.get( 'wgWikiID' ) == 'enwiki' ) {
-			app.links.dsalerts = makeLink( 'DS Alerts', usergrp );
+			app.links.dsalerts = makeLink( 'CTOP Alerts', usergrp );
 			app.links.restrict = makeLink( 'Restrictions', usergrp );
 		}
 		if ( mw.config.get( 'wgUserGroups' ).includes( 'checkuser' ) ) {
