@@ -295,7 +295,7 @@
 		}
 
 		// don't run on special pages that aren't associated with a specific user
-		const isSpecialPage = $( '[class^="mw-special-"]' ).length > 0;
+		const isSpecialPage = $( '[class^="mw-special-"], [class^="growthexperiments-homepage-"]' ).length > 0;
 		if ( isSpecialPage && !app.relevantUser ) {
 			return;
 		}
