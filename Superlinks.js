@@ -1,5 +1,13 @@
 // Forked from https://en.wikipedia.org/w/index.php?title=User:Bradv/Scripts/Superlinks.js&oldid=1171577516, with thanks to the author of that user script, Bradv.
 
+/*
+Changes:
+- added support for most skins, not just Vector 2010
+- fixed a bug that was breaking article superlinks (talk and user were working OK)
+- ran eslint-config-wikimedia linter on the code
+- refactored the code to use function keyword, to be flatter (no nested functions), to split apart big functions into multiple smaller functions, and to change short function/variable names to be more descriptive
+*/
+
 /* eslint-disable no-irregular-whitespace, no-jquery/no-constructor-attributes, no-jquery/no-done-fail, no-jquery/no-each-util */
 
 ( function ( $, mw ) {
