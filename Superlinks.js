@@ -671,5 +671,9 @@ Changes:
 		app.active = null;
 	}
 
-	execute();
+	$( () => {
+		mw.loader.using( [ 'mediawiki.util' ], () => {
+			execute();
+		} );
+	} );
 }( jQuery, mediaWiki ) );
