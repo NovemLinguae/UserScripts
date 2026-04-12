@@ -131,6 +131,7 @@ export class UserHighlighterSimple {
 			return false;
 		}
 
+		url = this.addHttpsIfMissing( url );
 		url = this.addDomainIfMissing( url );
 
 		let urlHelper;
@@ -203,6 +204,19 @@ export class UserHighlighterSimple {
 		return url.startsWith( 'http://', 0 ) ||
 			url.startsWith( 'https://', 0 ) ||
 			url.startsWith( '/', 0 );
+	}
+
+	/**
+	 * URL( url ) expects a complete URL. If we get something like //en.wikipedia.org/wiki/User:Test, convert it to https://en.wikipedia.org/wiki/User:Test.
+	 *
+	 * @param {string} url
+	 * @return {string} url
+	 */
+	addHttpsIfMissing( url ) {
+		if ( url.startsWith( '//' ) ) {
+			url = this.window.location.protocol + url;
+		}
+		return url;
 	}
 
 	/**
