@@ -7,7 +7,8 @@
 class VisualEditorEverywhere {
 	execute() {
 		this.articleName = mw.config.get( 'wgPageName' );
-		this.articleName = encodeURIComponent( this.articleName ); // fix bug involving & not getting converted to &amp;
+		// fix bug involving & not getting converted to &amp;
+		this.articleName = encodeURIComponent( this.articleName );
 		const pageIsUserScript = this.articleName.match( /(?:\.js|\.css)$/ );
 
 		const veTabIsPresent = $( '#ca-ve-edit' ).length;

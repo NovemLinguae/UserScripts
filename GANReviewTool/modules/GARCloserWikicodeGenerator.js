@@ -51,7 +51,7 @@ __TOC__`;
 		let textToAppend = '\n* ';
 
 		if ( error ) {
-			textToAppend += `<span style="color: red; font-weight: bold;">ERROR:</span> ${ error }. `;
+			textToAppend += `<span style="color: red; font-weight: bold;">ERROR:</span> <code><nowiki>${ error }</nowiki></code>. `;
 		}
 
 		const keepOrDelistPastTense = this.getKeepOrDelistPastTense( keepOrDelist );

@@ -1119,7 +1119,7 @@ describe( 'getLogMessageToAppend(username, passOrFail, reviewTitle, reviewRevisi
 		const talkRevisionID = undefined;
 		const gaRevisionID = undefined;
 		const error = 'ReferenceError: getPassWikicodeForGANPage is not defined';
-		const output = '\n* <span style="color: red; font-weight: bold;">ERROR:</span> ReferenceError: getPassWikicodeForGANPage is not defined. [[User:Novem Linguae|Novem Linguae]] passed [[Talk:Thomas Carlyle (Millais)/GA1]] at ~~~~~. ';
+		const output = '\n* <span style="color: red; font-weight: bold;">ERROR:</span> <code><nowiki>ReferenceError: getPassWikicodeForGANPage is not defined</nowiki></code>. [[User:Novem Linguae|Novem Linguae]] passed [[Talk:Thomas Carlyle (Millais)/GA1]] at ~~~~~. ';
 		expect( wg.getLogMessageToAppend( username, passOrFail, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error ) ).toBe( output );
 	} );
 
