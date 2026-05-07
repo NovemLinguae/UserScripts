@@ -126,7 +126,8 @@ export class GANReviewWikicodeGenerator {
 	getLogMessageToAppend( username, action, reviewTitle, reviewRevisionID, talkRevisionID, gaRevisionID, error ) {
 		let textToAppend = '\n* ';
 		if ( error ) {
-			textToAppend += `<span style="color: red; font-weight: bold;">ERROR:</span> <code><nowiki>${ error }</nowiki></code>. `;
+			// eslint-disable-next-line no-useless-concat
+			textToAppend += '<span style="color: red; font-weight: bold;">ERROR:</span> <code><no' + `wiki>${ error }</no` + 'wiki></code>. ';
 		}
 
 		let verb = '';
