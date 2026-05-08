@@ -51,8 +51,7 @@ __TOC__`;
 		let textToAppend = '\n* ';
 
 		if ( error ) {
-			// eslint-disable-next-line no-useless-concat
-			textToAppend += '<span style="color: red; font-weight: bold;">ERROR:</span> <code><no' + `wiki>${ error }</no` + 'wiki></code>. ';
+			textToAppend += `<span style="color: red; font-weight: bold;">ERROR:</span> <syntaxhighlight inline>${ error }</syntaxhighlight>. `;
 		}
 
 		const keepOrDelistPastTense = this.getKeepOrDelistPastTense( keepOrDelist );

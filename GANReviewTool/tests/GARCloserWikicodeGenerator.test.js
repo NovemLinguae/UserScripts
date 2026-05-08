@@ -395,7 +395,7 @@ describe( 'makeScriptLogEntryToAppend(username, keepOrDelist, reviewTitle, talkR
 		const garArchiveTemplateRevisionID = undefined;
 		const categoryRevisionID = undefined;
 		const error = 'ReferenceError: getPassWikicodeForGANPage is not defined';
-		const output = '\n* <span style="color: red; font-weight: bold;">ERROR:</span> <code><nowiki>ReferenceError: getPassWikicodeForGANPage is not defined</nowiki></code>. [[User:Novem Linguae|Novem Linguae]] delisted [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]][[Special:Diff/101112|[Log]]]';
+		const output = '\n* <span style="color: red; font-weight: bold;">ERROR:</span> <syntaxhighlight inline>ReferenceError: getPassWikicodeForGANPage is not defined</syntaxhighlight>. [[User:Novem Linguae|Novem Linguae]] delisted [[Wikipedia:Good article reassessment/WIN Television/1]] at ~~~~~. [[Special:Diff/987|[Atop]]][[Special:Diff/123|[Talk]]][[Special:Diff/456|[Article]]][[Special:Diff/789|[List]]][[Special:Diff/101112|[Log]]]';
 		expect( wg.makeScriptLogEntryToAppend( username, keepOrDelist, reviewTitle, garRevisionID, talkRevisionID, articleRevisionID, gaListRevisionID, garLogRevisionID, garArchiveTemplateRevisionID, error, categoryRevisionID ) ).toBe( output );
 	} );
 } );
