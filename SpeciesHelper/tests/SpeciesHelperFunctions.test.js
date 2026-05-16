@@ -110,6 +110,7 @@ describe( 'getPagesToCheck(taxa, listOfNonLatinSpeciesCategories)', () => {
 
 describe( 'taxaStringToArray(taxa)', () => {
 	test( 'Handles underscore in "unranked_classis"', () => {
+		// {{#invoke:Autotaxobox|listAll|Macratria}}
 		const taxa = 'Macratria-genus, Macratriinae-subfamilia, Anthicidae-familia, Tenebrionoidea-superfamilia, Cucujiformia-infraordo, Polyphaga-subordo, Coleoptera-ordo, Coleopterida-cladus, Neuropteroidea-cladus, Aparaglossata-clade, Holometabola-clade, Eumetabola-clade, Neoptera-infraclassis, Pterygota-subclassis, Dicondylia-unranked, Insecta-classis, Hexapoda-subphylum, Allotriocarida-clade, Pancrustacea-clade, Mandibulata-clade, Deuteropoda-unranked_classis, Arthropoda-phylum, Panarthropoda-clade, Ecdysozoa-superphylum, Protostomia-clade, Nephrozoa-clade, Bilateria-clade, ParaHoxozoa-cladus, Eumetazoa-subregnum, Animalia-regnum, Choanozoa-cladus, Filozoa-clade, Holozoa-clade, Opisthokonta-clade, Obazoa-cladus, Amorphea-cladus, Podiata-clade, Eukaryota-domain, Life-';
 		const output = [
 			'Macratria',
@@ -152,6 +153,48 @@ describe( 'taxaStringToArray(taxa)', () => {
 			'Eukaryota'
 		];
 		expect( f.taxaStringToArray( taxa ) ).toStrictEqual( output );
+	} );
+
+	test( 'Removes "/Plantae"', () => {
+		// {{#invoke:Autotaxobox|listAll|Cycas}}
+		const taxa = 'Cycas-genus, Cycadaceae-familia, Cycadineae-subordo, Cycadales-ordo, Cycadopsida-classis, Cycadophyta-divisio, Gymnosperms-cladus, Spermatophytes/Plantae-clade, Tracheophytes/Plantae-clade, Polysporangiophytes/Plantae-clade, Embryophytes/Plantae-clade, Plantae-regnum, Archaeplastida-clade, CAM-clade, Diaphoretickes-cladus, Eukaryota-domain, Life-';
+		const output = [
+			'Cycas',
+			'Cycadaceae',
+			'Cycadineae',
+			'Cycadales',
+			'Cycadopsida',
+			'Cycadophyta',
+			'Gymnosperms',
+			'Spermatophytes',
+			'Tracheophytes',
+			'Polysporangiophytes',
+			'Embryophytes',
+			'Plantae',
+			'Archaeplastida',
+			'CAM',
+			'Diaphoretickes',
+			'Eukaryota'
+		];
+		expect( f.taxaStringToArray( taxa ) ).toStrictEqual( output );
+	} );
+
+	test( 'Throws error when result array is too small. This is a sign of Template:Taxonomy/* being corrupted.', () => {
+		// {{#invoke:Autotaxobox|listAll|Sandbox}} with Template:Taxonomy/Sandbox's wikitext being `Test`
+		const taxa = 'Sandbox-test, Test-';
+		expect( () => f.taxaStringToArray( taxa ) ).toThrow( Error );
+	} );
+
+	test( 'Throws error when result array contains weird characters. This is a sign of Template:Taxonomy/* being corrupted.', () => {
+		// {{#invoke:Autotaxobox|listAll|Sandbox}} with Template:Taxonomy/Sandbox's wikitext being `%`
+		const taxa = 'Sandbox-%, %-';
+		expect( () => f.taxaStringToArray( taxa ) ).toThrow( Error );
+	} );
+
+	test( 'Throws error when result array contains weird characters. This is a sign of Template:Taxonomy/* being corrupted.', () => {
+		// {{#invoke:Autotaxobox|listAll|Sandbox}} with Template:Taxonomy/Sandbox's wikitext being `{{Don't edit this line {{{machine code|}}} ... }}%`
+		const taxa = 'Sandbox-clade%, Animalia%-';
+		expect( () => f.taxaStringToArray( taxa ) ).toThrow( Error );
 	} );
 } );
 
