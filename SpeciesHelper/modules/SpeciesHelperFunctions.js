@@ -256,7 +256,7 @@ export class SpeciesHelperFunctions {
 
 	taxaStringToArray( taxa ) {
 		// Double check that {{#invoke:Autotaxobox|listAll|*}} didn't return garbage. It can return garbage if Template:Taxonomy/* is formatted incorrectly.
-		if ( !taxa.match( /^[A-Za-z\-/ ,()]+$/ ) ) {
+		if ( !taxa.match( /^[A-Za-z\-_/ ,()]+$/ ) ) {
 			throw new Error();
 		}
 		// get rid of "Life" at the end

@@ -108,6 +108,53 @@ describe( 'getPagesToCheck(taxa, listOfNonLatinSpeciesCategories)', () => {
 	} );
 } );
 
+describe( 'taxaStringToArray(taxa)', () => {
+	test( 'Handles underscore in "unranked_classis"', () => {
+		const taxa = 'Macratria-genus, Macratriinae-subfamilia, Anthicidae-familia, Tenebrionoidea-superfamilia, Cucujiformia-infraordo, Polyphaga-subordo, Coleoptera-ordo, Coleopterida-cladus, Neuropteroidea-cladus, Aparaglossata-clade, Holometabola-clade, Eumetabola-clade, Neoptera-infraclassis, Pterygota-subclassis, Dicondylia-unranked, Insecta-classis, Hexapoda-subphylum, Allotriocarida-clade, Pancrustacea-clade, Mandibulata-clade, Deuteropoda-unranked_classis, Arthropoda-phylum, Panarthropoda-clade, Ecdysozoa-superphylum, Protostomia-clade, Nephrozoa-clade, Bilateria-clade, ParaHoxozoa-cladus, Eumetazoa-subregnum, Animalia-regnum, Choanozoa-cladus, Filozoa-clade, Holozoa-clade, Opisthokonta-clade, Obazoa-cladus, Amorphea-cladus, Podiata-clade, Eukaryota-domain, Life-';
+		const output = [
+			'Macratria',
+			'Macratriinae',
+			'Anthicidae',
+			'Tenebrionoidea',
+			'Cucujiformia',
+			'Polyphaga',
+			'Coleoptera',
+			'Coleopterida',
+			'Neuropteroidea',
+			'Aparaglossata',
+			'Holometabola',
+			'Eumetabola',
+			'Neoptera',
+			'Pterygota',
+			'Dicondylia',
+			'Insecta',
+			'Hexapoda',
+			'Allotriocarida',
+			'Pancrustacea',
+			'Mandibulata',
+			'Deuteropoda',
+			'Arthropoda',
+			'Panarthropoda',
+			'Ecdysozoa',
+			'Protostomia',
+			'Nephrozoa',
+			'Bilateria',
+			'ParaHoxozoa',
+			'Eumetazoa',
+			'Animalia',
+			'Choanozoa',
+			'Filozoa',
+			'Holozoa',
+			'Opisthokonta',
+			'Obazoa',
+			'Amorphea',
+			'Podiata',
+			'Eukaryota'
+		];
+		expect( f.taxaStringToArray( taxa ) ).toStrictEqual( output );
+	} );
+} );
+
 describe( 'deleteAllStubs(wikicode)', () => {
 	test( '1 stub', () => {
 		const wikicode = '{{Rayfinned-fish-stub}}\n';
