@@ -47,15 +47,15 @@ Many additional bugs fixed.
 		container.innerHTML = `
 			<tr>
 				<td class="reason-container" rowspan="2">
-					<textarea class="unblock-review-reason mw-ui-input" placeholder="Reason for accepting/declining here">${ DEFAULT_DECLINE_REASON }</textarea>
+					<textarea class="unblock-review-reason" placeholder="Reason for accepting/declining here">${ DEFAULT_DECLINE_REASON }</textarea>
 				</td>
 				<td>
-					<button class="unblock-review-accept mw-ui-button mw-ui-progressive">Accept</button>
+					<button class="unblock-review-accept cdx-button cdx-button--action-progressive cdx-button--weight-primary">Accept</button>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<button class="unblock-review-decline mw-ui-button mw-ui-destructive">Decline</button>
+					<button class="unblock-review-decline cdx-button cdx-button--action-destructive cdx-button--weight-primary">Decline</button>
 				</td>
 			</tr>
 			<select id="unblock-review-autoadd-template">
@@ -151,7 +151,7 @@ Many additional bugs fixed.
 	}
 
 	$( async () => {
-		await mw.loader.using( [ 'mediawiki.api', 'mediawiki.util', 'mediawiki.ui.button', 'mediawiki.ui.input' ] ).then( async () => {
+		await mw.loader.using( [ 'mediawiki.api', 'mediawiki.util', 'codex-styles' ] ).then( async () => {
 			await execute();
 		} );
 	} );
