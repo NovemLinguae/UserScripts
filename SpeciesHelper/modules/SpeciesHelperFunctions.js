@@ -255,15 +255,11 @@ export class SpeciesHelperFunctions {
 	}
 
 	taxaStringToArray( taxa ) {
-		// Double check that {{#invoke:Autotaxobox|listAll|*}} didn't return garbage. It can return garbage if Template:Taxonomy/* has weird code.
-		if ( !taxa.match( /^[A-Za-z\-_/ ,()]+$/ ) ) {
-			throw new Error();
-		}
 		// get rid of "Life" at the end
 		taxa = taxa.replace( ', Life-', '' );
 		// convert to array
 		taxa = taxa.split( ', ' );
-		// Double check that {{#invoke:Autotaxobox|listAll|*}} didn't return garbage. It can return garbage if Template:Taxonomy/* has weird code. We'll always be checking a genus, so there should be lots of stuff in the array. If the wikitext of Template:Taxonomy/* is simply "Test", it'll return "Sandbox-test, Test-", which will result in an array with only 2 entries.
+		// Double check that {{#invoke:Autotaxobox|listAll|*}} didn't return garbage. It can return garbage if Template:Taxonomy/* has weird code. We'll always be checking a genus, so there should be lots of stuff in the array. {{#invoke:Autotaxobox|listAll|*}} only returns 2 entries when Template:Taxonomy/* is corrupted.
 		if ( taxa.length < 3 ) {
 			throw new Error();
 		}

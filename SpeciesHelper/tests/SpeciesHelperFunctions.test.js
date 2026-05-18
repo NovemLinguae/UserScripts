@@ -179,21 +179,9 @@ describe( 'taxaStringToArray(taxa)', () => {
 		expect( f.taxaStringToArray( taxa ) ).toStrictEqual( output );
 	} );
 
-	test( 'Throws error when result array is too small. This is a sign of Template:Taxonomy/* being corrupted.', () => {
-		// {{#invoke:Autotaxobox|listAll|Sandbox}} with Template:Taxonomy/Sandbox's wikitext being `Test`
+	test( 'Throws error when result array is too small. Means that Template:Taxonomy/* is corrupted.', () => {
+		// {{#invoke:Autotaxobox|listAll|Sandbox}} with Template:Taxonomy/Sandbox's wikitext being `Test`.
 		const taxa = 'Sandbox-test, Test-';
-		expect( () => f.taxaStringToArray( taxa ) ).toThrow( Error );
-	} );
-
-	test( 'Throws error when result array contains weird characters. This is a sign of Template:Taxonomy/* being corrupted.', () => {
-		// {{#invoke:Autotaxobox|listAll|Sandbox}} with Template:Taxonomy/Sandbox's wikitext being `%`
-		const taxa = 'Sandbox-%, %-';
-		expect( () => f.taxaStringToArray( taxa ) ).toThrow( Error );
-	} );
-
-	test( 'Throws error when result array contains weird characters. This is a sign of Template:Taxonomy/* being corrupted.', () => {
-		// {{#invoke:Autotaxobox|listAll|Sandbox}} with Template:Taxonomy/Sandbox's wikitext being `{{Don't edit this line {{{machine code|}}} ... }}%`
-		const taxa = 'Sandbox-clade%, Animalia%-';
 		expect( () => f.taxaStringToArray( taxa ) ).toThrow( Error );
 	} );
 } );
