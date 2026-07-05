@@ -92,7 +92,7 @@ class ANRFC {
 		this.sections = [
 			'Administrative discussions',
 			'Requests for comment',
-			'Deletion discussions',
+			'<span class="anchor" id="Deletion discussions"></span> XfD discussions',
 			'Merge proposals',
 			'Requested moves',
 			'Other types of closing requests'
@@ -180,7 +180,9 @@ class ANRFC {
 
 		const items = [];
 		let i = 0;
-		for ( const section of this.sections ) {
+		for ( let section of this.sections ) {
+			// if there's an invisible HTML anchor, strip it before adding this item to the dropdown
+			section = section.replace( /<span class="anchor" id="[^"]+"><\/span>\s*/g, '' );
 			items.push( new OO.ui.MenuOptionWidget( {
 				data: i,
 				label: section
