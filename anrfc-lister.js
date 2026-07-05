@@ -35,6 +35,8 @@ CHANGES BY NOVEM LINGUAE:
 - Fixed duplicate RFC listing detection.
 - Titles shouldn't have underscores
 - Fixed bug where the script would always give "signature not found" error if you had MediaWiki:Gadget-CommentsInLocalTime.js gadget installed
+- Handles the WP:ANRFC renaming of "Deletion discussions" to "XfD discussions"
+- Better error handling for when the algorithm can't find the section in WP:ANRFC's wikitext
 
 CHANGES BY OTHERS SINCE THIS WAS FORKED
 - Added dark mode support
