@@ -418,11 +418,20 @@ class ANRFC {
 			discussions.push( '== ' + section + ' ==' );
 		}
 
-		const firstPart = wikitext.slice( 0, wikitext.indexOf( discussions[ targetSection ] ) );
-		wikitext = wikitext.slice( wikitext.indexOf( discussions[ targetSection ] ) );
-		const isLastDiscussion = ( targetSection === discussions.length - 1 );
-		let relventDiscussion = ( isLastDiscussion ) ? wikitext : wikitext.slice( 0, wikitext.indexOf( discussions[ targetSection + 1 ] ) );
-		wikitext = ( isLastDiscussion ) ? '' : wikitext.slice( wikitext.indexOf( discussions[ targetSection + 1 ] ) );
+		// Make sure we can find the target section. If not, error out.
+		const targetSectionIndex = wikitext.indexOf( discussions[ targetSection ] );
+		if ( targetSectionIndex === -1 ) {
+			this.mw.notify( 'Target section not found in wikitext', { type: 'error' } );
+			throw new Error( 'Target section not found in wikitext' );
+		}
+
+		const firstPart = wikitext.slice( 0, targetSectionIndex );
+		wikitext = wikitext.slice( targetSectionIndex );
+		const isLastDiscussion = targetSection === discussions.length - 1;
+
+		const nextSectionIndex = wikitext.indexOf( discussions[ targetSection + 1 ] );
+		let relventDiscussion = isLastDiscussion ? wikitext : wikitext.slice( 0, nextSectionIndex );
+		wikitext = isLastDiscussion ? '' : wikitext.slice( nextSectionIndex );
 
 		const initMatches = relventDiscussion.match( /((i|I)nitiated\|[\d]{1,2}:[\d]{1,2},\s[\d]{1,2}\s[\w]+\s[\d]{4}\s\([\w]+\))/g );
 
