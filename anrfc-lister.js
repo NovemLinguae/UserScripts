@@ -94,7 +94,7 @@ class ANRFC {
 		this.sections = [
 			'Administrative discussions',
 			'Requests for comment',
-			'<span class="anchor" id="Deletion discussions"></span> XfD discussions',
+			'XfD discussions',
 			'Merge proposals',
 			'Requested moves',
 			'Other types of closing requests'
@@ -182,9 +182,7 @@ class ANRFC {
 
 		const items = [];
 		let i = 0;
-		for ( let section of this.sections ) {
-			// if there's an invisible HTML anchor, strip it before adding this item to the dropdown
-			section = section.replace( /<span class="anchor" id="[^"]+"><\/span>\s*/g, '' );
+		for ( const section of this.sections ) {
 			items.push( new OO.ui.MenuOptionWidget( {
 				data: i,
 				label: section
@@ -414,14 +412,32 @@ class ANRFC {
 		return true;
 	}
 
-	makeWikitext( wikitext, wikitextToWrite, initiatedDate, targetSection ) {
-		const discussions = [];
-		for ( const section of this.sections ) {
-			discussions.push( '== ' + section + ' ==' );
+	stripHtmlFromHeading( headingText ) {
+		return headingText
+			.replace( /<!--[\s\S]*?-->/g, '' )
+			.replace( /<[^>]*>/g, '' )
+			.replace( /\s+/g, ' ' )
+			.trim();
+	}
+
+	findDiscussionSectionIndex( wikitext, sectionName, fromIndex = 0 ) {
+		const headingRegex = /^==\s*(.*?)\s*==\s*$/gm;
+		headingRegex.lastIndex = fromIndex;
+
+		let headingMatch;
+		while ( ( headingMatch = headingRegex.exec( wikitext ) ) !== null ) {
+			// Handle headings with anchors, e.g. <span id="anchor1"></span>
+			if ( this.stripHtmlFromHeading( headingMatch[ 1 ] ) === sectionName ) {
+				return headingMatch.index;
+			}
 		}
 
+		return -1;
+	}
+
+	makeWikitext( wikitext, wikitextToWrite, initiatedDate, targetSection ) {
 		// Make sure we can find the target section. If not, error out.
-		const targetSectionIndex = wikitext.indexOf( discussions[ targetSection ] );
+		const targetSectionIndex = this.findDiscussionSectionIndex( wikitext, this.sections[ targetSection ] );
 		if ( targetSectionIndex === -1 ) {
 			this.mw.notify( 'Target section not found in wikitext', { type: 'error' } );
 			throw new Error( 'Target section not found in wikitext' );
@@ -429,9 +445,9 @@ class ANRFC {
 
 		const firstPart = wikitext.slice( 0, targetSectionIndex );
 		wikitext = wikitext.slice( targetSectionIndex );
-		const isLastDiscussion = targetSection === discussions.length - 1;
+		const isLastDiscussion = targetSection === this.sections.length - 1;
 
-		const nextSectionIndex = wikitext.indexOf( discussions[ targetSection + 1 ] );
+		const nextSectionIndex = isLastDiscussion ? -1 : this.findDiscussionSectionIndex( wikitext, this.sections[ targetSection + 1 ], 1 );
 		let relventDiscussion = isLastDiscussion ? wikitext : wikitext.slice( 0, nextSectionIndex );
 		wikitext = isLastDiscussion ? '' : wikitext.slice( nextSectionIndex );
 
