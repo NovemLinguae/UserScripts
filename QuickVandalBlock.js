@@ -32,6 +32,10 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 							.first()
 							.text()
 							.trim();
+						if ( username === '' ) {
+							mw.notify( 'Error: Could not find username to block.' );
+							throw new Error( 'Could not find username to block.' );
+						}
 						const duration = '31 hours';
 						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
 						const templateName = 'uw-vblock';
@@ -57,6 +61,10 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 							.first()
 							.text()
 							.trim();
+						if ( username === '' ) {
+							mw.notify( 'Error: Could not find username to block.' );
+							throw new Error( 'Could not find username to block.' );
+						}
 						const duration = '1 year';
 						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
 						// no talk page message
@@ -80,6 +88,10 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 							.first()
 							.text()
 							.trim();
+						if ( username === '' ) {
+							mw.notify( 'Error: Could not find username to block.' );
+							throw new Error( 'Could not find username to block.' );
+						}
 						const duration = 'never';
 						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
 						const templateName = 'uw-vblock';
