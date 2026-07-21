@@ -19,7 +19,7 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 
 	function addLinksAndListener( obj ) {
 		obj.find( 'span.mw-usertoollinks' ).each( function ( idx, element ) {
-			const isIp = this.previousElementSibling.className.includes( 'mw-anonuserlink' );
+			const isIp = $( this ).prevAll( '.mw-anonuserlink' ).length > 0;
 			let $linkAndListener;
 
 			if ( isIp ) {
@@ -27,7 +27,11 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 					.attr( 'href', '#' )
 					.text( '31h' )
 					.on( 'click', function () {
-						const username = $( this ).parent().get( 0 ).previousElementSibling.textContent;
+						const username = $( this ).closest( '.history-user' )
+							.find( '.mw-anonuserlink bdi' )
+							.first()
+							.text()
+							.trim();
 						const duration = '31 hours';
 						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
 						const templateName = 'uw-vblock';
@@ -48,7 +52,11 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 					.attr( 'href', '#' )
 					.text( 'proxy' )
 					.on( 'click', function () {
-						const username = $( this ).parent().get( 0 ).previousElementSibling.textContent;
+						const username = $( this ).closest( '.history-user' )
+							.find( '.mw-anonuserlink bdi' )
+							.first()
+							.text()
+							.trim();
 						const duration = '1 year';
 						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
 						// no talk page message
@@ -66,7 +74,12 @@ $.when( mw.loader.using( [ 'mediawiki.api', 'mediawiki.util' ] ), $.ready ).then
 					.attr( 'href', '#' )
 					.text( 'indef' )
 					.on( 'click', function () {
-						const username = $( this ).parent().siblings( '.mw-userlink' ).find( 'bdi' ).text();
+						const username = $( this ).closest( 'span.mw-usertoollinks' )
+							.prevAll()
+							.find( '.mw-userlink bdi' )
+							.first()
+							.text()
+							.trim();
 						const duration = 'never';
 						const logReason = '[[Wikipedia:Vandalism|Vandalism]]';
 						const templateName = 'uw-vblock';
