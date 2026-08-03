@@ -141,6 +141,10 @@ class SourceListWikitextToJson {
 
 		// Highlighting Wikidata as unreliable is conflicting in situations when scholarly articles have both a DOI and a Wikidata ID, and there is no other highlight.
 		this.deleteAll( 'wikidata.org' );
+		// Highlighting Wikipedia and Wikisource as unreliable is conflicting with citations that link to these in the second part of the citation. For example, {{Cite url=https://test.com |publisher=[[Test]] }}
+		this.deleteAll( 'wikipedia.org', 'wikisource.org' );
+		// And let's safelist the rest of Wikimedia, just to be safe
+		this.deleteAll( 'wiktionary.org', 'wikiquote.org', 'wikibooks.org', 'wikinews.org', 'wikiversity.org', 'wikispecies.org', 'wikivoyage.org' );
 
 		// not helpful to highlight book websites red, as it's usually used by inexperienced editors to link to books, which are usually reliable
 		this.deleteAll( 'amazon.com', 'goodreads.com' );
