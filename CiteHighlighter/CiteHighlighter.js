@@ -30,7 +30,6 @@ class CiteHighlighter {
 		}
 		this.highlightSourceListsMoreAggressively();
 		this.highlightDraftsMoreAggressively();
-		this.preventWikipediaFalsePositives();
 		this.colors = this.getColors();
 		this.writeCSS();
 		// Note: Any wikicode containing a lot of domain names included in CiteHighlighter will be slow, unless added to isSlowPage(). This is because addHTMLClassesToRefs() checks the wikicode before trying to add classes to CSS.
@@ -179,16 +178,6 @@ class CiteHighlighter {
 	highlightDraftsMoreAggressively() {
 		if ( this.mw.config.get( 'wgNamespaceNumber' ) === 118 ) {
 			this.config.highlightEverything = true;
-		}
-	}
-
-	/**
-	 * If highlightEverything = true, delete wikipedia.org and wiktionary. Too many false positives.
-	 */
-	preventWikipediaFalsePositives() {
-		if ( this.config.highlightEverything ) {
-			this.deleteAll( this.sources, 'en.wikipedia.org', 'wikipedia.org', 'wiktionary.org' );
-			this.deleteFromArray( this.unreliableWordsForOrangeHighlighting, 'wiki' );
 		}
 	}
 
