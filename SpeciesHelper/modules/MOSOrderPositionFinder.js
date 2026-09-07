@@ -430,7 +430,7 @@ export class MOSOrderPositionFinder {
 			'Year dab',
 			'Другие значения',
 			'Однофамильцы'
-		]);
+		] );
 
 		this.sectionStartPositions.featured = this._lookForTemplates( this.wikitext, [
 			'Featured list',
