@@ -280,7 +280,6 @@ Changes:
 		app.links.rights = makeLink( 'Rights', $usergrp );
 		app.links.blocklog = makeLink( 'Blocks', $usergrp );
 		if ( mw.config.get( 'wgWikiID' ) == 'enwiki' ) {
-			app.links.dsalerts = makeLink( 'CTOP Alerts', $usergrp );
 			app.links.restrict = makeLink( 'Restrictions', $usergrp );
 		}
 		if ( mw.config.get( 'wgUserGroups' ).includes( 'checkuser' ) ) {
@@ -525,9 +524,6 @@ Changes:
 						} )
 					);
 					break;
-				case app.links.dsalerts:
-					openCtopAlertPanel();
-					break;
 				case app.links.restrict:
 					openEditingRestrictionsPanel();
 					break;
@@ -602,59 +598,6 @@ Changes:
 					$arbitrationEnforcement.remove();
 				}
 				doFinalPanelLoadingTasks();
-			} )
-			.fail( () => {
-				putErrorMessageInPanel();
-			} );
-	}
-
-	function openCtopAlertPanel() {
-		openPanel( '/wiki/Special:AbuseLog?wpSearchTitle=User_talk%3A' + app.relevantUser + '&wpSearchFilter=602' );
-		$.getJSON( '/w/api.php', {
-			action: 'query',
-			format: 'json',
-			list: 'abuselog',
-			afldir: 'older',
-			afltitle: 'User talk:' + app.relevantUser,
-			aflfilter: 602
-		} )
-			.done( ( data ) => {
-				app.$content.empty();
-				if ( data.query.abuselog.filter( ( item ) => ( item.revid ) ).length ) {
-					$.each( data.query.abuselog, ( i, item ) => {
-						if ( item.result == 'tag' && item.revid ) {
-							const $item = $( '<div>' ).appendTo( app.$content );
-							$.getJSON( '/w/api.php', {
-								action: 'compare',
-								format: 'json',
-								fromrev: item.revid,
-								torelative: 'prev',
-								prop: 'user|comment|diff'
-							} )
-								.done( ( comparedata ) => {
-									let ts = new Date( item.timestamp ).toUTCString();
-									ts = ts.slice( 5, ts.indexOf( 'GMT' ) - 1 );
-									const sum = ts + ' [[User:' + comparedata.compare.touser + '|' + comparedata.compare.touser + ']] ([[Special:Diff/' + item.revid + '|diff]])\n';
-
-									let diff = '';
-									$( comparedata.compare[ '*' ] ).find( 'td.diff-addedline > div' ).each( ( i, item ) => {
-										diff += $( item ).html() + '\n';
-									} );
-
-									diff = $( '<textarea/>' ).html( diff ).text();
-									diff = diff + "<div style='text-align:right'>" + sum + '</div>\n{{hr}}';
-									$.getJSON( '/w/api.php', { action: 'parse', format: 'json', contentmodel: 'wikitext', text: diff } )
-										.done( ( parsedata ) => {
-											$item.append( parsedata.parse.text[ '*' ] );
-											$item.find( '.mw-editsection' ).remove();
-											doFinalPanelLoadingTasks();
-										} );
-								} );
-						}
-					} );
-				} else {
-					doFinalPanelLoadingTasks();
-				}
 			} )
 			.fail( () => {
 				putErrorMessageInPanel();
