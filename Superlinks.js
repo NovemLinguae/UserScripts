@@ -265,10 +265,14 @@ Changes:
 
 	function makeUserLinksFragment( $usergrp ) {
 		const specialPageName = mw.config.get( 'wgCanonicalSpecialPageName' );
+		const isAdmin =
+			mw.config.get( 'wgUserGroups' ).includes( 'sysop' ) ||
+			mw.config.get( 'wgGlobalGroups' ).includes( 'global-sysop' ) ||
+			mw.config.get( 'wgGlobalGroups' ).includes( 'steward' );
 		if ( specialPageName != 'Contributions' ) {
 			app.links.contribs = makeLink( 'Contribs', $usergrp );
 		}
-		if ( mw.config.get( 'wgUserGroups' ).includes( 'sysop' ) && specialPageName != 'DeletedContributions' ) {
+		if ( isAdmin && specialPageName != 'DeletedContributions' ) {
 			app.links.deleted = makeLink( 'Deleted', $usergrp );
 		}
 		app.links.actions = makeLink( 'Actions', $usergrp );
