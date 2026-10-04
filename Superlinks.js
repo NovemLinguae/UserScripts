@@ -415,7 +415,7 @@ Changes:
 			putMessageInPanel();
 
 			// Run the API query and put real content in the panel
-			let url, $obj;
+			let url;
 			switch ( e.target ) {
 				case app.links.userpage:
 					url = '/w/index.php?action=render&title=User:' + app.relevantUser;
@@ -508,13 +508,12 @@ Changes:
 					openPanel( '/w/index.php?title=Special:CheckUserLog&cuSearchType=target&cuSearch=' + app.relevantUser );
 					break;
 				case app.links.nppflowchart:
-					$obj = $( '<object>', {
-						id: 'nppsvg',
-						type: 'image/svg+xml',
-						style: 'width: 100%'
-					} );
-					app.$content.empty().append( $obj );
-					$obj.attr( 'data', 'https://upload.wikimedia.org/wikipedia/commons/f/f4/NPP_flowchart.svg' );
+					app.$content.empty().append(
+						$( '<img>', {
+							src: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/NPP_flowchart.svg',
+							style: 'width: 100%'
+						} )
+					);
 					break;
 				case app.links.afcflowchart:
 					app.$content.empty().append(
