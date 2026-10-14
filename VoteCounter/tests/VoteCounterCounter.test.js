@@ -85,4 +85,10 @@ describe( '_convertWikicodeHeadingToHTMLSectionID(lineOfWikicode)', () => {
 		const output = 'Survey_(tagline)';
 		expect( vcc._convertWikicodeHeadingToHTMLSectionID( lineOfWikicode ) ).toEqual( output );
 	} );
+
+	it( 'Should handle HTML tags with invisible whitespace', () => {
+		const lineOfWikicode = '=== <span class="anchor" id="Survey (page mover-specific move protection)"></span> Survey (mover protection)===';
+		const output = 'Survey_(mover_protection)';
+		expect( vcc._convertWikicodeHeadingToHTMLSectionID( lineOfWikicode ) ).toEqual( output );
+	} );
 } );
