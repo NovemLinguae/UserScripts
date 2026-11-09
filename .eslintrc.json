@@ -19,10 +19,6 @@
 		// default rules we don't like
 		"compat/compat": "off",
 		"es-x/no-class-fields": "off",
-		"es-x/no-optional-catch-binding": "off",
-		"es-x/no-regexp-lookbehind-assertions": "off",
-		"es-x/no-regexp-s-flag": "off",
-		"es-x/no-rest-spread-properties": "off",
 		"es-x/no-string-prototype-matchall": "off",
 		"es-x/no-string-prototype-replaceall": "off",
 		"jsdoc/require-param": "off",
