@@ -114,13 +114,13 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 				list: 'blocks',
 				bklimit: '100',
 				bkusers: batchUsers,
-				bkprop: 'user|by|timestamp|expiry|reason|flags|restrictions',
+				bkprop: 'user|by|timestamp|expiry|reason|flags|restrictions'
 			} );
 			requests.push( fetch( apiCall, {
 				method: 'GET',
 				credentials: 'include',
 				headers: {
-					'Accept': 'application/json'
+					Accept: 'application/json'
 				}
 			} ).then( async ( response ) => {
 				const resp = await response.json();
@@ -156,13 +156,13 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 				list: 'globalblocks',
 				bglimit: '100',
 				bgtargets: batchUsers,
-				bgprop: 'target|by|timestamp|expiry|reason|localstatus',
+				bgprop: 'target|by|timestamp|expiry|reason|localstatus'
 			} );
 			requests.push( fetch( globalCall, {
 				method: 'GET',
 				credentials: 'include',
 				headers: {
-					'Accept': 'application/json'
+					Accept: 'application/json'
 				}
 			} ).then( async ( response ) => {
 				const resp = await response.json();
@@ -192,7 +192,7 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 	 */
 	function markLinks( list, serverTime, userLinks ) {
 
-		for ( let block of list ) {
+		for ( const block of list ) {
 			const partial = 'partial' in block; // Partial block
 			let htmlClass, blockTime;
 			if ( /^in/.test( block.expiry ) ) {
@@ -217,28 +217,39 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 				.replace( '$3', block.reason )
 				.replace( '$4', inHours( serverTime - parseTimestamp( block.timestamp ) ) );
 			if ( partial && block.restrictions && !window.mbHidePartialBlockRestrictions ) {
-				let pbDetails = [];
+				const pbDetails = [];
 				if ( block.restrictions.pages ) {
-					pbDetails.push ( ( block.restrictions.pages.length == 1 ? 'page ' : 'pages ' ) + makeCommaSeparatedList( block.restrictions.pages.map( ( page ) => '[[' + page.title + ']]' ) ) );
+					pbDetails.push( ( block.restrictions.pages.length == 1 ? 'page ' : 'pages ' ) + makeCommaSeparatedList( block.restrictions.pages.map( ( page ) => '[[' + page.title + ']]' ) ) );
 				}
 				if ( block.restrictions.namespaces ) {
-					if ( block.restrictions.namespaces && block.restrictions.namespaces.length == 1 && block.restrictions.namespaces[0] == 0 ) pbDetails.push( 'mainspace' );
-					else pbDetails.push ( ( block.restrictions.namespaces.length == 1 ? 'namespace ' : 'namespaces ' ) +
-						makeCommaSeparatedList( block.restrictions.namespaces.map( ( ns ) => ns == 0 ? '(Article)' : mw.config.get( 'wgFormattedNamespaces' )[ns] ) ) );
+					if ( block.restrictions.namespaces && block.restrictions.namespaces.length == 1 && block.restrictions.namespaces[ 0 ] == 0 ) {
+						pbDetails.push( 'mainspace' );
+					} else {
+						pbDetails.push( ( block.restrictions.namespaces.length == 1 ? 'namespace ' : 'namespaces ' ) +
+						makeCommaSeparatedList( block.restrictions.namespaces.map( ( ns ) => ns == 0 ? '(Article)' : mw.config.get( 'wgFormattedNamespaces' )[ ns ] ) ) );
+					}
 				}
 				if ( block.restrictions.actions ) {
-					if ( block.restrictions.actions.includes( 'upload' ) ) pbDetails.push( "uploading files" );
-					if ( block.restrictions.actions.includes( 'move' ) ) pbDetails.push( "moving pages" );
-					if ( block.restrictions.actions.includes( 'create' ) ) pbDetails.push( "creating pages" );
-					if ( block.restrictions.actions.includes( 'thanks' ) ) pbDetails.push( "thanking users" );
+					if ( block.restrictions.actions.includes( 'upload' ) ) {
+						pbDetails.push( 'uploading files' );
+					}
+					if ( block.restrictions.actions.includes( 'move' ) ) {
+						pbDetails.push( 'moving pages' );
+					}
+					if ( block.restrictions.actions.includes( 'create' ) ) {
+						pbDetails.push( 'creating pages' );
+					}
+					if ( block.restrictions.actions.includes( 'thanks' ) ) {
+						pbDetails.push( 'thanking users' );
+					}
 				}
 				if ( !block.restrictions.pages && !block.restrictions.namespaces && !block.restrictions.actions ) {
-					pbDetails.push( "specified non-editing actions" );
+					pbDetails.push( 'specified non-editing actions' );
 				}
-				tooltipString = tooltipString.replace ( '$5', makeCommaSeparatedList( pbDetails ) );
+				tooltipString = tooltipString.replace( '$5', makeCommaSeparatedList( pbDetails ) );
 			}
-			let username = block.user ? block.user : block.target;
-			let links = userLinks[ username ];
+			const username = block.user ? block.user : block.target;
+			const links = userLinks[ username ];
 			for ( let k = 0; links && k < links.length; k++ ) {
 				let $link = $( links[ k ] );
 				$link = $link.addClass( htmlClass );
@@ -355,14 +366,21 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 		return v;
 	}
 
-	/** @param {array} strings ["editing pages Test and Wikipedia", "thanking users"]
-        @return {string} "editing pages Test and Wikipedia and thanking users"
-    */
-	function makeCommaSeparatedList ( strings ) {
-    	if ( strings.length == 0 ) return "";
-    	if ( strings.length == 1 ) return strings[0];
-    	if ( strings.length == 2 ) return strings[0] + ' and ' + strings[1];
-    	return strings.slice( 0, -1 ).join( ', ' ) + ', and ' + strings[strings.length - 1];
+	/**
+	 * @param {Array} strings ["editing pages Test and Wikipedia", "thanking users"]
+	 * @return {string} "editing pages Test and Wikipedia and thanking users"
+	 */
+	function makeCommaSeparatedList( strings ) {
+		if ( strings.length == 0 ) {
+			return '';
+		}
+		if ( strings.length == 1 ) {
+			return strings[ 0 ];
+		}
+		if ( strings.length == 2 ) {
+			return strings[ 0 ] + ' and ' + strings[ 1 ];
+		}
+		return strings.slice( 0, -1 ).join( ', ' ) + ', and ' + strings[ strings.length - 1 ];
 	}
 
 	execute();
