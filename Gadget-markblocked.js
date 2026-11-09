@@ -22,7 +22,7 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 
 ( () => {
 	function execute() {
-		if ( [ 'edit', 'submit' ].indexOf( mw.config.get( 'wgAction' ) ) !== -1 ) {
+		if ( [ 'edit', 'submit' ].includes( mw.config.get( 'wgAction' ) ) ) {
 			return;
 		}
 
@@ -209,7 +209,7 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 				if ( window.mbHidePartialBlockRestrictions ) {
 					tooltipString = tooltipString.replace( 'blocked', 'partially blocked' );
 				} else {
-					tooltipString = tooltipString.replace( 'blocked', 'partially blocked from $5');
+					tooltipString = tooltipString.replace( 'blocked', 'partially blocked from $5' );
 				}
 			}
 			tooltipString = tooltipString.replace( '$1', blockTime )
@@ -219,12 +219,12 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 			if ( partial && block.restrictions && !window.mbHidePartialBlockRestrictions ) {
 				let pbDetails = [];
 				if ( block.restrictions.pages ) {
-					pbDetails.push ( ( block.restrictions.pages.length == 1 ? 'page ' : 'pages ' ) + makeCommaSeparatedList( block.restrictions.pages.map( (page) => '[[' + page.title + ']]' ) ) );
+					pbDetails.push ( ( block.restrictions.pages.length == 1 ? 'page ' : 'pages ' ) + makeCommaSeparatedList( block.restrictions.pages.map( ( page ) => '[[' + page.title + ']]' ) ) );
 				}
 				if ( block.restrictions.namespaces ) {
 					if ( block.restrictions.namespaces && block.restrictions.namespaces.length == 1 && block.restrictions.namespaces[0] == 0 ) pbDetails.push( 'mainspace' );
 					else pbDetails.push ( ( block.restrictions.namespaces.length == 1 ? 'namespace ' : 'namespaces ' ) +
-						makeCommaSeparatedList( block.restrictions.namespaces.map( (ns) => ns == 0 ? '(Article)' : mw.config.get( 'wgFormattedNamespaces' )[ns] ) ) );
+						makeCommaSeparatedList( block.restrictions.namespaces.map( ( ns ) => ns == 0 ? '(Article)' : mw.config.get( 'wgFormattedNamespaces' )[ns] ) ) );
 				}
 				if ( block.restrictions.actions ) {
 					if ( block.restrictions.actions.includes( 'upload' ) ) pbDetails.push( "uploading files" );
@@ -233,7 +233,7 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 					if ( block.restrictions.actions.includes( 'thanks' ) ) pbDetails.push( "thanking users" );
 				}
 				if ( !block.restrictions.pages && !block.restrictions.namespaces && !block.restrictions.actions ) {
-					pbDetails.push("specified non-editing actions");
+					pbDetails.push( "specified non-editing actions" );
 				}
 				tooltipString = tooltipString.replace ( '$5', makeCommaSeparatedList( pbDetails ) );
 			}
