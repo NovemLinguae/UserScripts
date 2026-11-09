@@ -249,8 +249,8 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 				tooltipString = tooltipString.replace( '$5', makeCommaSeparatedList( pbDetails ) );
 			}
 			const username = block.user ? block.user : block.target;
-			const links = userLinks[ username ];
-			for ( let k = 0; links && k < links.length; k++ ) {
+			const links = userLinks[ username ] || [];
+			for ( let k = 0; k < links.length; k++ ) {
 				let $link = $( links[ k ] );
 				$link = $link.addClass( htmlClass );
 				if ( window.mbTipBox ) {
