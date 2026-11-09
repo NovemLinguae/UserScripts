@@ -156,7 +156,7 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 				list: 'globalblocks',
 				bglimit: '100',
 				bgtargets: batchUsers,
-				bgprop: 'target|by|timestamp|expiry|reason',
+				bgprop: 'target|by|timestamp|expiry|reason|localstatus',
 			} );
 			requests.push( fetch( globalCall, {
 				method: 'GET',
@@ -170,7 +170,11 @@ Forked from https://ru.wikipedia.org/w/index.php?title=MediaWiki:Gadget-markbloc
 				const serverTime = new Date( response.headers.get( 'Date' ) );
 				let list;
 				if ( resp && ( list = resp.query ) && ( list = list.globalblocks ) ) {
-					markLinks( list, serverTime, userLinks );
+					const globalBlockHasLocalException = ( block ) => block.localstatus === 'disabled';
+					const blocksToMark = list.filter( ( block ) => !globalBlockHasLocalException( block ) );
+					if ( blocksToMark.length ) {
+						markLinks( blocksToMark, serverTime, userLinks );
+					}
 				}
 			} ) );
 		}
