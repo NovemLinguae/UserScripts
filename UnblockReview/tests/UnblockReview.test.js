@@ -132,6 +132,36 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 		const expected = `{{unblock-spamun|`;
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
 	} );
+
+	test( 'Reason wrapped in small tags with a piped link', () => {
+		const wikitext =
+`== Unblock please ==
+{{unblock|reason=<small>The following request was written through the [[Wikipedia:Unblock wizard|unblock wizard]].</small>}}`;
+		const appealReason = `The following request was written through the unblock wizard.`;
+		const expected = `{{unblock|reason=`;
+		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
+	} );
+
+	test( 'Small tags inside the reason', () => {
+		const wikitext = `{{unblock|reason=Please <SMALL class="note">review</SMALL> my appeal}}`;
+		const appealReason = `Please review my appeal`;
+		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( `{{unblock|reason=` );
+	} );
+
+	test( 'Other tags and quoted attributes inside the reason', () => {
+		const wikitext = `{{unblock|reason=<span title="1 > 0">Please <b>review</b> my appeal</span>}}`;
+		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, `Please review my appeal` ) ).toBe( `{{unblock|reason=` );
+	} );
+
+	test( 'Does not treat comparison text as a tag', () => {
+		const wikitext = `{{unblock|reason=Please < 4 and > review}}`;
+		expect( () => unblockReview.getLeftHalfOfUnblockTemplate( wikitext, `Please review` ) ).toThrow( 'Searching for target text failed' );
+	} );
+
+	test( 'Skip <small> tag inside <nowiki> tag', () => {
+		const wikitext = `<nowiki>{{unblock|reason=<small>Appeal</small>}}</nowiki>\n{{unblock|reason=Appeal}}`;
+		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, `Appeal` ) ).toBe( `{{unblock|reason=` );
+	} );
 } );
 
 describe( 'processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline )', () => {
@@ -289,6 +319,19 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		const expected =
 `{{unblock reviewed|accept=~~~~|1=I was blocked a few days ago for... <span style="font-family:'Courier New', monospace;">[[User:Test]]</span>}}`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Preserve <tags> and piped links in the reviewed reason', () => {
+		const wikitext = `{{unblock|reason=<small>The [[Wikipedia:Unblock wizard|unblock wizard]].</small>}}`;
+		const appealReason = `The unblock wizard.`;
+		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=<small>The [[Wikipedia:Unblock wizard|unblock wizard]].</small>}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, appealReason, `Insufficient.`, DEFAULT_DECLINE_REASON, `decline` ) ).toBe( expected );
+	} );
+
+	test( 'Preserve <tags> in the reviewed reason, and handle > and < characters by themselves', () => {
+		const wikitext = `{{unblock|reason=<span title="1 > 0">Please <b>review</b> my appeal</span>}}`;
+		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=<span title="1 > 0">Please <b>review</b> my appeal</span>}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, `Please review my appeal`, `Insufficient.`, DEFAULT_DECLINE_REASON, `decline` ) ).toBe( expected );
 	} );
 } );
 

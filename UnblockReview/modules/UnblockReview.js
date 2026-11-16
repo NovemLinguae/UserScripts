@@ -48,7 +48,10 @@ export class UnblockReview {
 
 		// eslint-disable-next-line no-useless-concat
 		const negativeLookbehinds = '(?<!<' + 'nowiki>)';
-		const regEx = new RegExp( negativeLookbehinds + this.escapeRegExp( initialText + paramsAndReason ), 'g' );
+		const regEx = new RegExp(
+			negativeLookbehinds + this.escapeRegExp( initialText ) + '(' + this.getAppealReasonPattern( paramsAndReason ) + ')',
+			'g'
+		);
 		const count = ( wikitext.match( regEx ) || [] ).length;
 		if ( count > 1 ) {
 			throw new Error( 'Too many matching unblock templates found' );
@@ -58,7 +61,8 @@ export class UnblockReview {
 		let wikitext2 = wikitext.replace(
 			regEx,
 			// Always add 1=. That way if there's an unescaped equals sign after it, it won't break things.
-			'{{' + templateName + ' reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + paramsAndReason
+			// match and originalReason are provided by .replace()
+			( match, originalReason ) => '{{' + templateName + ' reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + originalReason
 		);
 
 		// {{Unblock-spamun}} has an extra parameter for the new username. Example:
@@ -102,7 +106,7 @@ export class UnblockReview {
 		// Isolate the reason, stripping out all template syntax. So `{{Unblock|reason=ABC}}` becomes matches = [ 'ABC ']
 		// eslint-disable-next-line no-useless-concat
 		const negativeLookbehinds = '(?<!<' + 'nowiki>{{unblock\\|reason=)(?<!reviewed ?\\|1=)';
-		const regEx = new RegExp( negativeLookbehinds + this.escapeRegExp( appealReason ), 'g' );
+		const regEx = new RegExp( negativeLookbehinds + this.getAppealReasonPattern( appealReason ), 'g' );
 		let matches = wikitext.matchAll( regEx );
 		matches = [ ...matches ];
 
@@ -131,6 +135,11 @@ export class UnblockReview {
 				continue;
 			}
 
+			// eslint-disable-next-line no-useless-concat
+			if ( wikitext.slice( 0, unblockTemplateStartPos ).endsWith( '<' + 'nowiki>' ) ) {
+				continue;
+			}
+
 			// Don't match already reviewed templates. These are marked with the word "reviewed". Example: {{unblock-spamun reviewed|
 			if ( initialText.match( /\s+reviewed\s*\|/ ) ) {
 				continue;
@@ -140,6 +149,18 @@ export class UnblockReview {
 		}
 
 		throw new Error( 'Failed to find left half of unblock template in the wikicode' );
+	}
+
+	/**
+	 * Return a regex pattern that matches the appeal reason wikitext, even if it contains <tags> or wikilinks.
+	 *
+	 * @param {string} appealReason - The rendered appeal text.
+	 * @return {string} Regex pattern for matching the original wikitext.
+	 */
+	getAppealReasonPattern( appealReason ) {
+		// Matches HTML-style tags, wikilink delimiters, and piped link targets between rendered characters.
+		const markup = '(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[|\\]\\])*';
+		return Array.from( appealReason, ( character ) => markup + this.escapeRegExp( character ) ).join( '' );
 	}
 
 	/**
