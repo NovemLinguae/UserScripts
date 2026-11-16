@@ -112,6 +112,15 @@ Many additional bugs fixed.
 				);
 			} catch ( e ) {
 				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
+
+				await logErrorToWiki(
+					wikitext,
+					appealReason,
+					acceptDeclineReason,
+					acceptOrDecline,
+					e.message
+				);
+
 				return;
 			}
 
@@ -125,6 +134,57 @@ Many additional bugs fixed.
 			await editPage( title, wikitext2, editSummary );
 			window.location.reload( true );
 		} );
+	}
+
+	async function logErrorToWiki( wikitext, paramsAndReason, acceptDeclineReason, acceptOrDecline, errorMessage ) {
+		const errorLogTitle = 'User:Novem Linguae/Scripts/UnblockReview/ErrorLog';
+		const currentUser = mw.config.get( 'wgUserName' );
+		const pageTitle = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
+		const revisionId = mw.config.get( 'wgRevisionId' );
+		const oldidLink = `${ mw.config.get( 'wgServer' ) }/w/index.php?oldid=${ revisionId }`;
+
+		const now = new Date();
+		const dateTime = now.toLocaleString( 'en-US', {
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: false
+		} ).replace( /(\d+)\/(\d+)\/(\d+),\s(\d+):(\d+):(\d+)/, '$3-$1-$2 $4:$5:$6' );
+
+		const logEntry = `
+
+== ${ dateTime } ==
+* Unblocking admin: <code>${ currentUser }</code>
+* Page: [${ oldidLink } ${ pageTitle }]
+* Error: <code>${ errorMessage }</code>
+
+<syntaxhighlight lang="js">\ttest( '[YOUR TEST NAME HERE]', () => {
+\t\tconst wikitext =
+\`${ wikitext.replace( /`/g, '\\`' ) }\`;
+\t\tconst paramsAndReason = \`${ paramsAndReason.replace( /`/g, '\\`' ) }\`;
+\t\tconst acceptDeclineReason = \`${ acceptDeclineReason.replace( /`/g, '\\`' ) }\`;
+\t\tconst acceptOrDecline = \`${ acceptOrDecline }\`;
+\t\tconst expected = \`[YOUR EXPECTED WIKITEXT HERE]\`;
+\t\texpect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+\t} );</syntaxhighlight>
+
+<syntaxhighlight lang="js">\ttest( \`[YOUR TEST NAME HERE]\`, () => {
+\t\tconst wikitext =
+\`${ wikitext.replace( /`/g, '\\`' ) }\`;
+\t\tconst appealReason = \`${ paramsAndReason.replace( /`/g, '\\`' ) }\`;
+\t\tconst expected = \`[YOUR EXPECTED WIKITEXT HERE]\`;
+\t\texpect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
+\t} );</syntaxhighlight>
+`;
+
+		try {
+			await appendToPage( errorLogTitle, logEntry, 'Logging UnblockReview error' + ADVERT );
+		} catch ( logError ) {
+			console.error( 'Failed to log error to wiki:', logError );
+		}
 	}
 
 	async function getWikitext( title ) {
@@ -147,6 +207,15 @@ Many additional bugs fixed.
 			title: title,
 			summary: editSummary,
 			text: wikitext
+		} );
+	}
+
+	async function appendToPage( title, wikitext, editSummary ) {
+		await ( new mw.Api() ).postWithToken( 'csrf', {
+			action: 'edit',
+			title: title,
+			summary: editSummary,
+			appendtext: wikitext
 		} );
 	}
 
