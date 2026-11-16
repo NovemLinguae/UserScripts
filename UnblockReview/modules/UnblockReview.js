@@ -198,14 +198,14 @@ export class UnblockReview {
 	}
 
 	/**
-	 * Return a regex pattern that matches the appeal reason wikitext, even if it contains <tags> or wikilinks.
+	 * Return a regex pattern that matches appeal reason wikitext with tags, wikilinks, or emphasis.
 	 *
 	 * @param {string} appealReason - The rendered appeal text.
 	 * @return {string} Regex pattern for matching the original wikitext.
 	 */
 	getAppealReasonPattern( appealReason ) {
-		// Matches HTML-style tags, wikilink delimiters, and piped link targets between rendered characters.
-		const markup = '(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[|\\]\\])*';
+		// Matches tags, wikilink markup, and emphasis apostrophes between rendered characters.
+		const markup = '(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[|\\]\\]|\'{2,}(?!\'))*';
 		return Array.from( appealReason, ( character ) => markup + this.escapeRegExp( character ) ).join( '' );
 	}
 

@@ -406,6 +406,30 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		const acceptOrDecline = `decline`;
 		expect( () => unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toThrow( 'Too many matching unblock templates found' );
 	} );
+
+	test( `Handle reason starting with '''`, () => {
+		const wikitext =
+`{{unblock|1='''Hello, Wikipedia'''.
+<br>
+I was blocked a few days ago for... [[User:Test]]}}`;
+		const paramsAndReason = `Hello, Wikipedia`;
+		const acceptDeclineReason = `Please use your other account.`;
+		const acceptOrDecline = `decline`;
+		const expected =
+`{{unblock reviewed|decline=Please use your other account. ~~~~|1='''Hello, Wikipedia'''.
+<br>
+I was blocked a few days ago for... [[User:Test]]}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Preserve emphasis and literal apostrophes inside the reason', () => {
+		const wikitext = `{{unblock|reason=I can't ''edit'' and '''need''' help}}`;
+		const paramsAndReason = `I can't edit and need help`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=I can't ''edit'' and '''need''' help}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
 } );
 
 describe( 'hasSignature( text )', () => {
