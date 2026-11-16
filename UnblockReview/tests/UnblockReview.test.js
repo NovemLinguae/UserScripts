@@ -162,6 +162,18 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 		const wikitext = `<nowiki>{{unblock|reason=<small>Appeal</small>}}</nowiki>\n{{unblock|reason=Appeal}}`;
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, `Appeal` ) ).toBe( `{{unblock|reason=` );
 	} );
+
+	test( 'Skip <nowiki>:{{unblock}}', () => {
+		const wikitext = `Test <code><nowiki>:{{unblock|reason=Your reason here ~~~~}}</nowiki></code> Test`;
+		const appealReason = `Your reason here `;
+		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( Error );
+		expect( () => {unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason );} ).toThrow( "Searching for target text failed" );
+	} );
+
+	test( 'Skip a multiline nowiki example before a real request', () => {
+		const wikitext = `<NOWIKI>\n*:{{unblock|reason=Appeal}}</NOWIKI>\n<nowiki/>{{Unblock|1=Appeal}}`;
+		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, `Appeal` ) ).toBe( `{{Unblock|1=` );
+	} );
 } );
 
 describe( 'processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline )', () => {
@@ -332,6 +344,67 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		const wikitext = `{{unblock|reason=<span title="1 > 0">Please <b>review</b> my appeal</span>}}`;
 		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=<span title="1 > 0">Please <b>review</b> my appeal</span>}}`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, `Please review my appeal`, `Insufficient.`, DEFAULT_DECLINE_REASON, `decline` ) ).toBe( expected );
+	} );
+
+	test( '<nowiki> in front of {{Unblock}}', () => {
+		const wikitext =
+`<nowiki>{{unblock|reason=Test1}}</nowiki>
+{{unblock|reason=Test1}}`;
+		const paramsAndReason = `Test1`;
+		const acceptDeclineReason = `Insufficient. ~~~~`;
+		const acceptOrDecline = `decline`;
+		const expected =
+`<nowiki>{{unblock|reason=Test1}}</nowiki>
+{{unblock reviewed|decline=Insufficient. ~~~~|1=Test1}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( '<nowiki>: in front of {{Unblock}}', () => {
+		const wikitext =
+`<nowiki>:{{unblock|reason=Test1}}</nowiki>
+{{unblock|reason=Test1}}`;
+		const paramsAndReason = `Test1`;
+		const acceptDeclineReason = `Insufficient. ~~~~`;
+		const acceptOrDecline = `decline`;
+		const expected =
+`<nowiki>:{{unblock|reason=Test1}}</nowiki>
+{{unblock reviewed|decline=Insufficient. ~~~~|1=Test1}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Preserve indentation inside multiline nowiki while reviewing a request', () => {
+		const wikitext = `<nowiki>\n:{{unblock|reason=Test1}}</nowiki>\n:{{unblock|reason=Test1}}`;
+		const paramsAndReason = `Test1`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const expected = `<nowiki>\n:{{unblock|reason=Test1}}</nowiki>\n{{unblock reviewed|decline=Insufficient. ~~~~|1=Test1}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Match nowiki text within a real unblock reason', () => {
+		const wikitext = `{{unblock|reason=<nowiki>Test1</nowiki>}}`;
+		const paramsAndReason = `Test1`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=<nowiki>Test1</nowiki>}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Skip nowiki examples when the real request has no reason', () => {
+		const wikitext = `<nowiki>:{{UNBLOCK}}</nowiki>\n{{Unblock}}`;
+		const paramsAndReason = `Please provide a reason as to why you should be unblocked`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const expected = `<nowiki>:{{UNBLOCK}}</nowiki>\n{{Unblock reviewed|decline=Insufficient. ~~~~|1=}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Reject multiple real requests despite a nowiki example', () => {
+		const wikitext = `<nowiki>:{{unblock|reason=Test1}}</nowiki>\n{{unblock|reason=Test1}}\n{{unblock|reason=Test1}}`;
+		const paramsAndReason = `Test1`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		expect( () => unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toThrow( 'Too many matching unblock templates found' );
 	} );
 } );
 

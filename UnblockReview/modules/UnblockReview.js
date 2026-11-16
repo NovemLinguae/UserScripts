@@ -22,7 +22,14 @@ export class UnblockReview {
 		// Special case: If the user didn't provide a reason, the template will display "Please provide a reason as to why you should be unblocked", and this will be detected as the appealReason.
 		const reasonIsProvided = !paramsAndReason.startsWith( 'Please provide a reason as to why you should be unblocked' );
 		if ( !reasonIsProvided ) {
-			initialText = wikitext.match( /(\{\{Unblock)\}\}/i )[ 1 ];
+			const nowikiRanges = this.getNowikiRanges( wikitext );
+			const match = [ ...wikitext.matchAll( /(\{\{Unblock)\}\}/gi ) ].find(
+				( candidate ) => !this.isInsideNowiki( candidate.index, nowikiRanges )
+			);
+			if ( !match ) {
+				throw new Error( 'Searching for target text failed' );
+			}
+			initialText = match[ 1 ];
 			paramsAndReason = '';
 		} else {
 			initialText = this.getLeftHalfOfUnblockTemplate( wikitext, paramsAndReason );
@@ -46,24 +53,25 @@ export class UnblockReview {
 			acceptDeclineReason = this.SIGNATURE;
 		}
 
-		// eslint-disable-next-line no-useless-concat
-		const negativeLookbehinds = '(?<!<' + 'nowiki>)';
 		const regEx = new RegExp(
-			negativeLookbehinds + this.escapeRegExp( initialText ) + '(' + this.getAppealReasonPattern( paramsAndReason ) + ')',
+			this.escapeRegExp( initialText ) + '(' + this.getAppealReasonPattern( paramsAndReason ) + ')',
 			'g'
 		);
-		const count = ( wikitext.match( regEx ) || [] ).length;
-		if ( count > 1 ) {
+		const nowikiRanges = this.getNowikiRanges( wikitext );
+		const matches = [ ...wikitext.matchAll( regEx ) ].filter(
+			( match ) => !this.isInsideNowiki( match.index, nowikiRanges )
+		);
+		if ( matches.length > 1 ) {
 			throw new Error( 'Too many matching unblock templates found' );
+		}
+		if ( matches.length === 0 ) {
+			throw new Error( 'Replacing text with unblock message failed' );
 		}
 
 		const templateName = initialText.match( /^\{\{([A-Za-z-]+)/i )[ 1 ];
-		let wikitext2 = wikitext.replace(
-			regEx,
-			// Always add 1=. That way if there's an unescaped equals sign after it, it won't break things.
-			// match and originalReason are provided by .replace()
-			( match, originalReason ) => '{{' + templateName + ' reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + originalReason
-		);
+		const match = matches[ 0 ];
+		// Always add 1=. That way if there's an unescaped equals sign after it, it won't break things.
+		let replacement = '{{' + templateName + ' reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + match[ 1 ];
 
 		// {{Unblock-spamun}} has an extra parameter for the new username. Example:
 		// {{Unblock-spamun|NewUsername|Your reason here}}
@@ -72,18 +80,23 @@ export class UnblockReview {
 		const hasExtraUsernameParameter = templateName.toLowerCase() === 'unblock-spamun';
 		if ( hasExtraUsernameParameter ) {
 			// delete the first 1=
-			wikitext2 = wikitext2.replace( '|1=', '|' );
+			replacement = replacement.replace( '|1=', '|' );
 			// add a 2= after the third pipe
-			const thirdPipePos = this.getPosition( wikitext2, '|', 3 );
-			wikitext2 = wikitext2.slice( 0, thirdPipePos ) + '|2=' + wikitext2.slice( thirdPipePos + 1 );
+			const thirdPipePos = this.getPosition( replacement, '|', 3 );
+			replacement = replacement.slice( 0, thirdPipePos ) + '|2=' + replacement.slice( thirdPipePos + 1 );
 		}
 
+		let wikitext2 = wikitext.slice( 0, match.index ) + replacement + wikitext.slice( match.index + match[ 0 ].length );
 		if ( wikitext === wikitext2 ) {
 			throw new Error( 'Replacing text with unblock message failed' );
 		}
 
 		// get rid of any [#*:] in front of {{unblock X}} templates. indentation messes up the background color and border of the unblock template.
-		wikitext2 = wikitext2.replace( /^[#*: ]{1,}(\{\{\s*unblock)/gmi, '$1' );
+		const updatedNowikiRanges = this.getNowikiRanges( wikitext2 );
+		wikitext2 = wikitext2.replace(
+			/^[#*: ]{1,}(\{\{\s*unblock)/gmi,
+			( fullMatch, template, offset ) => this.isInsideNowiki( offset, updatedNowikiRanges ) ? fullMatch : template
+		);
 
 		return wikitext2;
 	}
@@ -109,6 +122,8 @@ export class UnblockReview {
 		const regEx = new RegExp( negativeLookbehinds + this.getAppealReasonPattern( appealReason ), 'g' );
 		let matches = wikitext.matchAll( regEx );
 		matches = [ ...matches ];
+		const nowikiRanges = this.getNowikiRanges( wikitext );
+		let hasNonNowikiMatch = false;
 
 		if ( matches.length === 0 ) {
 			throw new Error( 'Searching for target text failed' );
@@ -129,14 +144,14 @@ export class UnblockReview {
 				}
 			}
 
+			if ( this.isInsideNowiki( unblockTemplateStartPos === undefined ? matchPos : unblockTemplateStartPos, nowikiRanges ) ) {
+				continue;
+			}
+			hasNonNowikiMatch = true;
+
 			// Don't match stuff that isn't an unblock template
 			const initialText = wikitext.slice( unblockTemplateStartPos, matchPos );
 			if ( !initialText.match( /^\{\{unblock/i ) ) {
-				continue;
-			}
-
-			// eslint-disable-next-line no-useless-concat
-			if ( wikitext.slice( 0, unblockTemplateStartPos ).endsWith( '<' + 'nowiki>' ) ) {
 				continue;
 			}
 
@@ -148,7 +163,38 @@ export class UnblockReview {
 			return initialText;
 		}
 
-		throw new Error( 'Failed to find left half of unblock template in the wikicode' );
+		throw new Error( hasNonNowikiMatch ? 'Failed to find left half of unblock template in the wikicode' : 'Searching for target text failed' );
+	}
+
+	/**
+	 * Find non-self-closing nowiki elements, including unterminated ones.
+	 *
+	 * @param {string} wikitext - The wikitext to search.
+	 * @return {Array<number[]>} Start-inclusive, end-exclusive UTF-16 offset pairs.
+	 */
+	getNowikiRanges( wikitext ) {
+		// eslint-disable-next-line no-useless-concat
+		const tagPattern = new RegExp( '<\\/?no' + 'wiki\\b(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>', 'gi' );
+		const ranges = [];
+		let start;
+		for ( const match of wikitext.matchAll( tagPattern ) ) {
+			if ( match[ 0 ][ 1 ] === '/' ) {
+				if ( start !== undefined ) {
+					ranges.push( [ start, match.index + match[ 0 ].length ] );
+					start = undefined;
+				}
+			} else if ( start === undefined && !/\/\s*>$/.test( match[ 0 ] ) ) {
+				start = match.index;
+			}
+		}
+		if ( start !== undefined ) {
+			ranges.push( [ start, wikitext.length ] );
+		}
+		return ranges;
+	}
+
+	isInsideNowiki( position, ranges ) {
+		return ranges.some( ( range ) => position >= range[ 0 ] && position < range[ 1 ] );
 	}
 
 	/**
