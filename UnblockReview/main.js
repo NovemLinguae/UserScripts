@@ -161,6 +161,14 @@ Many additional bugs fixed.
 * Page: [${ oldidLink } ${ pageTitle }]
 * Error: <code>${ errorMessage }</code>
 
+<syntaxhighlight lang="js">\ttest( \`[YOUR TEST NAME HERE]\`, () => {
+\t\tconst wikitext =
+\`${ wikitext.replace( /`/g, '\\`' ) }\`;
+\t\tconst appealReason = \`${ paramsAndReason.replace( /`/g, '\\`' ) }\`;
+\t\tconst expected = \`[YOUR EXPECTED WIKITEXT HERE]\`;
+\t\texpect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
+\t} );</syntaxhighlight>
+
 <syntaxhighlight lang="js">\ttest( '[YOUR TEST NAME HERE]', () => {
 \t\tconst wikitext =
 \`${ wikitext.replace( /`/g, '\\`' ) }\`;
@@ -169,14 +177,6 @@ Many additional bugs fixed.
 \t\tconst acceptOrDecline = \`${ acceptOrDecline }\`;
 \t\tconst expected = \`[YOUR EXPECTED WIKITEXT HERE]\`;
 \t\texpect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
-\t} );</syntaxhighlight>
-
-<syntaxhighlight lang="js">\ttest( \`[YOUR TEST NAME HERE]\`, () => {
-\t\tconst wikitext =
-\`${ wikitext.replace( /`/g, '\\`' ) }\`;
-\t\tconst appealReason = \`${ paramsAndReason.replace( /`/g, '\\`' ) }\`;
-\t\tconst expected = \`[YOUR EXPECTED WIKITEXT HERE]\`;
-\t\texpect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
 \t} );</syntaxhighlight>
 `;
 
