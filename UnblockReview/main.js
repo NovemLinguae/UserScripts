@@ -127,7 +127,8 @@ Many additional bugs fixed.
 					appealReason,
 					acceptDeclineReason,
 					DEFAULT_DECLINE_REASON,
-					acceptOrDecline
+					acceptOrDecline,
+					isSpamUn
 				);
 			} catch ( e ) {
 				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
@@ -137,7 +138,8 @@ Many additional bugs fixed.
 					appealReason,
 					acceptDeclineReason,
 					acceptOrDecline,
-					e.message
+					e.message,
+					isSpamUn
 				);
 
 				return;
@@ -155,7 +157,7 @@ Many additional bugs fixed.
 		} );
 	}
 
-	async function logErrorToWiki( wikitext, paramsAndReason, acceptDeclineReason, acceptOrDecline, errorMessage ) {
+	async function logErrorToWiki( wikitext, paramsAndReason, acceptDeclineReason, acceptOrDecline, errorMessage, isSpamUn ) {
 		const errorLogTitle = 'User:Novem Linguae/Scripts/UnblockReview/ErrorLog';
 		const currentUser = mw.config.get( 'wgUserName' );
 		const pageTitle = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
@@ -185,7 +187,7 @@ Many additional bugs fixed.
 \`${ wikitext.replace( /`/g, '\\`' ) }\`;
 \t\tconst appealReason = \`${ paramsAndReason.replace( /`/g, '\\`' ) }\`;
 \t\tconst expected = \`[YOUR EXPECTED WIKITEXT HERE]\`;
-\t\texpect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
+\t\texpect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason, ${ isSpamUn } ) ).toBe( expected );
 \t} );</syntaxhighlight>
 
 <syntaxhighlight lang="js">\ttest( '[YOUR TEST NAME HERE]', () => {
@@ -195,7 +197,7 @@ Many additional bugs fixed.
 \t\tconst acceptDeclineReason = \`${ acceptDeclineReason.replace( /`/g, '\\`' ) }\`;
 \t\tconst acceptOrDecline = \`${ acceptOrDecline }\`;
 \t\tconst expected = \`[YOUR EXPECTED WIKITEXT HERE]\`;
-\t\texpect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+\t\texpect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, ${ isSpamUn } ) ).toBe( expected );
 \t} );</syntaxhighlight>
 `;
 

@@ -87,6 +87,33 @@ describe( 'UnblockReview - Mixed HTML/Wikitext scenarios', () => {
 		expect( windowMock.location.reload ).toHaveBeenCalled();
 	} );
 
+	test.each( [ 'decline', 'accept' ] )( 'Clicking %s on a spam-unblock request with a newline before the reason', async ( action ) => {
+		const wikitext = `{{unblock|AlexFlooringEditor|I now understand why my account was blocked.}}\n{{unblock-spamun|AlexFlooringEditor|Other}}\n{{unblock-spamun|AlexFlooringEditor|\nI now understand why my account was blocked.}}`;
+		const html = `<div class="user-block unblock unblock-un">
+			<div></div><hr><p><b>Requested username:</b></p>
+			<div><a class="new userlink">AlexFlooringEditor</a> (<a class="new userlink">talk</a> · <a>account availability check</a> · <span><a>rename user</a></span>)</div>
+			<b>Request reason:</b><div>\nI now understand why my account was blocked.</div>
+		</div>`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, action, true );
+		const response = action === 'decline' ? `{{subst:Decline reason here}} ~~~~` : `~~~~`;
+		const expected = `{{unblock|AlexFlooringEditor|I now understand why my account was blocked.}}\n{{unblock-spamun|AlexFlooringEditor|Other}}\n{{unblock-spamun reviewed|${ action }=${ response }|AlexFlooringEditor|2=\nI now understand why my account was blocked.}}`;
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
+	} );
+
+	test( 'Does not review a different template when the spam-unblock request is absent', async () => {
+		const wikitext = `{{unblock-spamun|Alex|Other}}\n{{unblock|Alex|\nTest}}`;
+		const html = `<div class="user-block unblock unblock-un">
+			<div></div><hr><p><b>Requested username:</b></p>
+			<div><a class="userlink">Alex</a> (<a>talk</a>)</div><b>Request reason:</b><div>Test</div>
+		</div>`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'decline', true );
+		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'UnblockReview error' ), { type: 'error' } );
+		expect( postWithToken ).not.toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expect.anything() } ) );
+		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+	} );
+
 	test( 'Does not save a spam-unblock request if its reason element is missing', async () => {
 		const html = `<div class="user-block unblock unblock-un">
 			<div></div><hr><p><b>Requested username:</b></p>

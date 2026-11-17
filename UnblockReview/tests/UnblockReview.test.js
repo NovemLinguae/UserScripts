@@ -300,6 +300,37 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
 
+	test( 'Preserve a space after the spam-unblock username', () => {
+		const wikitext = `{{unblock-spamun|Alex| Test}}`;
+		const paramsAndReason = `Alex|Test`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const isSpamUn = true;
+		const expected = `{{unblock-spamun reviewed|decline=Insufficient. ~~~~|Alex|2= Test}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, isSpamUn ) ).toBe( expected );
+	} );
+
+	test( 'Preserve a newline and tab after the spam-unblock username', () => {
+		const wikitext = `{{unblock-spamun|Alex|\r\n\tTest}}`;
+		const paramsAndReason = `Alex|Test`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const isSpamUn = true;
+		const expected = `{{unblock-spamun reviewed|decline=Insufficient. ~~~~|Alex|2=\r\n\tTest}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, isSpamUn ) ).toBe( expected );
+	} );
+
+	test( 'Reject multiple matching spam-unblock requests with different whitespace', () => {
+		const wikitext = `{{unblock-spamun|Alex|Test}}\n{{unblock-spamun|Alex|\nTest}}`;
+		const paramsAndReason = `Alex|Test`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const isSpamUn = true;
+		const expected = 'Too many matching unblock templates found';
+		expect( () => unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, isSpamUn ) )
+			.toThrow( expected );
+	} );
+
 	test( 'Handle an unescaped equals sign (handle by making sure the parameter starts with 1= or 2=)', () => {
 		const wikitext =
 `{{unblock|1=I was blocked a few days ago for... <span style="font-family:'Courier New', monospace;">[[User:Test]]</span>}}`;
