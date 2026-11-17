@@ -72,6 +72,47 @@ describe( 'UnblockReview - Mixed HTML/Wikitext scenarios', () => {
 		expect( windowMock.location.reload ).toHaveBeenCalled();
 	} );
 
+	test( 'Clicking decline ignores DiscussionTools reply controls after the signature', async () => {
+		const wikitext = `{{unblock|reason=Nythar was mass reverting my edits and seriously griefing pages. A lot of work was put in to them pages. Nythar seems to want to go to war for some reason?[[Special:Contributions/109.157.92.138|109.157.92.138]] ([[User talk:109.157.92.138#top|talk]]) 10:24, 22 June 2023 (UTC)}}`;
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+			<div></div><hr><p><b>Request reason</b>:</p>
+			<div>Nythar was mass reverting my edits and seriously griefing pages. A lot of work was put in to them pages. Nythar seems to want to go to war for some reason?<span data-mw-comment-sig="c-109.157.92.138-20230622102400"></span><a class="userlink">109.157.92.138</a> (<a class="userlink">talk</a>) <a class="ext-discussiontools-init-timestamplink">10:24, 22 June 2023 (UTC)</a><span class="ext-discussiontools-init-replylink-buttons" data-mw-thread-id="c-109.157.92.138-20230622102400"><a class="ext-discussiontools-init-replylink-reply">reply</a></span><span data-mw-comment-end="c-109.157.92.138-20230622102400"></span></div>
+		</div>`;
+		const expected = `{{unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=Nythar was mass reverting my edits and seriously griefing pages. A lot of work was put in to them pages. Nythar seems to want to go to war for some reason?[[Special:Contributions/109.157.92.138|109.157.92.138]] ([[User talk:109.157.92.138#top|talk]]) 10:24, 22 June 2023 (UTC)}}`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
+		expect( document.querySelector( '.ext-discussiontools-init-replylink-buttons' ).textContent ).toBe( 'reply' );
+	} );
+
+	test( 'Accepting a spam-unblock request keeps authored links while ignoring DiscussionTools controls', async () => {
+		const wikitext = `{{unblock-spamun|Alex|Please [[Help:Reply|reply]] to me.}}`;
+		const html = `<div class="user-block unblock unblock-un">
+			<div></div><hr><p><b>Requested username:</b></p>
+			<div><a class="userlink">Alex</a> (<a>talk</a>)</div><b>Request reason:</b>
+			<div>Please <a>reply</a><span class="ext-discussiontools-init-replylink-buttons"><a>reply</a></span> to <span>me.</span></div>
+		</div>`;
+		const expected = `{{unblock-spamun reviewed|accept=~~~~|Alex|2=Please [[Help:Reply|reply]] to me.}}`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'accept', true );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
+		expect( document.querySelector( '.ext-discussiontools-init-replylink-buttons' ).textContent ).toBe( 'reply' );
+	} );
+
+	test( 'Does not mistake a reply control for an appeal reason', async () => {
+		const wikitext = `{{unblock}}`;
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+			<div></div><hr><p><b>Request reason</b>:</p>
+			<div><span class="ext-discussiontools-init-replylink-buttons"><a>reply</a></span></div>
+		</div>`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html );
+		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'unable to find' ), { type: 'error' } );
+		expect( postWithToken ).not.toHaveBeenCalled();
+		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+	} );
+
 	test.each( [ 'decline', 'accept' ] )( 'Clicking %s on a spam-unblock request uses the username and full reason', async ( action ) => {
 		const wikitext = `{{unblock-spamun|CALorenz|Test}}\n{{unblock-spamun|CALorenz|Other}}`;
 		const html = `<div class="user-block unblock unblock-un">

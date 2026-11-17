@@ -84,6 +84,16 @@ Many additional bugs fixed.
 		return [ container, hrEl ];
 	}
 
+	function getAppealText( element ) {
+		const copy = element.cloneNode( true );
+		// DiscussionTools inserts reply controls that are not part of the wikitext.
+		const replyControls = copy.querySelectorAll( '.ext-discussiontools-init-replylink-buttons' );
+		for ( let i = 0; i < replyControls.length; i++ ) {
+			replyControls[ i ].remove();
+		}
+		return copy.textContent.trim();
+	}
+
 	async function listenForAcceptAndDecline( container, hrEl, isSpamUn ) {
 		const reasonArea = container.querySelector( 'textarea' );
 		$( container ).find( 'button' ).on( 'click', async function () {
@@ -100,13 +110,13 @@ Many additional bugs fixed.
 				if ( reasonElement.tagName === 'DIV' && usernameLink && usernameLink.tagName === 'A' &&
 					reasonLabel && reasonLabel.tagName === 'B' && spamReason && spamReason.tagName === 'DIV' ) {
 					const username = usernameLink.textContent.trim();
-					const reason = spamReason.textContent.trim();
+					const reason = getAppealText( spamReason );
 					if ( username && reason ) {
 						appealReason = username + '|' + reason;
 					}
 				}
 			} else if ( !isSpamUn && reasonElement ) {
-				appealReason = reasonElement.textContent.trim();
+				appealReason = getAppealText( reasonElement );
 			}
 			// FIXME: should handle this case (|reason=\nText, https://github.com/NovemLinguae/UserScripts/issues/240) instead of throwing an error
 			if ( !appealReason ) {
