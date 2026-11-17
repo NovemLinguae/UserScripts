@@ -28,7 +28,8 @@ Many additional bugs fixed.
 				// We now have a pending unblock request - add UI
 				const unblockDiv = userBlockBoxes[ i ];
 				const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
-				await listenForAcceptAndDecline( container, hrEl );
+				const isSpamUn = unblockDiv.style.background === UNBLOCK_SPAMUN_COLOR;
+				await listenForAcceptAndDecline( container, hrEl, isSpamUn );
 			}
 		}
 	}
@@ -83,17 +84,32 @@ Many additional bugs fixed.
 		return [ container, hrEl ];
 	}
 
-	async function listenForAcceptAndDecline( container, hrEl ) {
+	async function listenForAcceptAndDecline( container, hrEl, isSpamUn ) {
 		const reasonArea = container.querySelector( 'textarea' );
 		$( container ).find( 'button' ).on( 'click', async function () {
 			// look at the innerHtml of the button to see if it says "Accept" or "Decline"
 			const acceptOrDecline = $( this ).text().toLowerCase();
-			// Get all text content from the reason div, not just the first child node
-			// This handles cases where the reason contains wikilinks or templates that render as HTML elements
-			const reasonElement = hrEl.nextElementSibling.nextElementSibling;
-			const appealReason = reasonElement.textContent.trim();
+			const reasonHeader = hrEl.nextElementSibling;
+			const reasonElement = reasonHeader && reasonHeader.nextElementSibling;
+			let appealReason;
+			if ( isSpamUn && reasonElement ) {
+				// The requested username has extra links, while the reason is in a separate div.
+				const usernameLink = reasonElement.firstElementChild;
+				const reasonLabel = reasonElement.nextElementSibling;
+				const spamReason = reasonLabel && reasonLabel.nextElementSibling;
+				if ( reasonElement.tagName === 'DIV' && usernameLink && usernameLink.tagName === 'A' &&
+					reasonLabel && reasonLabel.tagName === 'B' && spamReason && spamReason.tagName === 'DIV' ) {
+					const username = usernameLink.textContent.trim();
+					const reason = spamReason.textContent.trim();
+					if ( username && reason ) {
+						appealReason = username + '|' + reason;
+					}
+				}
+			} else if ( !isSpamUn && reasonElement ) {
+				appealReason = reasonElement.textContent.trim();
+			}
 			// FIXME: should handle this case (|reason=\nText, https://github.com/NovemLinguae/UserScripts/issues/240) instead of throwing an error
-			if ( appealReason === '' || appealReason === '\n' ) {
+			if ( !appealReason ) {
 				mw.notify( 'UnblockReview error: unable to find decline reason by scanning HTML', { type: 'error' } );
 				return;
 			}
