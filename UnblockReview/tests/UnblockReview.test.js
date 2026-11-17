@@ -184,9 +184,7 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 		const wikitext = `{{unblock|reason={{u|331dot}} I am requesting a reconsideration of this block.}}`;
 		// The appeal reason as extracted from HTML - should be the full visible text
 		const appealReason = `331dot I am requesting a reconsideration of this block.`;
-		// When the pattern matches in wikitext, it will match starting at the {{u| since that's
-		// where "331dot" appears in the wikitext. So the left half includes that.
-		const expected = `{{unblock|reason={{u|`;
+		const expected = `{{unblock|reason=`;
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
 	} );
 
@@ -194,9 +192,7 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 		// Test with different parameter styles
 		const wikitext = `{{unblock|{{u|TestUser}} Please reconsider this block.}}`;
 		const appealReason = `TestUser Please reconsider this block.`;
-		// The pattern matches starting at "TestUser" (position 14), which is inside the {{u|...}} template
-		// So the left half includes everything from {{unblock| up to the start of the match
-		const expected = `{{unblock|{{u|`;
+		const expected = `{{unblock|`;
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
 	} );
 
@@ -210,8 +206,7 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 	test( 'Reason with multiple wikilinks and templates', () => {
 		const wikitext = `{{unblock|reason={{u|Admin}} and [[User:Mod|moderator]] agree my block was a mistake.}}`;
 		const appealReason = `Admin and moderator agree my block was a mistake.`;
-		// Pattern matches starting at {{u|Admin}}, so the expected left half includes that
-		const expected = `{{unblock|reason={{u|`;
+		const expected = `{{unblock|reason=`;
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
 	} );
 } );
@@ -587,6 +582,15 @@ I was blocked a few days ago for... [[User:Test]]}}`;
 		const acceptDeclineReason = `Insufficient.`;
 		const acceptOrDecline = `decline`;
 		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=331dot Please reconsider.}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Preserve a user template in the middle of an appeal reason', () => {
+		const wikitext = `{{unblock|reason=Please {{u|331dot}} reconsider.}}`;
+		const paramsAndReason = `Please 331dot reconsider.`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=Please {{u|331dot}} reconsider.}}`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
 	} );
 

@@ -8,9 +8,6 @@ import { readFileSync } from 'fs';
 // Specifically tests the case where HTML rendering includes tags that change
 // the perceived text content vs. the actual wikitext.
 
-const unblockReview = new UnblockReview();
-const DEFAULT_DECLINE_REASON = `{{subst:Decline reason here}}`;
-
 async function clickReviewButton( wikitext, html, action = 'decline', hasUsernameParameter = false ) {
 	document.body.innerHTML = html;
 	if ( hasUsernameParameter ) {

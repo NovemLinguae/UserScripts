@@ -82,6 +82,18 @@ export class UnblockReview {
 		const templateName = initialText.match( /^\{\{([A-Za-z-]+)/i )[ 1 ];
 		let matchedReason = hasUsernameParameter ? match[ 3 ] : match[ 1 ];
 		let remainingText = wikitext.slice( match.index + match[ 0 ].length );
+		// Preserve the existing plain-text replacement for a leading {{u|...}}.
+		if ( !hasUsernameParameter && /^\{\{\s*u\s*\|/i.test( matchedReason ) ) {
+			const reasonAndRemainingText = matchedReason + remainingText;
+			const userTemplate = reasonAndRemainingText.match( /^(\{\{\s*u\s*\|\s*)([^{}|\n]+?)(\}\})/i );
+			if ( !userTemplate || !matchedReason.startsWith( userTemplate[ 1 ] + userTemplate[ 2 ] ) ) {
+				throw new Error( 'Unable to safely match the nested template in the unblock reason' );
+			}
+			const closeOffset = userTemplate[ 1 ].length + userTemplate[ 2 ].length;
+			const remainingStart = Math.max( matchedReason.length, closeOffset + 2 );
+			matchedReason = userTemplate[ 2 ] + reasonAndRemainingText.slice( closeOffset + 2, remainingStart );
+			remainingText = reasonAndRemainingText.slice( remainingStart );
+		}
 		// If the match starts inside {{u|...}}, unwrap it without assuming how other templates render.
 		const nestedStart = initialText.lastIndexOf( '{{' );
 		if ( nestedStart > 0 && nestedStart > initialText.lastIndexOf( '}}' ) ) {
@@ -338,11 +350,8 @@ export class UnblockReview {
 	 * @return {string} Regex pattern for matching the original wikitext.
 	 */
 	getAppealReasonPattern( appealReason, hasUsernameParameter = false ) {
-		// Matches tags, wikilink markup, templates, and emphasis apostrophes between rendered characters.
-		// Template pattern allows both opening {{ and closing }} to appear between characters,
-		// since rendered text from {{u|username}} renders as just "username" with the template markup invisible.
-		// The brace depth check in getLeftHalfOfUnblockTemplate() ensures we don't match inside nested templates.
-		const markup = '(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[|\\]\\]|\'{2,}(?!\')|\\{[^{}]*\\}|\\{\\{[^}]*\\}\\}|\\}\\})*';
+		// Only {{u|...}} is known to render its argument as visible text.
+		const markup = '(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[|\\]\\]|\'{2,}(?!\')|\\{[^{}]*\\}|\\{\\{\\s*[uU]\\s*\\|\\s*|\\{\\{[^}]*\\}\\}|\\}\\})*';
 		// The HTML omits parameter names and whitespace around the username separator.
 		let usernameSeparator = hasUsernameParameter;
 		return Array.from( appealReason, ( character ) => {
