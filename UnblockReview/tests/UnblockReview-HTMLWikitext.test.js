@@ -11,9 +11,9 @@ import { readFileSync } from 'fs';
 const unblockReview = new UnblockReview();
 const DEFAULT_DECLINE_REASON = `{{subst:Decline reason here}}`;
 
-async function clickReviewButton( wikitext, html, action = 'decline', spamun = false ) {
+async function clickReviewButton( wikitext, html, action = 'decline', hasUsernameParameter = false ) {
 	document.body.innerHTML = html;
-	if ( spamun ) {
+	if ( hasUsernameParameter ) {
 		// jsdom does not parse CSS variables in the background shorthand.
 		Object.defineProperty( document.querySelector( '.user-block' ).style, 'background', {
 			value: 'var(--background-color-progressive-subtle, #f1f4fd)'
@@ -111,6 +111,34 @@ describe( 'UnblockReview - Mixed HTML/Wikitext scenarios', () => {
 		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'unable to find' ), { type: 'error' } );
 		expect( postWithToken ).not.toHaveBeenCalled();
 		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+	} );
+
+	test( 'Declining an unblock-un request preserves its named username and reason', async () => {
+		const wikitext = `{{unblock-un|1=AleahP|reason=Test}}`;
+		const html = `<div class="user-block unblock unblock-un">
+			<div></div><hr><p><b>Requested username:</b></p>
+			<div><a class="userlink">AleahP</a> (<a>talk</a> · <a>account availability check</a> · <a>rename user</a>)</div>
+			<b>Request reason:</b><div>Test</div>
+		</div>`;
+		const expected = `{{unblock-un reviewed|decline={{subst:Decline reason here}} ~~~~|1=AleahP|reason=Test}}`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'decline', true );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
+	} );
+
+	test( 'Accepting an unblock-un request preserves its positional username and reason', async () => {
+		const wikitext = `{{unblock-un|AleahP|\nTest}}`;
+		const html = `<div class="user-block unblock unblock-un">
+			<div></div><hr><p><b>Requested username:</b></p>
+			<div><a class="userlink">AleahP</a> (<a>talk</a>)</div>
+			<b>Request reason:</b><div>Test</div>
+		</div>`;
+		const expected = `{{unblock-un reviewed|accept=~~~~|AleahP|2=\nTest}}`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'accept', true );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
 	} );
 
 	test.each( [ 'decline', 'accept' ] )( 'Clicking %s on a spam-unblock request uses the username and full reason', async ( action ) => {

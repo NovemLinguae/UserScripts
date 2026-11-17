@@ -305,9 +305,9 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		const paramsAndReason = `Alex|Test`;
 		const acceptDeclineReason = `Insufficient.`;
 		const acceptOrDecline = `decline`;
-		const isSpamUn = true;
+		const hasUsernameParameter = true;
 		const expected = `{{unblock-spamun reviewed|decline=Insufficient. ~~~~|Alex|2= Test}}`;
-		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, isSpamUn ) ).toBe( expected );
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter ) ).toBe( expected );
 	} );
 
 	test( 'Preserve a newline and tab after the spam-unblock username', () => {
@@ -315,9 +315,9 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		const paramsAndReason = `Alex|Test`;
 		const acceptDeclineReason = `Insufficient.`;
 		const acceptOrDecline = `decline`;
-		const isSpamUn = true;
+		const hasUsernameParameter = true;
 		const expected = `{{unblock-spamun reviewed|decline=Insufficient. ~~~~|Alex|2=\r\n\tTest}}`;
-		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, isSpamUn ) ).toBe( expected );
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter ) ).toBe( expected );
 	} );
 
 	test( 'Reject multiple matching spam-unblock requests with different whitespace', () => {
@@ -325,9 +325,61 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		const paramsAndReason = `Alex|Test`;
 		const acceptDeclineReason = `Insufficient.`;
 		const acceptOrDecline = `decline`;
-		const isSpamUn = true;
+		const hasUsernameParameter = true;
 		const expected = 'Too many matching unblock templates found';
-		expect( () => unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, isSpamUn ) )
+		expect( () => unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter ) )
+			.toThrow( expected );
+	} );
+
+	test( 'Preserve explicitly numbered parameters in an unblock-un request', () => {
+		const wikitext = `{{Unblock-un|1=AleahP|2=Test}}`;
+		const paramsAndReason = `AleahP|Test`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const hasUsernameParameter = true;
+		const expected = `{{Unblock-un reviewed|decline=Insufficient. ~~~~|1=AleahP|2=Test}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter ) ).toBe( expected );
+	} );
+
+	test( 'Skip nowiki examples and preserve spaced named parameters', () => {
+		const wikitext = `<nowiki>{{unblock-un|1=AleahP|reason=Test}}</nowiki>\n{{Unblock-un|1 = AleahP | reason = Test}}`;
+		const paramsAndReason = `AleahP|Test`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const hasUsernameParameter = true;
+		const expected = `<nowiki>{{unblock-un|1=AleahP|reason=Test}}</nowiki>\n{{Unblock-un reviewed|decline=Insufficient. ~~~~|1 = AleahP | reason = Test}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter ) ).toBe( expected );
+	} );
+
+	test( 'Reject matching username requests across both template types', () => {
+		const wikitext = `{{unblock-un|1=AleahP|reason=Test}}\n{{unblock-spamun|AleahP|Test}}`;
+		const paramsAndReason = `AleahP|Test`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const hasUsernameParameter = true;
+		const expected = 'Too many matching unblock templates found';
+		expect( () => unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter ) )
+			.toThrow( expected );
+	} );
+
+	test( 'Preserve a decline reason containing a template parameter', () => {
+		const wikitext = `{{unblock-un|1=AleahP|reason=Test}}`;
+		const paramsAndReason = `AleahP|Test`;
+		const acceptDeclineReason = `{{subst:Decline reason|1=Example}}`;
+		const acceptOrDecline = `decline`;
+		const hasUsernameParameter = true;
+		const expected = `{{unblock-un reviewed|decline={{subst:Decline reason|1=Example}} ~~~~|1=AleahP|reason=Test}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter ) ).toBe( expected );
+	} );
+
+	test( 'Do not match text beyond the end of a username request', () => {
+		const wikitext = `{{unblock-un|1=AleahP|reason=Test}} extra`;
+		const paramsAndReason = `AleahP|Test extra`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const hasUsernameParameter = true;
+		const expected = 'Replacing text with unblock message failed';
+		expect( () => unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter ) )
 			.toThrow( expected );
 	} );
 

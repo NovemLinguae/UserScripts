@@ -1,6 +1,7 @@
 export class UnblockReview {
 	constructor() {
 		this.SIGNATURE = '~~~~';
+		this.templatesThatHaveUsernameParameters = [ 'unblock-un', 'unblock-spamun' ];
 	}
 
 	/**
@@ -12,10 +13,10 @@ export class UnblockReview {
 	 * @param {string} acceptDeclineReason - The reason for accepting or declining the unblock request.
 	 * @param {string} DEFAULT_DECLINE_REASON - The default reason for declining the unblock request.
 	 * @param {string} acceptOrDecline - Either "accept" or "decline".
-	 * @param {boolean} isSpamUn - Whether the request includes a separate username parameter.
+	 * @param {boolean} hasUsernameParameter - Whether the request includes a separate username parameter.
 	 * @return {string} wikitext
 	 */
-	processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, isSpamUn = false ) {
+	processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter = false ) {
 		// HTML does one line break and wikitext does 2ish. Cut off all text after the first line break to avoid breaking our search algorithm.
 		paramsAndReason = paramsAndReason.split( '\n' )[ 0 ];
 
@@ -32,8 +33,8 @@ export class UnblockReview {
 			}
 			initialText = match[ 1 ];
 			paramsAndReason = '';
-		} else {
-			initialText = this.getLeftHalfOfUnblockTemplate( wikitext, paramsAndReason, isSpamUn );
+		} else if ( !hasUsernameParameter ) {
+			initialText = this.getLeftHalfOfUnblockTemplate( wikitext, paramsAndReason );
 		}
 
 		// if reason is blank, use the default decline reason
@@ -54,14 +55,19 @@ export class UnblockReview {
 			acceptDeclineReason = this.SIGNATURE;
 		}
 
-		const regEx = new RegExp(
-			this.escapeRegExp( initialText ) + '(' + this.getAppealReasonPattern( paramsAndReason, isSpamUn ) + ')',
-			'g'
-		);
-		const nowikiRanges = this.getNowikiRanges( wikitext );
-		const matches = [ ...wikitext.matchAll( regEx ) ].filter(
-			( match ) => !this.isInsideNowiki( match.index, nowikiRanges )
-		);
+		let matches;
+		if ( hasUsernameParameter ) {
+			matches = this.getUsernameRequestMatches( wikitext, paramsAndReason );
+		} else {
+			const regEx = new RegExp(
+				this.escapeRegExp( initialText ) + '(' + this.getAppealReasonPattern( paramsAndReason ) + ')',
+				'g'
+			);
+			const nowikiRanges = this.getNowikiRanges( wikitext );
+			matches = [ ...wikitext.matchAll( regEx ) ].filter(
+				( match ) => !this.isInsideNowiki( match.index, nowikiRanges )
+			);
+		}
 		if ( matches.length > 1 ) {
 			throw new Error( 'Too many matching unblock templates found' );
 		}
@@ -69,11 +75,14 @@ export class UnblockReview {
 			throw new Error( 'Replacing text with unblock message failed' );
 		}
 
-		// If the match starts inside {{u|...}}, unwrap it without assuming how other templates render.
-		const templateName = initialText.match( /^\{\{([A-Za-z-]+)/i )[ 1 ];
 		const match = matches[ 0 ];
-		let matchedReason = match[ 1 ];
+		if ( hasUsernameParameter ) {
+			initialText = match[ 1 ];
+		}
+		const templateName = initialText.match( /^\{\{([A-Za-z-]+)/i )[ 1 ];
+		let matchedReason = hasUsernameParameter ? match[ 3 ] : match[ 1 ];
 		let remainingText = wikitext.slice( match.index + match[ 0 ].length );
+		// If the match starts inside {{u|...}}, unwrap it without assuming how other templates render.
 		const nestedStart = initialText.lastIndexOf( '{{' );
 		if ( nestedStart > 0 && nestedStart > initialText.lastIndexOf( '}}' ) ) {
 			// The opening markup is in initialText, so remove its matching closing braces as well.
@@ -94,12 +103,23 @@ export class UnblockReview {
 		// Always add 1=. That way if there's an unescaped equals sign after it, it won't break things.
 		let replacement = '{{' + templateName + ' reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + matchedReason;
 
-		// {{Unblock-spamun}} has an extra parameter for the new username. Example:
-		// {{Unblock-spamun|NewUsername|Your reason here}}
-		// So the output need to have a 2= instead of a 1=. Example:
-		// {{Unblock-spamun reviewed|accept=I accept. ~~~~|NewUsername|2=Your reason here}}
-		const hasExtraUsernameParameter = templateName.toLowerCase() === 'unblock-spamun';
-		if ( hasExtraUsernameParameter ) {
+		if ( hasUsernameParameter ) {
+			const username = paramsAndReason.slice( 0, paramsAndReason.indexOf( '|' ) );
+			const usernamePattern = this.getAppealReasonPattern( username );
+			const parameterMatch = matchedReason.match( new RegExp(
+				'^(' + usernamePattern + ')(\\s*\\|)(\\s*)(?:(reason|2)(\\s*=\\s*))?'
+			) );
+			if ( !parameterMatch ) {
+				throw new Error( 'Unable to identify the username and reason parameters' );
+			}
+			const usernamePrefix = initialText.slice( initialText.indexOf( '|' ) + 1 );
+			const reasonPrefix = parameterMatch[ 4 ] ?
+				parameterMatch[ 3 ] + parameterMatch[ 4 ] + parameterMatch[ 5 ] :
+				'2=' + parameterMatch[ 3 ];
+			replacement = '{{' + templateName + ' reviewed|' + acceptOrDecline + '=' + acceptDeclineReason +
+				'|' + usernamePrefix + parameterMatch[ 1 ] + parameterMatch[ 2 ] + reasonPrefix +
+				matchedReason.slice( parameterMatch[ 0 ].length );
+		} else if ( templateName.toLowerCase() === 'unblock-spamun' ) {
 			// delete the first 1=
 			replacement = replacement.replace( '|1=', '|' );
 			// add a 2= after the third pipe
@@ -129,6 +149,36 @@ export class UnblockReview {
 		return haystack.split( needle, nthOccurrence ).join( needle ).length;
 	}
 
+	getUsernameRequestMatches( wikitext, paramsAndReason ) {
+		const pattern = '(\\{\\{([A-Za-z-]+)\\s*\\|\\s*(?:1\\s*=\\s*)?)(' +
+			this.getAppealReasonPattern( paramsAndReason, true ) + ')';
+		const nowikiRanges = this.getNowikiRanges( wikitext );
+		return [ ...wikitext.matchAll( new RegExp( pattern, 'g' ) ) ].filter( ( match ) => {
+			if ( !this.templatesThatHaveUsernameParameters.includes( match[ 2 ].toLowerCase() ) ||
+				this.isInsideNowiki( match.index, nowikiRanges ) ) {
+				return false;
+			}
+			let depth = 0;
+			const end = match.index + match[ 0 ].length;
+			for ( let i = match.index; i < end - 1; i++ ) {
+				if ( this.isInsideNowiki( i, nowikiRanges ) ) {
+					continue;
+				}
+				if ( wikitext.slice( i, i + 2 ) === '{{' ) {
+					depth++;
+					i++;
+				} else if ( wikitext.slice( i, i + 2 ) === '}}' ) {
+					depth--;
+					i++;
+					if ( depth === 0 ) {
+						return false;
+					}
+				}
+			}
+			return true;
+		} );
+	}
+
 	/**
 	 * Given the wikitext of an entire page, and the |reason= parameter of one of the many unblock templates (e.g. {{Unblock}}, {{Unblock-un}}, {{Unblock-auto}}, {{Unblock-bot}}, etc.), return the wikitext of just the beginning of the template.
 	 *
@@ -136,19 +186,25 @@ export class UnblockReview {
 	 *
 	 * This can also handle 1=, and no parameter at all (just a pipe)
 	 */
-	getLeftHalfOfUnblockTemplate( wikitext, appealReason, isSpamUn = false ) {
+	getLeftHalfOfUnblockTemplate( wikitext, appealReason, hasUsernameParameter = false ) {
+		if ( hasUsernameParameter ) {
+			const matches = this.getUsernameRequestMatches( wikitext, appealReason );
+			if ( matches.length === 0 ) {
+				throw new Error( 'Searching for target text failed' );
+			}
+			return matches[ 0 ][ 1 ];
+		}
 		const nowikiRanges = this.getNowikiRanges( wikitext );
 		
 		// Find all {{unblock...|reason=... patterns using matchAll
 		const structuredMatches = [ ...wikitext.matchAll( /\{\{unblock[^}]*\|reason\s*=\s*/gi ) ].filter(
-			( match ) => !this.isInsideNowiki( match.index, nowikiRanges ) &&
-				( !isSpamUn || /^\{\{unblock-spamun\s*\|/i.test( match[ 0 ] ) )
+			( match ) => !this.isInsideNowiki( match.index, nowikiRanges )
 		);
 		
 		// Try each structured match to see if the reason after it matches appealReason
 		for ( const unblockReasonMatch of structuredMatches ) {
 			const reasonStartPos = unblockReasonMatch.index + unblockReasonMatch[0].length;
-			const reasonPattern = new RegExp( this.getAppealReasonPattern( appealReason, isSpamUn ) );
+			const reasonPattern = new RegExp( this.getAppealReasonPattern( appealReason ) );
 			const reasonText = wikitext.substring( reasonStartPos );
 			const reasonMatch = reasonText.match( reasonPattern );
 
@@ -179,7 +235,7 @@ export class UnblockReview {
 				const matchPos = reasonStartPos + reasonMatch.index;
 				
 				// Verify the match is within this template (before the closing }})
-				if ( matchPos < closePos && ( !isSpamUn || matchPos + reasonMatch[ 0 ].length <= closePos ) ) {
+				if ( matchPos < closePos ) {
 					const initialText = wikitext.slice( unblockReasonMatch.index, matchPos );
 					
 					if ( !initialText.match( /^\{\{unblock/i ) ) {
@@ -196,7 +252,7 @@ export class UnblockReview {
 		// Isolate the reason, stripping out all template syntax. So `{{Unblock|reason=ABC}}` becomes matches = [ 'ABC ']
 		// eslint-disable-next-line no-useless-concat
 		const negativeLookbehinds = '(?<!<' + 'nowiki>{{unblock\\|reason=)(?<!reviewed ?\\|1=)';
-		const regEx = new RegExp( negativeLookbehinds + this.getAppealReasonPattern( appealReason, isSpamUn ), 'g' );
+		const regEx = new RegExp( negativeLookbehinds + this.getAppealReasonPattern( appealReason ), 'g' );
 		let matches = wikitext.matchAll( regEx );
 		matches = [ ...matches ];
 		
@@ -226,9 +282,6 @@ export class UnblockReview {
 					}
 
 					const initialText = wikitext.slice( potentialStart, matchPos );
-					if ( isSpamUn && !/^\{\{unblock-spamun\s*\|[^{}]*$/i.test( initialText ) ) {
-						continue;
-					}
 					
 					// If this is an unblock template, we found it
 					if ( initialText.match( /^\{\{unblock/i ) ) {
@@ -281,23 +334,24 @@ export class UnblockReview {
 	 * Return a regex pattern that matches appeal reason wikitext with tags, wikilinks, templates, or emphasis.
 	 *
 	 * @param {string} appealReason - The rendered appeal text.
-	 * @param {boolean} isSpamUn - Whether the request includes a separate username parameter.
+	 * @param {boolean} hasUsernameParameter - Whether the request includes a separate username parameter.
 	 * @return {string} Regex pattern for matching the original wikitext.
 	 */
-	getAppealReasonPattern( appealReason, isSpamUn = false ) {
+	getAppealReasonPattern( appealReason, hasUsernameParameter = false ) {
 		// Matches tags, wikilink markup, templates, and emphasis apostrophes between rendered characters.
 		// Template pattern allows both opening {{ and closing }} to appear between characters,
 		// since rendered text from {{u|username}} renders as just "username" with the template markup invisible.
 		// The brace depth check in getLeftHalfOfUnblockTemplate() ensures we don't match inside nested templates.
 		const markup = '(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[|\\]\\]|\'{2,}(?!\')|\\{[^{}]*\\}|\\{\\{[^}]*\\}\\}|\\}\\})*';
-		// The HTML omits whitespace at the start of the second spam-unblock parameter.
-		let usernameSeparator = isSpamUn;
+		// The HTML omits parameter names and whitespace around the username separator.
+		let usernameSeparator = hasUsernameParameter;
 		return Array.from( appealReason, ( character ) => {
 			const isSeparator = usernameSeparator && character === '|';
 			if ( isSeparator ) {
 				usernameSeparator = false;
+				return markup + '\\s*\\|\\s*(?:(?:reason|2)\\s*=\\s*)?';
 			}
-			return markup + this.escapeRegExp( character ) + ( isSeparator ? '\\s*' : '' );
+			return markup + this.escapeRegExp( character );
 		} ).join( '' );
 	}
 

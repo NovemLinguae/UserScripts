@@ -7,7 +7,7 @@ Many additional bugs fixed.
 ( async function () {
 	const UNBLOCK_REQ_COLOR_PRE_2025 = 'rgb(235, 244, 255)';
 	const UNBLOCK_REQ_COLOR_POST_2025 = 'var(--background-color-progressive-subtle, #EBF4FF)';
-	const UNBLOCK_SPAMUN_COLOR = 'var(--background-color-progressive-subtle, #f1f4fd)';
+	const UNBLOCK_USERNAME_COLOR = 'var(--background-color-progressive-subtle, #f1f4fd)';
 	const DEFAULT_DECLINE_REASON = '{{subst:Decline reason here}}';
 	const ADVERT = ' ([[User:Novem Linguae/Scripts/UnblockReview.js|unblock-review]])';
 
@@ -23,13 +23,13 @@ Many additional bugs fixed.
 			if (
 				userBlockBoxes[ i ].style[ 'background-color' ] === UNBLOCK_REQ_COLOR_PRE_2025 ||
 				userBlockBoxes[ i ].style.background === UNBLOCK_REQ_COLOR_POST_2025 ||
-				userBlockBoxes[ i ].style.background === UNBLOCK_SPAMUN_COLOR
+				userBlockBoxes[ i ].style.background === UNBLOCK_USERNAME_COLOR
 			) {
 				// We now have a pending unblock request - add UI
 				const unblockDiv = userBlockBoxes[ i ];
 				const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
-				const isSpamUn = unblockDiv.style.background === UNBLOCK_SPAMUN_COLOR;
-				await listenForAcceptAndDecline( container, hrEl, isSpamUn );
+				const hasUsernameParameter = unblockDiv.style.background === UNBLOCK_USERNAME_COLOR;
+				await listenForAcceptAndDecline( container, hrEl, hasUsernameParameter );
 			}
 		}
 	}
@@ -94,7 +94,7 @@ Many additional bugs fixed.
 		return copy.textContent.trim();
 	}
 
-	async function listenForAcceptAndDecline( container, hrEl, isSpamUn ) {
+	async function listenForAcceptAndDecline( container, hrEl, hasUsernameParameter ) {
 		const reasonArea = container.querySelector( 'textarea' );
 		$( container ).find( 'button' ).on( 'click', async function () {
 			// look at the innerHtml of the button to see if it says "Accept" or "Decline"
@@ -102,20 +102,20 @@ Many additional bugs fixed.
 			const reasonHeader = hrEl.nextElementSibling;
 			const reasonElement = reasonHeader && reasonHeader.nextElementSibling;
 			let appealReason;
-			if ( isSpamUn && reasonElement ) {
+			if ( hasUsernameParameter && reasonElement ) {
 				// The requested username has extra links, while the reason is in a separate div.
 				const usernameLink = reasonElement.firstElementChild;
 				const reasonLabel = reasonElement.nextElementSibling;
-				const spamReason = reasonLabel && reasonLabel.nextElementSibling;
+				const usernameReason = reasonLabel && reasonLabel.nextElementSibling;
 				if ( reasonElement.tagName === 'DIV' && usernameLink && usernameLink.tagName === 'A' &&
-					reasonLabel && reasonLabel.tagName === 'B' && spamReason && spamReason.tagName === 'DIV' ) {
+					reasonLabel && reasonLabel.tagName === 'B' && usernameReason && usernameReason.tagName === 'DIV' ) {
 					const username = usernameLink.textContent.trim();
-					const reason = getAppealText( spamReason );
+					const reason = getAppealText( usernameReason );
 					if ( username && reason ) {
 						appealReason = username + '|' + reason;
 					}
 				}
-			} else if ( !isSpamUn && reasonElement ) {
+			} else if ( !hasUsernameParameter && reasonElement ) {
 				appealReason = getAppealText( reasonElement );
 			}
 			// FIXME: should handle this case (|reason=\nText, https://github.com/NovemLinguae/UserScripts/issues/240) instead of throwing an error
@@ -138,7 +138,7 @@ Many additional bugs fixed.
 					acceptDeclineReason,
 					DEFAULT_DECLINE_REASON,
 					acceptOrDecline,
-					isSpamUn
+					hasUsernameParameter
 				);
 			} catch ( e ) {
 				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
@@ -149,7 +149,7 @@ Many additional bugs fixed.
 					acceptDeclineReason,
 					acceptOrDecline,
 					e.message,
-					isSpamUn
+					hasUsernameParameter
 				);
 
 				return;
@@ -167,7 +167,7 @@ Many additional bugs fixed.
 		} );
 	}
 
-	async function logErrorToWiki( wikitext, paramsAndReason, acceptDeclineReason, acceptOrDecline, errorMessage, isSpamUn ) {
+	async function logErrorToWiki( wikitext, paramsAndReason, acceptDeclineReason, acceptOrDecline, errorMessage, hasUsernameParameter ) {
 		const errorLogTitle = 'User:Novem Linguae/Scripts/UnblockReview/ErrorLog';
 		const currentUser = mw.config.get( 'wgUserName' );
 		const pageTitle = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
@@ -197,7 +197,7 @@ Many additional bugs fixed.
 \`${ wikitext.replace( /`/g, '\\`' ) }\`;
 \t\tconst appealReason = \`${ paramsAndReason.replace( /`/g, '\\`' ) }\`;
 \t\tconst expected = \`[YOUR EXPECTED WIKITEXT HERE]\`;
-\t\texpect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason, ${ isSpamUn } ) ).toBe( expected );
+\t\texpect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason, ${ hasUsernameParameter } ) ).toBe( expected );
 \t} );</syntaxhighlight>
 
 <syntaxhighlight lang="js">\ttest( '[YOUR TEST NAME HERE]', () => {
@@ -207,7 +207,7 @@ Many additional bugs fixed.
 \t\tconst acceptDeclineReason = \`${ acceptDeclineReason.replace( /`/g, '\\`' ) }\`;
 \t\tconst acceptOrDecline = \`${ acceptOrDecline }\`;
 \t\tconst expected = \`[YOUR EXPECTED WIKITEXT HERE]\`;
-\t\texpect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, ${ isSpamUn } ) ).toBe( expected );
+\t\texpect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, ${ hasUsernameParameter } ) ).toBe( expected );
 \t} );</syntaxhighlight>
 `;
 
