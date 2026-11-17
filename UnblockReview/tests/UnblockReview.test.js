@@ -407,6 +407,14 @@ Seem’st thou thrive if he did banish thee, arm against thy quarrel.`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter ) ).toBe( expected );
 	} );
 
+	test( 'Escape unbalanced template-closing braces in the reviewer reason by adding <nowiki/>', () => {
+		const wikitext = `{{unblock|reason=I do not understand what instruction I am not following.}}`;
+		const paramsAndReason = `I do not understand what instruction I am not following.`;
+		const acceptDeclineReason = `Does it say to use {<nowiki/>{unblock'''-auto'''}} instead of {<nowiki/>{unblock}} (please note carefully the emphasis)?`;
+		const expected = `{{unblock reviewed|decline=Does it say to use {<nowiki/>{unblock'''-auto'''}<nowiki/>} instead of {<nowiki/>{unblock}<nowiki/>} (please note carefully the emphasis)? ~~~~|1=I do not understand what instruction I am not following.}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, `decline` ) ).toBe( expected );
+	} );
+
 	test( 'Do not match text beyond the end of a username request', () => {
 		const wikitext = `{{unblock-un|1=AleahP|reason=Test}} extra`;
 		const paramsAndReason = `AleahP|Test extra`;

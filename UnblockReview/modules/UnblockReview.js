@@ -54,6 +54,7 @@ export class UnblockReview {
 		} else if ( !acceptDeclineReason ) {
 			acceptDeclineReason = this.SIGNATURE;
 		}
+		acceptDeclineReason = this.escapeUnbalancedTemplateBraces( acceptDeclineReason );
 
 		let matches;
 		if ( hasUsernameParameter ) {
@@ -159,6 +160,53 @@ export class UnblockReview {
 	 */
 	getPosition( haystack, needle, nthOccurrence ) {
 		return haystack.split( needle, nthOccurrence ).join( needle ).length;
+	}
+
+	/**
+	 * Prevent unbalanced template braces (for example, unescaped `}}`) in a reviewer response from closing its enclosing template.
+	 */
+	escapeUnbalancedTemplateBraces( text ) {
+		const nowikiRanges = this.getNowikiRanges( text );
+		const openingBraces = [];
+		const unmatchedClosingBraces = new Set();
+		let nowikiRangeIndex = 0;
+		for ( let i = 0; i < text.length - 1; ) {
+			while ( nowikiRangeIndex < nowikiRanges.length && nowikiRanges[ nowikiRangeIndex ][ 1 ] <= i ) {
+				nowikiRangeIndex++;
+			}
+			const nowikiRange = nowikiRanges[ nowikiRangeIndex ];
+			if ( nowikiRange && i >= nowikiRange[ 0 ] ) {
+				i = nowikiRange[ 1 ];
+			} else if ( text.slice( i, i + 2 ) === '{{' ) {
+				openingBraces.push( i );
+				i += 2;
+			} else if ( text.slice( i, i + 2 ) === '}}' ) {
+				if ( openingBraces.length ) {
+					openingBraces.pop();
+				} else {
+					unmatchedClosingBraces.add( i );
+				}
+				i += 2;
+			} else {
+				i++;
+			}
+		}
+
+		const unmatchedOpeningBraces = new Set( openingBraces );
+		let escapedText = '';
+		for ( let i = 0; i < text.length; ) {
+			if ( unmatchedOpeningBraces.has( i ) ) {
+				escapedText += '{<nowiki/>{';
+				i += 2;
+			} else if ( unmatchedClosingBraces.has( i ) ) {
+				escapedText += '}<nowiki/>}';
+				i += 2;
+			} else {
+				escapedText += text[ i ];
+				i++;
+			}
+		}
+		return escapedText;
 	}
 
 	getUsernameRequestMatches( wikitext, paramsAndReason ) {
