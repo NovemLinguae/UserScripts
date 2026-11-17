@@ -1,5 +1,4 @@
-/** @jest-environment jsdom */
-/* eslint-disable quotes, block-spacing, brace-style, max-statements-per-line */
+/* eslint-disable quotes */
 
 import { UnblockReview } from '../modules/UnblockReview.js';
 import { readFileSync } from 'fs';
@@ -200,14 +199,14 @@ describe( 'UnblockReview - Mixed HTML/Wikitext scenarios', () => {
 		// - HTML renders {{u|331dot}} as: <a rel="mw:WikiLink" href="...">331dot</a>
 		// - The displayed text is: "331dot I am requesting a reconsideration of this block."
 		// - But textContent extraction might only get "331dot" if not done carefully
-		
+
 		const wikitext = `{{unblock|reason={{u|331dot}} I am requesting a reconsideration of this block.}}`;
 		// The appeal reason as extracted from HTML - should be the full visible text
 		const appealReason = `331dot I am requesting a reconsideration of this block.`;
 		// When the pattern matches in wikitext, it will match starting at the {{u| since that's
 		// where "331dot" appears in the wikitext. So the left half includes that.
 		const expected = `{{unblock|reason={{u|`;
-		
+
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
 	} );
 
@@ -216,7 +215,7 @@ describe( 'UnblockReview - Mixed HTML/Wikitext scenarios', () => {
 		const paramsAndReason = `331dot I am requesting a reconsideration of this block.`;
 		const acceptDeclineReason = `Looks good. ~~~~`;
 		const acceptOrDecline = `accept`;
-		
+
 		const result = unblockReview.processAcceptOrDecline(
 			wikitext,
 			paramsAndReason,
@@ -224,7 +223,7 @@ describe( 'UnblockReview - Mixed HTML/Wikitext scenarios', () => {
 			DEFAULT_DECLINE_REASON,
 			acceptOrDecline
 		);
-		
+
 		expect( result ).toBe( '{{unblock reviewed|accept=Looks good. ~~~~|1=331dot I am requesting a reconsideration of this block.}}' );
 	} );
 
@@ -233,7 +232,7 @@ describe( 'UnblockReview - Mixed HTML/Wikitext scenarios', () => {
 		const paramsAndReason = `331dot I am requesting a reconsideration of this block.`;
 		const acceptDeclineReason = DEFAULT_DECLINE_REASON;
 		const acceptOrDecline = `decline`;
-		
+
 		const result = unblockReview.processAcceptOrDecline(
 			wikitext,
 			paramsAndReason,
@@ -241,7 +240,7 @@ describe( 'UnblockReview - Mixed HTML/Wikitext scenarios', () => {
 			DEFAULT_DECLINE_REASON,
 			acceptOrDecline
 		);
-		
+
 		expect( result ).toBe( '{{unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=331dot I am requesting a reconsideration of this block.}}' );
 	} );
 
@@ -270,7 +269,7 @@ describe( 'UnblockReview - Mixed HTML/Wikitext scenarios', () => {
 		// The pattern matches starting at "TestUser" (position 14), which is inside the {{u|...}} template
 		// So the left half includes everything from {{unblock| up to the start of the match
 		const expected = `{{unblock|{{u|`;
-		
+
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
 	} );
 
@@ -278,7 +277,7 @@ describe( 'UnblockReview - Mixed HTML/Wikitext scenarios', () => {
 		const wikitext = `{{unblock|reason=I believe my [[User:Admin|appeal]] should be reconsidered.}}`;
 		const appealReason = `I believe my appeal should be reconsidered.`;
 		const expected = `{{unblock|reason=`;
-		
+
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
 	} );
 
@@ -287,7 +286,7 @@ describe( 'UnblockReview - Mixed HTML/Wikitext scenarios', () => {
 		const appealReason = `Admin and moderator agree my block was a mistake.`;
 		// Pattern matches starting at {{u|Admin}}, so the expected left half includes that
 		const expected = `{{unblock|reason={{u|`;
-		
+
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
 	} );
 } );

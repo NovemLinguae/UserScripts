@@ -195,34 +195,34 @@ export class UnblockReview {
 			return matches[ 0 ][ 1 ];
 		}
 		const nowikiRanges = this.getNowikiRanges( wikitext );
-		
+
 		// Find all {{unblock...|reason=... patterns using matchAll
 		const structuredMatches = [ ...wikitext.matchAll( /\{\{unblock[^}]*\|reason\s*=\s*/gi ) ].filter(
 			( match ) => !this.isInsideNowiki( match.index, nowikiRanges )
 		);
-		
+
 		// Try each structured match to see if the reason after it matches appealReason
 		for ( const unblockReasonMatch of structuredMatches ) {
-			const reasonStartPos = unblockReasonMatch.index + unblockReasonMatch[0].length;
+			const reasonStartPos = unblockReasonMatch.index + unblockReasonMatch[ 0 ].length;
 			const reasonPattern = new RegExp( this.getAppealReasonPattern( appealReason ) );
-			const reasonText = wikitext.substring( reasonStartPos );
+			const reasonText = wikitext.slice( reasonStartPos );
 			const reasonMatch = reasonText.match( reasonPattern );
 
 			if ( reasonMatch ) {
 				// Found a match! But need to verify it's the correct template.
 				// The match position could be in a nested template if the pattern allows }}
 				// Find the closing }} of THIS template to ensure our match is inside it
-				
+
 				// Count braces from the {{unblock start to find where this template closes
 				let braceDepth = 2; // Start with the opening {{
-				let closePos = unblockReasonMatch.index + unblockReasonMatch[0].length;
-				
+				let closePos = unblockReasonMatch.index + unblockReasonMatch[ 0 ].length;
+
 				// Scan forward to find the closing }} that closes this {{unblock template
 				for ( let i = closePos; i < wikitext.length - 1; i++ ) {
-					if ( wikitext[i] === '{' && wikitext[i+1] === '{' ) {
+					if ( wikitext[ i ] === '{' && wikitext[ i + 1 ] === '{' ) {
 						braceDepth += 2;
 						i++; // Skip next char since we just processed it
-					} else if ( wikitext[i] === '}' && wikitext[i+1] === '}' ) {
+					} else if ( wikitext[ i ] === '}' && wikitext[ i + 1 ] === '}' ) {
 						braceDepth -= 2;
 						if ( braceDepth === 0 ) {
 							closePos = i;
@@ -231,13 +231,13 @@ export class UnblockReview {
 						i++; // Skip next char since we just processed it
 					}
 				}
-				
+
 				const matchPos = reasonStartPos + reasonMatch.index;
-				
+
 				// Verify the match is within this template (before the closing }})
 				if ( matchPos < closePos ) {
 					const initialText = wikitext.slice( unblockReasonMatch.index, matchPos );
-					
+
 					if ( !initialText.match( /^\{\{unblock/i ) ) {
 						throw new Error( 'Failed to find left half of unblock template in the wikicode' );
 					}
@@ -247,7 +247,7 @@ export class UnblockReview {
 				// Otherwise, continue to the next structured match
 			}
 		}
-		
+
 		// If we didn't find a match via the structured approach, fall back to pattern-based approach
 		// Isolate the reason, stripping out all template syntax. So `{{Unblock|reason=ABC}}` becomes matches = [ 'ABC ']
 		// eslint-disable-next-line no-useless-concat
@@ -255,10 +255,10 @@ export class UnblockReview {
 		const regEx = new RegExp( negativeLookbehinds + this.getAppealReasonPattern( appealReason ), 'g' );
 		let matches = wikitext.matchAll( regEx );
 		matches = [ ...matches ];
-		
+
 		// Filter out matches that are inside nowiki blocks - those aren't valid
-		matches = matches.filter( match => !this.isInsideNowiki( match.index, nowikiRanges ) );
-		
+		matches = matches.filter( ( match ) => !this.isInsideNowiki( match.index, nowikiRanges ) );
+
 		if ( matches.length === 0 ) {
 			throw new Error( 'Searching for target text failed' );
 		}
@@ -271,18 +271,18 @@ export class UnblockReview {
 			// Keep scanning through nested templates until we find one that starts with {{unblock
 			// Stop at the beginning of the string OR after 100 characters
 			const stopPos = Math.max( 0, matchPos - 100 );
-			
+
 			for ( let i = matchPos; i > stopPos; i-- ) {
 				if ( wikitext[ i ] === '{' && wikitext[ i - 1 ] === '{' ) {
 					const potentialStart = i - 1;
-					
+
 					if ( this.isInsideNowiki( potentialStart, nowikiRanges ) ) {
 						// Skip {{  inside nowiki tags
 						continue;
 					}
 
 					const initialText = wikitext.slice( potentialStart, matchPos );
-					
+
 					// If this is an unblock template, we found it
 					if ( initialText.match( /^\{\{unblock/i ) ) {
 						// Don't match already reviewed templates
