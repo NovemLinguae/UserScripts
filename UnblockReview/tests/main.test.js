@@ -1,3 +1,4 @@
+/** @jest-environment jsdom */ // eslint-disable-line jsdoc/check-tag-names
 /* eslint-disable quotes */
 
 import { UnblockReview } from '../modules/UnblockReview.js';
