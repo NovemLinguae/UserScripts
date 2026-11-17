@@ -88,9 +88,12 @@ Many additional bugs fixed.
 		$( container ).find( 'button' ).on( 'click', async function () {
 			// look at the innerHtml of the button to see if it says "Accept" or "Decline"
 			const acceptOrDecline = $( this ).text().toLowerCase();
-			const appealReason = hrEl.nextElementSibling.nextElementSibling.childNodes[ 0 ].textContent;
+			// Get all text content from the reason div, not just the first child node
+			// This handles cases where the reason contains wikilinks or templates that render as HTML elements
+			const reasonElement = hrEl.nextElementSibling.nextElementSibling;
+			const appealReason = reasonElement.textContent.trim();
 			// FIXME: should handle this case (|reason=\nText, https://github.com/NovemLinguae/UserScripts/issues/240) instead of throwing an error
-			if ( appealReason === '\n' ) {
+			if ( appealReason === '' || appealReason === '\n' ) {
 				mw.notify( 'UnblockReview error: unable to find decline reason by scanning HTML', { type: 'error' } );
 				return;
 			}

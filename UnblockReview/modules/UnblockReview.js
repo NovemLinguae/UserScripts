@@ -116,15 +116,71 @@ export class UnblockReview {
 	 * This can also handle 1=, and no parameter at all (just a pipe)
 	 */
 	getLeftHalfOfUnblockTemplate( wikitext, appealReason ) {
+		const nowikiRanges = this.getNowikiRanges( wikitext );
+		
+		// Find all {{unblock...|reason=... patterns using matchAll
+		const structuredMatches = [ ...wikitext.matchAll( /\{\{unblock[^}]*\|reason\s*=\s*/gi ) ].filter(
+			match => !this.isInsideNowiki( match.index, nowikiRanges )
+		);
+		
+		// Try each structured match to see if the reason after it matches appealReason
+		for ( const unblockReasonMatch of structuredMatches ) {
+			const reasonStartPos = unblockReasonMatch.index + unblockReasonMatch[0].length;
+			const reasonPattern = new RegExp( this.getAppealReasonPattern( appealReason ) );
+			const reasonText = wikitext.substring( reasonStartPos );
+			const reasonMatch = reasonText.match( reasonPattern );
+
+			if ( reasonMatch ) {
+				// Found a match! But need to verify it's the correct template.
+				// The match position could be in a nested template if the pattern allows }}
+				// Find the closing }} of THIS template to ensure our match is inside it
+				
+				// Count braces from the {{unblock start to find where this template closes
+				let braceDepth = 2; // Start with the opening {{
+				let closePos = unblockReasonMatch.index + unblockReasonMatch[0].length;
+				
+				// Scan forward to find the closing }} that closes this {{unblock template
+				for ( let i = closePos; i < wikitext.length - 1; i++ ) {
+					if ( wikitext[i] === '{' && wikitext[i+1] === '{' ) {
+						braceDepth += 2;
+						i++; // Skip next char since we just processed it
+					} else if ( wikitext[i] === '}' && wikitext[i+1] === '}' ) {
+						braceDepth -= 2;
+						if ( braceDepth === 0 ) {
+							closePos = i;
+							break;
+						}
+						i++; // Skip next char since we just processed it
+					}
+				}
+				
+				const matchPos = reasonStartPos + reasonMatch.index;
+				
+				// Verify the match is within this template (before the closing }})
+				if ( matchPos < closePos ) {
+					const initialText = wikitext.slice( unblockReasonMatch.index, matchPos );
+					
+					if ( !initialText.match( /^\{\{unblock/i ) ) {
+						throw new Error( 'Failed to find left half of unblock template in the wikicode' );
+					}
+
+					return initialText;
+				}
+				// Otherwise, continue to the next structured match
+			}
+		}
+		
+		// If we didn't find a match via the structured approach, fall back to pattern-based approach
 		// Isolate the reason, stripping out all template syntax. So `{{Unblock|reason=ABC}}` becomes matches = [ 'ABC ']
 		// eslint-disable-next-line no-useless-concat
 		const negativeLookbehinds = '(?<!<' + 'nowiki>{{unblock\\|reason=)(?<!reviewed ?\\|1=)';
 		const regEx = new RegExp( negativeLookbehinds + this.getAppealReasonPattern( appealReason ), 'g' );
 		let matches = wikitext.matchAll( regEx );
 		matches = [ ...matches ];
-		const nowikiRanges = this.getNowikiRanges( wikitext );
-		let hasNonNowikiMatch = false;
-
+		
+		// Filter out matches that are inside nowiki blocks - those aren't valid
+		matches = matches.filter( match => !this.isInsideNowiki( match.index, nowikiRanges ) );
+		
 		if ( matches.length === 0 ) {
 			throw new Error( 'Searching for target text failed' );
 		}
@@ -132,38 +188,37 @@ export class UnblockReview {
 		// Loop through all the potential matches, trying to find an {{Unblock template. If found, return the beginning of the template.
 		for ( const match of matches ) {
 			const matchPos = match.index;
-			let unblockTemplateStartPos;
 
-			// Scan backwards from the match until we find {{
-			// Stop at the beginning of the string OR after 50 characters
-			const stopPos = Math.max( 0, matchPos - 50 );
+			// Scan backwards from the match until we find the {{unblock template
+			// Keep scanning through nested templates until we find one that starts with {{unblock
+			// Stop at the beginning of the string OR after 100 characters
+			const stopPos = Math.max( 0, matchPos - 100 );
+			
 			for ( let i = matchPos; i > stopPos; i-- ) {
 				if ( wikitext[ i ] === '{' && wikitext[ i - 1 ] === '{' ) {
-					unblockTemplateStartPos = i - 1;
-					break;
+					const potentialStart = i - 1;
+					
+					if ( this.isInsideNowiki( potentialStart, nowikiRanges ) ) {
+						// Skip {{  inside nowiki tags
+						continue;
+					}
+
+					const initialText = wikitext.slice( potentialStart, matchPos );
+					
+					// If this is an unblock template, we found it
+					if ( initialText.match( /^\{\{unblock/i ) ) {
+						// Don't match already reviewed templates
+						if ( !initialText.match( /\s+reviewed\s*\|/ ) ) {
+							return initialText;
+						}
+					}
+					// Otherwise, continue searching backward for the outer template
 				}
 			}
-
-			if ( this.isInsideNowiki( unblockTemplateStartPos === undefined ? matchPos : unblockTemplateStartPos, nowikiRanges ) ) {
-				continue;
-			}
-			hasNonNowikiMatch = true;
-
-			// Don't match stuff that isn't an unblock template
-			const initialText = wikitext.slice( unblockTemplateStartPos, matchPos );
-			if ( !initialText.match( /^\{\{unblock/i ) ) {
-				continue;
-			}
-
-			// Don't match already reviewed templates. These are marked with the word "reviewed". Example: {{unblock-spamun reviewed|
-			if ( initialText.match( /\s+reviewed\s*\|/ ) ) {
-				continue;
-			}
-
-			return initialText;
 		}
 
-		throw new Error( hasNonNowikiMatch ? 'Failed to find left half of unblock template in the wikicode' : 'Searching for target text failed' );
+		// If we got here, we found the target text but no valid unblock template
+		throw new Error( 'Failed to find left half of unblock template in the wikicode' );
 	}
 
 	/**
@@ -198,14 +253,17 @@ export class UnblockReview {
 	}
 
 	/**
-	 * Return a regex pattern that matches appeal reason wikitext with tags, wikilinks, or emphasis.
+	 * Return a regex pattern that matches appeal reason wikitext with tags, wikilinks, templates, or emphasis.
 	 *
 	 * @param {string} appealReason - The rendered appeal text.
 	 * @return {string} Regex pattern for matching the original wikitext.
 	 */
 	getAppealReasonPattern( appealReason ) {
-		// Matches tags, wikilink markup, and emphasis apostrophes between rendered characters.
-		const markup = '(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[|\\]\\]|\'{2,}(?!\'))*';
+		// Matches tags, wikilink markup, templates, and emphasis apostrophes between rendered characters.
+		// Template pattern allows both opening {{ and closing }} to appear between characters,
+		// since rendered text from {{u|username}} renders as just "username" with the template markup invisible.
+		// The brace depth check in getLeftHalfOfUnblockTemplate() ensures we don't match inside nested templates.
+		const markup = '(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[|\\]\\]|\'{2,}(?!\')|\\{[^{}]*\\}|\\{\\{[^}]*\\}\\}|\\}\\})*';
 		return Array.from( appealReason, ( character ) => markup + this.escapeRegExp( character ) ).join( '' );
 	}
 
