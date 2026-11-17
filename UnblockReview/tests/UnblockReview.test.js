@@ -174,6 +174,46 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 		const wikitext = `<NOWIKI>\n*:{{unblock|reason=Appeal}}</NOWIKI>\n<nowiki/>{{Unblock|1=Appeal}}`;
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, `Appeal` ) ).toBe( `{{Unblock|1=` );
 	} );
+
+	test( '{{unblock|reason={{u|331dot}} I am requesting a reconsideration of this block.}}', () => {
+		// This test represents a real Wikipedia scenario where:
+		// - Wikitext: {{unblock|reason={{u|331dot}} I am requesting a reconsideration of this block.}}
+		// - HTML renders {{u|331dot}} as: <a rel="mw:WikiLink" href="...">331dot</a>
+		// - The displayed text is: "331dot I am requesting a reconsideration of this block."
+		// - But textContent extraction might only get "331dot" if not done carefully
+		const wikitext = `{{unblock|reason={{u|331dot}} I am requesting a reconsideration of this block.}}`;
+		// The appeal reason as extracted from HTML - should be the full visible text
+		const appealReason = `331dot I am requesting a reconsideration of this block.`;
+		// When the pattern matches in wikitext, it will match starting at the {{u| since that's
+		// where "331dot" appears in the wikitext. So the left half includes that.
+		const expected = `{{unblock|reason={{u|`;
+		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
+	} );
+
+	test( 'Multiple template syntax variations with wiki markup', () => {
+		// Test with different parameter styles
+		const wikitext = `{{unblock|{{u|TestUser}} Please reconsider this block.}}`;
+		const appealReason = `TestUser Please reconsider this block.`;
+		// The pattern matches starting at "TestUser" (position 14), which is inside the {{u|...}} template
+		// So the left half includes everything from {{unblock| up to the start of the match
+		const expected = `{{unblock|{{u|`;
+		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
+	} );
+
+	test( 'Reason with wikilink in middle', () => {
+		const wikitext = `{{unblock|reason=I believe my [[User:Admin|appeal]] should be reconsidered.}}`;
+		const appealReason = `I believe my appeal should be reconsidered.`;
+		const expected = `{{unblock|reason=`;
+		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
+	} );
+
+	test( 'Reason with multiple wikilinks and templates', () => {
+		const wikitext = `{{unblock|reason={{u|Admin}} and [[User:Mod|moderator]] agree my block was a mistake.}}`;
+		const appealReason = `Admin and moderator agree my block was a mistake.`;
+		// Pattern matches starting at {{u|Admin}}, so the expected left half includes that
+		const expected = `{{unblock|reason={{u|`;
+		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
+	} );
 } );
 
 describe( 'processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline )', () => {
@@ -512,6 +552,51 @@ I was blocked a few days ago for... [[User:Test]]}}`;
 		const acceptOrDecline = `decline`;
 		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=I can't ''edit'' and '''need''' help}}`;
 		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Full workflow: accept with {{u|user}} link in reason', () => {
+		const wikitext = `{{unblock|reason={{u|331dot}} I am requesting a reconsideration of this block.}}`;
+		const paramsAndReason = `331dot I am requesting a reconsideration of this block.`;
+		const acceptDeclineReason = `Looks good. ~~~~`;
+		const acceptOrDecline = `accept`;
+		const expected = '{{unblock reviewed|accept=Looks good. ~~~~|1=331dot I am requesting a reconsideration of this block.}}';
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Full workflow: decline with {{u|user}} link in reason', () => {
+		const wikitext = `{{unblock|reason={{u|331dot}} I am requesting a reconsideration of this block.}}`;
+		const paramsAndReason = `331dot I am requesting a reconsideration of this block.`;
+		const acceptDeclineReason = DEFAULT_DECLINE_REASON;
+		const acceptOrDecline = `decline`;
+		const expected = '{{unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=331dot I am requesting a reconsideration of this block.}}';
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'A user link at the end of the matched text keeps the remainder of the reason', () => {
+		const wikitext = `{{unblock|reason={{u|331dot}} and more text.}}`;
+		const paramsAndReason = `331dot`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=331dot and more text.}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Declines a positional reason beginning with a user link', () => {
+		const wikitext = `{{unblock|{{u|331dot}} Please reconsider.}}`;
+		const paramsAndReason = `331dot Please reconsider.`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=331dot Please reconsider.}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
+	test( 'Does not assume another template renders its argument as a user link', () => {
+		const wikitext = `{{unblock|reason={{other|331dot}} I am requesting reconsideration.}}`;
+		const paramsAndReason = `331dot I am requesting reconsideration.`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const expectedError = 'Unable to safely match the nested template in the unblock reason';
+		expect( () => unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toThrow( expectedError );
 	} );
 } );
 
