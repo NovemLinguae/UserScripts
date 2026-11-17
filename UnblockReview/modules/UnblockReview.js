@@ -68,10 +68,30 @@ export class UnblockReview {
 			throw new Error( 'Replacing text with unblock message failed' );
 		}
 
+		// If the match starts inside {{u|...}}, unwrap it without assuming how other templates render.
 		const templateName = initialText.match( /^\{\{([A-Za-z-]+)/i )[ 1 ];
 		const match = matches[ 0 ];
+		let matchedReason = match[ 1 ];
+		let remainingText = wikitext.slice( match.index + match[ 0 ].length );
+		const nestedStart = initialText.lastIndexOf( '{{' );
+		if ( nestedStart > 0 && nestedStart > initialText.lastIndexOf( '}}' ) ) {
+			// The opening markup is in initialText, so remove its matching closing braces as well.
+			const nestedTemplate = wikitext.slice( match.index + nestedStart ).match( /^\{\{\s*u\s*\|\s*([^{}|\n]+?)\}\}/i );
+			if ( !nestedTemplate || !matchedReason.startsWith( nestedTemplate[ 1 ] ) ) {
+				throw new Error( 'Unable to safely match the nested template in the unblock reason' );
+			}
+			const closeOffset = nestedTemplate[ 1 ].length;
+			const reasonAndRemainingText = matchedReason + remainingText;
+			if ( reasonAndRemainingText.slice( closeOffset, closeOffset + 2 ) !== '}}' ) {
+				throw new Error( 'Unable to safely match the nested template in the unblock reason' );
+			}
+			const remainingStart = Math.max( matchedReason.length, closeOffset + 2 );
+			matchedReason = reasonAndRemainingText.slice( 0, closeOffset ) +
+				reasonAndRemainingText.slice( closeOffset + 2, remainingStart );
+			remainingText = reasonAndRemainingText.slice( remainingStart );
+		}
 		// Always add 1=. That way if there's an unescaped equals sign after it, it won't break things.
-		let replacement = '{{' + templateName + ' reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + match[ 1 ];
+		let replacement = '{{' + templateName + ' reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + matchedReason;
 
 		// {{Unblock-spamun}} has an extra parameter for the new username. Example:
 		// {{Unblock-spamun|NewUsername|Your reason here}}
@@ -86,7 +106,7 @@ export class UnblockReview {
 			replacement = replacement.slice( 0, thirdPipePos ) + '|2=' + replacement.slice( thirdPipePos + 1 );
 		}
 
-		let wikitext2 = wikitext.slice( 0, match.index ) + replacement + wikitext.slice( match.index + match[ 0 ].length );
+		let wikitext2 = wikitext.slice( 0, match.index ) + replacement + remainingText;
 		if ( wikitext === wikitext2 ) {
 			throw new Error( 'Replacing text with unblock message failed' );
 		}
