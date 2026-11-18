@@ -4,10 +4,15 @@
 import { UnblockReview } from '../modules/UnblockReview.js';
 import { readFileSync } from 'fs';
 
-// Test for handling mixed HTML and wikitext scenarios
-// Specifically tests the case where HTML rendering includes tags that change
-// the perceived text content vs. the actual wikitext.
-
+/**
+ * Mock a bunch of DOM stuff using `@jest-environment jsdom`. Return these mocks so that the calling test can check their values and make assertions against them.
+ *
+ * @param {string} wikitext The wikitext content of the unblock request.
+ * @param {string} html The HTML content to be rendered in the DOM. This should be really simple HTML that doesn't yet have the UnblockReview <section> added -- this function will simulate adding the review section and clicking the appropriate button.
+ * @param {string} [action='decline'] The action to simulate clicking ('decline' or 'approve').
+ * @param {boolean} [hasUsernameParameter=false] Whether the unblock request has a username parameter. For example, is this an {{Unblock}} template or an {{Unblock-spamun}} template?
+ * @return {Object} Object containing mw, postWithToken, and windowMock. Api().postWithToken is useful for checking what the edit API call was. windowMock is useful for checking if the page has been refreshed.
+ */
 async function clickReviewButton( wikitext, html, action = 'decline', hasUsernameParameter = false ) {
 	document.body.innerHTML = html;
 	if ( hasUsernameParameter ) {
