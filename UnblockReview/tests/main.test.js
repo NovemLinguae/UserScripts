@@ -5,13 +5,13 @@ import { UnblockReview } from '../modules/UnblockReview.js';
 import { readFileSync } from 'fs';
 
 /**
- * Mock a bunch of DOM stuff using `@jest-environment jsdom`. Return these mocks so that the calling test can check their values and make assertions against them.
+ * Set up the jsdom document and mocks needed to run main.js, then invoke the registered handler for the accept/decline button.
  *
- * @param {string} wikitext The wikitext content of the unblock request.
- * @param {string} html The HTML content to be rendered in the DOM. This should be really simple HTML that doesn't yet have the UnblockReview <section> added -- this function will simulate adding the review section and clicking the appropriate button.
- * @param {string} [action='decline'] The action to simulate clicking ('decline' or 'approve').
- * @param {boolean} [hasUsernameParameter=false] Whether the unblock request has a username parameter. For example, is this an {{Unblock}} template or an {{Unblock-spamun}} template?
- * @return {Object} Object containing mw, postWithToken, and windowMock. Api().postWithToken is useful for checking what the edit API call was. windowMock is useful for checking if the page has been refreshed.
+ * @param {string} wikitext The page wikitext returned by the mocked MediaWiki API.
+ * @param {string} html Rendered unblock-request HTML, before main.js adds UnblockReview HTML.
+ * @param {string} [action='decline'] The review action to simulate ('accept' or 'decline'). The registered handler is called directly; no click event is dispatched.
+ * @param {boolean} [hasUsernameParameter=false] Whether the request uses a separate username parameter, as in {{unblock-un|username|reason}} or {{unblock-spamun|username|reason}}.
+ * @return {Object} Mocks for assertions: mw (including notifications and API methods), postWithToken (the edit API spy), and windowMock (including the reload spy).
  */
 async function clickReviewButton( wikitext, html, action = 'decline', hasUsernameParameter = false ) {
 	document.body.innerHTML = html;
