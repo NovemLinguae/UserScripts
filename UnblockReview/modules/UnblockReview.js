@@ -281,7 +281,7 @@ export class UnblockReview {
 	 *
 	 * @param {string} wikitext - The page's wikitext.
 	 * @param {string} paramsAndReason - Rendered username and reason identifying the request.
-	 * @return {Array<RegExpMatchArray>} Matching template-opening matches with their source positions.
+	 * @return {Array<{ index: number, 0: string, 1: string }>} Matching template-opening matches with their source positions.
 	 */
 	getUsernameUnpauseMatches( wikitext, paramsAndReason ) {
 		const separator = paramsAndReason.indexOf( '|' );
