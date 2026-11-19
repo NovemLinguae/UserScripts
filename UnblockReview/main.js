@@ -10,12 +10,21 @@ Many additional bugs fixed.
 	const UNBLOCK_USERNAME_COLOR = 'var(--background-color-progressive-subtle, #f1f4fd)';
 	const DEFAULT_DECLINE_REASON = '{{subst:Decline reason here}}';
 	const ADVERT = ' ([[User:Novem Linguae/Scripts/UnblockReview.js|unblock-review]])';
+	const PAUSED_NOTICE_HTML = `
+		<div class="cdx-message cdx-message--warning" aria-live="polite">
+			<div class="cdx-message__content">
+				Idletimestamp is present in this template. This unblock request is paused until the user replies.
+				<a class="unblock-review-unpause" href="#">Unpause now.</a>
+			</div>
+		</div>
+	`;
 
 	async function execute() {
 		const userTalkNamespace = 3;
 		if ( mw.config.get( 'wgNamespaceNumber' ) !== userTalkNamespace ) {
 			return;
 		}
+		addStyles();
 
 		// look for user-block HTML class, which will correspond to {{Unblock}} requests
 		const userBlockBoxes = document.querySelectorAll( 'div.user-block' );
@@ -27,6 +36,10 @@ Many additional bugs fixed.
 			) {
 				// We now have a pending unblock request - add UI
 				const unblockDiv = userBlockBoxes[ i ];
+				if ( hasIdletimestampParameter( unblockDiv ) ) {
+					addPausedNotice( unblockDiv );
+					continue;
+				}
 				const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
 				const hasUsernameParameter = unblockDiv.style.background === UNBLOCK_USERNAME_COLOR;
 				await listenForAcceptAndDecline( container, hrEl, hasUsernameParameter );
@@ -34,42 +47,99 @@ Many additional bugs fixed.
 		}
 	}
 
-	function addTextBoxAndButtons( unblockDiv ) {
+	function addStyles() {
 		mw.util.addCSS( `
-			.unblock-review td { padding: 0 }
-			td.reason-container { padding-right: 1em; width: 30em }
-			#unblock-review-autoadd-template { width: 31em; background-color: white; border: 1px solid black; }
-			.unblock-review-reason { height: 5em }
+			.unblock-review { display: flex; align-items: flex-start; justify-content: flex-start; gap: 1em }
+			.unblock-review .reason-container { display: flex; flex-direction: column; align-items: flex-start; width: 40em }
+			.unblock-review .cdx-text-area { width: 100% }
+			#unblock-review-autoadd-template { width: 100%; box-sizing: border-box; }
+			.unblock-review-reason { width: 100%; box-sizing: border-box; height: 10em }
+			.unblock-review-buttons { display: flex; flex-direction: column; align-items: flex-start }
+			.unblock-review-buttons button { margin: 0.25em }
 		` );
+	}
 
-		const container = document.createElement( 'table' );
+	function hasIdletimestampParameter( unblockDiv ) {
+		const dataMw = unblockDiv.getAttribute( 'data-mw' );
+		if ( !dataMw ) {
+			return false;
+		}
+		let parsedDataMw;
+		try {
+			parsedDataMw = JSON.parse( dataMw );
+		} catch ( e ) {
+			mw.notify( 'UnblockReview error: unable to parse data-mw for unblock request.', { type: 'error' } );
+			return false;
+		}
+		return Array.isArray( parsedDataMw.parts ) && parsedDataMw.parts.some( ( part ) => {
+			const template = part.template;
+			return template && template.target &&
+				typeof template.target.wt === 'string' &&
+				/^unblock(?:-|$)/i.test( template.target.wt ) &&
+				template.params && Object.prototype.hasOwnProperty.call( template.params, 'idletimestamp' );
+		} );
+	}
+
+	function addPausedNotice( unblockDiv ) {
+		const container = document.createElement( 'div' );
+		container.className = 'unblock-review';
+		const hrEl = unblockDiv.querySelector( 'hr' );
+		unblockDiv.insertBefore( container, hrEl.previousElementSibling );
+		const hasUsernameParameter = unblockDiv.style.background === UNBLOCK_USERNAME_COLOR;
+		showPausedNotice( container, hrEl, hasUsernameParameter );
+	}
+
+	function showPausedNotice( container, hrEl, hasUsernameParameter ) {
+		container.innerHTML = PAUSED_NOTICE_HTML;
+		$( container ).find( '.unblock-review-unpause' ).on( 'click', async ( event ) => {
+			event.preventDefault();
+			const appealReason = getAppealReason( hrEl, hasUsernameParameter );
+			if ( !appealReason ) {
+				mw.notify( 'UnblockReview error: unable to find request reason by scanning HTML', { type: 'error' } );
+				return;
+			}
+			// eslint-disable-next-line no-undef
+			const unblockReview = new UnblockReview();
+			const title = mw.config.get( 'wgPageName' );
+			const wikitext = await getWikitext( title );
+			let updatedWikitext;
+			try {
+				updatedWikitext = unblockReview.processUnpause( wikitext, appealReason, hasUsernameParameter );
+			} catch ( e ) {
+				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
+				return;
+			}
+			await editPage( title, updatedWikitext, 'Unpausing unblock request' + ADVERT );
+			window.location.reload( true );
+		} );
+	}
+
+	function addTextBoxAndButtons( unblockDiv ) {
+		const container = document.createElement( 'div' );
 		container.className = 'unblock-review';
 		// Note: The innerHtml of the button is sensitive. Is used to figure out which accept/decline wikitext to use. Don't add whitespace to it.
 		container.innerHTML = `
-			<tr>
-				<td class="reason-container" rowspan="2">
-					<textarea class="unblock-review-reason" placeholder="Reason for accepting/declining here">${ DEFAULT_DECLINE_REASON }</textarea>
-				</td>
-				<td>
-					<button class="unblock-review-accept cdx-button cdx-button--action-progressive cdx-button--weight-primary">Accept</button>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<button class="unblock-review-decline cdx-button cdx-button--action-destructive cdx-button--weight-primary">Decline</button>
-				</td>
-			</tr>
-			<select id="unblock-review-autoadd-template">
-				<option value="default" selected disabled>Select one of these templates to auto-add it above...</option>
-				<option>{{subst:2nd chance}}</option>
-				<option>{{subst:2nd chance autoload}}</option>
-				<option>{{subst:2nd chance autoload/editintro}}</option>
-				<option>{{subst:Decline reason here}}</option>
-				<option>{{subst:Decline spam unblock request}}</option>
-				<option>{{subst:Decline stale}}</option>
-				<option>{{subst:Decline-ai}}</option>
-				<option>{{subst:Declined unblock request for range block text}}</option>
-			</select>
+			<div class="reason-container">
+				<div class="cdx-text-area">
+					<textarea class="cdx-text-area__textarea unblock-review-reason" placeholder="Reason for accepting/declining here">${ DEFAULT_DECLINE_REASON }</textarea>
+				</div>
+				<select class="cdx-select" id="unblock-review-autoadd-template">
+					<option value="default" selected disabled>Select one of these templates to auto-add it above...</option>
+					<option>{{subst:2nd chance}}</option>
+					<option>{{subst:2nd chance autoload}}</option>
+					<option>{{subst:2nd chance autoload/editintro}}</option>
+					<option>{{subst:Decline reason here}}</option>
+					<option>{{subst:Decline spam unblock request}}</option>
+					<option>{{subst:Decline stale}}</option>
+					<option>{{subst:Decline-ai}}</option>
+					<option>{{subst:Declined unblock request for range block text}}</option>
+				</select>
+			</div>
+			<div class="unblock-review-buttons">
+				<button class="unblock-review-accept cdx-button cdx-button--action-progressive cdx-button--weight-primary">Accept</button>
+				<button class="unblock-review-decline cdx-button cdx-button--action-destructive cdx-button--weight-primary">Decline</button>
+				<button class="unblock-review-wait cdx-button cdx-button--action-default cdx-button--weight-primary">Pause until user responds</button>
+			</div>
 			`;
 		const hrEl = unblockDiv.querySelector( 'hr' );
 		unblockDiv.insertBefore( container, hrEl.previousElementSibling );
@@ -94,30 +164,35 @@ Many additional bugs fixed.
 		return copy.textContent.trim();
 	}
 
+	function getAppealReason( hrEl, hasUsernameParameter ) {
+		const reasonHeader = hrEl.nextElementSibling;
+		const reasonElement = reasonHeader && reasonHeader.nextElementSibling;
+		let appealReason;
+		if ( hasUsernameParameter && reasonElement ) {
+			// The requested username has extra links, while the reason is in a separate div.
+			const usernameLink = reasonElement.firstElementChild;
+			const reasonLabel = reasonElement.nextElementSibling;
+			const usernameReason = reasonLabel && reasonLabel.nextElementSibling;
+			if ( reasonElement.tagName === 'DIV' && usernameLink && usernameLink.tagName === 'A' &&
+				reasonLabel && reasonLabel.tagName === 'B' && usernameReason && usernameReason.tagName === 'DIV' ) {
+				const username = usernameLink.textContent.trim();
+				const reason = getAppealText( usernameReason );
+				if ( username && reason ) {
+					appealReason = username + '|' + reason;
+				}
+			}
+		} else if ( !hasUsernameParameter && reasonElement ) {
+			appealReason = getAppealText( reasonElement );
+		}
+		return appealReason;
+	}
+
 	async function listenForAcceptAndDecline( container, hrEl, hasUsernameParameter ) {
 		const reasonArea = container.querySelector( 'textarea' );
 		$( container ).find( 'button' ).on( 'click', async function () {
 			// look at the innerHtml of the button to see if it says "Accept" or "Decline"
-			const acceptOrDecline = $( this ).text().toLowerCase();
-			const reasonHeader = hrEl.nextElementSibling;
-			const reasonElement = reasonHeader && reasonHeader.nextElementSibling;
-			let appealReason;
-			if ( hasUsernameParameter && reasonElement ) {
-				// The requested username has extra links, while the reason is in a separate div.
-				const usernameLink = reasonElement.firstElementChild;
-				const reasonLabel = reasonElement.nextElementSibling;
-				const usernameReason = reasonLabel && reasonLabel.nextElementSibling;
-				if ( reasonElement.tagName === 'DIV' && usernameLink && usernameLink.tagName === 'A' &&
-					reasonLabel && reasonLabel.tagName === 'B' && usernameReason && usernameReason.tagName === 'DIV' ) {
-					const username = usernameLink.textContent.trim();
-					const reason = getAppealText( usernameReason );
-					if ( username && reason ) {
-						appealReason = username + '|' + reason;
-					}
-				}
-			} else if ( !hasUsernameParameter && reasonElement ) {
-				appealReason = getAppealText( reasonElement );
-			}
+			const acceptOrDecline = this.classList.contains( 'unblock-review-wait' ) ? 'wait' : $( this ).text().toLowerCase();
+			const appealReason = getAppealReason( hrEl, hasUsernameParameter );
 			// FIXME: should handle this case (|reason=\nText, https://github.com/NovemLinguae/UserScripts/issues/240) instead of throwing an error
 			if ( !appealReason ) {
 				mw.notify( 'UnblockReview error: unable to find decline reason by scanning HTML', { type: 'error' } );
@@ -129,6 +204,18 @@ Many additional bugs fixed.
 			const unblockReview = new UnblockReview();
 			const title = mw.config.get( 'wgPageName' );
 			const wikitext = await getWikitext( title );
+			if ( acceptOrDecline === 'wait' ) {
+				let updatedWikitext;
+				try {
+					updatedWikitext = unblockReview.processWaitForUserResponse( wikitext, appealReason, hasUsernameParameter );
+				} catch ( e ) {
+					mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
+					return;
+				}
+				await editPage( title, updatedWikitext, 'Pausing unblock request' + ADVERT );
+				showPausedNotice( container, hrEl, hasUsernameParameter );
+				return;
+			}
 			const acceptDeclineReason = reasonArea.value;
 			let wikitext2;
 			try {

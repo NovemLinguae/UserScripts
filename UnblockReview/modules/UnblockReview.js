@@ -156,6 +156,166 @@ export class UnblockReview {
 	}
 
 	/**
+	 * Add an idletimestamp parameter to the matching unblock request.
+	 *
+	 * @param {string} wikitext - The wikitext of the page.
+	 * @param {string} paramsAndReason - The username and reason, or reason, identifying the request.
+	 * @param {boolean} hasUsernameParameter - Whether the request includes a separate username parameter.
+	 * @return {string} Updated wikitext.
+	 */
+	processWaitForUserResponse( wikitext, paramsAndReason, hasUsernameParameter = false ) {
+		const { start, closePos } = this.getUnblockTemplateRange( wikitext, paramsAndReason, hasUsernameParameter );
+		const template = wikitext.slice( start, closePos + 2 );
+		const updatedTemplate = template.slice( 0, -2 ) +
+			'|idletimestamp={{subst:CURRENTTIMESTAMP}}}}';
+		return wikitext.slice( 0, start ) + updatedTemplate + wikitext.slice( closePos + 2 );
+	}
+
+	/**
+	 * Remove the idletimestamp parameter from the matching unblock request.
+	 *
+	 * @param {string} wikitext - The wikitext of the page.
+	 * @param {string} paramsAndReason - The username and reason, or reason, identifying the request.
+	 * @param {boolean} hasUsernameParameter - Whether the request includes a separate username parameter.
+	 * @return {string} Updated wikitext.
+	 */
+	processUnpause( wikitext, paramsAndReason, hasUsernameParameter = false ) {
+		const { start, closePos } = this.getUnblockTemplateRange(
+			wikitext,
+			paramsAndReason,
+			hasUsernameParameter,
+			true
+		);
+		const template = wikitext.slice( start, closePos + 2 );
+		const updatedTemplate = template.replace( /\s*\|\s*idletimestamp\s*=\s*\d{14}\s*/gi, '' );
+		if ( template === updatedTemplate ) {
+			throw new Error( 'Unable to find an idletimestamp parameter in the unblock template' );
+		}
+		return wikitext.slice( 0, start ) + updatedTemplate + wikitext.slice( closePos + 2 );
+	}
+
+	/**
+	 * Find the matching unblock template's bounds, accounting for nested templates and excluding nowiki content.
+	 * Unblock templates that take a username parameter use username-aware matching; unpausing also handles timestamped requests with no reason
+	 * and idletimestamp parameters between the username and reason.
+	 *
+	 * @param {string} wikitext - The page's wikitext.
+	 * @param {string} paramsAndReason - Rendered username and reason, or reason, identifying the request.
+	 * @param {boolean} hasUsernameParameter - Whether the request has a separate username parameter.
+	 * @param {boolean} unpausing - Whether the lookup is for removing an idletimestamp.
+	 * @return {{start: number, closePos: number}} The opening and closing positions of the template.
+	 */
+	getUnblockTemplateRange( wikitext, paramsAndReason, hasUsernameParameter = false, unpausing = false ) {
+		paramsAndReason = paramsAndReason.split( '\n' )[ 0 ];
+		let matches;
+		if ( !hasUsernameParameter && paramsAndReason.startsWith( 'Please provide a reason as to why you should be unblocked' ) ) {
+			const nowikiRanges = this.getNowikiRanges( wikitext );
+			const pattern = unpausing ?
+				/\{\{\s*Unblock(?=\s*(?:\||\}\}))/gi :
+				/\{\{Unblock\}\}/gi;
+			matches = [ ...wikitext.matchAll( pattern ) ].filter(
+				( match ) => !this.isInsideNowiki( match.index, nowikiRanges )
+			);
+			if ( unpausing ) {
+				matches = matches.filter( ( match ) => {
+					const range = this.getTemplateRangeAt( wikitext, match.index, nowikiRanges );
+					return /\|\s*idletimestamp\s*=\s*\d{14}/i.test(
+						wikitext.slice( match.index, range.closePos + 2 )
+					);
+				} );
+			}
+		} else if ( hasUsernameParameter && unpausing ) {
+			matches = this.getUsernameUnpauseMatches( wikitext, paramsAndReason );
+		} else if ( hasUsernameParameter ) {
+			matches = this.getUsernameRequestMatches( wikitext, paramsAndReason );
+		} else {
+			const initialText = this.getLeftHalfOfUnblockTemplate( wikitext, paramsAndReason );
+			const pattern = new RegExp(
+				this.escapeRegExp( initialText ) + '(' + this.getAppealReasonPattern( paramsAndReason ) + ')',
+				'g'
+			);
+			const nowikiRanges = this.getNowikiRanges( wikitext );
+			matches = [ ...wikitext.matchAll( pattern ) ].filter(
+				( match ) => !this.isInsideNowiki( match.index, nowikiRanges )
+			);
+		}
+		if ( matches.length > 1 ) {
+			throw new Error( 'Too many matching unblock templates found' );
+		}
+		if ( matches.length === 0 ) {
+			throw new Error( 'Searching for target text failed' );
+		}
+
+		const nowikiRanges = this.getNowikiRanges( wikitext );
+		return this.getTemplateRangeAt( wikitext, matches[ 0 ].index, nowikiRanges );
+	}
+
+	getTemplateRangeAt( wikitext, start, nowikiRanges ) {
+		let depth = 0;
+		let closePos = -1;
+		for ( let i = start; i < wikitext.length - 1; i++ ) {
+			if ( this.isInsideNowiki( i, nowikiRanges ) ) {
+				continue;
+			}
+			if ( wikitext.slice( i, i + 2 ) === '{{' ) {
+				depth++;
+				i++;
+			} else if ( wikitext.slice( i, i + 2 ) === '}}' ) {
+				depth--;
+				if ( depth === 0 ) {
+					closePos = i;
+					break;
+				}
+				i++;
+			}
+		}
+		if ( closePos === -1 ) {
+			throw new Error( 'Failed to find the closing braces of the unblock template' );
+		}
+		return { start, closePos };
+	}
+
+	/**
+	 * Find timestamped username-request templates matching the rendered username and reason.
+	 * Allows idletimestamp to appear between those parameters and ignores templates inside nowiki.
+	 *
+	 * @param {string} wikitext - The page's wikitext.
+	 * @param {string} paramsAndReason - Rendered username and reason identifying the request.
+	 * @return {Array<RegExpMatchArray>} Matching template-opening matches with their source positions.
+	 */
+	getUsernameUnpauseMatches( wikitext, paramsAndReason ) {
+		const separator = paramsAndReason.indexOf( '|' );
+		if ( separator === -1 ) {
+			return [];
+		}
+		const username = paramsAndReason.slice( 0, separator ).trim();
+		const reason = paramsAndReason.slice( separator + 1 );
+		const reasonIsProvided = !reason.startsWith( 'Please provide a reason as to why you should be unblocked' );
+		const usernamePattern = this.getAppealReasonPattern( username );
+		const reasonPattern = reasonIsProvided ? new RegExp( this.getAppealReasonPattern( reason ), 'i' ) : null;
+		const nowikiRanges = this.getNowikiRanges( wikitext );
+		const matches = [];
+		for ( const match of wikitext.matchAll( /\{\{\s*([A-Za-z-]+)\s*\|/gi ) ) {
+			if ( !this.templatesThatHaveUsernameParameters.includes( match[ 1 ].toLowerCase() ) ||
+				this.isInsideNowiki( match.index, nowikiRanges ) ) {
+				continue;
+			}
+			const range = this.getTemplateRangeAt( wikitext, match.index, nowikiRanges );
+			const template = wikitext.slice( match.index, range.closePos + 2 );
+			const usernameMatch = template.match( new RegExp(
+				'^\\{\\{\\s*' + this.escapeRegExp( match[ 1 ] ) + '\\s*\\|\\s*(?:1\\s*=\\s*)?' +
+				usernamePattern + '\\s*\\|',
+				'i'
+			) );
+			if ( usernameMatch && /\|\s*idletimestamp\s*=\s*\d{14}/i.test( template ) &&
+				( !reasonPattern || reasonPattern.test( template.slice( usernameMatch[ 0 ].length ) ) ) ) {
+				matches.push( match );
+			}
+		}
+		return matches;
+	}
+
+	/**
 	 * @copyright Denys Seguret, CC BY-SA 4.0, https://stackoverflow.com/a/14480366/3480193
 	 */
 	getPosition( haystack, needle, nthOccurrence ) {

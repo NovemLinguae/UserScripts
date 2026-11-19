@@ -9,7 +9,7 @@ import { readFileSync } from 'fs';
  *
  * @param {string} wikitext The page wikitext returned by the mocked MediaWiki API.
  * @param {string} html Rendered unblock-request HTML, before main.js adds UnblockReview HTML.
- * @param {string} [action='decline'] The review action to simulate ('accept' or 'decline'). The registered handler is called directly; no click event is dispatched.
+ * @param {string} [action='decline'] The review action to simulate ('accept', 'decline', 'wait', 'unpause', or 'none'). The registered handler is called directly; no click event is dispatched.
  * @param {boolean} [hasUsernameParameter=false] Whether the request uses a separate username parameter, as in {{unblock-un|username|reason}} or {{unblock-spamun|username|reason}}.
  * @return {Object} Mocks for assertions: mw (including notifications and API methods), postWithToken (the edit API spy), and windowMock (including the reload spy).
  */
@@ -23,6 +23,7 @@ async function clickReviewButton( wikitext, html, action = 'decline', hasUsernam
 	}
 	let ready;
 	let clickHandler;
+	let unpauseClickHandler;
 	const $ = ( element ) => {
 		if ( typeof element === 'function' ) {
 			ready = element;
@@ -33,6 +34,8 @@ async function clickReviewButton( wikitext, html, action = 'decline', hasUsernam
 				on: ( event, handler ) => {
 					if ( selector === 'button' && event === 'click' ) {
 						clickHandler = handler;
+					} else if ( selector === '.unblock-review-unpause' && event === 'click' ) {
+						unpauseClickHandler = handler;
 					}
 				}
 			} ),
@@ -55,7 +58,12 @@ async function clickReviewButton( wikitext, html, action = 'decline', hasUsernam
 	const runMain = new Function( 'mw', '$', 'UnblockReview', 'document', 'window', readFileSync( require.resolve( '../main.js' ), 'utf8' ) );
 	runMain( mw, $, UnblockReview, document, windowMock );
 	await ready();
-	await clickHandler.call( document.querySelector( '.unblock-review-' + action ) );
+	if ( action === 'unpause' ) {
+		await unpauseClickHandler.call( document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
+	} else if ( action !== 'none' ) {
+		const buttonClass = action === 'wait' ? 'unblock-review-wait' : 'unblock-review-' + action;
+		await clickHandler.call( document.querySelector( '.' + buttonClass ) );
+	}
 	return { mw, postWithToken, windowMock };
 }
 
@@ -194,5 +202,128 @@ describe( 'main.js', () => {
 		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'unable to find' ), { type: 'error' } );
 		expect( postWithToken ).not.toHaveBeenCalled();
 		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+	} );
+
+	test( 'Waiting appends an idletimestamp without removing existing template parameters', async () => {
+		const wikitext = `{{unblock|reason=Please reconsider.|idletimestamp=20250102030405|foo=bar|idletimestamp={{subst:CURRENTTIMESTAMP}}}}\n{{other|idletimestamp=20250102030405}}`;
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+			<div></div><hr><div></div><div>Please reconsider.</div>
+		</div>`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'wait' );
+
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			summary: expect.stringContaining( 'Pausing unblock request' ),
+			text: `{{unblock|reason=Please reconsider.|idletimestamp=20250102030405|foo=bar|idletimestamp={{subst:CURRENTTIMESTAMP}}|idletimestamp={{subst:CURRENTTIMESTAMP}}}}\n{{other|idletimestamp=20250102030405}}`
+		} ) );
+		expect( document.querySelector( '.unblock-review .cdx-message__content' ).textContent ).toContain(
+			'Idletimestamp is present in this template. This unblock request is paused until the user replies.'
+		);
+		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Unpause now.' );
+		expect( document.querySelector( '.unblock-review .cdx-message--warning' ) ).not.toBeNull();
+		expect( document.querySelector( '.unblock-review textarea' ) ).toBeNull();
+		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+	} );
+
+	test( 'Waiting adds an idletimestamp when the unblock template has none', async () => {
+		const wikitext = `{{unblock|reason=Please reconsider.}}`;
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+			<div></div><hr><div></div><div>Please reconsider.</div>
+		</div>`;
+		const { postWithToken } = await clickReviewButton( wikitext, html, 'wait' );
+
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{unblock|reason=Please reconsider.|idletimestamp={{subst:CURRENTTIMESTAMP}}}}`
+		} ) );
+	} );
+
+	test( 'Waiting pauses a username-parameter unblock request', async () => {
+		const wikitext = `{{unblock-un|Alex|Please reconsider.|idletimestamp=20250102030405}}`;
+		const html = `<div class="user-block unblock unblock-un">
+			<div></div><hr><p><b>Requested username:</b></p>
+			<div><a class="userlink">Alex</a> (<a>talk</a>)</div>
+			<b>Request reason:</b><div>Please reconsider.</div>
+		</div>`;
+		const { postWithToken } = await clickReviewButton( wikitext, html, 'wait', true );
+
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{unblock-un|Alex|Please reconsider.|idletimestamp=20250102030405|idletimestamp={{subst:CURRENTTIMESTAMP}}}}`
+		} ) );
+	} );
+
+	test( 'Waiting pauses an unblock request with no authored reason', async () => {
+		const wikitext = `{{Unblock}}`;
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+			<div></div><hr><p><b>Request reason</b>:</p>
+			<div>Please provide a reason as to why you should be unblocked</div>
+		</div>`;
+		const { postWithToken } = await clickReviewButton( wikitext, html, 'wait' );
+
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{Unblock|idletimestamp={{subst:CURRENTTIMESTAMP}}}}`
+		} ) );
+	} );
+
+	test( 'Initially displays the paused notice instead of controls when data-mw has idletimestamp', async () => {
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)"
+			data-mw='{"parts":[{"template":{"target":{"wt":"unblock-un"},"params":{"idletimestamp":{"wt":"20261119101555"}}}}]}'>
+			<div></div><hr><div></div><div>Request reason</div>
+		</div>`;
+		const { mw } = await clickReviewButton( '', html, 'none' );
+
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( document.querySelector( '.unblock-review .cdx-message--warning .cdx-message__content' ).textContent ).toContain(
+			'Idletimestamp is present in this template. This unblock request is paused until the user replies.'
+		);
+		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Unpause now.' );
+		expect( document.querySelector( '.unblock-review textarea' ) ).toBeNull();
+		expect( document.querySelector( '.unblock-review button' ) ).toBeNull();
+	} );
+
+	test( 'Unpause removes idletimestamp only from the matching unblock template and reloads', async () => {
+		const wikitext = `{{unblock|reason=Please reconsider.|idletimestamp=20261119101555}}\n{{unblock|reason=Other request.|idletimestamp=20261119101556}}`;
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)"
+			data-mw='{"parts":[{"template":{"target":{"wt":"unblock"},"params":{"idletimestamp":{"wt":"20261119101555"}}}}]}'>
+			<div></div><hr><div></div><div>Please reconsider.</div>
+		</div>`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'unpause' );
+
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			summary: expect.stringContaining( 'Unpausing unblock request' ),
+			text: `{{unblock|reason=Please reconsider.}}\n{{unblock|reason=Other request.|idletimestamp=20261119101556}}`
+		} ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
+	} );
+
+	test( 'Unpause removes idletimestamp from a request with no authored reason', async () => {
+		const wikitext = `{{Unblock|idletimestamp=20261119101555}}`;
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)"
+			data-mw='{"parts":[{"template":{"target":{"wt":"Unblock"},"params":{"idletimestamp":{"wt":"20261119101555"}}}}]}'>
+			<div></div><hr><p><b>Request reason</b>:</p>
+			<div>Please provide a reason as to why you should be unblocked</div>
+		</div>`;
+		const { postWithToken } = await clickReviewButton( wikitext, html, 'unpause' );
+
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{Unblock}}`
+		} ) );
+	} );
+
+	test( 'Unpause finds a username request when idletimestamp appears between username and reason', async () => {
+		const wikitext = `{{unblock-un|1=Omer EVREY  |  idletimestamp  =  20261119104225  |reason=Test}}`;
+		const html = `<div class="user-block unblock unblock-un" style="background:var(--background-color-progressive-subtle, #f1f4fd)"
+			data-mw='{"parts":[{"template":{"target":{"wt":"unblock-un"},"params":{"1":{"wt":"Omer EVREY"},"idletimestamp":{"wt":"20261119104225"},"reason":{"wt":"Test"}}}}]}'>
+			<div></div><hr><p><b>Requested username:</b></p>
+			<div><a class="userlink">Omer EVREY</a> (<a>talk</a>)</div>
+			<b>Request reason:</b><div>Test</div>
+		</div>`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'unpause', true );
+
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{unblock-un|1=Omer EVREY|reason=Test}}`
+		} ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
 	} );
 } );
