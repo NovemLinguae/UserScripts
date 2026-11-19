@@ -281,7 +281,7 @@ Many additional bugs fixed.
 
 <syntaxhighlight lang="js">\ttest( \`[YOUR TEST NAME HERE]\`, () => {
 \t\tconst wikitext =
-\`${ wikitext.replace( /`/g, '\\`' ) }\`;
+\`[YOUR WIKITEXT HERE]\`;
 \t\tconst appealReason = \`${ paramsAndReason.replace( /`/g, '\\`' ) }\`;
 \t\tconst expected = \`[YOUR EXPECTED WIKITEXT HERE]\`;
 \t\texpect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason, ${ hasUsernameParameter } ) ).toBe( expected );
@@ -289,7 +289,7 @@ Many additional bugs fixed.
 
 <syntaxhighlight lang="js">\ttest( '[YOUR TEST NAME HERE]', () => {
 \t\tconst wikitext =
-\`${ wikitext.replace( /`/g, '\\`' ) }\`;
+\`[YOUR WIKITEXT HERE]\`;
 \t\tconst paramsAndReason = \`${ paramsAndReason.replace( /`/g, '\\`' ) }\`;
 \t\tconst acceptDeclineReason = \`${ acceptDeclineReason.replace( /`/g, '\\`' ) }\`;
 \t\tconst acceptOrDecline = \`${ acceptOrDecline }\`;
