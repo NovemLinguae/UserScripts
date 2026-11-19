@@ -203,6 +203,25 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
 	} );
 
+	test( 'Selects the request with the matching external-link label', () => {
+		const wikitext = `{{unblock|reason=See [https://example.org/other other].}}\n{{unblock|reason=See [https://example.org/path?x=1&y=2 the discussion].}}`;
+		const appealReason = `See the discussion.`;
+		const differentAppealReason = `See a different discussion.`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const expected = `{{unblock|reason=See [https://example.org/other other].}}\n{{unblock reviewed|decline=Insufficient. ~~~~|1=See [https://example.org/path?x=1&y=2 the discussion].}}`;
+		const expectedError = 'Searching for target text failed';
+		expect( unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+		expect( () => unblockReview.processAcceptOrDecline( wikitext, differentAppealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toThrow( expectedError );
+	} );
+
+	test( 'Does not ignore a literal closing bracket outside an external link', () => {
+		const wikitext = `{{unblock|reason=See discussion] please.}}`;
+		const appealReason = `See discussion please.`;
+		const expectedError = 'Searching for target text failed';
+		expect( () => unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toThrow( expectedError );
+	} );
+
 	test( 'Reason with multiple wikilinks and templates', () => {
 		const wikitext = `{{unblock|reason={{u|Admin}} and [[User:Mod|moderator]] agree my block was a mistake.}}`;
 		const appealReason = `Admin and moderator agree my block was a mistake.`;

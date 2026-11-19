@@ -156,10 +156,10 @@ Many additional bugs fixed.
 
 	function getAppealText( element ) {
 		const copy = element.cloneNode( true );
-		// DiscussionTools inserts reply controls that are not part of the wikitext.
-		const replyControls = copy.querySelectorAll( '.ext-discussiontools-init-replylink-buttons' );
-		for ( let i = 0; i < replyControls.length; i++ ) {
-			replyControls[ i ].remove();
+		// Remove interface controls that are not part of the wikitext.
+		const controls = copy.querySelectorAll( '.ext-discussiontools-init-replylink-buttons, .ext-checkuser-tempaccount-reveal-ip-button' );
+		for ( let i = 0; i < controls.length; i++ ) {
+			controls[ i ].remove();
 		}
 		return copy.textContent.trim();
 	}

@@ -551,7 +551,7 @@ export class UnblockReview {
 	}
 
 	/**
-	 * Return a regex pattern that matches appeal reason wikitext with tags, wikilinks, templates, or emphasis.
+	 * Return a regex pattern that matches appeal reason wikitext with tags, links, templates, or emphasis.
 	 *
 	 * @param {string} appealReason - The rendered appeal text.
 	 * @param {boolean} hasUsernameParameter - Whether the request includes a separate username parameter.
@@ -559,7 +559,7 @@ export class UnblockReview {
 	 */
 	getAppealReasonPattern( appealReason, hasUsernameParameter = false ) {
 		// Only {{u|...}} is known to render its argument as visible text.
-		const markup = '(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[|\\]\\]|\'{2,}(?!\')|\\{[^{}]*\\}|\\{\\{\\s*[uU]\\s*\\|\\s*|\\{\\{[^}]*\\}\\}|\\}\\})*';
+		const markup = '(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[|\\]\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+|(?<=\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+[^\\]\\n]*)\\](?!\\])|\'{2,}(?!\')|\\{[^{}]*\\}|\\{\\{\\s*[uU]\\s*\\|\\s*|\\{\\{[^}]*\\}\\}|\\}\\})*';
 		// The HTML omits parameter names and whitespace around the username separator.
 		let usernameSeparator = hasUsernameParameter;
 		return Array.from( appealReason, ( character ) => {

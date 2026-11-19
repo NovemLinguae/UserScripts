@@ -96,6 +96,24 @@ describe( 'main.js', () => {
 		expect( document.querySelector( '.ext-discussiontools-init-replylink-buttons' ).textContent ).toBe( 'reply' );
 	} );
 
+	test( 'Declining a temporary-account appeal with an external link and multiple signatures', async () => {
+		const reason = `I was blocked because of the abuse of editing privileges. This is includes failing to understand [[WP:COMPETENCE]] and the lack of ability to understand the [[English Wikipedia]] per [[WP:NOTHERE]], and [https://en.wikipedia.org/wiki/Wikipedia:Administrators%27_noticeboard/IncidentArchive1239#~2026-47089-17_-_WP:CIR_issues_from_a_possible_language_barrier,_repeated_and_continuous_failure_to_use_sources,_suspected_use_of_WP:LLM_to_create_articles per presented] at [[WP:ANI]] the past days, despite given additional warnings, leading my article [[Draft:Serendipity Point Films|Serendipity Point Films]] to be put back into draftspace. and several rollbacks by experienced editors. --[[Special:Contributions/~2026-47089-17|~2026-47089-17]] ([[User talk:~2026-47089-17|talk]]) 23:43, 18 November 2026 (UTC)
+::What I will do differently is edit constructively. --[[Special:Contributions/~2026-47089-17|~2026-47089-17]] ([[User talk:~2026-47089-17|talk]]) 23:43, 18 November 2026 (UTC)`;
+		const wikitext = `:{{unblock|reason=${ reason }}}}`;
+		const html = `<div class="user-block" style="background-color: #EBF4FF">
+			<div></div><hr><p><b>Request reason</b>:</p>
+			<div>I was blocked because of the abuse of editing privileges. This is includes failing to understand <a>WP:COMPETENCE</a> and the lack of ability to understand the <a>English Wikipedia</a> per <a>WP:NOTHERE</a>, and <a class="external text">per presented</a> at <a>WP:ANI</a> the past days, despite given additional warnings, leading my article <a>Serendipity Point Films</a> to be put back into draftspace. and several rollbacks by experienced editors. --<a class="mw-tempuserlink userlink">~2026-47089-17</a><span class="ext-checkuser-tempaccount-reveal-ip-button"><a>Show IP</a></span> (<a>talk</a>) <a>23:43, 18 November 2026 (UTC)</a><span class="ext-discussiontools-init-replylink-buttons"><a>reply</a></span>
+			<dl><dd><dl><dd>What I will do differently is edit constructively. --<a>~2026-47089-17</a><span class="ext-checkuser-tempaccount-reveal-ip-button"><a>Show IP</a></span> (<a>talk</a>) <a>23:43, 18 November 2026 (UTC)</a><span class="ext-discussiontools-init-replylink-buttons"><a>reply</a></span></dd></dl></dd></dl></div>
+		</div>`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=${ reason }}}}`
+		} ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
+		expect( document.querySelectorAll( '.ext-checkuser-tempaccount-reveal-ip-button' ) ).toHaveLength( 2 );
+	} );
+
 	test( 'Accepting a spam-unblock request keeps authored links while ignoring DiscussionTools controls', async () => {
 		const wikitext = `{{unblock-spamun|Alex|Please [[Help:Reply|reply]] to me.}}`;
 		const html = `<div class="user-block unblock unblock-un">
