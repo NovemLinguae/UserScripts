@@ -7,6 +7,6 @@ import { UnblockReviewController } from './modules/UnblockReviewController.js';
 
 $( async () => {
 	await mw.loader.using( [ 'mediawiki.api', 'mediawiki.util', 'codex-styles' ] ).then( async () => {
-		await UnblockReviewController.execute();
+		await ( new UnblockReviewController() ).execute();
 	} );
 } );

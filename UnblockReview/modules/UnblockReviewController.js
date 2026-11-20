@@ -1,9 +1,10 @@
 import { UnblockReview } from './UnblockReview.js';
 
-export const UnblockReviewController = ( function () {
-	const DEFAULT_DECLINE_REASON = '{{subst:Decline reason here}}';
-	const ADVERT = ' ([[User:Novem Linguae/Scripts/UnblockReview.js|unblock-review]])';
-	const PAUSED_NOTICE_HTML = `
+export class UnblockReviewController {
+	constructor() {
+		this.DEFAULT_DECLINE_REASON = '{{subst:Decline reason here}}';
+		this.ADVERT = ' ([[User:Novem Linguae/Scripts/UnblockReview.js|unblock-review]])';
+		this.PAUSED_NOTICE_HTML = `
 		<div class="cdx-message cdx-message--warning" aria-live="polite">
 			<div class="cdx-message__content">
 				Idletimestamp is present in this template. This unblock request is paused until the user replies.
@@ -11,7 +12,7 @@ export const UnblockReviewController = ( function () {
 			</div>
 		</div>
 	`;
-	const ON_HOLD_NOTICE_HTML = `
+		this.ON_HOLD_NOTICE_HTML = `
 		<div class="cdx-message cdx-message--warning" aria-live="polite">
 			<div class="cdx-message__content">
 				This unblock request is paused until the blocking administrator responds.
@@ -19,42 +20,43 @@ export const UnblockReviewController = ( function () {
 			</div>
 		</div>
 	`;
+	}
 
-	async function execute() {
+	async execute() {
 		const userTalkNamespace = 3;
 		if ( mw.config.get( 'wgNamespaceNumber' ) !== userTalkNamespace ) {
 			return;
 		}
-		addStyles();
+		this.addStyles();
 
 		const userBlockBoxes = document.querySelectorAll( 'div.user-block' );
 		for ( let i = 0, n = userBlockBoxes.length; i < n; i++ ) {
 			const unblockDiv = userBlockBoxes[ i ];
 			if ( unblockDiv.classList.contains( 'unblock' ) && unblockDiv.classList.contains( 'unblock-on-hold' ) ) {
-				addPausedNotice( unblockDiv, true );
+				this.addPausedNotice( unblockDiv, true );
 				continue;
 			}
-			if ( !isPendingUnblockRequest( unblockDiv ) ) {
+			if ( !this.isPendingUnblockRequest( unblockDiv ) ) {
 				continue;
 			}
-			if ( hasIdletimestampParameter( unblockDiv ) ) {
-				addPausedNotice( unblockDiv );
+			if ( this.hasIdletimestampParameter( unblockDiv ) ) {
+				this.addPausedNotice( unblockDiv );
 				continue;
 			}
-			const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
+			const [ container, hrEl ] = this.addTextBoxAndButtons( unblockDiv );
 			const hasUsernameParameter = unblockDiv.classList.contains( 'unblock-un' );
-			addListeners( container, hrEl, hasUsernameParameter );
+			this.addListeners( container, hrEl, hasUsernameParameter );
 		}
 	}
 
-	function isPendingUnblockRequest( unblockDiv ) {
+	isPendingUnblockRequest( unblockDiv ) {
 		return unblockDiv.classList.contains( 'unblock' ) &&
 			!unblockDiv.classList.contains( 'unblock-on-hold' ) &&
 			!unblockDiv.classList.contains( 'unblock-reviewed' ) &&
 			!unblockDiv.classList.contains( 'unblock-auto' );
 	}
 
-	function addStyles() {
+	addStyles() {
 		mw.util.addCSS( `
 			.unblock-review { display: flex; align-items: flex-start; justify-content: flex-start; gap: 1em }
 			.unblock-review .reason-container { display: flex; flex-direction: column; align-items: flex-start; width: 40em }
@@ -66,7 +68,7 @@ export const UnblockReviewController = ( function () {
 		` );
 	}
 
-	function hasIdletimestampParameter( unblockDiv ) {
+	hasIdletimestampParameter( unblockDiv ) {
 		const dataMw = unblockDiv.getAttribute( 'data-mw' );
 		if ( !dataMw ) {
 			return false;
@@ -87,28 +89,28 @@ export const UnblockReviewController = ( function () {
 		} );
 	}
 
-	function addPausedNotice( unblockDiv, onHold = false ) {
+	addPausedNotice( unblockDiv, onHold = false ) {
 		const container = document.createElement( 'div' );
 		container.className = 'unblock-review';
 		const hrEl = unblockDiv.querySelector( 'hr' );
 		unblockDiv.insertBefore( container, hrEl.previousElementSibling );
 		const hasUsernameParameter = unblockDiv.classList.contains( 'unblock-un' );
-		showPausedNotice( container, hrEl, hasUsernameParameter, onHold );
+		this.showPausedNotice( container, hrEl, hasUsernameParameter, onHold );
 	}
 
-	function showPausedNotice( container, hrEl, hasUsernameParameter, onHold = false ) {
-		container.innerHTML = onHold ? ON_HOLD_NOTICE_HTML : PAUSED_NOTICE_HTML;
-		addListeners( container, hrEl, hasUsernameParameter, onHold );
+	showPausedNotice( container, hrEl, hasUsernameParameter, onHold = false ) {
+		container.innerHTML = onHold ? this.ON_HOLD_NOTICE_HTML : this.PAUSED_NOTICE_HTML;
+		this.addListeners( container, hrEl, hasUsernameParameter, onHold );
 	}
 
-	function addTextBoxAndButtons( unblockDiv ) {
+	addTextBoxAndButtons( unblockDiv ) {
 		const container = document.createElement( 'div' );
 		container.className = 'unblock-review';
 		// Note: The innerHtml of the button is sensitive. Is used to figure out which accept/decline wikitext to use. Don't add whitespace to it.
 		container.innerHTML = `
 			<div class="reason-container">
 				<div class="cdx-text-area">
-					<textarea class="cdx-text-area__textarea unblock-review-reason" placeholder="Reason for accepting/declining here">${ DEFAULT_DECLINE_REASON }</textarea>
+					<textarea class="cdx-text-area__textarea unblock-review-reason" placeholder="Reason for accepting/declining here">${ this.DEFAULT_DECLINE_REASON }</textarea>
 				</div>
 				<select class="cdx-select" id="unblock-review-autoadd-template">
 					<option value="default" selected disabled>Select one of these templates to auto-add it above...</option>
@@ -135,7 +137,7 @@ export const UnblockReviewController = ( function () {
 		return [ container, hrEl ];
 	}
 
-	async function getBlockingAdmin() {
+	async getBlockingAdmin() {
 		const user = mw.config.get( 'wgNamespaceNumber' ) === 3 && mw.config.get( 'wgRelevantUserName' );
 		if ( !user ) {
 			return '';
@@ -165,7 +167,7 @@ export const UnblockReviewController = ( function () {
 		return '';
 	}
 
-	function getAppealText( element ) {
+	getAppealText( element ) {
 		const copy = element.cloneNode( true );
 		// Remove interface controls that are not part of the wikitext.
 		const controls = copy.querySelectorAll( '.ext-discussiontools-init-replylink-buttons, .ext-checkuser-tempaccount-reveal-ip-button' );
@@ -175,7 +177,7 @@ export const UnblockReviewController = ( function () {
 		return copy.textContent.trim();
 	}
 
-	function getAppealReason( hrEl, hasUsernameParameter ) {
+	getAppealReason( hrEl, hasUsernameParameter ) {
 		const reasonHeader = hrEl.nextElementSibling;
 		const reasonElement = reasonHeader && reasonHeader.nextElementSibling;
 		let appealReason;
@@ -187,24 +189,24 @@ export const UnblockReviewController = ( function () {
 			if ( reasonElement.tagName === 'DIV' && usernameLink && usernameLink.tagName === 'A' &&
 				reasonLabel && reasonLabel.tagName === 'B' && usernameReason && usernameReason.tagName === 'DIV' ) {
 				const username = usernameLink.textContent.trim();
-				const reason = getAppealText( usernameReason );
+				const reason = this.getAppealText( usernameReason );
 				if ( username && reason ) {
 					appealReason = username + '|' + reason;
 				}
 			}
 		} else if ( !hasUsernameParameter && reasonElement ) {
-			appealReason = getAppealText( reasonElement );
+			appealReason = this.getAppealText( reasonElement );
 		}
 		return appealReason;
 	}
 
-	function getOnHoldAppealReason( hrEl ) {
+	getOnHoldAppealReason( hrEl ) {
 		for ( let element = hrEl.nextElementSibling; element; element = element.nextElementSibling ) {
 			const label = element.tagName === 'P' && element.querySelector( 'b' );
 			if ( label && /^Request reason:?$/i.test( label.textContent.trim() ) ) {
 				const reason = element.nextElementSibling;
 				if ( reason && reason.tagName === 'DIV' ) {
-					return getAppealText( reason );
+					return this.getAppealText( reason );
 				}
 				return undefined;
 			}
@@ -212,7 +214,8 @@ export const UnblockReviewController = ( function () {
 		return undefined;
 	}
 
-	function addListeners( container, hrEl, hasUsernameParameter, onHold = false ) {
+	addListeners( container, hrEl, hasUsernameParameter, onHold = false ) {
+		const controller = this;
 		$( container ).find( '#unblock-review-autoadd-template' ).on( 'change', function () {
 			// eslint-disable-next-line no-jquery/no-sizzle
 			const templateText = $( this ).find( 'option:selected' ).text() || $( this ).val() || '';
@@ -220,26 +223,26 @@ export const UnblockReviewController = ( function () {
 		} );
 
 		$( container ).find( '.unblock-review-wait-admin' ).on( 'click', function () {
-			return handleWaitForAdmin( this, hrEl, hasUsernameParameter );
+			return controller.handleWaitForAdmin( this, hrEl, hasUsernameParameter );
 		} );
 
-		$( container ).find( '.unblock-review-unpause' ).on( 'click', ( event ) => handleUnpause( event, hrEl, hasUsernameParameter, onHold ) );
+		$( container ).find( '.unblock-review-unpause' ).on( 'click', ( event ) => this.handleUnpause( event, hrEl, hasUsernameParameter, onHold ) );
 
 		$( container ).find( '.unblock-review-accept, .unblock-review-decline, .unblock-review-wait-user' ).on( 'click', function () {
-			return handleReviewAction( this, container, hrEl, hasUsernameParameter );
+			return controller.handleReviewAction( this, container, hrEl, hasUsernameParameter );
 		} );
 	}
 
-	async function handleWaitForAdmin( button, hrEl, hasUsernameParameter ) {
+	async handleWaitForAdmin( button, hrEl, hasUsernameParameter ) {
 		button.disabled = true;
-		const blockingAdmin = await getBlockingAdmin().catch( ( e ) => {
+		const blockingAdmin = await this.getBlockingAdmin().catch( ( e ) => {
 			console.error( 'UnblockReview blocking administrator lookup failed:', e );
 			return '';
 		} );
 		button.disabled = false;
 		const selectedAdmin = window.prompt( 'Blocking administrator:', blockingAdmin );
 		if ( selectedAdmin !== null ) {
-			const appealReason = getAppealReason( hrEl, hasUsernameParameter );
+			const appealReason = this.getAppealReason( hrEl, hasUsernameParameter );
 			if ( !appealReason ) {
 				mw.notify( 'UnblockReview error: unable to find request reason by scanning HTML', { type: 'error' } );
 				return;
@@ -248,11 +251,11 @@ export const UnblockReviewController = ( function () {
 			try {
 				const unblockReview = new UnblockReview();
 				const title = mw.config.get( 'wgPageName' );
-				const wikitext = await getWikitext( title );
+				const wikitext = await this.getWikitext( title );
 				const updatedWikitext = unblockReview.processWaitForBlockingAdmin(
 					wikitext, appealReason, selectedAdmin.trim(), hasUsernameParameter
 				);
-				await editPage( title, updatedWikitext, 'Putting unblock request on hold' + ADVERT );
+				await this.editPage( title, updatedWikitext, 'Putting unblock request on hold' + this.ADVERT );
 				window.location.reload( true );
 			} catch ( e ) {
 				mw.notify( 'UnblockReview error: unable to put request on hold: ' + ( e.message || e ), { type: 'error' } );
@@ -262,9 +265,9 @@ export const UnblockReviewController = ( function () {
 		}
 	}
 
-	async function handleUnpause( event, hrEl, hasUsernameParameter, onHold ) {
+	async handleUnpause( event, hrEl, hasUsernameParameter, onHold ) {
 		event.preventDefault();
-		const appealReason = onHold ? getOnHoldAppealReason( hrEl ) : getAppealReason( hrEl, hasUsernameParameter );
+		const appealReason = onHold ? this.getOnHoldAppealReason( hrEl ) : this.getAppealReason( hrEl, hasUsernameParameter );
 		if ( appealReason === undefined || ( !onHold && !appealReason ) ) {
 			mw.notify( 'UnblockReview error: unable to find request reason by scanning HTML', { type: 'error' } );
 			return;
@@ -272,11 +275,11 @@ export const UnblockReviewController = ( function () {
 		try {
 			const unblockReview = new UnblockReview();
 			const title = mw.config.get( 'wgPageName' );
-			const wikitext = await getWikitext( title );
+			const wikitext = await this.getWikitext( title );
 			const updatedWikitext = onHold ?
 				unblockReview.processRemoveHold( wikitext, appealReason ) :
 				unblockReview.processUnpause( wikitext, appealReason, hasUsernameParameter );
-			await editPage( title, updatedWikitext, ( onHold ? 'Taking unblock request off hold' : 'Unpausing unblock request' ) + ADVERT );
+			await this.editPage( title, updatedWikitext, ( onHold ? 'Taking unblock request off hold' : 'Unpausing unblock request' ) + this.ADVERT );
 			window.location.reload( true );
 		} catch ( e ) {
 			mw.notify( 'UnblockReview error: ' + ( e.message || e ), { type: 'error' } );
@@ -291,10 +294,10 @@ export const UnblockReviewController = ( function () {
 	 * @param {HTMLElement} hrEl - The separator preceding the request reason.
 	 * @param {boolean} hasUsernameParameter - Whether the request includes a separate username.
 	 */
-	async function handleReviewAction( button, container, hrEl, hasUsernameParameter ) {
+	async handleReviewAction( button, container, hrEl, hasUsernameParameter ) {
 		// look at the innerHtml of the button to see if it says "Accept" or "Decline"
 		const acceptOrDecline = button.classList.contains( 'unblock-review-wait-user' ) ? 'wait-user' : $( button ).text().toLowerCase();
-		const appealReason = getAppealReason( hrEl, hasUsernameParameter );
+		const appealReason = this.getAppealReason( hrEl, hasUsernameParameter );
 		if ( !appealReason ) {
 			mw.notify( 'UnblockReview error: unable to find decline reason by scanning HTML', { type: 'error' } );
 			return;
@@ -303,7 +306,7 @@ export const UnblockReviewController = ( function () {
 		// change wikitext
 		const unblockReview = new UnblockReview();
 		const title = mw.config.get( 'wgPageName' );
-		const wikitext = await getWikitext( title );
+		const wikitext = await this.getWikitext( title );
 		if ( acceptOrDecline === 'wait-user' ) {
 			let updatedWikitext;
 			try {
@@ -312,8 +315,8 @@ export const UnblockReviewController = ( function () {
 				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
 				return;
 			}
-			await editPage( title, updatedWikitext, 'Pausing unblock request' + ADVERT );
-			showPausedNotice( container, hrEl, hasUsernameParameter );
+			await this.editPage( title, updatedWikitext, 'Pausing unblock request' + this.ADVERT );
+			this.showPausedNotice( container, hrEl, hasUsernameParameter );
 			return;
 		}
 		const acceptDeclineReason = container.querySelector( 'textarea' ).value;
@@ -323,14 +326,14 @@ export const UnblockReviewController = ( function () {
 				wikitext,
 				appealReason,
 				acceptDeclineReason,
-				DEFAULT_DECLINE_REASON,
+				this.DEFAULT_DECLINE_REASON,
 				acceptOrDecline,
 				hasUsernameParameter
 			);
 		} catch ( e ) {
 			mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
 
-			await logErrorToWiki(
+			await this.logErrorToWiki(
 				acceptDeclineReason,
 				acceptOrDecline,
 				e.message
@@ -345,12 +348,12 @@ export const UnblockReviewController = ( function () {
 		}
 
 		const acceptingOrDeclining = ( acceptOrDecline === 'accept' ? 'Accepting' : 'Declining' );
-		const editSummary = acceptingOrDeclining + ' unblock request' + ADVERT;
-		await editPage( title, wikitext2, editSummary );
+		const editSummary = acceptingOrDeclining + ' unblock request' + this.ADVERT;
+		await this.editPage( title, wikitext2, editSummary );
 		window.location.reload( true );
 	}
 
-	async function logErrorToWiki( acceptDeclineReason, acceptOrDecline, errorMessage ) {
+	async logErrorToWiki( acceptDeclineReason, acceptOrDecline, errorMessage ) {
 		const errorLogTitle = 'User:Novem Linguae/Scripts/UnblockReview/ErrorLog';
 		const currentUser = mw.config.get( 'wgUserName' );
 		const pageTitle = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
@@ -397,13 +400,13 @@ ${ acceptDeclineReason }
 `;
 
 		try {
-			await appendToPage( errorLogTitle, logEntry, 'Logging UnblockReview error' + ADVERT );
+			await this.appendToPage( errorLogTitle, logEntry, 'Logging UnblockReview error' + this.ADVERT );
 		} catch ( logError ) {
 			console.error( 'Failed to log error to wiki:', logError );
 		}
 	}
 
-	async function getWikitext( title ) {
+	async getWikitext( title ) {
 		const data = await ( new mw.Api() ).get( {
 			format: 'json',
 			action: 'query',
@@ -417,7 +420,7 @@ ${ acceptDeclineReason }
 		return wikitext;
 	}
 
-	async function editPage( title, wikitext, editSummary ) {
+	async editPage( title, wikitext, editSummary ) {
 		await ( new mw.Api() ).postWithToken( 'csrf', {
 			action: 'edit',
 			title: title,
@@ -426,7 +429,7 @@ ${ acceptDeclineReason }
 		} );
 	}
 
-	async function appendToPage( title, wikitext, editSummary ) {
+	async appendToPage( title, wikitext, editSummary ) {
 		await ( new mw.Api() ).postWithToken( 'csrf', {
 			action: 'edit',
 			title: title,
@@ -434,6 +437,4 @@ ${ acceptDeclineReason }
 			appendtext: wikitext
 		} );
 	}
-
-	return { execute };
-}() );
+}
