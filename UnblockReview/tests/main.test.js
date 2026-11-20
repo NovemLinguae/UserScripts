@@ -96,6 +96,21 @@ describe( 'main.js', () => {
 		expect( document.querySelector( '.ext-discussiontools-init-replylink-buttons' ).textContent ).toBe( 'reply' );
 	} );
 
+	test( 'Declining an appeal containing an interwiki link with a leading colon', async () => {
+		const reason = `I recently added a section in the French Wikipedia article available at [[:fr:Arc géodésique de Struve]]. I posted a proposal to consider translation in the [http://Talk:Struve_Geodetic_Arc talk page] of [[Struve Geodetic Arc]]. [[User:Charles Inigo|Charles Inigo]] ([[User talk:Charles Inigo#top|talk]]) 08:01, 20 November 2026 (UTC)`;
+		const wikitext = `{{unblock|reason=${ reason }}}}`;
+		const html = `<div class="user-block" style="background-color: #EBF4FF">
+			<div></div><hr><p><b>Request reason</b>:</p>
+			<div>I recently added a section in the French Wikipedia article available at <a rel="mw:WikiLink/Interwiki">fr:Arc géodésique de Struve</a>. I posted a proposal to consider translation in the <a rel="mw:ExtLink">talk page</a> of <a rel="mw:WikiLink">Struve Geodetic Arc</a>. <span data-mw-comment-sig="c-Charles_Inigo-20261120080100"></span><a>Charles Inigo</a> (<a>talk</a>) <a>08:01, 20 November 2026 (UTC)</a><span class="ext-discussiontools-init-replylink-buttons"><a>reply</a></span></div>
+		</div>`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=${ reason }}}}`
+		} ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
+	} );
+
 	test( 'Declining a temporary-account appeal with an external link and multiple signatures', async () => {
 		const reason = `I was blocked because of the abuse of editing privileges. This is includes failing to understand [[WP:COMPETENCE]] and the lack of ability to understand the [[English Wikipedia]] per [[WP:NOTHERE]], and [https://en.wikipedia.org/wiki/Wikipedia:Administrators%27_noticeboard/IncidentArchive1239#~2026-47089-17_-_WP:CIR_issues_from_a_possible_language_barrier,_repeated_and_continuous_failure_to_use_sources,_suspected_use_of_WP:LLM_to_create_articles per presented] at [[WP:ANI]] the past days, despite given additional warnings, leading my article [[Draft:Serendipity Point Films|Serendipity Point Films]] to be put back into draftspace. and several rollbacks by experienced editors. --[[Special:Contributions/~2026-47089-17|~2026-47089-17]] ([[User talk:~2026-47089-17|talk]]) 23:43, 18 November 2026 (UTC)
 ::What I will do differently is edit constructively. --[[Special:Contributions/~2026-47089-17|~2026-47089-17]] ([[User talk:~2026-47089-17|talk]]) 23:43, 18 November 2026 (UTC)`;

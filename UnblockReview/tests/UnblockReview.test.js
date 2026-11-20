@@ -203,6 +203,19 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
 	} );
 
+	test( 'Matches colon-prefixed wikilinks', () => {
+		const wikitext = `{{unblock|reason=See [[:fr:Example]] and [[:Category:Example|the category]].}}`;
+		const appealReason = `See fr:Example and the category.`;
+		const expected = `{{unblock|reason=`;
+		expect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toBe( expected );
+	} );
+
+	test( 'Does not ignore visible text in a colon-prefixed wikilink', () => {
+		const wikitext = `{{unblock|reason=See [[:fr:Example]] and [[:Category:Example|the category]].}}`;
+		const appealReason = `See Example and the category.`;
+		expect( () => unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason ) ).toThrow( 'Searching for target text failed' );
+	} );
+
 	test( 'Selects the request with the matching external-link label', () => {
 		const wikitext = `{{unblock|reason=See [https://example.org/other other].}}\n{{unblock|reason=See [https://example.org/path?x=1&y=2 the discussion].}}`;
 		const appealReason = `See the discussion.`;
@@ -231,6 +244,15 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 } );
 
 describe( 'processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline )', () => {
+	test( 'Declines a request with colon-prefixed wikilinks', () => {
+		const wikitext = `{{unblock|reason=See [[:fr:Example]] and [[:Category:Example|the category]].}}`;
+		const appealReason = `See fr:Example and the category.`;
+		const acceptDeclineReason = `Insufficient.`;
+		const acceptOrDecline = `decline`;
+		const expected = `{{unblock reviewed|decline=Insufficient. ~~~~|1=See [[:fr:Example]] and [[:Category:Example|the category]].}}`;
+		expect( unblockReview.processAcceptOrDecline( wikitext, appealReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline ) ).toBe( expected );
+	} );
+
 	test( 'Normal', () => {
 		const wikitext = `Test {{unblock|reason=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}} Test`;
 		const paramsAndReason = `Your reason here `;
