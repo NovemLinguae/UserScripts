@@ -9,11 +9,12 @@ import { readFileSync } from 'fs';
  *
  * @param {string} wikitext The page wikitext returned by the mocked MediaWiki API.
  * @param {string} html Rendered unblock-request HTML, before main.js adds UnblockReview HTML.
- * @param {string} [action='decline'] The review action to simulate ('accept', 'decline', 'wait', 'unpause', or 'none'). The registered handler is called directly; no click event is dispatched.
+ * @param {string} [action='decline'] The review action to simulate. The registered handler is called directly; no click event is dispatched.
  * @param {boolean} [hasUsernameParameter=false] Whether the request uses a separate username parameter, as in {{unblock-un|username|reason}} or {{unblock-spamun|username|reason}}.
+ * @param {Object} [options={}] Overrides for the relevant user, API, and prompt.
  * @return {Object} Mocks for assertions: mw (including notifications and API methods), postWithToken (the edit API spy), and windowMock (including the reload spy).
  */
-async function clickReviewButton( wikitext, html, action = 'decline', hasUsernameParameter = false ) {
+async function clickReviewButton( wikitext, html, action = 'decline', hasUsernameParameter = false, options = {} ) {
 	document.body.innerHTML = html;
 	if ( hasUsernameParameter ) {
 		// jsdom does not parse CSS variables in the background shorthand.
@@ -24,6 +25,8 @@ async function clickReviewButton( wikitext, html, action = 'decline', hasUsernam
 	let ready;
 	let clickHandler;
 	let unpauseClickHandler;
+	let adminClickHandler;
+	let templateChangeHandler;
 	const $ = ( element ) => {
 		if ( typeof element === 'function' ) {
 			ready = element;
@@ -32,42 +35,72 @@ async function clickReviewButton( wikitext, html, action = 'decline', hasUsernam
 		return {
 			find: ( selector ) => ( {
 				on: ( event, handler ) => {
-					if ( selector === 'button' && event === 'click' ) {
+					if ( !element.querySelector( selector ) ) {
+						return;
+					}
+					if ( selector === '.unblock-review-accept, .unblock-review-decline, .unblock-review-wait' && event === 'click' ) {
 						clickHandler = handler;
 					} else if ( selector === '.unblock-review-unpause' && event === 'click' ) {
 						unpauseClickHandler = handler;
+					} else if ( selector === '.unblock-review-wait-admin' && event === 'click' ) {
+						adminClickHandler = handler;
+					} else if ( selector === '#unblock-review-autoadd-template' && event === 'change' ) {
+						templateChangeHandler = handler;
 					}
+				},
+				text: () => element.querySelector( selector.replace( ':selected', ':checked' ) ).textContent,
+				val: ( value ) => {
+					element.querySelector( selector ).value = value;
 				}
 			} ),
 			text: () => element.textContent
 		};
 	};
 	const postWithToken = jest.fn().mockResolvedValue( {} );
+	const get = options.get || jest.fn().mockResolvedValue( { query: { pages: { 1: { revisions: [ { '*': wikitext } ] } } } } );
 	const mw = {
-		config: { get: ( key ) => ( { wgNamespaceNumber: 3, wgPageName: 'User_talk:Example' } )[ key ] },
+		config: { get: ( key ) => ( { wgNamespaceNumber: 3, wgPageName: 'User_talk:Example', wgRelevantUserName: options.user } )[ key ] },
 		loader: { using: () => Promise.resolve() },
 		util: { addCSS: jest.fn() },
 		Api: function () {
-			this.get = jest.fn().mockResolvedValue( { query: { pages: { 1: { revisions: [ { '*': wikitext } ] } } } } );
+			this.get = get;
 			this.postWithToken = postWithToken;
 		},
 		notify: jest.fn()
 	};
-	const windowMock = { location: { reload: jest.fn() } };
+	const windowMock = { location: { reload: jest.fn() }, prompt: options.prompt || jest.fn() };
 	// eslint-disable-next-line no-new-func
 	const runMain = new Function( 'mw', '$', 'UnblockReview', 'document', 'window', readFileSync( require.resolve( '../main.js' ), 'utf8' ) );
 	runMain( mw, $, UnblockReview, document, windowMock );
 	await ready();
 	if ( action === 'unpause' ) {
 		await unpauseClickHandler.call( document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
+	} else if ( action === 'wait-admin' ) {
+		await adminClickHandler.call( document.querySelector( '.unblock-review-wait-admin' ) );
+	} else if ( action === 'select-template' ) {
+		const select = document.querySelector( '#unblock-review-autoadd-template' );
+		select.value = '{{subst:2nd chance}}';
+		templateChangeHandler.call( select );
 	} else if ( action !== 'none' ) {
-		const buttonClass = action === 'wait' ? 'unblock-review-wait' : 'unblock-review-' + action;
+		const buttonClass = action === 'wait' || action === 'wait-unpause' ? 'unblock-review-wait' : 'unblock-review-' + action;
 		await clickHandler.call( document.querySelector( '.' + buttonClass ) );
+		if ( action === 'wait-unpause' ) {
+			await unpauseClickHandler.call( document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
+		}
 	}
 	return { mw, postWithToken, windowMock };
 }
 
 describe( 'main.js', () => {
+	test( 'Selecting a template updates the reason', async () => {
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+			<div></div><hr><div></div><div>Request reason</div>
+		</div>`;
+		const { postWithToken } = await clickReviewButton( '', html, 'select-template' );
+		expect( document.querySelector( '.unblock-review-reason' ).value ).toBe( '{{subst:2nd chance}}' );
+		expect( postWithToken ).not.toHaveBeenCalled();
+	} );
+
 	test( 'Clicking decline reads all rendered reason text and saves the reviewed request', async () => {
 		const wikitext = `{{unblock|reason={{u|331dot}} I am requesting a reconsideration of this block.}}`;
 		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
@@ -268,6 +301,102 @@ describe( 'main.js', () => {
 		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
 			text: `{{unblock|reason=Please reconsider.|idletimestamp={{subst:CURRENTTIMESTAMP}}}}`
 		} ) );
+	} );
+
+	test( 'The unpause listener works immediately after pausing', async () => {
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+			<div></div><hr><div></div><div>Please reconsider.</div>
+		</div>`;
+		const get = jest.fn()
+			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': '{{unblock|reason=Please reconsider.}}' } ] } } } } )
+			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': '{{unblock|reason=Please reconsider.|idletimestamp=20261119101555}}' } ] } } } } );
+		const { postWithToken, windowMock } = await clickReviewButton( '', html, 'wait-unpause', false, { get } );
+		expect( postWithToken ).toHaveBeenCalledTimes( 2 );
+		expect( postWithToken ).toHaveBeenLastCalledWith( 'csrf', expect.objectContaining( {
+			summary: expect.stringContaining( 'Unpausing unblock request' ),
+			text: '{{unblock|reason=Please reconsider.}}'
+		} ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
+	} );
+
+	test( 'Blocking admin selection puts the matching unblock request on hold and reloads', async () => {
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+			<div></div><hr><div></div><div>Request reason</div>
+		</div>`;
+		const wikitext = '{{unblock|reason=Another request}}\n{{unblock|reason=[[Help:Appeal|Request reason]]|category=}}';
+		const get = jest.fn()
+			.mockResolvedValueOnce( { query: { logevents: [ { action: 'unblock', user: 'Other' } ] }, continue: { lecontinue: 'next' } } )
+			.mockResolvedValueOnce( { query: { logevents: [ { action: 'reblock', user: 'Blocking admin' } ] } } )
+			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': wikitext } ] } } } } );
+		const prompt = jest.fn().mockReturnValue( ' Another admin ' );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( '', html, 'wait-admin', false, { user: 'Example', get, prompt } );
+
+		expect( document.querySelector( '.unblock-review-wait' ).nextElementSibling.className ).toContain( 'unblock-review-wait-admin' );
+		expect( get ).toHaveBeenCalledWith( expect.objectContaining( {
+			list: 'logevents', letype: 'block', letitle: 'User:Example'
+		} ) );
+		expect( get ).toHaveBeenNthCalledWith( 2, expect.objectContaining( { lecontinue: 'next' } ) );
+		expect( prompt ).toHaveBeenCalledWith( 'Blocking administrator:', 'Blocking admin' );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			summary: expect.stringContaining( 'Putting unblock request on hold' ),
+			text: '{{unblock|reason=Another request}}\n{{Unblock on hold|1=Another admin|2=[[Help:Appeal|Request reason]]|3=~~~~}}'
+		} ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
+	} );
+
+	test.each( [
+		[ undefined, undefined ],
+		[ 'Example', [] ],
+		[ 'Example', [ { action: 'block', userhidden: '' } ] ],
+		[ 'Example', [ { actionhidden: '', user: 'Hidden action' } ] ]
+	] )( 'Blocking admin selection allows a blank default when no admin is available', async ( user, events ) => {
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+			<div></div><hr><div></div><div>Request reason</div>
+		</div>`;
+		const get = jest.fn().mockResolvedValue( { query: { logevents: events } } );
+		const prompt = jest.fn().mockReturnValue( null );
+		const { mw, postWithToken } = await clickReviewButton( '', html, 'wait-admin', false, { user, get, prompt } );
+		expect( prompt ).toHaveBeenCalledWith( 'Blocking administrator:', '' );
+		expect( get ).toHaveBeenCalledTimes( user ? 1 : 0 );
+		expect( document.querySelector( '.unblock-review' ).dataset.blockingAdmin ).toBeUndefined();
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).not.toHaveBeenCalled();
+	} );
+
+	test( 'Blocking admin lookup failure defaults to blank and permits manual entry', async () => {
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+			<div></div><hr><div></div><div>Request reason</div>
+		</div>`;
+		const get = jest.fn()
+			.mockRejectedValueOnce( new Error( 'API failed' ) )
+			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': '{{unblock|reason=Request reason}}' } ] } } } } );
+		const prompt = jest.fn().mockReturnValue( 'Manual admin' );
+		const consoleError = jest.spyOn( console, 'error' ).mockImplementation( () => {} );
+		try {
+			const { mw, postWithToken } = await clickReviewButton( '', html, 'wait-admin', false, { user: 'Example', get, prompt } );
+			expect( consoleError ).toHaveBeenCalledWith( expect.stringContaining( 'lookup failed' ), expect.any( Error ) );
+			expect( mw.notify ).not.toHaveBeenCalledWith( expect.anything(), { type: 'error' } );
+			expect( prompt ).toHaveBeenCalledWith( 'Blocking administrator:', '' );
+			expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+				text: '{{Unblock on hold|1=Manual admin|2=Request reason|3=~~~~}}'
+			} ) );
+		} finally {
+			consoleError.mockRestore();
+		}
+	} );
+
+	test( 'An ambiguous request is not edited or reloaded', async () => {
+		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+			<div></div><hr><div></div><div>Request reason</div>
+		</div>`;
+		const wikitext = '{{unblock|reason=Request reason}}\n{{unblock|reason=Request reason}}';
+		const prompt = jest.fn().mockReturnValue( 'Admin' );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'wait-admin', false, { prompt } );
+		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'Too many matching' ), { type: 'error' } );
+		expect( postWithToken ).not.toHaveBeenCalled();
+		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+		expect( document.querySelector( '.unblock-review-wait-admin' ).disabled ).toBe( false );
 	} );
 
 	test( 'Waiting pauses a username-parameter unblock request', async () => {

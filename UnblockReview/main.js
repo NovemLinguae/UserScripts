@@ -1,6 +1,6 @@
 /*
 Forked from [[User:Enterprisey/unblock-review.js]] on Oct 31, 2024.
-Many additional bugs fixed.
+Many many bugs fixed. And some features added :)
 */
 
 // <nowiki>
@@ -42,7 +42,7 @@ Many additional bugs fixed.
 				}
 				const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
 				const hasUsernameParameter = unblockDiv.style.background === UNBLOCK_USERNAME_COLOR;
-				await listenForAcceptAndDecline( container, hrEl, hasUsernameParameter );
+				addListeners( container, hrEl, hasUsernameParameter );
 			}
 		}
 	}
@@ -91,27 +91,7 @@ Many additional bugs fixed.
 
 	function showPausedNotice( container, hrEl, hasUsernameParameter ) {
 		container.innerHTML = PAUSED_NOTICE_HTML;
-		$( container ).find( '.unblock-review-unpause' ).on( 'click', async ( event ) => {
-			event.preventDefault();
-			const appealReason = getAppealReason( hrEl, hasUsernameParameter );
-			if ( !appealReason ) {
-				mw.notify( 'UnblockReview error: unable to find request reason by scanning HTML', { type: 'error' } );
-				return;
-			}
-			// eslint-disable-next-line no-undef
-			const unblockReview = new UnblockReview();
-			const title = mw.config.get( 'wgPageName' );
-			const wikitext = await getWikitext( title );
-			let updatedWikitext;
-			try {
-				updatedWikitext = unblockReview.processUnpause( wikitext, appealReason, hasUsernameParameter );
-			} catch ( e ) {
-				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
-				return;
-			}
-			await editPage( title, updatedWikitext, 'Unpausing unblock request' + ADVERT );
-			window.location.reload( true );
-		} );
+		addListeners( container, hrEl, hasUsernameParameter );
 	}
 
 	function addTextBoxAndButtons( unblockDiv ) {
@@ -139,19 +119,43 @@ Many additional bugs fixed.
 				<button class="unblock-review-accept cdx-button cdx-button--action-progressive cdx-button--weight-primary">Accept</button>
 				<button class="unblock-review-decline cdx-button cdx-button--action-destructive cdx-button--weight-primary">Decline</button>
 				<button class="unblock-review-wait cdx-button cdx-button--action-default cdx-button--weight-primary">Pause until user responds</button>
+				<button class="unblock-review-wait-admin cdx-button cdx-button--action-default cdx-button--weight-primary">Pause until blocking admin responds</button>
 			</div>
 			`;
 		const hrEl = unblockDiv.querySelector( 'hr' );
 		unblockDiv.insertBefore( container, hrEl.previousElementSibling );
 
-		// When a template is selected from the dropdown, insert its display text into the reason textarea.
-		$( container ).find( '#unblock-review-autoadd-template' ).on( 'change', function () {
-			// eslint-disable-next-line no-jquery/no-sizzle
-			const templateText = $( this ).find( 'option:selected' ).text() || $( this ).val() || '';
-			$( container ).find( '.unblock-review-reason' ).val( templateText );
-		} );
-
 		return [ container, hrEl ];
+	}
+
+	async function getBlockingAdmin() {
+		const user = mw.config.get( 'wgNamespaceNumber' ) === 3 && mw.config.get( 'wgRelevantUserName' );
+		if ( !user ) {
+			return '';
+		}
+		const api = new mw.Api();
+		let continuation;
+		do {
+			const data = await api.get( {
+				action: 'query',
+				list: 'logevents',
+				letype: 'block',
+				letitle: 'User:' + user,
+				leprop: 'type|user|details',
+				lelimit: 10,
+				lecontinue: continuation
+			} );
+			for ( const event of data.query.logevents ) {
+				if ( Object.prototype.hasOwnProperty.call( event, 'actionhidden' ) ) {
+					return '';
+				}
+				if ( event.action === 'block' || event.action === 'reblock' ) {
+					return event.user || '';
+				}
+			}
+			continuation = data.continue && data.continue.lecontinue;
+		} while ( continuation );
+		return '';
 	}
 
 	function getAppealText( element ) {
@@ -187,9 +191,69 @@ Many additional bugs fixed.
 		return appealReason;
 	}
 
-	async function listenForAcceptAndDecline( container, hrEl, hasUsernameParameter ) {
-		const reasonArea = container.querySelector( 'textarea' );
-		$( container ).find( 'button' ).on( 'click', async function () {
+	function addListeners( container, hrEl, hasUsernameParameter ) {
+		$( container ).find( '#unblock-review-autoadd-template' ).on( 'change', function () {
+			// eslint-disable-next-line no-jquery/no-sizzle
+			const templateText = $( this ).find( 'option:selected' ).text() || $( this ).val() || '';
+			$( container ).find( '.unblock-review-reason' ).val( templateText );
+		} );
+
+		$( container ).find( '.unblock-review-wait-admin' ).on( 'click', async function () {
+			this.disabled = true;
+			const blockingAdmin = await getBlockingAdmin().catch( ( e ) => {
+				console.error( 'UnblockReview blocking administrator lookup failed:', e );
+				return '';
+			} );
+			this.disabled = false;
+			const selectedAdmin = window.prompt( 'Blocking administrator:', blockingAdmin );
+			if ( selectedAdmin !== null ) {
+				const appealReason = getAppealReason( hrEl, hasUsernameParameter );
+				if ( !appealReason ) {
+					mw.notify( 'UnblockReview error: unable to find request reason by scanning HTML', { type: 'error' } );
+					return;
+				}
+				this.disabled = true;
+				try {
+					// eslint-disable-next-line no-undef
+					const unblockReview = new UnblockReview();
+					const title = mw.config.get( 'wgPageName' );
+					const wikitext = await getWikitext( title );
+					const updatedWikitext = unblockReview.processWaitForBlockingAdmin(
+						wikitext, appealReason, selectedAdmin.trim(), hasUsernameParameter
+					);
+					await editPage( title, updatedWikitext, 'Putting unblock request on hold' + ADVERT );
+					window.location.reload( true );
+				} catch ( e ) {
+					mw.notify( 'UnblockReview error: unable to put request on hold: ' + ( e.message || e ), { type: 'error' } );
+				} finally {
+					this.disabled = false;
+				}
+			}
+		} );
+
+		$( container ).find( '.unblock-review-unpause' ).on( 'click', async ( event ) => {
+			event.preventDefault();
+			const appealReason = getAppealReason( hrEl, hasUsernameParameter );
+			if ( !appealReason ) {
+				mw.notify( 'UnblockReview error: unable to find request reason by scanning HTML', { type: 'error' } );
+				return;
+			}
+			// eslint-disable-next-line no-undef
+			const unblockReview = new UnblockReview();
+			const title = mw.config.get( 'wgPageName' );
+			const wikitext = await getWikitext( title );
+			let updatedWikitext;
+			try {
+				updatedWikitext = unblockReview.processUnpause( wikitext, appealReason, hasUsernameParameter );
+			} catch ( e ) {
+				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
+				return;
+			}
+			await editPage( title, updatedWikitext, 'Unpausing unblock request' + ADVERT );
+			window.location.reload( true );
+		} );
+
+		$( container ).find( '.unblock-review-accept, .unblock-review-decline, .unblock-review-wait' ).on( 'click', async function () {
 			// look at the innerHtml of the button to see if it says "Accept" or "Decline"
 			const acceptOrDecline = this.classList.contains( 'unblock-review-wait' ) ? 'wait' : $( this ).text().toLowerCase();
 			const appealReason = getAppealReason( hrEl, hasUsernameParameter );
@@ -216,7 +280,7 @@ Many additional bugs fixed.
 				showPausedNotice( container, hrEl, hasUsernameParameter );
 				return;
 			}
-			const acceptDeclineReason = reasonArea.value;
+			const acceptDeclineReason = container.querySelector( 'textarea' ).value;
 			let wikitext2;
 			try {
 				wikitext2 = unblockReview.processAcceptOrDecline(

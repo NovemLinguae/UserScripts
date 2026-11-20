@@ -172,6 +172,87 @@ export class UnblockReview {
 	}
 
 	/**
+	 * Replace a matching unblock request with an on-hold template.
+	 *
+	 * @param {string} wikitext - The page wikitext.
+	 * @param {string} paramsAndReason - Rendered reason identifying the request.
+	 * @param {string} blockingAdmin - The blocking administrator.
+	 * @param {boolean} hasUsernameParameter - Whether the request has a separate username parameter.
+	 * @return {string} Updated wikitext.
+	 */
+	processWaitForBlockingAdmin( wikitext, paramsAndReason, blockingAdmin, hasUsernameParameter = false ) {
+		if ( hasUsernameParameter ) {
+			throw new Error( 'Putting username requests on hold is not supported' );
+		}
+		if ( /[|{}[\]<>\r\n]/.test( blockingAdmin ) ) {
+			throw new Error( 'Invalid blocking administrator name' );
+		}
+		const { start, closePos } = this.getUnblockTemplateRange( wikitext, paramsAndReason );
+		const template = wikitext.slice( start, closePos + 2 );
+		const opening = template.match( /^\{\{\s*unblock\s*(?=\||\}\})/i );
+		if ( !opening ) {
+			throw new Error( 'Putting this unblock template on hold is not supported' );
+		}
+		const parameters = this.getUnblockParameters( template.slice( opening[ 0 ].length, -2 ) );
+		const reason = Object.prototype.hasOwnProperty.call( parameters, '1' ) ?
+			parameters[ '1' ] : ( parameters.reason || '' );
+		const replacement = '{{Unblock on hold|1=' + blockingAdmin + '|2=' + reason + '|3=' + this.SIGNATURE + '}}';
+		return wikitext.slice( 0, start ) + replacement + wikitext.slice( closePos + 2 );
+	}
+
+	getUnblockParameters( text ) {
+		const parameters = {};
+		const stack = [];
+		let start = 1;
+		let equals = -1;
+		let position = 1;
+		for ( let i = 1; i <= text.length; i++ ) {
+			if ( text.startsWith( '<!--', i ) ) {
+				const end = text.indexOf( '-->', i + 4 );
+				if ( end === -1 ) {
+					throw new Error( 'Unable to parse the unblock reason' );
+				}
+				i = end + 2;
+				continue;
+			}
+			const tag = text.slice( i ).match( /^<(nowiki|ref|pre|syntaxhighlight|source|math)\b[^>]*>/i );
+			if ( tag ) {
+				if ( /\/\s*>$/.test( tag[ 0 ] ) ) {
+					i += tag[ 0 ].length - 1;
+				} else {
+					const closing = new RegExp( '</' + tag[ 1 ] + '\\s*>', 'i' ).exec( text.slice( i + tag[ 0 ].length ) );
+					if ( !closing ) {
+						throw new Error( 'Unable to parse the unblock reason' );
+					}
+					i += tag[ 0 ].length + closing.index + closing[ 0 ].length - 1;
+				}
+				continue;
+			}
+			const pair = text.slice( i, i + 2 );
+			if ( pair === '{{' || pair === '[[' ) {
+				stack.push( pair === '{{' ? '}}' : ']]' );
+				i++;
+			} else if ( pair === stack[ stack.length - 1 ] ) {
+				stack.pop();
+				i++;
+			} else if ( pair === '}}' || pair === ']]' ) {
+				throw new Error( 'Unable to parse the unblock reason' );
+			} else if ( stack.length === 0 && text[ i ] === '=' && equals === -1 ) {
+				equals = i;
+			} else if ( stack.length === 0 && ( text[ i ] === '|' || i === text.length ) ) {
+				const key = equals === -1 ? String( position++ ) : text.slice( start, equals ).trim();
+				parameters[ key ] = text.slice( equals === -1 ? start : equals + 1, i );
+				start = i + 1;
+				equals = -1;
+			}
+		}
+		if ( stack.length ) {
+			throw new Error( 'Unable to parse the unblock reason' );
+		}
+		return parameters;
+	}
+
+	/**
 	 * Remove the idletimestamp parameter from the matching unblock request.
 	 *
 	 * @param {string} wikitext - The wikitext of the page.

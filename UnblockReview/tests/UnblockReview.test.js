@@ -9,6 +9,43 @@ import { UnblockReview } from '../modules/UnblockReview.js';
 const unblockReview = new UnblockReview();
 const DEFAULT_DECLINE_REASON = `{{subst:Decline reason here}}`;
 
+describe( 'processWaitForBlockingAdmin', () => {
+	test.each( [
+		[ '{{unblock|reason=Please reconsider [[Help:Appeal|this]] {{u|Example}}|category=}}', 'Please reconsider [[Help:Appeal|this]] {{u|Example}}' ],
+		[ '{{unblock|1=Please reconsider|reason=Other reason}}', 'Please reconsider' ],
+		[ '{{unblock|Please reconsider|category=}}', 'Please reconsider' ],
+		[ '{{unblock|reason=Please reconsider <nowiki>a|b=c</nowiki>}}', 'Please reconsider <nowiki>a|b=c</nowiki>' ]
+	] )( 'Preserves the original reason from %s', ( template, reason ) => {
+		const result = unblockReview.processWaitForBlockingAdmin( template, 'Please reconsider', 'Admin' );
+		expect( result ).toBe( `{{Unblock on hold|1=Admin|2=${ reason }|3=~~~~}}` );
+	} );
+
+	test( 'Allows a blank administrator and an unblock request without a reason', () => {
+		expect( unblockReview.processWaitForBlockingAdmin(
+			'{{Unblock}}', 'Please provide a reason as to why you should be unblocked', ''
+		) ).toBe( '{{Unblock on hold|1=|2=|3=~~~~}}' );
+	} );
+
+	test( 'Rejects unsupported username requests and unsafe administrator names', () => {
+		expect( () => unblockReview.processWaitForBlockingAdmin( '{{unblock-un|Alex|Please reconsider}}', 'Alex|Please reconsider', 'Admin', true ) )
+			.toThrow( 'username requests' );
+		expect( () => unblockReview.processWaitForBlockingAdmin( '{{unblock|Please reconsider}}', 'Please reconsider', 'Admin|3=Other' ) )
+			.toThrow( 'Invalid blocking administrator' );
+	} );
+
+	test( 'Does not replace an ambiguous request', () => {
+		expect( () => unblockReview.processWaitForBlockingAdmin(
+			'{{unblock|reason=Please reconsider}}\n{{unblock|reason=Please reconsider}}', 'Please reconsider', 'Admin'
+		) ).toThrow( 'Too many matching unblock templates found' );
+	} );
+
+	test( 'Does not consume a later template when a comment contains opening braces', () => {
+		expect( () => unblockReview.processWaitForBlockingAdmin(
+			'{{unblock|reason=Please reconsider <!-- {{ -->}}\n{{other}} }}', 'Please reconsider', 'Admin'
+		) ).toThrow( 'Unable to parse the unblock reason' );
+	} );
+} );
+
 describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 	test( '{{unblock|reason=Your reason here }}', () => {
 		const wikitext = `Test {{unblock|reason=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}} Test`;
