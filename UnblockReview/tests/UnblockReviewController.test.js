@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */ // eslint-disable-line jsdoc/check-tag-names
 /* eslint-disable quotes */
 
-import { UnblockReview } from '../modules/UnblockReview.js';
+import { UnblockReviewWikitext } from '../modules/UnblockReviewWikitext.js';
 import { readFileSync } from 'fs';
 
 /**
@@ -67,8 +67,8 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 		.replace( /^export /m, '' );
 	const mainSource = readFileSync( require.resolve( '../main.js' ), 'utf8' ).replace( /^import .*\r?\n/m, '' );
 	// eslint-disable-next-line no-new-func
-	const runMain = new Function( 'mw', '$', 'UnblockReview', 'document', 'window', controllerSource + '\n' + mainSource );
-	runMain( mw, $, UnblockReview, document, windowMock );
+	const runMain = new Function( 'mw', '$', 'UnblockReviewWikitext', 'document', 'window', controllerSource + '\n' + mainSource );
+	runMain( mw, $, UnblockReviewWikitext, document, windowMock );
 	await ready();
 	if ( action === 'unpause' ) {
 		await unpauseClickHandler.call( document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );

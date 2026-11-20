@@ -1,4 +1,4 @@
-export class UnblockReview {
+export class UnblockReviewWikitext {
 	constructor() {
 		this.SIGNATURE = '~~~~';
 		this.templatesThatHaveUsernameParameters = [ 'unblock-un', 'unblock-spamun' ];

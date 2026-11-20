@@ -1,12 +1,12 @@
 /* eslint-disable quotes, block-spacing, brace-style, max-statements-per-line */
 
-import { UnblockReview } from '../modules/UnblockReview.js';
+import { UnblockReviewWikitext } from '../modules/UnblockReviewWikitext.js';
 
 // Babel is required to use ES6 module syntax
 // Copy package.json and .babelrc from a project that already has this working
 // Babel tutorial: https://www.sitepoint.com/babel-beginners-guide/
 
-const unblockReview = new UnblockReview();
+const unblockReview = new UnblockReviewWikitext();
 const DEFAULT_DECLINE_REASON = `{{subst:Decline reason here}}`;
 
 describe( 'processWaitForBlockingAdmin', () => {

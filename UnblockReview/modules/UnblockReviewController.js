@@ -1,4 +1,4 @@
-import { UnblockReview } from './UnblockReview.js';
+import { UnblockReviewWikitext } from './UnblockReviewWikitext.js';
 
 export class UnblockReviewController {
 	constructor() {
@@ -249,7 +249,7 @@ export class UnblockReviewController {
 			}
 			button.disabled = true;
 			try {
-				const unblockReview = new UnblockReview();
+				const unblockReview = new UnblockReviewWikitext();
 				const title = mw.config.get( 'wgPageName' );
 				const wikitext = await this.getWikitext( title );
 				const updatedWikitext = unblockReview.processWaitForBlockingAdmin(
@@ -273,7 +273,7 @@ export class UnblockReviewController {
 			return;
 		}
 		try {
-			const unblockReview = new UnblockReview();
+			const unblockReview = new UnblockReviewWikitext();
 			const title = mw.config.get( 'wgPageName' );
 			const wikitext = await this.getWikitext( title );
 			const updatedWikitext = onHold ?
@@ -304,7 +304,7 @@ export class UnblockReviewController {
 		}
 
 		// change wikitext
-		const unblockReview = new UnblockReview();
+		const unblockReview = new UnblockReviewWikitext();
 		const title = mw.config.get( 'wgPageName' );
 		const wikitext = await this.getWikitext( title );
 		if ( acceptOrDecline === 'wait-user' ) {
