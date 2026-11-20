@@ -31,7 +31,7 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 					if ( !element.querySelector( selector ) ) {
 						return;
 					}
-					if ( selector === '.unblock-review-accept, .unblock-review-decline, .unblock-review-wait' && event === 'click' ) {
+					if ( selector === '.unblock-review-accept, .unblock-review-decline, .unblock-review-wait-user' && event === 'click' ) {
 						clickHandler = handler;
 					} else if ( selector === '.unblock-review-unpause' && event === 'click' ) {
 						unpauseClickHandler = handler;
@@ -75,7 +75,7 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 		select.value = '{{subst:2nd chance}}';
 		templateChangeHandler.call( select );
 	} else if ( action !== 'none' ) {
-		const buttonClass = action === 'wait' || action === 'wait-unpause' ? 'unblock-review-wait' : 'unblock-review-' + action;
+		const buttonClass = action === 'wait' || action === 'wait-unpause' ? 'unblock-review-wait-user' : 'unblock-review-' + action;
 		await clickHandler.call( document.querySelector( '.' + buttonClass ) );
 		if ( action === 'wait-unpause' ) {
 			await unpauseClickHandler.call( document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
@@ -348,7 +348,7 @@ describe( 'main.js', () => {
 		const prompt = jest.fn().mockReturnValue( ' Another admin ' );
 		const { mw, postWithToken, windowMock } = await clickReviewButton( '', html, 'wait-admin', { user: 'Example', get, prompt } );
 
-		expect( document.querySelector( '.unblock-review-wait' ).nextElementSibling.className ).toContain( 'unblock-review-wait-admin' );
+		expect( document.querySelector( '.unblock-review-wait-user' ).nextElementSibling.className ).toContain( 'unblock-review-wait-admin' );
 		expect( get ).toHaveBeenCalledWith( expect.objectContaining( {
 			list: 'logevents', letype: 'block', letitle: 'User:Example'
 		} ) );
@@ -470,8 +470,10 @@ describe( 'main.js', () => {
 		const wikitext = '{{Unblock on hold|1=Other|2=Other reason|3=Signature}}\n' +
 			'{{Unblock on hold|1=Admin|2=Please [[Help:Appeal|reconsider]].|3=Reviewer}}';
 		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'unpause' );
-		expect( document.querySelector( '.cdx-message--warning' ).textContent ).toContain( 'on hold' );
-		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Take off hold.' );
+		expect( document.querySelector( '.cdx-message--warning' ).textContent ).toContain(
+			'This unblock request is paused until the blocking administrator responds.'
+		);
+		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Unpause now.' );
 		expect( document.querySelector( '.unblock-review button' ) ).toBeNull();
 		expect( mw.notify ).not.toHaveBeenCalled();
 		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {

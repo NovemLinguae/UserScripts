@@ -129,7 +129,7 @@ Many many bugs fixed. And some features added :)
 			<div class="unblock-review-buttons">
 				<button class="unblock-review-accept cdx-button cdx-button--action-progressive cdx-button--weight-primary">Accept</button>
 				<button class="unblock-review-decline cdx-button cdx-button--action-destructive cdx-button--weight-primary">Decline</button>
-				<button class="unblock-review-wait cdx-button cdx-button--action-default cdx-button--weight-primary">Pause until user responds</button>
+				<button class="unblock-review-wait-user cdx-button cdx-button--action-default cdx-button--weight-primary">Pause until user responds</button>
 				<button class="unblock-review-wait-admin cdx-button cdx-button--action-default cdx-button--weight-primary">Pause until blocking admin responds</button>
 			</div>
 			`;
@@ -223,121 +223,138 @@ Many many bugs fixed. And some features added :)
 			$( container ).find( '.unblock-review-reason' ).val( templateText );
 		} );
 
-		$( container ).find( '.unblock-review-wait-admin' ).on( 'click', async function () {
-			this.disabled = true;
-			const blockingAdmin = await getBlockingAdmin().catch( ( e ) => {
-				console.error( 'UnblockReview blocking administrator lookup failed:', e );
-				return '';
-			} );
-			this.disabled = false;
-			const selectedAdmin = window.prompt( 'Blocking administrator:', blockingAdmin );
-			if ( selectedAdmin !== null ) {
-				const appealReason = getAppealReason( hrEl, hasUsernameParameter );
-				if ( !appealReason ) {
-					mw.notify( 'UnblockReview error: unable to find request reason by scanning HTML', { type: 'error' } );
-					return;
-				}
-				this.disabled = true;
-				try {
-					// eslint-disable-next-line no-undef
-					const unblockReview = new UnblockReview();
-					const title = mw.config.get( 'wgPageName' );
-					const wikitext = await getWikitext( title );
-					const updatedWikitext = unblockReview.processWaitForBlockingAdmin(
-						wikitext, appealReason, selectedAdmin.trim(), hasUsernameParameter
-					);
-					await editPage( title, updatedWikitext, 'Putting unblock request on hold' + ADVERT );
-					window.location.reload( true );
-				} catch ( e ) {
-					mw.notify( 'UnblockReview error: unable to put request on hold: ' + ( e.message || e ), { type: 'error' } );
-				} finally {
-					this.disabled = false;
-				}
-			}
+		$( container ).find( '.unblock-review-wait-admin' ).on( 'click', function () {
+			return handleWaitForAdmin( this, hrEl, hasUsernameParameter );
 		} );
 
-		$( container ).find( '.unblock-review-unpause' ).on( 'click', async ( event ) => {
-			event.preventDefault();
-			const appealReason = onHold ? getOnHoldAppealReason( hrEl ) : getAppealReason( hrEl, hasUsernameParameter );
-			if ( appealReason === undefined || ( !onHold && !appealReason ) ) {
+		$( container ).find( '.unblock-review-unpause' ).on( 'click', ( event ) => handleUnpause( event, hrEl, hasUsernameParameter, onHold ) );
+
+		$( container ).find( '.unblock-review-accept, .unblock-review-decline, .unblock-review-wait-user' ).on( 'click', function () {
+			return handleReviewAction( this, container, hrEl, hasUsernameParameter );
+		} );
+	}
+
+	async function handleWaitForAdmin( button, hrEl, hasUsernameParameter ) {
+		button.disabled = true;
+		const blockingAdmin = await getBlockingAdmin().catch( ( e ) => {
+			console.error( 'UnblockReview blocking administrator lookup failed:', e );
+			return '';
+		} );
+		button.disabled = false;
+		const selectedAdmin = window.prompt( 'Blocking administrator:', blockingAdmin );
+		if ( selectedAdmin !== null ) {
+			const appealReason = getAppealReason( hrEl, hasUsernameParameter );
+			if ( !appealReason ) {
 				mw.notify( 'UnblockReview error: unable to find request reason by scanning HTML', { type: 'error' } );
 				return;
 			}
+			button.disabled = true;
 			try {
 				// eslint-disable-next-line no-undef
 				const unblockReview = new UnblockReview();
 				const title = mw.config.get( 'wgPageName' );
 				const wikitext = await getWikitext( title );
-				const updatedWikitext = onHold ?
-					unblockReview.processRemoveHold( wikitext, appealReason ) :
-					unblockReview.processUnpause( wikitext, appealReason, hasUsernameParameter );
-				await editPage( title, updatedWikitext, ( onHold ? 'Taking unblock request off hold' : 'Unpausing unblock request' ) + ADVERT );
+				const updatedWikitext = unblockReview.processWaitForBlockingAdmin(
+					wikitext, appealReason, selectedAdmin.trim(), hasUsernameParameter
+				);
+				await editPage( title, updatedWikitext, 'Putting unblock request on hold' + ADVERT );
 				window.location.reload( true );
 			} catch ( e ) {
-				mw.notify( 'UnblockReview error: ' + ( e.message || e ), { type: 'error' } );
+				mw.notify( 'UnblockReview error: unable to put request on hold: ' + ( e.message || e ), { type: 'error' } );
+			} finally {
+				button.disabled = false;
 			}
-		} );
+		}
+	}
 
-		$( container ).find( '.unblock-review-accept, .unblock-review-decline, .unblock-review-wait' ).on( 'click', async function () {
-			// look at the innerHtml of the button to see if it says "Accept" or "Decline"
-			const acceptOrDecline = this.classList.contains( 'unblock-review-wait' ) ? 'wait' : $( this ).text().toLowerCase();
-			const appealReason = getAppealReason( hrEl, hasUsernameParameter );
-			// FIXME: should handle this case (|reason=\nText, https://github.com/NovemLinguae/UserScripts/issues/240) instead of throwing an error
-			if ( !appealReason ) {
-				mw.notify( 'UnblockReview error: unable to find decline reason by scanning HTML', { type: 'error' } );
-				return;
-			}
-
-			// change wikitext
+	async function handleUnpause( event, hrEl, hasUsernameParameter, onHold ) {
+		event.preventDefault();
+		const appealReason = onHold ? getOnHoldAppealReason( hrEl ) : getAppealReason( hrEl, hasUsernameParameter );
+		if ( appealReason === undefined || ( !onHold && !appealReason ) ) {
+			mw.notify( 'UnblockReview error: unable to find request reason by scanning HTML', { type: 'error' } );
+			return;
+		}
+		try {
 			// eslint-disable-next-line no-undef
 			const unblockReview = new UnblockReview();
 			const title = mw.config.get( 'wgPageName' );
 			const wikitext = await getWikitext( title );
-			if ( acceptOrDecline === 'wait' ) {
-				let updatedWikitext;
-				try {
-					updatedWikitext = unblockReview.processWaitForUserResponse( wikitext, appealReason, hasUsernameParameter );
-				} catch ( e ) {
-					mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
-					return;
-				}
-				await editPage( title, updatedWikitext, 'Pausing unblock request' + ADVERT );
-				showPausedNotice( container, hrEl, hasUsernameParameter );
-				return;
-			}
-			const acceptDeclineReason = container.querySelector( 'textarea' ).value;
-			let wikitext2;
+			const updatedWikitext = onHold ?
+				unblockReview.processRemoveHold( wikitext, appealReason ) :
+				unblockReview.processUnpause( wikitext, appealReason, hasUsernameParameter );
+			await editPage( title, updatedWikitext, ( onHold ? 'Taking unblock request off hold' : 'Unpausing unblock request' ) + ADVERT );
+			window.location.reload( true );
+		} catch ( e ) {
+			mw.notify( 'UnblockReview error: ' + ( e.message || e ), { type: 'error' } );
+		}
+	}
+
+	/**
+	 * Handle accept, decline, or idletimestamp (pause until user responds) actions.
+	 *
+	 * @param {HTMLElement} button - The clicked button.
+	 * @param {HTMLElement} container - The request controls container.
+	 * @param {HTMLElement} hrEl - The separator preceding the request reason.
+	 * @param {boolean} hasUsernameParameter - Whether the request includes a separate username.
+	 */
+	async function handleReviewAction( button, container, hrEl, hasUsernameParameter ) {
+		// look at the innerHtml of the button to see if it says "Accept" or "Decline"
+		const acceptOrDecline = button.classList.contains( 'unblock-review-wait-user' ) ? 'wait-user' : $( button ).text().toLowerCase();
+		const appealReason = getAppealReason( hrEl, hasUsernameParameter );
+		if ( !appealReason ) {
+			mw.notify( 'UnblockReview error: unable to find decline reason by scanning HTML', { type: 'error' } );
+			return;
+		}
+
+		// change wikitext
+		// eslint-disable-next-line no-undef
+		const unblockReview = new UnblockReview();
+		const title = mw.config.get( 'wgPageName' );
+		const wikitext = await getWikitext( title );
+		if ( acceptOrDecline === 'wait-user' ) {
+			let updatedWikitext;
 			try {
-				wikitext2 = unblockReview.processAcceptOrDecline(
-					wikitext,
-					appealReason,
-					acceptDeclineReason,
-					DEFAULT_DECLINE_REASON,
-					acceptOrDecline,
-					hasUsernameParameter
-				);
+				updatedWikitext = unblockReview.processWaitForUserResponse( wikitext, appealReason, hasUsernameParameter );
 			} catch ( e ) {
 				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
-
-				await logErrorToWiki(
-					acceptDeclineReason,
-					acceptOrDecline,
-					e.message
-				);
-
 				return;
 			}
+			await editPage( title, updatedWikitext, 'Pausing unblock request' + ADVERT );
+			showPausedNotice( container, hrEl, hasUsernameParameter );
+			return;
+		}
+		const acceptDeclineReason = container.querySelector( 'textarea' ).value;
+		let wikitext2;
+		try {
+			wikitext2 = unblockReview.processAcceptOrDecline(
+				wikitext,
+				appealReason,
+				acceptDeclineReason,
+				DEFAULT_DECLINE_REASON,
+				acceptOrDecline,
+				hasUsernameParameter
+			);
+		} catch ( e ) {
+			mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
 
-			if ( wikitext === wikitext2 ) {
-				mw.notify( 'UnblockReview error: unable to determine write location.', { type: 'error' } );
-				return;
-			}
+			await logErrorToWiki(
+				acceptDeclineReason,
+				acceptOrDecline,
+				e.message
+			);
 
-			const acceptingOrDeclining = ( acceptOrDecline === 'accept' ? 'Accepting' : 'Declining' );
-			const editSummary = acceptingOrDeclining + ' unblock request' + ADVERT;
-			await editPage( title, wikitext2, editSummary );
-			window.location.reload( true );
-		} );
+			return;
+		}
+
+		if ( wikitext === wikitext2 ) {
+			mw.notify( 'UnblockReview error: unable to determine write location.', { type: 'error' } );
+			return;
+		}
+
+		const acceptingOrDeclining = ( acceptOrDecline === 'accept' ? 'Accepting' : 'Declining' );
+		const editSummary = acceptingOrDeclining + ' unblock request' + ADVERT;
+		await editPage( title, wikitext2, editSummary );
+		window.location.reload( true );
 	}
 
 	async function logErrorToWiki( acceptDeclineReason, acceptOrDecline, errorMessage ) {
