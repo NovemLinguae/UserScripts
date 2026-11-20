@@ -231,12 +231,9 @@ Many additional bugs fixed.
 				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
 
 				await logErrorToWiki(
-					wikitext,
-					appealReason,
 					acceptDeclineReason,
 					acceptOrDecline,
-					e.message,
-					hasUsernameParameter
+					e.message
 				);
 
 				return;
@@ -254,12 +251,12 @@ Many additional bugs fixed.
 		} );
 	}
 
-	async function logErrorToWiki( wikitext, paramsAndReason, acceptDeclineReason, acceptOrDecline, errorMessage, hasUsernameParameter ) {
+	async function logErrorToWiki( acceptDeclineReason, acceptOrDecline, errorMessage ) {
 		const errorLogTitle = 'User:Novem Linguae/Scripts/UnblockReview/ErrorLog';
 		const currentUser = mw.config.get( 'wgUserName' );
 		const pageTitle = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
 		const revisionId = mw.config.get( 'wgRevisionId' );
-		const oldidLink = `${ mw.config.get( 'wgServer' ) }/w/index.php?oldid=${ revisionId }`;
+		const oldidLink = `${ mw.config.get( 'wgServer' ) }/w/index.php?oldid=${ revisionId }&action=edit`;
 
 		const now = new Date();
 		const dateTime = now.toLocaleString( 'en-US', {
@@ -276,26 +273,28 @@ Many additional bugs fixed.
 
 == ${ dateTime } ==
 * Unblocking admin: <code>${ currentUser }</code>
-* Page: [${ oldidLink } ${ pageTitle }]
-* Error: <code>${ errorMessage }</code>
+* Page title: <code>${ pageTitle.replace( /_/g, ' ' ) }</code>
+* Wikitext: [${ oldidLink }]
+* AI prompt:
+<pre>UnblockReview: Performing the "${ acceptOrDecline }" action with the below fails. Please write test and fix.
 
-<syntaxhighlight lang="js">\ttest( \`[YOUR TEST NAME HERE]\`, () => {
-\t\tconst wikitext =
-\`[YOUR WIKITEXT HERE]\`;
-\t\tconst appealReason = \`${ paramsAndReason.replace( /`/g, '\\`' ) }\`;
-\t\tconst expected = \`[YOUR EXPECTED WIKITEXT HERE]\`;
-\t\texpect( unblockReview.getLeftHalfOfUnblockTemplate( wikitext, appealReason, ${ hasUsernameParameter } ) ).toBe( expected );
-\t} );</syntaxhighlight>
+errorMessage:
+\`\`\`
+${ errorMessage }
+\`\`\`
 
-<syntaxhighlight lang="js">\ttest( '[YOUR TEST NAME HERE]', () => {
-\t\tconst wikitext =
-\`[YOUR WIKITEXT HERE]\`;
-\t\tconst paramsAndReason = \`${ paramsAndReason.replace( /`/g, '\\`' ) }\`;
-\t\tconst acceptDeclineReason = \`${ acceptDeclineReason.replace( /`/g, '\\`' ) }\`;
-\t\tconst acceptOrDecline = \`${ acceptOrDecline }\`;
-\t\tconst expected = \`[YOUR EXPECTED WIKITEXT HERE]\`;
-\t\texpect( unblockReview.processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, ${ hasUsernameParameter } ) ).toBe( expected );
-\t} );</syntaxhighlight>
+acceptDeclineReason:
+\`\`\`
+${ acceptDeclineReason }
+\`\`\`
+
+\`\`\`
+[WIKITEXT, REDUCED TO SMALLEST CASE VIA TESTING ON TESTWIKI. USE WIKITEXT LINK ABOVE.]
+\`\`\`
+
+\`\`\`
+[OUTER HTML. TESTWIKI -> INSPECT -> DIV -> COPY -> OUTER HTML.]
+\`\`\`</pre>
 `;
 
 		try {
