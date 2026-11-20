@@ -5,7 +5,7 @@ import { UnblockReview } from '../modules/UnblockReview.js';
 import { readFileSync } from 'fs';
 
 /**
- * Set up the jsdom document and mocks needed to run main.js, then invoke the registered handler for the accept/decline button.
+ * Set up the jsdom document and mocks needed to run the controller, then invoke the registered handler.
  *
  * @param {string} wikitext The page wikitext returned by the mocked MediaWiki API.
  * @param {string} html Rendered unblock-request HTML, before main.js adds UnblockReview HTML.
@@ -62,8 +62,12 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 		notify: jest.fn()
 	};
 	const windowMock = { location: { reload: jest.fn() }, prompt: options.prompt || jest.fn() };
+	const controllerSource = readFileSync( require.resolve( '../modules/UnblockReviewController.js' ), 'utf8' )
+		.replace( /^import .*\r?\n/m, '' )
+		.replace( /^export /m, '' );
+	const mainSource = readFileSync( require.resolve( '../main.js' ), 'utf8' ).replace( /^import .*\r?\n/m, '' );
 	// eslint-disable-next-line no-new-func
-	const runMain = new Function( 'mw', '$', 'UnblockReview', 'document', 'window', readFileSync( require.resolve( '../main.js' ), 'utf8' ) );
+	const runMain = new Function( 'mw', '$', 'UnblockReview', 'document', 'window', controllerSource + '\n' + mainSource );
 	runMain( mw, $, UnblockReview, document, windowMock );
 	await ready();
 	if ( action === 'unpause' ) {
@@ -84,7 +88,7 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 	return { mw, postWithToken, windowMock };
 }
 
-describe( 'main.js', () => {
+describe( 'UnblockReviewController', () => {
 	test( 'Identifies pending requests by class, not by color', async () => {
 		const html = `
 			<div id="standard" class="user-block unblock user-unblock-request" style="background-color: red">
