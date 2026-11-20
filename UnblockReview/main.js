@@ -293,7 +293,7 @@ ${ acceptDeclineReason }
 \`\`\`
 
 \`\`\`
-[OUTER HTML. TESTWIKI -> INSPECT -> DIV -> COPY -> OUTER HTML.]
+[HTML. TESTWIKI -> INSPECT -> DIV -> COPY -> OUTER HTML]
 \`\`\`</pre>
 `;
 
