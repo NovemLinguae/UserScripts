@@ -8,6 +8,6 @@ services:
     volumes:
       - .:/var/www/html
     environment:
-      PHP_IDE_CONFIG: "serverName=Docker"
+      PHP_IDE_CONFIG: serverName=Docker
     extra_hosts:
-      - "host.docker.internal:host-gateway"  # Required for Xdebug to connect back to host
+      - "host.docker.internal:host-gateway" # Required for Xdebug to connect back to host

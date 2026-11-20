@@ -760,6 +760,7 @@ $( async () => {
 	const diffID = mw.config.get( 'wgRevisionId' );
 	const wikicode = await getWikicodeOfDiff( diffID );
 
+	// eslint-disable-next-line no-unused-vars
 	const pf = new MOSOrderPositionFinder( wikicode, true );
 } );
 
