@@ -10,18 +10,11 @@ import { readFileSync } from 'fs';
  * @param {string} wikitext The page wikitext returned by the mocked MediaWiki API.
  * @param {string} html Rendered unblock-request HTML, before main.js adds UnblockReview HTML.
  * @param {string} [action='decline'] The review action to simulate. The registered handler is called directly; no click event is dispatched.
- * @param {boolean} [hasUsernameParameter=false] Whether the request uses a separate username parameter, as in {{unblock-un|username|reason}} or {{unblock-spamun|username|reason}}.
  * @param {Object} [options={}] Overrides for the relevant user, API, and prompt.
  * @return {Object} Mocks for assertions: mw (including notifications and API methods), postWithToken (the edit API spy), and windowMock (including the reload spy).
  */
-async function clickReviewButton( wikitext, html, action = 'decline', hasUsernameParameter = false, options = {} ) {
+async function clickReviewButton( wikitext, html, action = 'decline', options = {} ) {
 	document.body.innerHTML = html;
-	if ( hasUsernameParameter ) {
-		// jsdom does not parse CSS variables in the background shorthand.
-		Object.defineProperty( document.querySelector( '.user-block' ).style, 'background', {
-			value: 'var(--background-color-progressive-subtle, #f1f4fd)'
-		} );
-	}
 	let ready;
 	let clickHandler;
 	let unpauseClickHandler;
@@ -92,8 +85,30 @@ async function clickReviewButton( wikitext, html, action = 'decline', hasUsernam
 }
 
 describe( 'main.js', () => {
+	test( 'Identifies pending requests by class, not by color', async () => {
+		const html = `
+			<div id="standard" class="user-block unblock user-unblock-request" style="background-color: red">
+				<div></div><hr><p><b>Request reason</b>:</p><div>Standard reason</div>
+			</div>
+			<div id="username" class="user-block unblock unblock-un">
+				<div></div><hr><p><b>Requested username:</b></p><div><a>Alex</a></div><b>Request reason:</b><div>Reason</div>
+			</div>
+			<div id="other" class="user-block" style="background-color: #EBF4FF"><div></div><hr><p>Other notice</p></div>
+			<div id="reviewed" class="user-block unblock-reviewed" style="background-color: #EBF4FF"><div></div><hr></div>
+			<div id="on-hold" class="user-block unblock unblock-on-hold" style="background-color: #EBF4FF"><div></div><hr></div>
+			<div id="autoblock" class="user-block unblock unblock-auto"><div></div><hr></div>`;
+		await clickReviewButton( '', html, 'none' );
+		expect( document.querySelectorAll( '.unblock-review' ) ).toHaveLength( 2 );
+		for ( const id of [ 'standard', 'username' ] ) {
+			expect( document.querySelector( '#' + id + ' .unblock-review-accept' ) ).not.toBeNull();
+		}
+		for ( const id of [ 'other', 'reviewed', 'on-hold', 'autoblock' ] ) {
+			expect( document.querySelector( '#' + id + ' .unblock-review' ) ).toBeNull();
+		}
+	} );
+
 	test( 'Selecting a template updates the reason', async () => {
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><div></div><div>Request reason</div>
 		</div>`;
 		const { postWithToken } = await clickReviewButton( '', html, 'select-template' );
@@ -103,7 +118,7 @@ describe( 'main.js', () => {
 
 	test( 'Clicking decline reads all rendered reason text and saves the reviewed request', async () => {
 		const wikitext = `{{unblock|reason={{u|331dot}} I am requesting a reconsideration of this block.}}`;
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><div></div><div><a href="/wiki/User:331dot">331dot</a> I am requesting a reconsideration of this block.</div>
 		</div>`;
 		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html );
@@ -117,7 +132,7 @@ describe( 'main.js', () => {
 
 	test( 'Clicking decline ignores DiscussionTools reply controls after the signature', async () => {
 		const wikitext = `{{unblock|reason=Nythar was mass reverting my edits and seriously griefing pages. A lot of work was put in to them pages. Nythar seems to want to go to war for some reason?[[Special:Contributions/109.157.92.138|109.157.92.138]] ([[User talk:109.157.92.138#top|talk]]) 10:24, 22 June 2023 (UTC)}}`;
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><p><b>Request reason</b>:</p>
 			<div>Nythar was mass reverting my edits and seriously griefing pages. A lot of work was put in to them pages. Nythar seems to want to go to war for some reason?<span data-mw-comment-sig="c-109.157.92.138-20230622102400"></span><a class="userlink">109.157.92.138</a> (<a class="userlink">talk</a>) <a class="ext-discussiontools-init-timestamplink">10:24, 22 June 2023 (UTC)</a><span class="ext-discussiontools-init-replylink-buttons" data-mw-thread-id="c-109.157.92.138-20230622102400"><a class="ext-discussiontools-init-replylink-reply">reply</a></span><span data-mw-comment-end="c-109.157.92.138-20230622102400"></span></div>
 		</div>`;
@@ -132,7 +147,7 @@ describe( 'main.js', () => {
 	test( 'Declining an appeal containing an interwiki link with a leading colon', async () => {
 		const reason = `I recently added a section in the French Wikipedia article available at [[:fr:Arc géodésique de Struve]]. I posted a proposal to consider translation in the [http://Talk:Struve_Geodetic_Arc talk page] of [[Struve Geodetic Arc]]. [[User:Charles Inigo|Charles Inigo]] ([[User talk:Charles Inigo#top|talk]]) 08:01, 20 November 2026 (UTC)`;
 		const wikitext = `{{unblock|reason=${ reason }}}}`;
-		const html = `<div class="user-block" style="background-color: #EBF4FF">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: #EBF4FF">
 			<div></div><hr><p><b>Request reason</b>:</p>
 			<div>I recently added a section in the French Wikipedia article available at <a rel="mw:WikiLink/Interwiki">fr:Arc géodésique de Struve</a>. I posted a proposal to consider translation in the <a rel="mw:ExtLink">talk page</a> of <a rel="mw:WikiLink">Struve Geodetic Arc</a>. <span data-mw-comment-sig="c-Charles_Inigo-20261120080100"></span><a>Charles Inigo</a> (<a>talk</a>) <a>08:01, 20 November 2026 (UTC)</a><span class="ext-discussiontools-init-replylink-buttons"><a>reply</a></span></div>
 		</div>`;
@@ -148,7 +163,7 @@ describe( 'main.js', () => {
 		const reason = `I was blocked because of the abuse of editing privileges. This is includes failing to understand [[WP:COMPETENCE]] and the lack of ability to understand the [[English Wikipedia]] per [[WP:NOTHERE]], and [https://en.wikipedia.org/wiki/Wikipedia:Administrators%27_noticeboard/IncidentArchive1239#~2026-47089-17_-_WP:CIR_issues_from_a_possible_language_barrier,_repeated_and_continuous_failure_to_use_sources,_suspected_use_of_WP:LLM_to_create_articles per presented] at [[WP:ANI]] the past days, despite given additional warnings, leading my article [[Draft:Serendipity Point Films|Serendipity Point Films]] to be put back into draftspace. and several rollbacks by experienced editors. --[[Special:Contributions/~2026-47089-17|~2026-47089-17]] ([[User talk:~2026-47089-17|talk]]) 23:43, 18 November 2026 (UTC)
 ::What I will do differently is edit constructively. --[[Special:Contributions/~2026-47089-17|~2026-47089-17]] ([[User talk:~2026-47089-17|talk]]) 23:43, 18 November 2026 (UTC)`;
 		const wikitext = `:{{unblock|reason=${ reason }}}}`;
-		const html = `<div class="user-block" style="background-color: #EBF4FF">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: #EBF4FF">
 			<div></div><hr><p><b>Request reason</b>:</p>
 			<div>I was blocked because of the abuse of editing privileges. This is includes failing to understand <a>WP:COMPETENCE</a> and the lack of ability to understand the <a>English Wikipedia</a> per <a>WP:NOTHERE</a>, and <a class="external text">per presented</a> at <a>WP:ANI</a> the past days, despite given additional warnings, leading my article <a>Serendipity Point Films</a> to be put back into draftspace. and several rollbacks by experienced editors. --<a class="mw-tempuserlink userlink">~2026-47089-17</a><span class="ext-checkuser-tempaccount-reveal-ip-button"><a>Show IP</a></span> (<a>talk</a>) <a>23:43, 18 November 2026 (UTC)</a><span class="ext-discussiontools-init-replylink-buttons"><a>reply</a></span>
 			<dl><dd><dl><dd>What I will do differently is edit constructively. --<a>~2026-47089-17</a><span class="ext-checkuser-tempaccount-reveal-ip-button"><a>Show IP</a></span> (<a>talk</a>) <a>23:43, 18 November 2026 (UTC)</a><span class="ext-discussiontools-init-replylink-buttons"><a>reply</a></span></dd></dl></dd></dl></div>
@@ -170,7 +185,7 @@ describe( 'main.js', () => {
 			<div>Please <a>reply</a><span class="ext-discussiontools-init-replylink-buttons"><a>reply</a></span> to <span>me.</span></div>
 		</div>`;
 		const expected = `{{unblock-spamun reviewed|accept=~~~~|Alex|2=Please [[Help:Reply|reply]] to me.}}`;
-		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'accept', true );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'accept' );
 		expect( mw.notify ).not.toHaveBeenCalled();
 		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
 		expect( windowMock.location.reload ).toHaveBeenCalled();
@@ -179,7 +194,7 @@ describe( 'main.js', () => {
 
 	test( 'Does not mistake a reply control for an appeal reason', async () => {
 		const wikitext = `{{unblock}}`;
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><p><b>Request reason</b>:</p>
 			<div><span class="ext-discussiontools-init-replylink-buttons"><a>reply</a></span></div>
 		</div>`;
@@ -197,7 +212,7 @@ describe( 'main.js', () => {
 			<b>Request reason:</b><div>Test</div>
 		</div>`;
 		const expected = `{{unblock-un reviewed|decline={{subst:Decline reason here}} ~~~~|1=AleahP|reason=Test}}`;
-		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'decline', true );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'decline' );
 		expect( mw.notify ).not.toHaveBeenCalled();
 		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
 		expect( windowMock.location.reload ).toHaveBeenCalled();
@@ -211,7 +226,7 @@ describe( 'main.js', () => {
 			<b>Request reason:</b><div>Test</div>
 		</div>`;
 		const expected = `{{unblock-un reviewed|accept=~~~~|AleahP|2=\nTest}}`;
-		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'accept', true );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'accept' );
 		expect( mw.notify ).not.toHaveBeenCalled();
 		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
 		expect( windowMock.location.reload ).toHaveBeenCalled();
@@ -224,7 +239,7 @@ describe( 'main.js', () => {
 			<div><a class="userlink">CALorenz</a> (<a class="userlink">talk</a> · <a>account availability check</a> · <a>rename user</a>)</div>
 			<b>Request reason:</b><div><span>Te</span>st</div>
 		</div>`;
-		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, action, true );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, action );
 		const response = action === 'decline' ? `{{subst:Decline reason here}} ~~~~` : `~~~~`;
 		const expected = `{{unblock-spamun reviewed|${ action }=${ response }|CALorenz|2=Test}}\n{{unblock-spamun|CALorenz|Other}}`;
 		expect( mw.notify ).not.toHaveBeenCalled();
@@ -239,7 +254,7 @@ describe( 'main.js', () => {
 			<div><a class="new userlink">AlexFlooringEditor</a> (<a class="new userlink">talk</a> · <a>account availability check</a> · <span><a>rename user</a></span>)</div>
 			<b>Request reason:</b><div>\nI now understand why my account was blocked.</div>
 		</div>`;
-		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, action, true );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, action );
 		const response = action === 'decline' ? `{{subst:Decline reason here}} ~~~~` : `~~~~`;
 		const expected = `{{unblock|AlexFlooringEditor|I now understand why my account was blocked.}}\n{{unblock-spamun|AlexFlooringEditor|Other}}\n{{unblock-spamun reviewed|${ action }=${ response }|AlexFlooringEditor|2=\nI now understand why my account was blocked.}}`;
 		expect( mw.notify ).not.toHaveBeenCalled();
@@ -253,7 +268,7 @@ describe( 'main.js', () => {
 			<div></div><hr><p><b>Requested username:</b></p>
 			<div><a class="userlink">Alex</a> (<a>talk</a>)</div><b>Request reason:</b><div>Test</div>
 		</div>`;
-		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'decline', true );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'decline' );
 		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'UnblockReview error' ), { type: 'error' } );
 		expect( postWithToken ).not.toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expect.anything() } ) );
 		expect( windowMock.location.reload ).not.toHaveBeenCalled();
@@ -264,7 +279,7 @@ describe( 'main.js', () => {
 			<div></div><hr><p><b>Requested username:</b></p>
 			<div><a class="userlink">CALorenz</a> (<a>talk</a>)</div><b>Request reason:</b>
 		</div>`;
-		const { mw, postWithToken, windowMock } = await clickReviewButton( `{{unblock-spamun|CALorenz|Test}}`, html, 'decline', true );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( `{{unblock-spamun|CALorenz|Test}}`, html, 'decline' );
 		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'unable to find' ), { type: 'error' } );
 		expect( postWithToken ).not.toHaveBeenCalled();
 		expect( windowMock.location.reload ).not.toHaveBeenCalled();
@@ -272,7 +287,7 @@ describe( 'main.js', () => {
 
 	test( 'Waiting appends an idletimestamp without removing existing template parameters', async () => {
 		const wikitext = `{{unblock|reason=Please reconsider.|idletimestamp=20250102030405|foo=bar|idletimestamp={{subst:CURRENTTIMESTAMP}}}}\n{{other|idletimestamp=20250102030405}}`;
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><div></div><div>Please reconsider.</div>
 		</div>`;
 		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'wait' );
@@ -293,7 +308,7 @@ describe( 'main.js', () => {
 
 	test( 'Waiting adds an idletimestamp when the unblock template has none', async () => {
 		const wikitext = `{{unblock|reason=Please reconsider.}}`;
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><div></div><div>Please reconsider.</div>
 		</div>`;
 		const { postWithToken } = await clickReviewButton( wikitext, html, 'wait' );
@@ -304,13 +319,13 @@ describe( 'main.js', () => {
 	} );
 
 	test( 'The unpause listener works immediately after pausing', async () => {
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><div></div><div>Please reconsider.</div>
 		</div>`;
 		const get = jest.fn()
 			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': '{{unblock|reason=Please reconsider.}}' } ] } } } } )
 			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': '{{unblock|reason=Please reconsider.|idletimestamp=20261119101555}}' } ] } } } } );
-		const { postWithToken, windowMock } = await clickReviewButton( '', html, 'wait-unpause', false, { get } );
+		const { postWithToken, windowMock } = await clickReviewButton( '', html, 'wait-unpause', { get } );
 		expect( postWithToken ).toHaveBeenCalledTimes( 2 );
 		expect( postWithToken ).toHaveBeenLastCalledWith( 'csrf', expect.objectContaining( {
 			summary: expect.stringContaining( 'Unpausing unblock request' ),
@@ -320,7 +335,7 @@ describe( 'main.js', () => {
 	} );
 
 	test( 'Blocking admin selection puts the matching unblock request on hold and reloads', async () => {
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><div></div><div>Request reason</div>
 		</div>`;
 		const wikitext = '{{unblock|reason=Another request}}\n{{unblock|reason=[[Help:Appeal|Request reason]]|category=}}';
@@ -329,7 +344,7 @@ describe( 'main.js', () => {
 			.mockResolvedValueOnce( { query: { logevents: [ { action: 'reblock', user: 'Blocking admin' } ] } } )
 			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': wikitext } ] } } } } );
 		const prompt = jest.fn().mockReturnValue( ' Another admin ' );
-		const { mw, postWithToken, windowMock } = await clickReviewButton( '', html, 'wait-admin', false, { user: 'Example', get, prompt } );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( '', html, 'wait-admin', { user: 'Example', get, prompt } );
 
 		expect( document.querySelector( '.unblock-review-wait' ).nextElementSibling.className ).toContain( 'unblock-review-wait-admin' );
 		expect( get ).toHaveBeenCalledWith( expect.objectContaining( {
@@ -351,12 +366,12 @@ describe( 'main.js', () => {
 		[ 'Example', [ { action: 'block', userhidden: '' } ] ],
 		[ 'Example', [ { actionhidden: '', user: 'Hidden action' } ] ]
 	] )( 'Blocking admin selection allows a blank default when no admin is available', async ( user, events ) => {
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><div></div><div>Request reason</div>
 		</div>`;
 		const get = jest.fn().mockResolvedValue( { query: { logevents: events } } );
 		const prompt = jest.fn().mockReturnValue( null );
-		const { mw, postWithToken } = await clickReviewButton( '', html, 'wait-admin', false, { user, get, prompt } );
+		const { mw, postWithToken } = await clickReviewButton( '', html, 'wait-admin', { user, get, prompt } );
 		expect( prompt ).toHaveBeenCalledWith( 'Blocking administrator:', '' );
 		expect( get ).toHaveBeenCalledTimes( user ? 1 : 0 );
 		expect( document.querySelector( '.unblock-review' ).dataset.blockingAdmin ).toBeUndefined();
@@ -365,7 +380,7 @@ describe( 'main.js', () => {
 	} );
 
 	test( 'Blocking admin lookup failure defaults to blank and permits manual entry', async () => {
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><div></div><div>Request reason</div>
 		</div>`;
 		const get = jest.fn()
@@ -374,7 +389,7 @@ describe( 'main.js', () => {
 		const prompt = jest.fn().mockReturnValue( 'Manual admin' );
 		const consoleError = jest.spyOn( console, 'error' ).mockImplementation( () => {} );
 		try {
-			const { mw, postWithToken } = await clickReviewButton( '', html, 'wait-admin', false, { user: 'Example', get, prompt } );
+			const { mw, postWithToken } = await clickReviewButton( '', html, 'wait-admin', { user: 'Example', get, prompt } );
 			expect( consoleError ).toHaveBeenCalledWith( expect.stringContaining( 'lookup failed' ), expect.any( Error ) );
 			expect( mw.notify ).not.toHaveBeenCalledWith( expect.anything(), { type: 'error' } );
 			expect( prompt ).toHaveBeenCalledWith( 'Blocking administrator:', '' );
@@ -387,12 +402,12 @@ describe( 'main.js', () => {
 	} );
 
 	test( 'An ambiguous request is not edited or reloaded', async () => {
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><div></div><div>Request reason</div>
 		</div>`;
 		const wikitext = '{{unblock|reason=Request reason}}\n{{unblock|reason=Request reason}}';
 		const prompt = jest.fn().mockReturnValue( 'Admin' );
-		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'wait-admin', false, { prompt } );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'wait-admin', { prompt } );
 		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'Too many matching' ), { type: 'error' } );
 		expect( postWithToken ).not.toHaveBeenCalled();
 		expect( windowMock.location.reload ).not.toHaveBeenCalled();
@@ -406,7 +421,7 @@ describe( 'main.js', () => {
 			<div><a class="userlink">Alex</a> (<a>talk</a>)</div>
 			<b>Request reason:</b><div>Please reconsider.</div>
 		</div>`;
-		const { postWithToken } = await clickReviewButton( wikitext, html, 'wait', true );
+		const { postWithToken } = await clickReviewButton( wikitext, html, 'wait' );
 
 		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
 			text: `{{unblock-un|Alex|Please reconsider.|idletimestamp=20250102030405|idletimestamp={{subst:CURRENTTIMESTAMP}}}}`
@@ -415,7 +430,7 @@ describe( 'main.js', () => {
 
 	test( 'Waiting pauses an unblock request with no authored reason', async () => {
 		const wikitext = `{{Unblock}}`;
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><p><b>Request reason</b>:</p>
 			<div>Please provide a reason as to why you should be unblocked</div>
 		</div>`;
@@ -427,7 +442,7 @@ describe( 'main.js', () => {
 	} );
 
 	test( 'Initially displays the paused notice instead of controls when data-mw has idletimestamp', async () => {
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)"
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)"
 			data-mw='{"parts":[{"template":{"target":{"wt":"unblock-un"},"params":{"idletimestamp":{"wt":"20261119101555"}}}}]}'>
 			<div></div><hr><div></div><div>Request reason</div>
 		</div>`;
@@ -444,7 +459,7 @@ describe( 'main.js', () => {
 
 	test( 'Unpause removes idletimestamp only from the matching unblock template and reloads', async () => {
 		const wikitext = `{{unblock|reason=Please reconsider.|idletimestamp=20261119101555}}\n{{unblock|reason=Other request.|idletimestamp=20261119101556}}`;
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)"
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)"
 			data-mw='{"parts":[{"template":{"target":{"wt":"unblock"},"params":{"idletimestamp":{"wt":"20261119101555"}}}}]}'>
 			<div></div><hr><div></div><div>Please reconsider.</div>
 		</div>`;
@@ -460,7 +475,7 @@ describe( 'main.js', () => {
 
 	test( 'Unpause removes idletimestamp from a request with no authored reason', async () => {
 		const wikitext = `{{Unblock|idletimestamp=20261119101555}}`;
-		const html = `<div class="user-block" style="background-color: rgb(235, 244, 255)"
+		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)"
 			data-mw='{"parts":[{"template":{"target":{"wt":"Unblock"},"params":{"idletimestamp":{"wt":"20261119101555"}}}}]}'>
 			<div></div><hr><p><b>Request reason</b>:</p>
 			<div>Please provide a reason as to why you should be unblocked</div>
@@ -480,7 +495,7 @@ describe( 'main.js', () => {
 			<div><a class="userlink">Omer EVREY</a> (<a>talk</a>)</div>
 			<b>Request reason:</b><div>Test</div>
 		</div>`;
-		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'unpause', true );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'unpause' );
 
 		expect( mw.notify ).not.toHaveBeenCalled();
 		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {

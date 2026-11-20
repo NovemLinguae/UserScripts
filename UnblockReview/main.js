@@ -5,9 +5,6 @@ Many many bugs fixed. And some features added :)
 
 // <nowiki>
 ( async function () {
-	const UNBLOCK_REQ_COLOR_PRE_2025 = 'rgb(235, 244, 255)';
-	const UNBLOCK_REQ_COLOR_POST_2025 = 'var(--background-color-progressive-subtle, #EBF4FF)';
-	const UNBLOCK_USERNAME_COLOR = 'var(--background-color-progressive-subtle, #f1f4fd)';
 	const DEFAULT_DECLINE_REASON = '{{subst:Decline reason here}}';
 	const ADVERT = ' ([[User:Novem Linguae/Scripts/UnblockReview.js|unblock-review]])';
 	const PAUSED_NOTICE_HTML = `
@@ -26,25 +23,27 @@ Many many bugs fixed. And some features added :)
 		}
 		addStyles();
 
-		// look for user-block HTML class, which will correspond to {{Unblock}} requests
 		const userBlockBoxes = document.querySelectorAll( 'div.user-block' );
 		for ( let i = 0, n = userBlockBoxes.length; i < n; i++ ) {
-			if (
-				userBlockBoxes[ i ].style[ 'background-color' ] === UNBLOCK_REQ_COLOR_PRE_2025 ||
-				userBlockBoxes[ i ].style.background === UNBLOCK_REQ_COLOR_POST_2025 ||
-				userBlockBoxes[ i ].style.background === UNBLOCK_USERNAME_COLOR
-			) {
-				// We now have a pending unblock request - add UI
-				const unblockDiv = userBlockBoxes[ i ];
-				if ( hasIdletimestampParameter( unblockDiv ) ) {
-					addPausedNotice( unblockDiv );
-					continue;
-				}
-				const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
-				const hasUsernameParameter = unblockDiv.style.background === UNBLOCK_USERNAME_COLOR;
-				addListeners( container, hrEl, hasUsernameParameter );
+			const unblockDiv = userBlockBoxes[ i ];
+			if ( !isPendingUnblockRequest( unblockDiv ) ) {
+				continue;
 			}
+			if ( hasIdletimestampParameter( unblockDiv ) ) {
+				addPausedNotice( unblockDiv );
+				continue;
+			}
+			const [ container, hrEl ] = addTextBoxAndButtons( unblockDiv );
+			const hasUsernameParameter = unblockDiv.classList.contains( 'unblock-un' );
+			addListeners( container, hrEl, hasUsernameParameter );
 		}
+	}
+
+	function isPendingUnblockRequest( unblockDiv ) {
+		return unblockDiv.classList.contains( 'unblock' ) &&
+			!unblockDiv.classList.contains( 'unblock-on-hold' ) &&
+			!unblockDiv.classList.contains( 'unblock-reviewed' ) &&
+			!unblockDiv.classList.contains( 'unblock-auto' );
 	}
 
 	function addStyles() {
@@ -85,7 +84,7 @@ Many many bugs fixed. And some features added :)
 		container.className = 'unblock-review';
 		const hrEl = unblockDiv.querySelector( 'hr' );
 		unblockDiv.insertBefore( container, hrEl.previousElementSibling );
-		const hasUsernameParameter = unblockDiv.style.background === UNBLOCK_USERNAME_COLOR;
+		const hasUsernameParameter = unblockDiv.classList.contains( 'unblock-un' );
 		showPausedNotice( container, hrEl, hasUsernameParameter );
 	}
 
