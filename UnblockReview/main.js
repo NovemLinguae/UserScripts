@@ -15,6 +15,14 @@ Many many bugs fixed. And some features added :)
 			</div>
 		</div>
 	`;
+	const ON_HOLD_NOTICE_HTML = `
+		<div class="cdx-message cdx-message--warning" aria-live="polite">
+			<div class="cdx-message__content">
+				This unblock request is paused until the blocking administrator responds.
+				<a class="unblock-review-unpause" href="#">Unpause now.</a>
+			</div>
+		</div>
+	`;
 
 	async function execute() {
 		const userTalkNamespace = 3;
@@ -26,6 +34,10 @@ Many many bugs fixed. And some features added :)
 		const userBlockBoxes = document.querySelectorAll( 'div.user-block' );
 		for ( let i = 0, n = userBlockBoxes.length; i < n; i++ ) {
 			const unblockDiv = userBlockBoxes[ i ];
+			if ( unblockDiv.classList.contains( 'unblock' ) && unblockDiv.classList.contains( 'unblock-on-hold' ) ) {
+				addPausedNotice( unblockDiv, true );
+				continue;
+			}
 			if ( !isPendingUnblockRequest( unblockDiv ) ) {
 				continue;
 			}
@@ -79,18 +91,18 @@ Many many bugs fixed. And some features added :)
 		} );
 	}
 
-	function addPausedNotice( unblockDiv ) {
+	function addPausedNotice( unblockDiv, onHold = false ) {
 		const container = document.createElement( 'div' );
 		container.className = 'unblock-review';
 		const hrEl = unblockDiv.querySelector( 'hr' );
 		unblockDiv.insertBefore( container, hrEl.previousElementSibling );
 		const hasUsernameParameter = unblockDiv.classList.contains( 'unblock-un' );
-		showPausedNotice( container, hrEl, hasUsernameParameter );
+		showPausedNotice( container, hrEl, hasUsernameParameter, onHold );
 	}
 
-	function showPausedNotice( container, hrEl, hasUsernameParameter ) {
-		container.innerHTML = PAUSED_NOTICE_HTML;
-		addListeners( container, hrEl, hasUsernameParameter );
+	function showPausedNotice( container, hrEl, hasUsernameParameter, onHold = false ) {
+		container.innerHTML = onHold ? ON_HOLD_NOTICE_HTML : PAUSED_NOTICE_HTML;
+		addListeners( container, hrEl, hasUsernameParameter, onHold );
 	}
 
 	function addTextBoxAndButtons( unblockDiv ) {
@@ -190,7 +202,21 @@ Many many bugs fixed. And some features added :)
 		return appealReason;
 	}
 
-	function addListeners( container, hrEl, hasUsernameParameter ) {
+	function getOnHoldAppealReason( hrEl ) {
+		for ( let element = hrEl.nextElementSibling; element; element = element.nextElementSibling ) {
+			const label = element.tagName === 'P' && element.querySelector( 'b' );
+			if ( label && /^Request reason:?$/i.test( label.textContent.trim() ) ) {
+				const reason = element.nextElementSibling;
+				if ( reason && reason.tagName === 'DIV' ) {
+					return getAppealText( reason );
+				}
+				return undefined;
+			}
+		}
+		return undefined;
+	}
+
+	function addListeners( container, hrEl, hasUsernameParameter, onHold = false ) {
 		$( container ).find( '#unblock-review-autoadd-template' ).on( 'change', function () {
 			// eslint-disable-next-line no-jquery/no-sizzle
 			const templateText = $( this ).find( 'option:selected' ).text() || $( this ).val() || '';
@@ -232,24 +258,24 @@ Many many bugs fixed. And some features added :)
 
 		$( container ).find( '.unblock-review-unpause' ).on( 'click', async ( event ) => {
 			event.preventDefault();
-			const appealReason = getAppealReason( hrEl, hasUsernameParameter );
-			if ( !appealReason ) {
+			const appealReason = onHold ? getOnHoldAppealReason( hrEl ) : getAppealReason( hrEl, hasUsernameParameter );
+			if ( appealReason === undefined || ( !onHold && !appealReason ) ) {
 				mw.notify( 'UnblockReview error: unable to find request reason by scanning HTML', { type: 'error' } );
 				return;
 			}
-			// eslint-disable-next-line no-undef
-			const unblockReview = new UnblockReview();
-			const title = mw.config.get( 'wgPageName' );
-			const wikitext = await getWikitext( title );
-			let updatedWikitext;
 			try {
-				updatedWikitext = unblockReview.processUnpause( wikitext, appealReason, hasUsernameParameter );
+				// eslint-disable-next-line no-undef
+				const unblockReview = new UnblockReview();
+				const title = mw.config.get( 'wgPageName' );
+				const wikitext = await getWikitext( title );
+				const updatedWikitext = onHold ?
+					unblockReview.processRemoveHold( wikitext, appealReason ) :
+					unblockReview.processUnpause( wikitext, appealReason, hasUsernameParameter );
+				await editPage( title, updatedWikitext, ( onHold ? 'Taking unblock request off hold' : 'Unpausing unblock request' ) + ADVERT );
+				window.location.reload( true );
 			} catch ( e ) {
-				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
-				return;
+				mw.notify( 'UnblockReview error: ' + ( e.message || e ), { type: 'error' } );
 			}
-			await editPage( title, updatedWikitext, 'Unpausing unblock request' + ADVERT );
-			window.location.reload( true );
 		} );
 
 		$( container ).find( '.unblock-review-accept, .unblock-review-decline, .unblock-review-wait' ).on( 'click', async function () {

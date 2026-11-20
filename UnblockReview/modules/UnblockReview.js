@@ -276,6 +276,52 @@ export class UnblockReview {
 	}
 
 	/**
+	 * Restore the original reason from a matching on-hold unblock request.
+	 *
+	 * @param {string} wikitext - The page wikitext.
+	 * @param {string} appealReason - The rendered request reason.
+	 * @return {string} Updated wikitext.
+	 */
+	processRemoveHold( wikitext, appealReason ) {
+		const excludedRanges = this.getNowikiRanges( wikitext );
+		for ( const comment of wikitext.matchAll( /<!--[\s\S]*?(?:-->|$)/g ) ) {
+			excludedRanges.push( [ comment.index, comment.index + comment[ 0 ].length ] );
+		}
+		const reasonPattern = appealReason ?
+			new RegExp( '^\\s*' + this.getAppealReasonPattern( appealReason.split( '\n' )[ 0 ] ) +
+				'(?:[ \\t\\r]|\\]\\]|\\}\\}|\\]|\\x27{2,}|<\\/[a-zA-Z][a-zA-Z0-9:-]*\\s*>)*(?:\\n|$)' ) : null;
+		const matches = [];
+		const openingPattern = /\{\{\s*unblock[ _]+on[ _]+hold\s*(?=\||\}\})/gi;
+		for ( const opening of wikitext.matchAll( openingPattern ) ) {
+			if ( this.isInsideNowiki( opening.index, excludedRanges ) ) {
+				continue;
+			}
+			const range = this.getTemplateRangeAt( wikitext, opening.index, excludedRanges );
+			const text = wikitext.slice( opening.index + opening[ 0 ].length, range.closePos );
+			const parameters = this.getUnblockParameters( text );
+			const hasReason = Object.prototype.hasOwnProperty.call( parameters, 'reason' ) ||
+				Object.prototype.hasOwnProperty.call( parameters, '2' );
+			const reason = Object.prototype.hasOwnProperty.call( parameters, 'reason' ) ?
+				parameters.reason : ( parameters[ '2' ] || '' );
+			if (
+				( reasonPattern && hasReason && reasonPattern.test( reason ) ) ||
+				( !reasonPattern && hasReason && !reason.trim() ) ||
+				( !hasReason && appealReason === 'Please include the original unblock request.' )
+			) {
+				matches.push( { ...range, reason } );
+			}
+		}
+		if ( matches.length > 1 ) {
+			throw new Error( 'Too many matching on-hold unblock templates found' );
+		}
+		if ( matches.length === 0 ) {
+			throw new Error( 'Unable to find the matching on-hold unblock template' );
+		}
+		const { start, closePos, reason } = matches[ 0 ];
+		return wikitext.slice( 0, start ) + '{{Unblock|reason=' + reason + '}}' + wikitext.slice( closePos + 2 );
+	}
+
+	/**
 	 * Find the matching unblock template's bounds, accounting for nested templates and excluding nowiki content.
 	 * Unblock templates that take a username parameter use username-aware matching; unpausing also handles timestamped requests with no reason
 	 * and idletimestamp parameters between the username and reason.

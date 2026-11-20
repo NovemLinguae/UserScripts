@@ -46,6 +46,38 @@ describe( 'processWaitForBlockingAdmin', () => {
 	} );
 } );
 
+describe( 'processRemoveHold', () => {
+	test.each( [
+		[ '{{Unblock on hold|1=Admin|2=Please [[Help:Appeal|reconsider]] {{u|Example}}|3=Signature}}',
+			'Please reconsider Example', 'Please [[Help:Appeal|reconsider]] {{u|Example}}' ],
+		[ '{{Unblock_on_hold|Admin|Please reconsider|Signature}}', 'Please reconsider', 'Please reconsider' ],
+		[ '{{Unblock on hold|2=Other|reason=Please reconsider|1=Admin}}', 'Please reconsider', 'Please reconsider' ],
+		[ '{{Unblock on hold|1=Admin|2=|3=Signature}}', '', '' ],
+		[ '{{Unblock on hold|1=Admin|3=Signature}}', 'Please include the original unblock request.', '' ]
+	] )( 'Restores the original reason from %s', ( template, rendered, reason ) => {
+		expect( unblockReview.processRemoveHold( template, rendered ) ).toBe( '{{Unblock|reason=' + reason + '}}' );
+	} );
+
+	test( 'Ignores on-hold templates in nowiki and comments', () => {
+		const wikitext = '<nowiki>{{Unblock on hold|1=A|2=Please reconsider|3=X}}</nowiki>\n' +
+			'<!-- {{Unblock on hold|1=B|2=Please reconsider|3=X}} -->\n' +
+			'{{Unblock on hold|1=C|2=Please reconsider|3=X}}';
+		expect( unblockReview.processRemoveHold( wikitext, 'Please reconsider' ) ).toBe(
+			'<nowiki>{{Unblock on hold|1=A|2=Please reconsider|3=X}}</nowiki>\n' +
+			'<!-- {{Unblock on hold|1=B|2=Please reconsider|3=X}} -->\n{{Unblock|reason=Please reconsider}}'
+		);
+	} );
+
+	test( 'Rejects ambiguous or missing matches', () => {
+		const wikitext = '{{Unblock on hold|1=A|2=Please reconsider|3=X}}\n{{Unblock on hold|1=B|2=Please reconsider|3=Y}}';
+		expect( () => unblockReview.processRemoveHold( wikitext, 'Please reconsider' ) ).toThrow( 'Too many matching' );
+		expect( () => unblockReview.processRemoveHold( wikitext, 'Another reason' ) ).toThrow( 'Unable to find' );
+		expect( () => unblockReview.processRemoveHold(
+			'{{Unblock on hold|1=A|2=Please reconsider something else|3=X}}', 'Please reconsider'
+		) ).toThrow( 'Unable to find' );
+	} );
+} );
+
 describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 	test( '{{unblock|reason=Your reason here }}', () => {
 		const wikitext = `Test {{unblock|reason=Your reason here [[User:Filipe46|Filipe46]] ([[User talk:Filipe46#top|talk]]) 21:54, 25 November 2021 (UTC)}} Test`;

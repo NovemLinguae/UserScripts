@@ -96,15 +96,17 @@ describe( 'main.js', () => {
 			<div id="other" class="user-block" style="background-color: #EBF4FF"><div></div><hr><p>Other notice</p></div>
 			<div id="reviewed" class="user-block unblock-reviewed" style="background-color: #EBF4FF"><div></div><hr></div>
 			<div id="on-hold" class="user-block unblock unblock-on-hold" style="background-color: #EBF4FF"><div></div><hr></div>
+			<div id="username-on-hold" class="user-block unblock-on-hold unblock-un-on-hold"><div></div><hr></div>
 			<div id="autoblock" class="user-block unblock unblock-auto"><div></div><hr></div>`;
 		await clickReviewButton( '', html, 'none' );
-		expect( document.querySelectorAll( '.unblock-review' ) ).toHaveLength( 2 );
+		expect( document.querySelectorAll( '.unblock-review' ) ).toHaveLength( 3 );
 		for ( const id of [ 'standard', 'username' ] ) {
 			expect( document.querySelector( '#' + id + ' .unblock-review-accept' ) ).not.toBeNull();
 		}
-		for ( const id of [ 'other', 'reviewed', 'on-hold', 'autoblock' ] ) {
+		for ( const id of [ 'other', 'reviewed', 'username-on-hold', 'autoblock' ] ) {
 			expect( document.querySelector( '#' + id + ' .unblock-review' ) ).toBeNull();
 		}
+		expect( document.querySelector( '#on-hold .unblock-review-unpause' ) ).not.toBeNull();
 	} );
 
 	test( 'Selecting a template updates the reason', async () => {
@@ -455,6 +457,61 @@ describe( 'main.js', () => {
 		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Unpause now.' );
 		expect( document.querySelector( '.unblock-review textarea' ) ).toBeNull();
 		expect( document.querySelector( '.unblock-review button' ) ).toBeNull();
+	} );
+
+	test( 'An on-hold request displays a warning and takes the matching request off hold', async () => {
+		const html = `<div class="user-block unblock unblock-on-hold">
+			<div></div><hr>
+			<p>Blocking administrator: <a>Admin</a> (talk)</p>
+			<p>Reviewing administrator: Reviewer</p>
+			<p><b>Request reason</b>:</p>
+			<div>Please <a>reconsider</a>.<span class="ext-discussiontools-init-replylink-buttons"><a>reply</a></span></div>
+		</div>`;
+		const wikitext = '{{Unblock on hold|1=Other|2=Other reason|3=Signature}}\n' +
+			'{{Unblock on hold|1=Admin|2=Please [[Help:Appeal|reconsider]].|3=Reviewer}}';
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'unpause' );
+		expect( document.querySelector( '.cdx-message--warning' ).textContent ).toContain( 'on hold' );
+		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Take off hold.' );
+		expect( document.querySelector( '.unblock-review button' ) ).toBeNull();
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			summary: expect.stringContaining( 'Taking unblock request off hold' ),
+			text: '{{Unblock on hold|1=Other|2=Other reason|3=Signature}}\n{{Unblock|reason=Please [[Help:Appeal|reconsider]].}}'
+		} ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
+	} );
+
+	test( 'Taking an ambiguous on-hold request off hold does not edit or reload', async () => {
+		const html = `<div class="user-block unblock unblock-on-hold">
+			<div></div><hr><p>Blocking administrator: Admin</p><p><b>Request reason</b>:</p><div>Please reconsider.</div>
+		</div>`;
+		const wikitext = '{{Unblock on hold|1=One|2=Please reconsider.|3=Reviewer}}\n' +
+			'{{Unblock on hold|1=Two|2=Please reconsider.|3=Reviewer}}';
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'unpause' );
+		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'Too many matching' ), { type: 'error' } );
+		expect( postWithToken ).not.toHaveBeenCalled();
+		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+	} );
+
+	test( 'Taking an on-hold request with an empty reason off hold preserves the empty reason', async () => {
+		const html = `<div class="user-block unblock unblock-on-hold">
+			<div></div><hr><p><b>Request reason</b>:</p><div></div>
+		</div>`;
+		const { postWithToken } = await clickReviewButton( '{{Unblock on hold|1=Admin|2=|3=Reviewer}}', html, 'unpause' );
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: '{{Unblock|reason=}}'
+		} ) );
+	} );
+
+	test( 'A failed page lookup is reported when taking a request off hold', async () => {
+		const html = `<div class="user-block unblock unblock-on-hold">
+			<div></div><hr><p><b>Request reason</b>:</p><div>Please reconsider.</div>
+		</div>`;
+		const get = jest.fn().mockRejectedValue( new Error( 'API failed' ) );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( '', html, 'unpause', { get } );
+		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'API failed' ), { type: 'error' } );
+		expect( postWithToken ).not.toHaveBeenCalled();
+		expect( windowMock.location.reload ).not.toHaveBeenCalled();
 	} );
 
 	test( 'Unpause removes idletimestamp only from the matching unblock template and reloads', async () => {
