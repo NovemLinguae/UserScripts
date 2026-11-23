@@ -15,7 +15,7 @@ let reply;
 test( 'all deployment scripts have identical code', () => {
 	const root = path.join( __dirname, '..', '..' );
 	const expected = fs.readFileSync( path.join( root, 'deploy-script', 'deploy.js' ), 'utf8' );
-	for ( const project of [ 'DraftCleaner', 'GANReviewTool', 'SpeciesHelper', 'UnblockReview', 'UserHighlighterSimple', 'UserRightsDiff', 'VoteCounter' ] ) {
+	for ( const project of [ 'deploy-script', 'DraftCleaner', 'GANReviewTool', 'SpeciesHelper', 'UnblockReview', 'UserHighlighterSimple', 'UserRightsDiff', 'VoteCounter' ] ) {
 		expect( fs.readFileSync( path.join( root, project, 'deploy.js' ), 'utf8' ) ).toBe( expected );
 	}
 } );
