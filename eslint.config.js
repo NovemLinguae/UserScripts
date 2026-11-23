@@ -25,7 +25,7 @@ module.exports = defineConfig( [
 		ignores: [ 'eslint.config.js' ],
 		extends: [ wikimedia( 'client', 'jquery', 'mediawiki' ) ],
 		languageOptions: {
-			ecmaVersion: 'latest',
+			ecmaVersion: 2024,
 			globals: {
 				// From `env: { jest: true }`
 				...globals.jest,
