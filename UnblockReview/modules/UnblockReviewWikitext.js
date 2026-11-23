@@ -695,6 +695,10 @@ export class UnblockReviewWikitext {
 				usernameSeparator = false;
 				return markup + '\\s*\\|\\s*(?:(?:reason|2)\\s*=\\s*)?';
 			}
+			if ( character === '\u00a0' ) {
+				// MediaWiki can render an ordinary source space as a non-breaking display space.
+				return markup + '[ \u00a0]';
+			}
 			return markup + this.escapeRegExp( character );
 		} ).join( '' );
 	}

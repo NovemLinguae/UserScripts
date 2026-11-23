@@ -313,6 +313,22 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 } );
 
 describe( 'processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline )', () => {
+	test( 'Matches rendered non-breaking spaces without ignoring other differences or ambiguity', () => {
+		const appealReason = 'Blocked\u00a0:(';
+		const original = '{{unblock|reason=Blocked :(}}';
+		const other = '{{unblock|reason=Blocked :)}}';
+		const reviewed = '{{unblock reviewed|decline=Insufficient. ~~~~|1=Blocked :(}}';
+		expect( unblockReview.processAcceptOrDecline(
+			other + '\n' + original, appealReason, 'Insufficient.', DEFAULT_DECLINE_REASON, 'decline'
+		) ).toBe( other + '\n' + reviewed );
+		expect( () => unblockReview.processAcceptOrDecline(
+			original + '\n' + original, appealReason, 'Insufficient.', DEFAULT_DECLINE_REASON, 'decline'
+		) ).toThrow( 'Too many matching unblock templates found' );
+		expect( () => unblockReview.processAcceptOrDecline(
+			other, appealReason, 'Insufficient.', DEFAULT_DECLINE_REASON, 'decline'
+		) ).toThrow( 'Searching for target text failed' );
+	} );
+
 	test( 'Declines a request with colon-prefixed wikilinks', () => {
 		const wikitext = `{{unblock|reason=See [[:fr:Example]] and [[:Category:Example|the category]].}}`;
 		const appealReason = `See fr:Example and the category.`;

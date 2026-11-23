@@ -228,6 +228,21 @@ describe( 'UnblockReviewController', () => {
 		expect( windowMock.location.reload ).toHaveBeenCalled();
 	} );
 
+	test( 'Declines a request with paragraph breaks and a rendered non-breaking space', async () => {
+		const reason = `'''''Can you explain, in your own words, what you were blocked for?'''''{{pb}}I have no clue, I was randomly blocked from editing{{pb}}'''''If unblocked, what edits would you make and what (if applicable) would you do differently?'''''{{pb}}Try to not do anything else on Wikipedia I guess{{pb}}'''''Is there anything else that may be helpful to your unblock request?'''''{{pb}}I was blocked randomly :({{pb}} [[Special:Contributions/~2026-61927-23|~2026-61927-23]] ([[User talk:~2026-61927-23|talk]]) 16:04, 23 November 2026 (UTC)`;
+		const declineReason = `Unfortunately, another person on your [[IP range]] has made abusive edits which necessitate that the range is blocked. Consider creating an account, either by request at [[WP:ACC]] or by creating one on a different network, so you can avoid getting caught up in blocks meant to target others.`;
+		const html = `<div class="user-block unblock"><div></div><hr><p><b>Request reason</b>:</p><div><i><b>Can you explain, in your own words, what you were blocked for?</b></i><div class="paragraphbreak" style="margin-top:0.5em"></div>I have no clue, I was randomly blocked from editing<div class="paragraphbreak" style="margin-top:0.5em"></div><i><b>If unblocked, what edits would you make and what (if applicable) would you do differently?</b></i><div class="paragraphbreak" style="margin-top:0.5em"></div>Try to not do anything else on Wikipedia I guess<div class="paragraphbreak" style="margin-top:0.5em"></div><i><b>Is there anything else that may be helpful to your unblock request?</b></i><div class="paragraphbreak" style="margin-top:0.5em"></div>I was blocked randomly<span typeof="mw:DisplaySpace">&nbsp;</span>:(<div class="paragraphbreak" style="margin-top:0.5em"></div> <a>~2026-61927-23</a><span class="ext-checkuser-tempaccount-reveal-ip-button">Show IP</span> (<a>talk</a>) <a>16:04, 23 November 2026 (UTC)</a><span class="ext-discussiontools-init-replylink-buttons">reply</span></div></div>`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton(
+			`{{Unblock|reason=${ reason }}}`, html, 'decline', { reason: declineReason }
+		);
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledTimes( 1 );
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{Unblock reviewed|decline=${ declineReason } ~~~~|1=${ reason }}}`
+		} ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
+	} );
+
 	test( 'Clicking decline ignores DiscussionTools reply controls after the signature', async () => {
 		const wikitext = `{{unblock|reason=Nythar was mass reverting my edits and seriously griefing pages. A lot of work was put in to them pages. Nythar seems to want to go to war for some reason?[[Special:Contributions/109.157.92.138|109.157.92.138]] ([[User talk:109.157.92.138#top|talk]]) 10:24, 22 June 2023 (UTC)}}`;
 		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
