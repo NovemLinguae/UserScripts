@@ -1,0 +1,7 @@
+{
+	"WIKIPEDIA_API_URL": "https://en.wikipedia.org/w/api.php",
+	"PAGE_TITLE": "User:Novem Linguae/Scripts/GANReviewTool.js",
+	"MAIN_FILE_PATH": "dist/GANReviewTool.js",
+	"WIKIPEDIA_USERNAME": "Your username@bot password name",
+	"WIKIPEDIA_PASSWORD": "Your bot password"
+}

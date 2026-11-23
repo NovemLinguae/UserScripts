@@ -10,6 +10,7 @@
 	},
 	"scripts": {
 		"build": "esbuild GANReviewTool.js --charset=utf8 --bundle --target=es2017 --format=iife --outdir=dist",
+		"deploy": "npm run build && node publish.js",
 		"test": "jest"
 	}
 }

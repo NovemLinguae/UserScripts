@@ -6,6 +6,7 @@
 		"types-mediawiki": "github:wikimedia-gadgets/types-mediawiki"
 	},
 	"scripts": {
+		"deploy": "node publish.js",
 		"test": "jest"
 	}
 }

@@ -1,10 +1,9 @@
 {
-	"CiteHighlighter": "docker compose up -d; Start-Process \"http://localhost:8082/CiteHighlighter/publish.php\"",
-	"DraftCleaner": "docker compose up -d; Start-Process \"http://localhost:8082/DraftCleaner/publish.php\"",
-	"GANReviewTool": "docker compose up -d; Start-Process \"http://localhost:8082/GANReviewTool/publish.php\"",
-	"SpeciesHelper": "docker compose up -d; Start-Process \"http://localhost:8082/SpeciesHelper/publish.php\"",
+	"DraftCleaner": "cd DraftCleaner; npm run deploy",
+	"GANReviewTool": "cd GANReviewTool; npm run deploy",
+	"SpeciesHelper": "cd SpeciesHelper; npm run deploy",
 	"UnblockReview": "cd UnblockReview; npm run deploy",
-	"UserHighlighterSimple": "docker compose up -d; Start-Process \"http://localhost:8082/UserHighlighterSimple/publish.php\"",
-	"UserRightsDiff": "docker compose up -d; Start-Process \"http://localhost:8082/UserRightsDiff/publish.php\"",
-	"VoteCounter": "docker compose up -d; Start-Process \"http://localhost:8082/VoteCounter/publish.php\""
+	"UserHighlighterSimple": "cd UserHighlighterSimple; npm run deploy",
+	"UserRightsDiff": "cd UserRightsDiff; npm run deploy",
+	"VoteCounter": "cd VoteCounter; npm run deploy"
 }

@@ -4,6 +4,7 @@
 		"jest": "^27.4.3"
 	},
 	"scripts": {
+		"deploy": "node publish.js",
 		"test": "jest"
 	}
 }

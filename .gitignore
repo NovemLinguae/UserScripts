@@ -8,9 +8,7 @@ gitignore/
 jsconfig.json
 Morebits/
 node_modules
-publish_old.php
-publish.config.php
-/UnblockReview/publish.config.json
+publish.config.json
 RequestedArticleSifter
 sandbox*.*
 test*.*

@@ -5,6 +5,7 @@
 		"jquery": "^3.6.0"
 	},
 	"scripts": {
+		"deploy": "node publish.js",
 		"test": "jest"
 	}
 }
