@@ -27,6 +27,15 @@ export class UnblockReviewController {
 		if ( mw.config.get( 'wgNamespaceNumber' ) !== userTalkNamespace ) {
 			return;
 		}
+
+		// Save revision ID for edit conflict detection.
+		try {
+			this.revisionId = await this.getLatestRevisionId();
+		} catch ( e ) {
+			mw.notify( 'UnblockReview error: unable to check page revision: ' + ( e.message || e ), { type: 'error' } );
+			return;
+		}
+
 		this.addStyles();
 
 		const userBlockBoxes = document.querySelectorAll( 'div.user-block' );
@@ -251,12 +260,13 @@ export class UnblockReviewController {
 			try {
 				const unblockReview = new UnblockReviewWikitext();
 				const title = mw.config.get( 'wgPageName' );
-				const wikitext = await this.getWikitext( title );
+				const wikitext = await this.getWikitextFromRevisionId( this.revisionId );
 				const updatedWikitext = unblockReview.processWaitForBlockingAdmin(
 					wikitext, appealReason, selectedAdmin.trim(), hasUsernameParameter
 				);
-				await this.editPage( title, updatedWikitext, 'Putting unblock request on hold' + this.ADVERT );
-				window.location.reload( true );
+				if ( await this.editPage( title, updatedWikitext, 'Putting unblock request on hold' + this.ADVERT ) ) {
+					window.location.reload( true );
+				}
 			} catch ( e ) {
 				mw.notify( 'UnblockReview error: unable to put request on hold: ' + ( e.message || e ), { type: 'error' } );
 			} finally {
@@ -275,12 +285,13 @@ export class UnblockReviewController {
 		try {
 			const unblockReview = new UnblockReviewWikitext();
 			const title = mw.config.get( 'wgPageName' );
-			const wikitext = await this.getWikitext( title );
+			const wikitext = await this.getWikitextFromRevisionId( this.revisionId );
 			const updatedWikitext = onHold ?
 				unblockReview.processRemoveHold( wikitext, appealReason ) :
 				unblockReview.processUnpause( wikitext, appealReason, hasUsernameParameter );
-			await this.editPage( title, updatedWikitext, ( onHold ? 'Taking unblock request off hold' : 'Unpausing unblock request' ) + this.ADVERT );
-			window.location.reload( true );
+			if ( await this.editPage( title, updatedWikitext, ( onHold ? 'Taking unblock request off hold' : 'Unpausing unblock request' ) + this.ADVERT ) ) {
+				window.location.reload( true );
+			}
 		} catch ( e ) {
 			mw.notify( 'UnblockReview error: ' + ( e.message || e ), { type: 'error' } );
 		}
@@ -306,7 +317,13 @@ export class UnblockReviewController {
 		// change wikitext
 		const unblockReview = new UnblockReviewWikitext();
 		const title = mw.config.get( 'wgPageName' );
-		const wikitext = await this.getWikitext( title );
+		let wikitext;
+		try {
+			wikitext = await this.getWikitextFromRevisionId( this.revisionId );
+		} catch ( e ) {
+			mw.notify( 'UnblockReview error: unable to load page revision: ' + ( e.message || e ), { type: 'error' } );
+			return;
+		}
 		if ( acceptOrDecline === 'wait-user' ) {
 			let updatedWikitext;
 			try {
@@ -315,7 +332,16 @@ export class UnblockReviewController {
 				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
 				return;
 			}
-			await this.editPage( title, updatedWikitext, 'Pausing unblock request' + this.ADVERT );
+			const result = await this.editPage( title, updatedWikitext, 'Pausing unblock request' + this.ADVERT );
+			if ( !result ) {
+				return;
+			}
+			const hasInvalidNewRevisionId = !result.edit || !Number.isInteger( result.edit.newrevid ) || result.edit.newrevid <= 0;
+			if ( hasInvalidNewRevisionId ) {
+				mw.notify( 'UnblockReview error: the edit response did not contain a new revision ID. Refresh the page before continuing.', { type: 'error', autoHide: false } );
+				return;
+			}
+			this.revisionId = result.edit.newrevid;
 			this.showPausedNotice( container, hrEl, hasUsernameParameter );
 			return;
 		}
@@ -349,8 +375,9 @@ export class UnblockReviewController {
 
 		const acceptingOrDeclining = ( acceptOrDecline === 'accept' ? 'Accepting' : 'Declining' );
 		const editSummary = acceptingOrDeclining + ' unblock request' + this.ADVERT;
-		await this.editPage( title, wikitext2, editSummary );
-		window.location.reload( true );
+		if ( await this.editPage( title, wikitext2, editSummary ) ) {
+			window.location.reload( true );
+		}
 	}
 
 	async logErrorToWiki( acceptDeclineReason, acceptOrDecline, errorMessage ) {
@@ -406,14 +433,30 @@ ${ acceptDeclineReason }
 		}
 	}
 
-	async getWikitext( title ) {
+	async getLatestRevisionId() {
+		const data = await ( new mw.Api() ).get( {
+			action: 'query',
+			prop: 'revisions',
+			rvprop: 'ids',
+			rvlimit: 1,
+			titles: mw.config.get( 'wgPageName' )
+		} );
+		const pages = data.query && data.query.pages;
+		const page = pages && pages[ Object.keys( pages )[ 0 ] ];
+		const revisionId = page && page.revisions && page.revisions[ 0 ] && page.revisions[ 0 ].revid;
+		if ( !Number.isInteger( revisionId ) || revisionId <= 0 ) {
+			throw new Error( 'No latest revision ID returned by the API.' );
+		}
+		return revisionId;
+	}
+
+	async getWikitextFromRevisionId( revisionId ) {
 		const data = await ( new mw.Api() ).get( {
 			format: 'json',
 			action: 'query',
 			prop: 'revisions',
 			rvprop: 'content',
-			rvlimit: 1,
-			titles: title
+			revids: revisionId
 		} );
 		const pageId = Object.keys( data.query.pages )[ 0 ];
 		const wikitext = data.query.pages[ pageId ].revisions[ 0 ][ '*' ];
@@ -421,12 +464,27 @@ ${ acceptDeclineReason }
 	}
 
 	async editPage( title, wikitext, editSummary ) {
-		await ( new mw.Api() ).postWithToken( 'csrf', {
-			action: 'edit',
-			title: title,
-			summary: editSummary,
-			text: wikitext
-		} );
+		try {
+			const result = await ( new mw.Api() ).postWithToken( 'csrf', {
+				action: 'edit',
+				title: title,
+				summary: editSummary,
+				text: wikitext,
+				// this style of edit conflict detection only detects changes in the neighborhood of the text being edited. it is pretty narrow. if we want broader edit conflict detection... I wonder if basetimestamp detects any intervening edit?
+				baserevid: this.revisionId
+			} );
+			if ( !result.edit || result.edit.result !== 'Success' ) {
+				throw new Error( 'The API did not report a successful edit: ' + JSON.stringify( result ) );
+			}
+			return result;
+		} catch ( e ) {
+			if ( e === 'editconflict' ) {
+				mw.notify( 'Edit conflict. Someone else has edited the page. Copy whatever you typed into the reason box if you would like to save it, then refresh the page.', { type: 'error', autoHide: false } );
+			} else {
+				mw.notify( 'UnblockReview error: unable to save page: ' + ( e.message || e ), { type: 'error' } );
+			}
+			return null;
+		}
 	}
 
 	async appendToPage( title, wikitext, editSummary ) {

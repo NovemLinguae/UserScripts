@@ -49,14 +49,15 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 			text: () => element.textContent
 		};
 	};
-	const postWithToken = jest.fn().mockResolvedValue( {} );
+	const postWithToken = options.postWithToken || jest.fn().mockResolvedValue( { edit: { result: 'Success', newrevid: 2 } } );
 	const get = options.get || jest.fn().mockResolvedValue( { query: { pages: { 1: { revisions: [ { '*': wikitext } ] } } } } );
+	const revisionGet = options.revisionGet || jest.fn().mockResolvedValue( { query: { pages: { 1: { revisions: [ { revid: 1 } ] } } } } );
 	const mw = {
 		config: { get: ( key ) => ( { wgNamespaceNumber: 3, wgPageName: 'User_talk:Example', wgRelevantUserName: options.user } )[ key ] },
 		loader: { using: () => Promise.resolve() },
 		util: { addCSS: jest.fn() },
 		Api: function () {
-			this.get = get;
+			this.get = ( params ) => params.rvprop === 'ids' ? revisionGet( params ) : get( params );
 			this.postWithToken = postWithToken;
 		},
 		notify: jest.fn()
@@ -70,6 +71,9 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 	const runMain = new Function( 'mw', '$', 'UnblockReviewWikitext', 'document', 'window', controllerSource + '\n' + mainSource );
 	runMain( mw, $, UnblockReviewWikitext, document, windowMock );
 	await ready();
+	if ( options.reason !== undefined ) {
+		document.querySelector( '.unblock-review-reason' ).value = options.reason;
+	}
 	if ( action === 'unpause' ) {
 		await unpauseClickHandler.call( document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
 	} else if ( action === 'wait-admin' ) {
@@ -85,10 +89,98 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 			await unpauseClickHandler.call( document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
 		}
 	}
-	return { mw, postWithToken, windowMock };
+	return { mw, postWithToken, windowMock, revisionGet };
 }
 
 describe( 'UnblockReviewController', () => {
+	test.each( [ 'accept', 'decline', 'wait', 'wait-admin', 'unpause', 'unpause-on-hold' ] )(
+		'Preserves the interface when the %s edit reports an edit conflict', async ( action ) => {
+			const onHold = action === 'unpause-on-hold';
+			const paused = action === 'unpause';
+			const html = `<div class="user-block unblock ${ onHold ? 'unblock-on-hold' : '' }"
+				${ paused ? `data-mw='{"parts":[{"template":{"target":{"wt":"unblock"},"params":{"idletimestamp":{"wt":"1"}}}}]}'` : '' }>
+				<div></div><hr><p><b>Request reason</b>:</p><div>Request reason</div>
+			</div>`;
+			const revisionGet = jest.fn().mockResolvedValue( { query: { pages: { 1: { revisions: [ { revid: 10 } ] } } } } );
+			const postWithToken = jest.fn().mockRejectedValue( 'editconflict' );
+			const prompt = jest.fn().mockReturnValue( 'Admin' );
+			const wikitext = onHold ? '{{Unblock on hold|1=Admin|2=Request reason|3=Reviewer}}' :
+				`{{unblock|reason=Request reason${ paused ? '|idletimestamp=20261119101555' : '' }}}}`;
+			const get = jest.fn().mockResolvedValue( { query: { pages: { 1: { revisions: [ { '*': wikitext } ] } } } } );
+			const reason = paused || onHold ? undefined : 'Text to preserve';
+			const { mw, windowMock } = await clickReviewButton(
+				wikitext, html, onHold ? 'unpause' : action, { revisionGet, postWithToken, get, prompt, reason }
+			);
+			expect( revisionGet ).toHaveBeenCalledTimes( 1 );
+			expect( revisionGet ).toHaveBeenCalledWith( expect.objectContaining( {
+				action: 'query', prop: 'revisions', rvprop: 'ids', titles: 'User_talk:Example'
+			} ) );
+			expect( get ).toHaveBeenCalledWith( expect.objectContaining( { rvprop: 'content', revids: 10 } ) );
+			expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'Edit conflict.' ), expect.objectContaining( { autoHide: false } ) );
+			expect( postWithToken ).toHaveBeenCalledTimes( 1 );
+			expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { baserevid: 10 } ) );
+			expect( windowMock.location.reload ).not.toHaveBeenCalled();
+			if ( reason ) {
+				expect( document.querySelector( '.unblock-review-reason' ).value ).toBe( reason );
+			}
+		}
+	);
+
+	test( 'A failed edit reports its error and preserves the reason', async () => {
+		const html = `<div class="user-block unblock"><div></div><hr><p>Request reason</p><div>Request reason</div></div>`;
+		const postWithToken = jest.fn().mockRejectedValue( 'permissiondenied' );
+		const { mw, windowMock } = await clickReviewButton(
+			'{{unblock|reason=Request reason}}', html, 'decline', { postWithToken, reason: 'Text to preserve' }
+		);
+		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'permissiondenied' ), { type: 'error' } );
+		expect( postWithToken ).toHaveBeenCalledTimes( 1 );
+		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+		expect( document.querySelector( '.unblock-review-reason' ).value ).toBe( 'Text to preserve' );
+	} );
+
+	test( 'An unsuccessful edit response does not reload or discard the reason', async () => {
+		const html = `<div class="user-block unblock"><div></div><hr><p>Request reason</p><div>Request reason</div></div>`;
+		const postWithToken = jest.fn().mockResolvedValue( { edit: { result: 'Failure', code: 'spam' } } );
+		const { mw, windowMock } = await clickReviewButton(
+			'{{unblock|reason=Request reason}}', html, 'decline', { postWithToken, reason: 'Text to preserve' }
+		);
+		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'did not report a successful edit' ), { type: 'error' } );
+		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+		expect( document.querySelector( '.unblock-review-reason' ).value ).toBe( 'Text to preserve' );
+	} );
+
+	test( 'A failed base revision lookup preserves the reason', async () => {
+		const html = `<div class="user-block unblock"><div></div><hr><p>Request reason</p><div>Request reason</div></div>`;
+		const get = jest.fn().mockRejectedValue( 'http' );
+		const { mw, postWithToken, windowMock } = await clickReviewButton(
+			'', html, 'decline', { get, reason: 'Text to preserve' }
+		);
+		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'unable to load page revision: http' ), { type: 'error' } );
+		expect( postWithToken ).not.toHaveBeenCalled();
+		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+		expect( document.querySelector( '.unblock-review-reason' ).value ).toBe( 'Text to preserve' );
+	} );
+
+	test( 'A pause response without a new revision ID preserves the controls', async () => {
+		const html = `<div class="user-block unblock"><div></div><hr><p>Request reason</p><div>Request reason</div></div>`;
+		const postWithToken = jest.fn().mockResolvedValue( { edit: { result: 'Success', nochange: true } } );
+		const { mw, windowMock } = await clickReviewButton(
+			'{{unblock|reason=Request reason}}', html, 'wait', { postWithToken, reason: 'Text to preserve' }
+		);
+		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'did not contain a new revision ID' ), expect.any( Object ) );
+		expect( document.querySelector( '.unblock-review-reason' ).value ).toBe( 'Text to preserve' );
+		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+	} );
+
+	test( 'A failed initial revision lookup does not enable review controls', async () => {
+		const html = `<div class="user-block unblock"><div></div><hr><p>Request reason</p><div>Request reason</div></div>`;
+		const revisionGet = jest.fn().mockResolvedValue( { query: { pages: { 1: {} } } } );
+		const { mw, postWithToken } = await clickReviewButton( '', html, 'none', { revisionGet } );
+		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'No latest revision ID' ), { type: 'error' } );
+		expect( document.querySelector( '.unblock-review' ) ).toBeNull();
+		expect( postWithToken ).not.toHaveBeenCalled();
+	} );
+
 	test( 'Identifies pending requests by class, not by color', async () => {
 		const html = `
 			<div id="standard" class="user-block unblock user-unblock-request" style="background-color: red">
@@ -333,11 +425,34 @@ describe( 'UnblockReviewController', () => {
 			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': '{{unblock|reason=Please reconsider.|idletimestamp=20261119101555}}' } ] } } } } );
 		const { postWithToken, windowMock } = await clickReviewButton( '', html, 'wait-unpause', { get } );
 		expect( postWithToken ).toHaveBeenCalledTimes( 2 );
+		expect( postWithToken ).toHaveBeenNthCalledWith( 1, 'csrf', expect.objectContaining( { baserevid: 1 } ) );
 		expect( postWithToken ).toHaveBeenLastCalledWith( 'csrf', expect.objectContaining( {
 			summary: expect.stringContaining( 'Unpausing unblock request' ),
+			baserevid: 2,
 			text: '{{unblock|reason=Please reconsider.}}'
 		} ) );
+		expect( get ).toHaveBeenNthCalledWith( 1, expect.objectContaining( { revids: 1 } ) );
+		expect( get ).toHaveBeenNthCalledWith( 2, expect.objectContaining( { revids: 2 } ) );
 		expect( windowMock.location.reload ).toHaveBeenCalled();
+	} );
+
+	test( 'Clicking unpause detects edit conflicts', async () => {
+		const html = `<div class="user-block unblock">
+			<div></div><hr><div></div><div>Please reconsider.</div>
+		</div>`;
+		const get = jest.fn()
+			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': '{{unblock|reason=Please reconsider.}}' } ] } } } } )
+			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': '{{unblock|reason=Please reconsider.|idletimestamp=20261119101555}}' } ] } } } } );
+		const postWithToken = jest.fn()
+			.mockResolvedValueOnce( { edit: { result: 'Success', newrevid: 2 } } )
+			.mockRejectedValueOnce( 'editconflict' );
+		const { mw, windowMock } = await clickReviewButton(
+			'', html, 'wait-unpause', { get, postWithToken }
+		);
+		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'Edit conflict.' ), expect.any( Object ) );
+		expect( postWithToken ).toHaveBeenCalledTimes( 2 );
+		expect( postWithToken ).toHaveBeenLastCalledWith( 'csrf', expect.objectContaining( { baserevid: 2 } ) );
+		expect( windowMock.location.reload ).not.toHaveBeenCalled();
 	} );
 
 	test( 'Blocking admin selection puts the matching unblock request on hold and reloads', async () => {
