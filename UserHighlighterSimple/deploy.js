@@ -7,6 +7,12 @@ const readline = require( 'readline' );
 const config = JSON.parse( fs.readFileSync( path.join( __dirname, 'deploy.config.json' ), 'utf8' ) );
 
 function generateWikitext() {
+	if ( config.ESBUILD_BUNDLE ) {
+		const wikitext = "// === Compiled with esbuild and Novem Linguae's deploy.js script ======================\n\n" +
+			fs.readFileSync( path.resolve( __dirname, config.MAIN_FILE_PATH ), 'utf8' );
+		return '// <nowiki>\n\n' + wikitext + '\n\n// </nowiki>';
+	}
+
 	let wikitext = "// === Compiled with Novem Linguae's deploy.js script ======================";
 	const modulesPath = path.resolve( __dirname, config.CLASSES_FOLDER_PATH );
 	for ( const fileName of fs.readdirSync( modulesPath ).sort() ) {
@@ -27,7 +33,14 @@ function generateWikitext() {
 }
 
 async function publish() {
-	for ( const key of [ 'WIKIPEDIA_API_URL', 'PAGE_TITLE', 'MAIN_FILE_PATH', 'CLASSES_FOLDER_PATH', 'WIKIPEDIA_USERNAME', 'WIKIPEDIA_PASSWORD' ] ) {
+	if ( config.ESBUILD_BUNDLE !== undefined && typeof config.ESBUILD_BUNDLE !== 'boolean' ) {
+		throw new Error( 'Invalid configuration: ESBUILD_BUNDLE' );
+	}
+	const requiredKeys = [ 'WIKIPEDIA_API_URL', 'PAGE_TITLE', 'MAIN_FILE_PATH', 'WIKIPEDIA_USERNAME', 'WIKIPEDIA_PASSWORD' ];
+	if ( !config.ESBUILD_BUNDLE ) {
+		requiredKeys.push( 'CLASSES_FOLDER_PATH' );
+	}
+	for ( const key of requiredKeys ) {
 		if ( typeof config[ key ] !== 'string' || !config[ key ] ) {
 			throw new Error( `Missing or invalid configuration: ${ key }` );
 		}

@@ -12,6 +12,14 @@ let server;
 let requests;
 let reply;
 
+test( 'all deployment scripts have identical code', () => {
+	const root = path.join( __dirname, '..', '..' );
+	const expected = fs.readFileSync( path.join( root, 'UnblockReview', 'deploy.js' ), 'utf8' );
+	for ( const project of [ 'DraftCleaner', 'GANReviewTool', 'SpeciesHelper', 'UserHighlighterSimple', 'UserRightsDiff', 'VoteCounter' ] ) {
+		expect( fs.readFileSync( path.join( root, project, 'deploy.js' ), 'utf8' ) ).toBe( expected );
+	}
+} );
+
 describe.each( [
 	[ 'UnblockReview', false ],
 	[ 'DraftCleaner', false ],
@@ -47,7 +55,7 @@ describe.each( [
 		fs.writeFileSync( path.join( directory, 'modules', 'a.js' ), '// <nowiki>\r\nimport X from "x";\r\nexport class A {}\r\n// </nowiki>\r\n' );
 		fs.writeFileSync( path.join( directory, 'main.js' ), 'const X = require("x");\r\nrun();\r\n' );
 		fs.mkdirSync( path.join( directory, 'dist' ) );
-		fs.writeFileSync( path.join( directory, 'dist', 'bundle.js' ), '(() => { run(); })();\n' );
+		fs.writeFileSync( path.join( directory, 'dist', 'bundle.js' ), '// <nowiki>\n(() => { require("x"); run(); })();\n// </nowiki>\n' );
 		requests = [];
 		reply = ( index ) => [
 			{ query: { tokens: { logintoken: 'login-token' } } },
@@ -82,7 +90,8 @@ describe.each( [
 			WIKIPEDIA_API_URL: `http://127.0.0.1:${ server.address().port }/api.php`,
 			PAGE_TITLE: 'User:Example/UnblockReview.js',
 			MAIN_FILE_PATH: bundled ? 'dist/bundle.js' : 'main.js',
-			CLASSES_FOLDER_PATH: 'modules/',
+			ESBUILD_BUNDLE: bundled,
+			...( bundled ? {} : { CLASSES_FOLDER_PATH: 'modules/' } ),
 			WIKIPEDIA_USERNAME: 'example@bot',
 			WIKIPEDIA_PASSWORD: 'secret'
 		} ) );
@@ -109,10 +118,8 @@ describe.each( [
 		const text = requests[ 3 ].form.get( 'text' );
 		expect( text ).toMatch( /^\/\/ <nowiki>\n\n/ );
 		if ( bundled ) {
-			expect( text ).toContain( 'Compiled with esbuild' );
-			expect( text ).toContain( '(() => { run(); })();' );
-			expect( text ).not.toContain( 'class A {}' );
-			expect( text ).not.toContain( '$(async function() {' );
+			expect( text ).toBe( "// <nowiki>\n\n// === Compiled with esbuild and Novem Linguae's deploy.js script ======================\n\n" +
+				'// <nowiki>\n(() => { require("x"); run(); })();\n// </nowiki>\n\n\n// </nowiki>' );
 		} else {
 			expect( text ).toContain( 'class A {}' );
 			expect( text.indexOf( 'class A {}' ) ).toBeLessThan( text.indexOf( 'class B {}' ) );
@@ -163,4 +170,20 @@ describe.each( [
 		expect( result.stderr ).toContain( 'ENOENT' );
 		expect( requests ).toHaveLength( 0 );
 	} );
+
+	if ( bundled ) {
+		test.each( [
+			[ 'invalid bundle option', 'ESBUILD_BUNDLE', 'true', 'ESBUILD_BUNDLE' ],
+			[ 'unbundled deployment without classes', 'ESBUILD_BUNDLE', false, 'CLASSES_FOLDER_PATH' ]
+		] )( '%s exits nonzero before contacting the API', async ( description, key, value, message ) => {
+			const configPath = path.join( directory, 'deploy.config.json' );
+			const config = JSON.parse( fs.readFileSync( configPath, 'utf8' ) );
+			config[ key ] = value;
+			fs.writeFileSync( configPath, JSON.stringify( config ) );
+			const result = await runPublish();
+			expect( result.code ).not.toBe( 0 );
+			expect( result.stderr ).toContain( message );
+			expect( requests ).toHaveLength( 0 );
+		} );
+	}
 } );

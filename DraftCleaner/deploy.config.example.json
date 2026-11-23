@@ -2,6 +2,7 @@
 	"WIKIPEDIA_API_URL": "https://en.wikipedia.org/w/api.php",
 	"PAGE_TITLE": "User:Novem Linguae/Scripts/DraftCleaner.js",
 	"MAIN_FILE_PATH": "main.js",
+	"ESBUILD_BUNDLE": false,
 	"CLASSES_FOLDER_PATH": "modules/",
 	"WIKIPEDIA_USERNAME": "Your username@bot password name",
 	"WIKIPEDIA_PASSWORD": "Your bot password"
