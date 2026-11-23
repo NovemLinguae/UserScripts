@@ -19,7 +19,7 @@ User scripts in folders are more complex scripts usually spanning multiple files
 # Deploying
 
 - For single file user scripts in the root directory, just copy paste them onwiki.
-- For folders with a `publish.js`, copy that folder's `publish.config.example.json` to `publish.config.json` and configure a bot password. Run `npm run deploy` from the folder and enter an edit summary when prompted. Node.js 20 or newer is required. GANReviewTool also builds its bundle before publishing.
+- For folders with a `deploy.js`, copy that folder's `deploy.config.example.json` to `deploy.config.json` and configure a bot password. Run `npm run deploy` from the folder and enter an edit summary when prompted. Node.js 20 or newer is required. GANReviewTool also builds its bundle before publishing.
 
 # Issues and pull requests
 

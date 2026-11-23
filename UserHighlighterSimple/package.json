@@ -7,7 +7,7 @@
 		"types-mediawiki": "^1.9.1"
 	},
 	"scripts": {
-		"deploy": "node publish.js",
+		"deploy": "node deploy.js",
 		"test": "jest"
 	}
 }

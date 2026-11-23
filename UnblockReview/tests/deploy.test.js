@@ -24,7 +24,7 @@ describe.each( [
 
 	function runPublish( input = 'Deploy update\n' ) {
 		return new Promise( ( resolve, reject ) => {
-			const child = spawn( process.execPath, [ path.join( directory, 'publish.js' ) ], { cwd: os.tmpdir() } );
+			const child = spawn( process.execPath, [ path.join( directory, 'deploy.js' ) ], { cwd: os.tmpdir() } );
 			let stdout = '';
 			let stderr = '';
 			child.stdout.on( 'data', ( data ) => {
@@ -41,7 +41,7 @@ describe.each( [
 
 	beforeEach( async () => {
 		directory = fs.mkdtempSync( path.join( os.tmpdir(), 'unblock-deploy-' ) );
-		fs.copyFileSync( path.join( __dirname, '..', '..', project, 'publish.js' ), path.join( directory, 'publish.js' ) );
+		fs.copyFileSync( path.join( __dirname, '..', '..', project, 'deploy.js' ), path.join( directory, 'deploy.js' ) );
 		fs.mkdirSync( path.join( directory, 'modules' ) );
 		fs.writeFileSync( path.join( directory, 'modules', 'b.js' ), 'export class B {}\n' );
 		fs.writeFileSync( path.join( directory, 'modules', 'a.js' ), '// <nowiki>\r\nimport X from "x";\r\nexport class A {}\r\n// </nowiki>\r\n' );
@@ -78,7 +78,7 @@ describe.each( [
 		await new Promise( ( resolve ) => {
 			server.listen( 0, '127.0.0.1', resolve );
 		} );
-		fs.writeFileSync( path.join( directory, 'publish.config.json' ), JSON.stringify( {
+		fs.writeFileSync( path.join( directory, 'deploy.config.json' ), JSON.stringify( {
 			WIKIPEDIA_API_URL: `http://127.0.0.1:${ server.address().port }/api.php`,
 			PAGE_TITLE: 'User:Example/UnblockReview.js',
 			MAIN_FILE_PATH: bundled ? 'dist/bundle.js' : 'main.js',
@@ -105,7 +105,7 @@ describe.each( [
 		expect( requests[ 1 ].form.get( 'lgtoken' ) ).toBe( 'login-token' );
 		expect( requests[ 3 ].form.get( 'token' ) ).toBe( 'csrf-token' );
 		expect( requests[ 3 ].form.get( 'title' ) ).toBe( 'User:Example/UnblockReview.js' );
-		expect( requests[ 3 ].form.get( 'summary' ) ).toBe( 'Deploy update (publish.js)' );
+		expect( requests[ 3 ].form.get( 'summary' ) ).toBe( 'Deploy update (deploy.js)' );
 		const text = requests[ 3 ].form.get( 'text' );
 		expect( text ).toMatch( /^\/\/ <nowiki>\n\n/ );
 		if ( bundled ) {
@@ -129,7 +129,7 @@ describe.each( [
 		const result = await runPublish( '\n' );
 		expect( result.code ).toBe( 0 );
 		expect( result.stdout ).toContain( 'no edit made' );
-		expect( requests[ 3 ].form.get( 'summary' ) ).toBe( '(publish.js)' );
+		expect( requests[ 3 ].form.get( 'summary' ) ).toBe( '(deploy.js)' );
 	} );
 
 	test( 'closed input exits nonzero before contacting the API', async () => {

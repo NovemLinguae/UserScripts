@@ -4,16 +4,30 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const readline = require( 'readline' );
 
-const config = JSON.parse( fs.readFileSync( path.join( __dirname, 'publish.config.json' ), 'utf8' ) );
+const config = JSON.parse( fs.readFileSync( path.join( __dirname, 'deploy.config.json' ), 'utf8' ) );
 
 function generateWikitext() {
-	let wikitext = "// === Compiled with esbuild and Novem Linguae's publish.js script ======================\n\n";
+	let wikitext = "// === Compiled with Novem Linguae's deploy.js script ======================";
+	const modulesPath = path.resolve( __dirname, config.CLASSES_FOLDER_PATH );
+	for ( const fileName of fs.readdirSync( modulesPath ).sort() ) {
+		const displayPath = config.CLASSES_FOLDER_PATH.replace( /[\\/]+$/, '' ) + '/' + fileName;
+		const classText = fs.readFileSync( path.join( modulesPath, fileName ), 'utf8' );
+		wikitext += `\n\n// === ${ displayPath } ======================================================\n\n${ classText }`;
+	}
+
+	wikitext += `$(async function() {\n\n// === ${ config.MAIN_FILE_PATH } ======================================================\n\n`;
 	wikitext += fs.readFileSync( path.resolve( __dirname, config.MAIN_FILE_PATH ), 'utf8' );
+	wikitext += '\n\n});';
+
+	wikitext = wikitext.replace( /<\/?nowiki>/g, '' )
+		.replace( /import [^\n]*\n/g, '' )
+		.replace( /^export /gm, '' )
+		.replace( /^[^\n]*require\([^\n]*\n/gm, '' );
 	return '// <nowiki>\n\n' + wikitext + '\n\n// </nowiki>';
 }
 
 async function publish() {
-	for ( const key of [ 'WIKIPEDIA_API_URL', 'PAGE_TITLE', 'MAIN_FILE_PATH', 'WIKIPEDIA_USERNAME', 'WIKIPEDIA_PASSWORD' ] ) {
+	for ( const key of [ 'WIKIPEDIA_API_URL', 'PAGE_TITLE', 'MAIN_FILE_PATH', 'CLASSES_FOLDER_PATH', 'WIKIPEDIA_USERNAME', 'WIKIPEDIA_PASSWORD' ] ) {
 		if ( typeof config[ key ] !== 'string' || !config[ key ] ) {
 			throw new Error( `Missing or invalid configuration: ${ key }` );
 		}
@@ -40,7 +54,7 @@ async function publish() {
 			redirect: 'error',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
-				'User-Agent': "[[w:User:Novem Linguae]]'s publish.js script. Concatenates .js files together and writes them to .js pages onwiki.",
+				'User-Agent': "[[w:User:Novem Linguae]]'s deploy.js script. Concatenates .js files together and writes them to .js pages onwiki.",
 				...( cookies.size ? { Cookie: Array.from( cookies, ( [ name, value ] ) => `${ name }=${ value }` ).join( '; ' ) } : {} )
 			},
 			body: new URLSearchParams( { ...data, format: 'json' } )
@@ -82,7 +96,7 @@ async function publish() {
 		action: 'edit',
 		title: config.PAGE_TITLE,
 		text: wikitext,
-		summary: `${ editSummary ? editSummary + ' ' : '' }(publish.js)`,
+		summary: `${ editSummary ? editSummary + ' ' : '' }(deploy.js)`,
 		token: csrfToken
 	} );
 	if ( result.edit?.result !== 'Success' ) {

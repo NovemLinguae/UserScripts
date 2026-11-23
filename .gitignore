@@ -8,7 +8,7 @@ gitignore/
 jsconfig.json
 Morebits/
 node_modules
-publish.config.json
+deploy.config.json
 RequestedArticleSifter
 sandbox*.*
 test*.*

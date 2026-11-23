@@ -41,7 +41,7 @@ Add one of the following to your User:yourName/common.js (at the top) to change 
     window.draftCleanerPutInToolsMenu = true;
 	window.draftCleanerPutInMoreMenu = true;
 
-This page was assembled from 3 files using my publish.js script. I have an offline test suite with around 100 unit tests for the DraftCleaner and StringFilter classes.
+This page was assembled from 3 files using my deploy.js script. I have an offline test suite with around 100 unit tests for the DraftCleaner and StringFilter classes.
 */
 
 const { DraftCleaner } = require( './modules/DraftCleaner.js' );
