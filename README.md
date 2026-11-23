@@ -19,7 +19,8 @@ User scripts in folders are more complex scripts usually spanning multiple files
 # Deploying
 
 - For single file user scripts in the root directory, just copy paste them onwiki.
-- For folders, spin up a PHP localhost, create a publish.config.php file in that folder (see publish.config.example.php as an example), then in browser visit that folder's publish.php file. Then you can click a button to deploy.
+- For UnblockReview, copy `UnblockReview/publish.config.example.json` to `UnblockReview/publish.config.json`, configure a bot password, then run `npm run deploy` from the UnblockReview folder and enter an edit summary when prompted. Node.js 20 or newer is required.
+- For other folders, spin up a PHP localhost, create a publish.config.php file in that folder (see publish.config.example.php as an example), then in browser visit that folder's publish.php file. Then you can click a button to deploy.
 
 # Issues and pull requests
 

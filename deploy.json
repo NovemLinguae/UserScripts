@@ -3,7 +3,7 @@
 	"DraftCleaner": "docker compose up -d; Start-Process \"http://localhost:8082/DraftCleaner/publish.php\"",
 	"GANReviewTool": "docker compose up -d; Start-Process \"http://localhost:8082/GANReviewTool/publish.php\"",
 	"SpeciesHelper": "docker compose up -d; Start-Process \"http://localhost:8082/SpeciesHelper/publish.php\"",
-	"UnblockReview": "docker compose up -d; Start-Process \"http://localhost:8082/UnblockReview/publish.php\"",
+	"UnblockReview": "cd UnblockReview; npm run deploy",
 	"UserHighlighterSimple": "docker compose up -d; Start-Process \"http://localhost:8082/UserHighlighterSimple/publish.php\"",
 	"UserRightsDiff": "docker compose up -d; Start-Process \"http://localhost:8082/UserRightsDiff/publish.php\"",
 	"VoteCounter": "docker compose up -d; Start-Process \"http://localhost:8082/VoteCounter/publish.php\""
