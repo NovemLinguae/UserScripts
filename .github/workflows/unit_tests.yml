@@ -11,6 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 24
+
+    - working-directory: ./deploy-script
+      run: npm install
+    - working-directory: ./deploy-script
+      run: npm test
+      name: Deploy script unit tests
 
     - working-directory: ./DraftCleaner
       run: npm install

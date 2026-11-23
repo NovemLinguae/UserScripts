@@ -14,21 +14,16 @@ let reply;
 
 test( 'all deployment scripts have identical code', () => {
 	const root = path.join( __dirname, '..', '..' );
-	const expected = fs.readFileSync( path.join( root, 'UnblockReview', 'deploy.js' ), 'utf8' );
-	for ( const project of [ 'DraftCleaner', 'GANReviewTool', 'SpeciesHelper', 'UserHighlighterSimple', 'UserRightsDiff', 'VoteCounter' ] ) {
+	const expected = fs.readFileSync( path.join( root, 'deploy-script', 'deploy.js' ), 'utf8' );
+	for ( const project of [ 'DraftCleaner', 'GANReviewTool', 'SpeciesHelper', 'UnblockReview', 'UserHighlighterSimple', 'UserRightsDiff', 'VoteCounter' ] ) {
 		expect( fs.readFileSync( path.join( root, project, 'deploy.js' ), 'utf8' ) ).toBe( expected );
 	}
 } );
 
 describe.each( [
-	[ 'UnblockReview', false ],
-	[ 'DraftCleaner', false ],
-	[ 'GANReviewTool', true ],
-	[ 'SpeciesHelper', false ],
-	[ 'UserHighlighterSimple', false ],
-	[ 'UserRightsDiff', false ],
-	[ 'VoteCounter', false ]
-] )( '%s publisher', ( project, bundled ) => {
+	[ 'unbundled', false ],
+	[ 'esbuild bundle', true ]
+] )( '%s publisher', ( description, bundled ) => {
 
 	function runPublish( input = 'Deploy update\n' ) {
 		return new Promise( ( resolve, reject ) => {
@@ -49,7 +44,7 @@ describe.each( [
 
 	beforeEach( async () => {
 		directory = fs.mkdtempSync( path.join( os.tmpdir(), 'unblock-deploy-' ) );
-		fs.copyFileSync( path.join( __dirname, '..', '..', project, 'deploy.js' ), path.join( directory, 'deploy.js' ) );
+		fs.copyFileSync( path.join( __dirname, '..', 'deploy.js' ), path.join( directory, 'deploy.js' ) );
 		fs.mkdirSync( path.join( directory, 'modules' ) );
 		fs.writeFileSync( path.join( directory, 'modules', 'b.js' ), 'export class B {}\n' );
 		fs.writeFileSync( path.join( directory, 'modules', 'a.js' ), '// <nowiki>\r\nimport X from "x";\r\nexport class A {}\r\n// </nowiki>\r\n' );

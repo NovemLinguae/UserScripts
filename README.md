@@ -15,11 +15,12 @@ User scripts in folders are more complex scripts usually spanning multiple files
 # Unit tests
 
 - Install unit tests by running `npm update` in applicable subdirectories. Then run the tests with `npm test`. Unit tests are run in CI and should always be passing before merging to the master branch.
+- To run the shared deploy script tests, install dependencies and run `npm test` in the `deploy-script` folder.
 
 # Deploying
 
 - For single file user scripts in the root directory, just copy paste them onwiki.
-- For folders with a `deploy.js`, copy that folder's `deploy.config.example.json` to `deploy.config.json` and configure a bot password. Run `npm run deploy` from the folder and enter an edit summary when prompted. Node.js 20 or newer is required. GANReviewTool also builds its bundle before publishing.
+- For folders with a `deploy.js`, copy that folder's `deploy.config.example.json` to `deploy.config.json` and configure a bot password. Run `npm run deploy` from the folder and enter an edit summary when prompted. Node.js 20 or newer is required.
 - Set `ESBUILD_BUNDLE` to `true` when `MAIN_FILE_PATH` points to an existing esbuild bundle. In that mode the publisher uses the bundle as-is instead of combining the classes folder and main file. As of 2026, this is only applicable for GANReviewTool.
 
 # Issues and pull requests
