@@ -8,7 +8,7 @@ export class UnblockReviewController {
 		<div class="cdx-message cdx-message--warning" aria-live="polite">
 			<div class="cdx-message__content">
 				Idletimestamp is present in this template. This unblock request is paused until the user replies.
-				<button type="button" class="unblock-review-unpause cdx-button cdx-button--action-default cdx-button--weight-primary">Unpause now.</button>
+				<button type="button" class="unblock-review-unpause cdx-button cdx-button--action-default cdx-button--weight-primary">Unpause</button>
 			</div>
 		</div>
 	`;
@@ -16,7 +16,7 @@ export class UnblockReviewController {
 		<div class="cdx-message cdx-message--warning" aria-live="polite">
 			<div class="cdx-message__content">
 				This unblock request is paused until the blocking administrator responds.
-				<button type="button" class="unblock-review-unpause cdx-button cdx-button--action-default cdx-button--weight-primary">Unpause now.</button>
+				<button type="button" class="unblock-review-unpause cdx-button cdx-button--action-default cdx-button--weight-primary">Unpause</button>
 			</div>
 		</div>
 	`;
@@ -68,6 +68,20 @@ export class UnblockReviewController {
 			.unblock-review-buttons { display: flex; flex-direction: column; align-items: flex-start }
 			.unblock-review-buttons button { margin: 0.25em }
 		` );
+	}
+
+	disableAllButtons() {
+		const buttons = document.querySelectorAll( '.unblock-review button' );
+		for ( let i = 0; i < buttons.length; i++ ) {
+			buttons[ i ].disabled = true;
+		}
+	}
+
+	enableAllButtons() {
+		const buttons = document.querySelectorAll( '.unblock-review button' );
+		for ( let i = 0; i < buttons.length; i++ ) {
+			buttons[ i ].disabled = false;
+		}
 	}
 
 	hasIdletimestampParameter( unblockDiv ) {
@@ -224,24 +238,27 @@ export class UnblockReviewController {
 			$( container ).find( '.unblock-review-reason' ).val( templateText );
 		} );
 
-		$( container ).find( '.unblock-review-wait-admin' ).on( 'click', function () {
-			return controller.handleWaitForAdmin( this, hrEl, hasUsernameParameter );
+		$( container ).find( '.unblock-review-wait-admin' ).on( 'click', () => {
+			controller.disableAllButtons();
+			return controller.handleWaitForAdmin( hrEl, hasUsernameParameter );
 		} );
 
-		$( container ).find( '.unblock-review-unpause' ).on( 'click', ( event ) => this.handleUnpause( event, hrEl, hasUsernameParameter, onHold ) );
+		$( container ).find( '.unblock-review-unpause' ).on( 'click', ( event ) => {
+			this.disableAllButtons();
+			return this.handleUnpause( event, hrEl, hasUsernameParameter, onHold );
+		} );
 
 		$( container ).find( '.unblock-review-accept, .unblock-review-decline, .unblock-review-wait-user' ).on( 'click', function () {
+			controller.disableAllButtons();
 			return controller.handleReviewAction( this, container, hrEl, hasUsernameParameter );
 		} );
 	}
 
-	async handleWaitForAdmin( button, hrEl, hasUsernameParameter ) {
-		button.disabled = true;
+	async handleWaitForAdmin( hrEl, hasUsernameParameter ) {
 		const blockingAdmin = await this.getBlockingAdmin().catch( ( e ) => {
 			console.error( 'UnblockReview blocking administrator lookup failed:', e );
 			return '';
 		} );
-		button.disabled = false;
 		const selectedAdmin = window.prompt( 'Blocking administrator:', blockingAdmin );
 		if ( selectedAdmin !== null ) {
 			const appealReason = this.getAppealReason( hrEl, hasUsernameParameter );
@@ -249,7 +266,6 @@ export class UnblockReviewController {
 				mw.notify( 'UnblockReview error: unable to find request reason by scanning HTML', { type: 'error' } );
 				return;
 			}
-			button.disabled = true;
 			try {
 				const unblockReview = new UnblockReviewWikitext();
 				const title = mw.config.get( 'wgPageName' );
@@ -262,8 +278,6 @@ export class UnblockReviewController {
 				}
 			} catch ( e ) {
 				mw.notify( 'UnblockReview error: unable to put request on hold: ' + ( e.message || e ), { type: 'error' } );
-			} finally {
-				button.disabled = false;
 			}
 		}
 	}
@@ -336,6 +350,7 @@ export class UnblockReviewController {
 			}
 			this.revisionId = result.edit.newrevid;
 			this.showPausedNotice( container, hrEl, hasUsernameParameter );
+			this.enableAllButtons();
 			return;
 		}
 		const acceptDeclineReason = container.querySelector( 'textarea' ).value;

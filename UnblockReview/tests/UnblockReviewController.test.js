@@ -79,25 +79,54 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 	if ( options.reason !== undefined ) {
 		document.querySelector( '.unblock-review-reason' ).value = options.reason;
 	}
+	const invokeClickHandler = async ( handler, element, event ) => {
+		const pendingHandler = handler.call( element, event );
+		if ( options.onActionStart ) {
+			options.onActionStart();
+		}
+		await pendingHandler;
+	};
 	if ( action === 'unpause' ) {
-		await unpauseClickHandler.call( document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
+		await invokeClickHandler( unpauseClickHandler, document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
 	} else if ( action === 'wait-admin' ) {
-		await adminClickHandler.call( document.querySelector( '.unblock-review-wait-admin' ) );
+		await invokeClickHandler( adminClickHandler, document.querySelector( '.unblock-review-wait-admin' ) );
 	} else if ( action === 'select-template' ) {
 		const select = document.querySelector( '#unblock-review-autoadd-template' );
 		select.value = '{{subst:2nd chance}}';
 		templateChangeHandler.call( select );
 	} else if ( action !== 'none' ) {
 		const buttonClass = action === 'wait' || action === 'wait-unpause' ? 'unblock-review-wait-user' : 'unblock-review-' + action;
-		await clickHandler.call( document.querySelector( '.' + buttonClass ) );
+		await invokeClickHandler( clickHandler, document.querySelector( '.' + buttonClass ) );
 		if ( action === 'wait-unpause' ) {
-			await unpauseClickHandler.call( document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
+			await invokeClickHandler( unpauseClickHandler, document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
 		}
 	}
 	return { mw, postWithToken, windowMock, revisionGet };
 }
 
 describe( 'UnblockReviewController', () => {
+	test.each( [ 'accept', 'decline', 'wait', 'wait-admin', 'unpause' ] )(
+		'Disables all review buttons while handling %s and enables them afterward', async ( action ) => {
+			const html = action === 'unpause' ?
+				`<div class="user-block unblock"
+					data-mw='{"parts":[{"template":{"target":{"wt":"unblock"},"params":{"idletimestamp":{"wt":"20261119101555"}}}}]}'>
+					<div></div><hr><p><b>Request reason</b>:</p><div>Request reason</div>
+				</div>` :
+				`<div class="user-block unblock"><div></div><hr><p>Request reason</p><div>Request reason</div></div>`;
+			let allDisabledDuringAction = false;
+			await clickReviewButton( '', html, action, {
+				prompt: jest.fn().mockReturnValue( null ),
+				onActionStart: () => {
+					const buttons = Array.from( document.querySelectorAll( '.unblock-review button' ) );
+					allDisabledDuringAction = buttons.length > 0 && buttons.every( ( button ) => button.disabled );
+				}
+			} );
+
+			expect( allDisabledDuringAction ).toBe( true );
+			expect( Array.from( document.querySelectorAll( '.unblock-review button' ) ).every( ( button ) => !button.disabled ) ).toBe( true );
+		}
+	);
+
 	test.each( [ 'accept', 'decline', 'wait', 'wait-admin', 'unpause', 'unpause-on-hold' ] )(
 		'Preserves the interface when the %s edit detects a revision conflict', async ( action ) => {
 			const onHold = action === 'unpause-on-hold';
@@ -415,7 +444,7 @@ describe( 'UnblockReviewController', () => {
 		expect( document.querySelector( '.unblock-review .cdx-message__content' ).textContent ).toContain(
 			'Idletimestamp is present in this template. This unblock request is paused until the user replies.'
 		);
-		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Unpause now.' );
+		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Unpause' );
 		expect( document.querySelector( '.unblock-review .cdx-message--warning' ) ).not.toBeNull();
 		expect( document.querySelector( '.unblock-review textarea' ) ).toBeNull();
 		expect( windowMock.location.reload ).not.toHaveBeenCalled();
@@ -592,7 +621,7 @@ describe( 'UnblockReviewController', () => {
 		expect( document.querySelector( '.unblock-review .cdx-message--warning .cdx-message__content' ).textContent ).toContain(
 			'Idletimestamp is present in this template. This unblock request is paused until the user replies.'
 		);
-		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Unpause now.' );
+		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Unpause' );
 		expect( document.querySelector( '.unblock-review-unpause' ).tagName ).toBe( 'BUTTON' );
 		expect( document.querySelector( '.unblock-review textarea' ) ).toBeNull();
 		expect( document.querySelector( '.unblock-review button' ) ).toBe( document.querySelector( '.unblock-review-unpause' ) );
@@ -612,7 +641,7 @@ describe( 'UnblockReviewController', () => {
 		expect( document.querySelector( '.cdx-message--warning' ).textContent ).toContain(
 			'This unblock request is paused until the blocking administrator responds.'
 		);
-		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Unpause now.' );
+		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Unpause' );
 		expect( document.querySelector( '.unblock-review-unpause' ).tagName ).toBe( 'BUTTON' );
 		expect( document.querySelector( '.unblock-review a' ) ).toBeNull();
 		expect( mw.notify ).not.toHaveBeenCalled();
