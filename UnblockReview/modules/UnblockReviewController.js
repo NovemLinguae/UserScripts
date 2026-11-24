@@ -52,10 +52,44 @@ export class UnblockReviewController {
 	}
 
 	isPendingUnblockRequest( unblockDiv ) {
+		return this.isOpenUnblockRequest( unblockDiv ) &&
+			!unblockDiv.classList.contains( 'unblock-on-hold' );
+	}
+
+	isOpenUnblockRequest( unblockDiv ) {
 		return unblockDiv.classList.contains( 'unblock' ) &&
-			!unblockDiv.classList.contains( 'unblock-on-hold' ) &&
 			!unblockDiv.classList.contains( 'unblock-reviewed' ) &&
 			!unblockDiv.classList.contains( 'unblock-auto' );
+	}
+
+	getOpenUnblockRequestOrdinal( container ) {
+		const clickedRequest = container.closest( 'div.user-block' );
+		const unblockRequests = document.querySelectorAll( 'div.user-block' );
+		let ordinal = 0;
+
+		for ( let i = 0; i < unblockRequests.length; i++ ) {
+			if ( !this.isOpenUnblockRequest( unblockRequests[ i ] ) ) {
+				continue;
+			}
+			ordinal++;
+			if ( unblockRequests[ i ] === clickedRequest ) {
+				const lastTwoDigits = ordinal % 100;
+				let suffix = 'th';
+				if ( lastTwoDigits < 11 || lastTwoDigits > 13 ) {
+					const lastDigit = ordinal % 10;
+					if ( lastDigit === 1 ) {
+						suffix = 'st';
+					} else if ( lastDigit === 2 ) {
+						suffix = 'nd';
+					} else if ( lastDigit === 3 ) {
+						suffix = 'rd';
+					}
+				}
+				return ordinal + suffix;
+			}
+		}
+
+		return null;
 	}
 
 	addStyles() {
@@ -370,7 +404,8 @@ export class UnblockReviewController {
 			await this.logErrorToWiki(
 				acceptDeclineReason,
 				acceptOrDecline,
-				e.message
+				e.message,
+				container
 			);
 
 			return;
@@ -388,12 +423,16 @@ export class UnblockReviewController {
 		}
 	}
 
-	async logErrorToWiki( acceptDeclineReason, acceptOrDecline, errorMessage ) {
+	async logErrorToWiki( acceptDeclineReason, acceptOrDecline, errorMessage, container ) {
 		const errorLogTitle = 'User:Novem Linguae/Scripts/UnblockReview/ErrorLog';
 		const currentUser = mw.config.get( 'wgUserName' );
 		const pageTitle = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' );
 		const revisionId = mw.config.get( 'wgRevisionId' );
 		const oldidLink = `${ mw.config.get( 'wgServer' ) }/w/index.php?oldid=${ revisionId }&action=edit`;
+		const openUnblockRequestOrdinal = this.getOpenUnblockRequestOrdinal( container );
+		const requestDescription = openUnblockRequestOrdinal ?
+			`the ${ openUnblockRequestOrdinal } open unblock request` :
+			'an open unblock request whose position could not be determined';
 
 		const now = new Date();
 		const dateTime = now.toLocaleString( 'en-US', {
@@ -411,6 +450,7 @@ export class UnblockReviewController {
 == ${ dateTime } ==
 * Unblocking admin: <code>${ currentUser }</code>
 * Page title: <code>${ pageTitle.replace( /_/g, ' ' ) }</code>
+* Error occurred in ${ requestDescription }.
 * Wikitext: [${ oldidLink }]
 * AI prompt:
 <pre>UnblockReview: Performing the "${ acceptOrDecline }" action with the below fails. Please write test and fix.

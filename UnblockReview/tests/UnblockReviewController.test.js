@@ -96,7 +96,10 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 		templateChangeHandler.call( select );
 	} else if ( action !== 'none' ) {
 		const buttonClass = action === 'wait' || action === 'wait-unpause' ? 'unblock-review-wait-user' : 'unblock-review-' + action;
-		await invokeClickHandler( clickHandler, document.querySelector( '.' + buttonClass ) );
+		const button = options.buttonSelector ?
+			document.querySelector( options.buttonSelector ) :
+			document.querySelector( '.' + buttonClass );
+		await invokeClickHandler( clickHandler, button );
 		if ( action === 'wait-unpause' ) {
 			await invokeClickHandler( unpauseClickHandler, document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
 		}
@@ -177,6 +180,21 @@ describe( 'UnblockReviewController', () => {
 		expect( postWithToken ).toHaveBeenCalledTimes( 1 );
 		expect( windowMock.location.reload ).not.toHaveBeenCalled();
 		expect( document.querySelector( '.unblock-review-reason' ).value ).toBe( 'Text to preserve' );
+	} );
+
+	test( 'Error logs identify the ordinal of the clicked open unblock request', async () => {
+		const html = `<div id="first" class="user-block unblock"><div></div><hr><p>Request reason</p><div>First reason</div></div>
+			<div id="second" class="user-block unblock unblock-on-hold"><div></div><hr><p><b>Request reason</b>:</p><div>Second reason</div></div>
+			<div class="user-block unblock unblock-reviewed"><div></div><hr></div>
+			<div class="user-block unblock unblock-auto"><div></div><hr></div>
+			<div id="third" class="user-block unblock"><div></div><hr><p>Request reason</p><div>Target reason</div></div>`;
+		const wikitext = '{{unblock|reason=Target reason}}\n{{unblock|reason=Target reason}}';
+		const { postWithToken } = await clickReviewButton( wikitext, html, 'decline', {
+			buttonSelector: '#third .unblock-review-decline'
+		} );
+		const errorLogCall = postWithToken.mock.calls.find( ( call ) => call[ 1 ].appendtext );
+
+		expect( errorLogCall[ 1 ].appendtext ).toContain( '* Error occurred in the 3rd open unblock request.' );
 	} );
 
 	test( 'An unsuccessful edit response does not reload or discard the reason', async () => {
