@@ -470,7 +470,7 @@ ${ acceptDeclineReason }
 				title: title,
 				summary: editSummary,
 				text: wikitext,
-				// this style of edit conflict detection only detects changes in the neighborhood of the text being edited. it is pretty narrow. if we want broader edit conflict detection... I wonder if basetimestamp detects any intervening edit?
+				// TODO: baserevid and basetimestamp only detect changes in the neighborhood of the text being edited. it is pretty narrow. we should broaden the edit conflict detection by saving the top revid when we first load the page, then grabbing the top revid again at the beginning of this editPage method. if they don't match, then give a mw.notify error and abort the edit.
 				baserevid: this.revisionId
 			} );
 			if ( !result.edit || result.edit.result !== 'Success' ) {
