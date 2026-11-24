@@ -8,7 +8,7 @@ export class UnblockReviewController {
 		<div class="cdx-message cdx-message--warning" aria-live="polite">
 			<div class="cdx-message__content">
 				Idletimestamp is present in this template. This unblock request is paused until the user replies.
-				<a class="unblock-review-unpause" href="#">Unpause now.</a>
+				<button type="button" class="unblock-review-unpause cdx-button cdx-button--action-default cdx-button--weight-primary">Unpause now.</button>
 			</div>
 		</div>
 	`;
@@ -16,7 +16,7 @@ export class UnblockReviewController {
 		<div class="cdx-message cdx-message--warning" aria-live="polite">
 			<div class="cdx-message__content">
 				This unblock request is paused until the blocking administrator responds.
-				<a class="unblock-review-unpause" href="#">Unpause now.</a>
+				<button type="button" class="unblock-review-unpause cdx-button cdx-button--action-default cdx-button--weight-primary">Unpause now.</button>
 			</div>
 		</div>
 	`;

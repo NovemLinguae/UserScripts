@@ -593,8 +593,9 @@ describe( 'UnblockReviewController', () => {
 			'Idletimestamp is present in this template. This unblock request is paused until the user replies.'
 		);
 		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Unpause now.' );
+		expect( document.querySelector( '.unblock-review-unpause' ).tagName ).toBe( 'BUTTON' );
 		expect( document.querySelector( '.unblock-review textarea' ) ).toBeNull();
-		expect( document.querySelector( '.unblock-review button' ) ).toBeNull();
+		expect( document.querySelector( '.unblock-review button' ) ).toBe( document.querySelector( '.unblock-review-unpause' ) );
 	} );
 
 	test( 'An on-hold request displays a warning and takes the matching request off hold', async () => {
@@ -612,7 +613,8 @@ describe( 'UnblockReviewController', () => {
 			'This unblock request is paused until the blocking administrator responds.'
 		);
 		expect( document.querySelector( '.unblock-review-unpause' ).textContent ).toBe( 'Unpause now.' );
-		expect( document.querySelector( '.unblock-review button' ) ).toBeNull();
+		expect( document.querySelector( '.unblock-review-unpause' ).tagName ).toBe( 'BUTTON' );
+		expect( document.querySelector( '.unblock-review a' ) ).toBeNull();
 		expect( mw.notify ).not.toHaveBeenCalled();
 		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
 			summary: expect.stringContaining( 'Taking unblock request off hold' ),
