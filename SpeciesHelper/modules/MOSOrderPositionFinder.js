@@ -1,5 +1,6 @@
 /**
  * Utilities to help user scripts properly follow English Wikipedia's MOS:ORDER. Most of the methods need wikitext and a specific MOS:ORDER section as parameters, then output something useful related to MOS:ORDER.
+ *
  * @author Novem Linguae <noveminguae@gmail.com>
  */
 export class MOSOrderPositionFinder {
