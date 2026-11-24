@@ -53,7 +53,12 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 	const get = options.get || jest.fn().mockResolvedValue( { query: { pages: { 1: { revisions: [ { '*': wikitext } ] } } } } );
 	const revisionGet = options.revisionGet || jest.fn().mockResolvedValue( { query: { pages: { 1: { revisions: [ { revid: 1 } ] } } } } );
 	const mw = {
-		config: { get: ( key ) => ( { wgNamespaceNumber: 3, wgPageName: 'User_talk:Example', wgRelevantUserName: options.user } )[ key ] },
+		config: { get: ( key ) => ( {
+			wgNamespaceNumber: 3,
+			wgPageName: 'User_talk:Example',
+			wgRelevantUserName: options.user,
+			wgCurRevisionId: options.revisionId === undefined ? 1 : options.revisionId
+		} )[ key ] },
 		loader: { using: () => Promise.resolve() },
 		util: { addCSS: jest.fn() },
 		Api: function () {
@@ -94,7 +99,7 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 
 describe( 'UnblockReviewController', () => {
 	test.each( [ 'accept', 'decline', 'wait', 'wait-admin', 'unpause', 'unpause-on-hold' ] )(
-		'Preserves the interface when the %s edit reports an edit conflict', async ( action ) => {
+		'Preserves the interface when the %s edit detects a revision conflict', async ( action ) => {
 			const onHold = action === 'unpause-on-hold';
 			const paused = action === 'unpause';
 			const html = `<div class="user-block unblock ${ onHold ? 'unblock-on-hold' : '' }"
@@ -115,10 +120,8 @@ describe( 'UnblockReviewController', () => {
 			expect( revisionGet ).toHaveBeenCalledWith( expect.objectContaining( {
 				action: 'query', prop: 'revisions', rvprop: 'ids', titles: 'User_talk:Example'
 			} ) );
-			expect( get ).toHaveBeenCalledWith( expect.objectContaining( { rvprop: 'content', revids: 10 } ) );
 			expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'Edit conflict.' ), expect.objectContaining( { autoHide: false } ) );
-			expect( postWithToken ).toHaveBeenCalledTimes( 1 );
-			expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { baserevid: 10 } ) );
+			expect( postWithToken ).not.toHaveBeenCalled();
 			expect( windowMock.location.reload ).not.toHaveBeenCalled();
 			if ( reason ) {
 				expect( document.querySelector( '.unblock-review-reason' ).value ).toBe( reason );
@@ -172,12 +175,11 @@ describe( 'UnblockReviewController', () => {
 		expect( windowMock.location.reload ).not.toHaveBeenCalled();
 	} );
 
-	test( 'A failed initial revision lookup does not enable review controls', async () => {
+	test( 'Uses the page current revision ID without a startup API lookup', async () => {
 		const html = `<div class="user-block unblock"><div></div><hr><p>Request reason</p><div>Request reason</div></div>`;
-		const revisionGet = jest.fn().mockResolvedValue( { query: { pages: { 1: {} } } } );
-		const { mw, postWithToken } = await clickReviewButton( '', html, 'none', { revisionGet } );
-		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'No latest revision ID' ), { type: 'error' } );
-		expect( document.querySelector( '.unblock-review' ) ).toBeNull();
+		const { revisionGet, postWithToken } = await clickReviewButton( '', html, 'none' );
+		expect( revisionGet ).not.toHaveBeenCalled();
+		expect( document.querySelector( '.unblock-review-accept' ) ).not.toBeNull();
 		expect( postWithToken ).not.toHaveBeenCalled();
 	} );
 
@@ -438,12 +440,13 @@ describe( 'UnblockReviewController', () => {
 		const get = jest.fn()
 			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': '{{unblock|reason=Please reconsider.}}' } ] } } } } )
 			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': '{{unblock|reason=Please reconsider.|idletimestamp=20261119101555}}' } ] } } } } );
-		const { postWithToken, windowMock } = await clickReviewButton( '', html, 'wait-unpause', { get } );
+		const revisionGet = jest.fn()
+			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { revid: 1 } ] } } } } )
+			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { revid: 2 } ] } } } } );
+		const { postWithToken, windowMock } = await clickReviewButton( '', html, 'wait-unpause', { get, revisionGet } );
 		expect( postWithToken ).toHaveBeenCalledTimes( 2 );
-		expect( postWithToken ).toHaveBeenNthCalledWith( 1, 'csrf', expect.objectContaining( { baserevid: 1 } ) );
 		expect( postWithToken ).toHaveBeenLastCalledWith( 'csrf', expect.objectContaining( {
 			summary: expect.stringContaining( 'Unpausing unblock request' ),
-			baserevid: 2,
 			text: '{{unblock|reason=Please reconsider.}}'
 		} ) );
 		expect( get ).toHaveBeenNthCalledWith( 1, expect.objectContaining( { revids: 1 } ) );
@@ -451,7 +454,7 @@ describe( 'UnblockReviewController', () => {
 		expect( windowMock.location.reload ).toHaveBeenCalled();
 	} );
 
-	test( 'Clicking unpause detects edit conflicts', async () => {
+	test( 'Clicking unpause detects a revision conflict after pausing', async () => {
 		const html = `<div class="user-block unblock">
 			<div></div><hr><div></div><div>Please reconsider.</div>
 		</div>`;
@@ -459,14 +462,15 @@ describe( 'UnblockReviewController', () => {
 			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': '{{unblock|reason=Please reconsider.}}' } ] } } } } )
 			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': '{{unblock|reason=Please reconsider.|idletimestamp=20261119101555}}' } ] } } } } );
 		const postWithToken = jest.fn()
-			.mockResolvedValueOnce( { edit: { result: 'Success', newrevid: 2 } } )
-			.mockRejectedValueOnce( 'editconflict' );
+			.mockResolvedValueOnce( { edit: { result: 'Success', newrevid: 2 } } );
+		const revisionGet = jest.fn()
+			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { revid: 1 } ] } } } } )
+			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { revid: 3 } ] } } } } );
 		const { mw, windowMock } = await clickReviewButton(
-			'', html, 'wait-unpause', { get, postWithToken }
+			'', html, 'wait-unpause', { get, postWithToken, revisionGet }
 		);
 		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'Edit conflict.' ), expect.any( Object ) );
-		expect( postWithToken ).toHaveBeenCalledTimes( 2 );
-		expect( postWithToken ).toHaveBeenLastCalledWith( 'csrf', expect.objectContaining( { baserevid: 2 } ) );
+		expect( postWithToken ).toHaveBeenCalledTimes( 1 );
 		expect( windowMock.location.reload ).not.toHaveBeenCalled();
 	} );
 

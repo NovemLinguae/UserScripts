@@ -20,19 +20,12 @@ export class UnblockReviewController {
 			</div>
 		</div>
 	`;
+		this.revisionId = mw.config.get( 'wgCurRevisionId' );
 	}
 
 	async execute() {
 		const userTalkNamespace = 3;
 		if ( mw.config.get( 'wgNamespaceNumber' ) !== userTalkNamespace ) {
-			return;
-		}
-
-		// Save revision ID for edit conflict detection.
-		try {
-			this.revisionId = await this.getLatestRevisionId();
-		} catch ( e ) {
-			mw.notify( 'UnblockReview error: unable to check page revision: ' + ( e.message || e ), { type: 'error' } );
 			return;
 		}
 
@@ -464,25 +457,26 @@ ${ acceptDeclineReason }
 	}
 
 	async editPage( title, wikitext, editSummary ) {
+		// Edit conflict detection. Using baserevid or basetimestamp in the API query is pretty narrow edit conflict detection that only detects wikitext changes in the immediate neighborhood of the change. Saving a revision ID and they re-checking it right before the edit offers broader edit conflict detection, including moved page detection (e.g. user rename and then their user talk page gets moved).
+		const latestRevisionId = await this.getLatestRevisionId();
+		if ( latestRevisionId !== this.revisionId ) {
+			mw.notify( 'Edit conflict. Someone else has moved or edited the page. Copy whatever you typed into the reason box if you would like to save it, then refresh the page.', { type: 'error', autoHide: false } );
+			return null;
+		}
+
 		try {
 			const result = await ( new mw.Api() ).postWithToken( 'csrf', {
 				action: 'edit',
 				title: title,
 				summary: editSummary,
-				text: wikitext,
-				// TODO: baserevid and basetimestamp only detect changes in the neighborhood of the text being edited. it is pretty narrow. we should broaden the edit conflict detection by saving the top revid when we first load the page, then grabbing the top revid again at the beginning of this editPage method. if they don't match, then give a mw.notify error and abort the edit.
-				baserevid: this.revisionId
+				text: wikitext
 			} );
 			if ( !result.edit || result.edit.result !== 'Success' ) {
 				throw new Error( 'The API did not report a successful edit: ' + JSON.stringify( result ) );
 			}
 			return result;
 		} catch ( e ) {
-			if ( e === 'editconflict' ) {
-				mw.notify( 'Edit conflict. Someone else has edited the page. Copy whatever you typed into the reason box if you would like to save it, then refresh the page.', { type: 'error', autoHide: false } );
-			} else {
-				mw.notify( 'UnblockReview error: unable to save page: ' + ( e.message || e ), { type: 'error' } );
-			}
+			mw.notify( 'UnblockReview error: unable to save page: ' + ( e.message || e ), { type: 'error' } );
 			return null;
 		}
 	}
