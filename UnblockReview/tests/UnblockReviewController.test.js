@@ -105,8 +105,14 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 }
 
 describe( 'UnblockReviewController', () => {
-	test.each( [ 'accept', 'decline', 'wait', 'wait-admin', 'unpause' ] )(
-		'Disables all review buttons while handling %s and enables them afterward', async ( action ) => {
+	test.each( [
+		[ 'accept', true ],
+		[ 'decline', true ],
+		[ 'wait', false ],
+		[ 'wait-admin', true ],
+		[ 'unpause', true ]
+	] )(
+		'Disables all review buttons while handling %s and keeps them disabled when expected', async ( action, buttonsRemainDisabled ) => {
 			const html = action === 'unpause' ?
 				`<div class="user-block unblock"
 					data-mw='{"parts":[{"template":{"target":{"wt":"unblock"},"params":{"idletimestamp":{"wt":"20261119101555"}}}}]}'>
@@ -114,7 +120,10 @@ describe( 'UnblockReviewController', () => {
 				</div>` :
 				`<div class="user-block unblock"><div></div><hr><p>Request reason</p><div>Request reason</div></div>`;
 			let allDisabledDuringAction = false;
-			await clickReviewButton( '', html, action, {
+			const wikitext = action === 'unpause' ?
+				'{{unblock|reason=Request reason|idletimestamp=20261119101555}}' :
+				'{{unblock|reason=Request reason}}';
+			await clickReviewButton( wikitext, html, action, {
 				prompt: jest.fn().mockReturnValue( null ),
 				onActionStart: () => {
 					const buttons = Array.from( document.querySelectorAll( '.unblock-review button' ) );
@@ -123,7 +132,7 @@ describe( 'UnblockReviewController', () => {
 			} );
 
 			expect( allDisabledDuringAction ).toBe( true );
-			expect( Array.from( document.querySelectorAll( '.unblock-review button' ) ).every( ( button ) => !button.disabled ) ).toBe( true );
+			expect( Array.from( document.querySelectorAll( '.unblock-review button' ) ).every( ( button ) => button.disabled ) ).toBe( buttonsRemainDisabled );
 		}
 	);
 
@@ -580,7 +589,7 @@ describe( 'UnblockReviewController', () => {
 		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'Too many matching' ), { type: 'error' } );
 		expect( postWithToken ).not.toHaveBeenCalled();
 		expect( windowMock.location.reload ).not.toHaveBeenCalled();
-		expect( document.querySelector( '.unblock-review-wait-admin' ).disabled ).toBe( false );
+		expect( Array.from( document.querySelectorAll( '.unblock-review button' ) ).every( ( button ) => button.disabled ) ).toBe( true );
 	} );
 
 	test( 'Waiting pauses a username-parameter unblock request', async () => {
