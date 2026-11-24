@@ -14,18 +14,28 @@ export class UnblockReviewWikitext {
 	 * @param {string} DEFAULT_DECLINE_REASON - The default reason for declining the unblock request.
 	 * @param {string} acceptOrDecline - Either "accept" or "decline".
 	 * @param {boolean} hasUsernameParameter - Whether the request includes a separate username parameter.
+	 * @param {{index: number, count: number}} [targetRequestPosition] - The clicked request's zero-based position among open requests.
 	 * @return {string} wikitext
 	 */
-	processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter = false ) {
+	processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter, targetRequestPosition ) {
+		let targetRequestRange;
+		if ( targetRequestPosition !== undefined ) {
+			targetRequestRange = this.getPositionedOpenRequestRange( wikitext, targetRequestPosition );
+		}
+
 		const fullParamsAndReason = paramsAndReason;
-		paramsAndReason = paramsAndReason.split( '\n' )[ 0 ];
+		const firstLineParamsAndReason = paramsAndReason.split( '\n' )[ 0 ];
+		paramsAndReason = targetRequestRange ? fullParamsAndReason : firstLineParamsAndReason;
 
 		let initialText = '';
 		// Special case: If the user didn't provide a reason, the template will display "Please provide a reason as to why you should be unblocked", and this will be detected as the appealReason.
-		const reasonIsProvided = !paramsAndReason.startsWith( 'Please provide a reason as to why you should be unblocked' );
+		const reasonIsProvided = !firstLineParamsAndReason.startsWith( 'Please provide a reason as to why you should be unblocked' );
 		if ( !reasonIsProvided ) {
-			const nowikiRanges = this.getNowikiRanges( wikitext );
-			const match = [ ...wikitext.matchAll( /(\{\{Unblock)\}\}/gi ) ].find(
+			const searchText = targetRequestRange ?
+				wikitext.slice( targetRequestRange.start, targetRequestRange.end ) :
+				wikitext;
+			const nowikiRanges = this.getNowikiRanges( searchText );
+			const match = [ ...searchText.matchAll( /(\{\{Unblock)\}\}/gi ) ].find(
 				( candidate ) => !this.isInsideNowiki( candidate.index, nowikiRanges )
 			);
 			if ( !match ) {
@@ -33,11 +43,26 @@ export class UnblockReviewWikitext {
 			}
 			initialText = match[ 1 ];
 			paramsAndReason = '';
+		} else if ( targetRequestRange && !hasUsernameParameter ) {
+			const targetText = wikitext.slice( targetRequestRange.start, targetRequestRange.end );
+			const reasonPrefix = targetText.match( /^\{\{\s*[^|}]+\|\s*(?:(?:reason|1|2)\s*=\s*)?/i );
+			if ( !reasonPrefix ) {
+				throw new Error( 'The clicked request does not contain a matching reason parameter. Refusing to edit.' );
+			}
+			const targetReason = targetText.slice( reasonPrefix[ 0 ].length );
+			const reasonPattern = new RegExp(
+				'^' + this.getAppealReasonPattern( fullParamsAndReason, false, true )
+			);
+			if ( !reasonPattern.test( targetReason ) ) {
+				throw new Error( 'The clicked request reason did not match its wikitext. Refusing to edit.' );
+			}
+			initialText = reasonPrefix[ 0 ];
 		} else if ( !hasUsernameParameter ) {
-			// Prefer the full rendered reason to distinguish repeated prompt text; retain the first-line fallback for rendering differences.
-			const reasonCandidates = fullParamsAndReason === paramsAndReason ?
-				[ paramsAndReason ] :
-				[ fullParamsAndReason, paramsAndReason ];
+			// Prefer the full rendered reason. Only unpositioned callers may use a first-line fallback.
+			let reasonCandidates = [ fullParamsAndReason ];
+			if ( !targetRequestRange && fullParamsAndReason !== paramsAndReason ) {
+				reasonCandidates = [ fullParamsAndReason, paramsAndReason ];
+			}
 			let searchError;
 			for ( const reasonCandidate of reasonCandidates ) {
 				try {
@@ -78,15 +103,34 @@ export class UnblockReviewWikitext {
 		let matches;
 		if ( hasUsernameParameter ) {
 			matches = this.getUsernameRequestMatches( wikitext, paramsAndReason );
+			if ( targetRequestRange ) {
+				matches = matches.filter( ( match ) => match.index >= targetRequestRange.start &&
+					match.index < targetRequestRange.end
+				);
+			}
 		} else {
 			const regEx = new RegExp(
-				this.escapeRegExp( initialText ) + '(' + this.getAppealReasonPattern( paramsAndReason ) + ')',
+				this.escapeRegExp( initialText ) + '(' +
+					this.getAppealReasonPattern( paramsAndReason, false, Boolean( targetRequestRange ) ) + ')',
 				'g'
 			);
-			const nowikiRanges = this.getNowikiRanges( wikitext );
-			matches = [ ...wikitext.matchAll( regEx ) ].filter(
+			const searchText = targetRequestRange ?
+				wikitext.slice( targetRequestRange.start, targetRequestRange.end ) :
+				wikitext;
+			const nowikiRanges = this.getNowikiRanges( searchText );
+			matches = [ ...searchText.matchAll( regEx ) ].filter(
 				( match ) => !this.isInsideNowiki( match.index, nowikiRanges )
 			);
+			if ( targetRequestRange ) {
+				matches.forEach( ( match ) => {
+					match.index += targetRequestRange.start;
+				} );
+			}
+		}
+		if ( targetRequestRange ) {
+			if ( matches.length === 0 ) {
+				throw new Error( 'The clicked request reason did not match its wikitext. Refusing to edit.' );
+			}
 		}
 		if ( matches.length > 1 ) {
 			throw new Error( 'Too many matching unblock templates found' );
@@ -180,10 +224,13 @@ export class UnblockReviewWikitext {
 	 * @param {string} wikitext - The wikitext of the page.
 	 * @param {string} paramsAndReason - The username and reason, or reason, identifying the request.
 	 * @param {boolean} hasUsernameParameter - Whether the request includes a separate username parameter.
+	 * @param {{index: number, count: number}} [targetRequestPosition] - The clicked request's position among open requests.
 	 * @return {string} Updated wikitext.
 	 */
-	processWaitForUserResponse( wikitext, paramsAndReason, hasUsernameParameter = false ) {
-		const { start, closePos } = this.getUnblockTemplateRange( wikitext, paramsAndReason, hasUsernameParameter );
+	processWaitForUserResponse( wikitext, paramsAndReason, hasUsernameParameter, targetRequestPosition ) {
+		const { start, closePos } = this.getUnblockTemplateRange(
+			wikitext, paramsAndReason, hasUsernameParameter, false, targetRequestPosition
+		);
 		const template = wikitext.slice( start, closePos + 2 );
 		const updatedTemplate = template.slice( 0, -2 ) +
 			'|idletimestamp={{subst:CURRENTTIMESTAMP}}}}';
@@ -197,16 +244,19 @@ export class UnblockReviewWikitext {
 	 * @param {string} paramsAndReason - Rendered reason identifying the request.
 	 * @param {string} blockingAdmin - The blocking administrator.
 	 * @param {boolean} hasUsernameParameter - Whether the request has a separate username parameter.
+	 * @param {{index: number, count: number}} [targetRequestPosition] - The clicked request's position among open requests.
 	 * @return {string} Updated wikitext.
 	 */
-	processWaitForBlockingAdmin( wikitext, paramsAndReason, blockingAdmin, hasUsernameParameter = false ) {
+	processWaitForBlockingAdmin( wikitext, paramsAndReason, blockingAdmin, hasUsernameParameter, targetRequestPosition ) {
 		if ( hasUsernameParameter ) {
 			throw new Error( 'Putting username requests on hold is not supported' );
 		}
 		if ( /[|{}[\]<>\r\n]/.test( blockingAdmin ) ) {
 			throw new Error( 'Invalid blocking administrator name' );
 		}
-		const { start, closePos } = this.getUnblockTemplateRange( wikitext, paramsAndReason );
+		const { start, closePos } = this.getUnblockTemplateRange(
+			wikitext, paramsAndReason, false, false, targetRequestPosition
+		);
 		const template = wikitext.slice( start, closePos + 2 );
 		const opening = template.match( /^\{\{\s*unblock\s*(?=\||\}\})/i );
 		if ( !opening ) {
@@ -277,14 +327,16 @@ export class UnblockReviewWikitext {
 	 * @param {string} wikitext - The wikitext of the page.
 	 * @param {string} paramsAndReason - The username and reason, or reason, identifying the request.
 	 * @param {boolean} hasUsernameParameter - Whether the request includes a separate username parameter.
+	 * @param {{index: number, count: number}} [targetRequestPosition] - The clicked request's position among open requests.
 	 * @return {string} Updated wikitext.
 	 */
-	processUnpause( wikitext, paramsAndReason, hasUsernameParameter = false ) {
+	processUnpause( wikitext, paramsAndReason, hasUsernameParameter, targetRequestPosition ) {
 		const { start, closePos } = this.getUnblockTemplateRange(
 			wikitext,
 			paramsAndReason,
 			hasUsernameParameter,
-			true
+			true,
+			targetRequestPosition
 		);
 		const template = wikitext.slice( start, closePos + 2 );
 		const updatedTemplate = template.replace( /\s*\|\s*idletimestamp\s*=\s*\d{14}\s*/gi, '' );
@@ -299,23 +351,30 @@ export class UnblockReviewWikitext {
 	 *
 	 * @param {string} wikitext - The page wikitext.
 	 * @param {string} appealReason - The rendered request reason.
+	 * @param {{index: number, count: number}} [targetRequestPosition] - The clicked request's position among open requests.
 	 * @return {string} Updated wikitext.
 	 */
-	processRemoveHold( wikitext, appealReason ) {
+	processRemoveHold( wikitext, appealReason, targetRequestPosition ) {
 		const excludedRanges = this.getNowikiRanges( wikitext );
 		for ( const comment of wikitext.matchAll( /<!--[\s\S]*?(?:-->|$)/g ) ) {
 			excludedRanges.push( [ comment.index, comment.index + comment[ 0 ].length ] );
 		}
 		const reasonPattern = appealReason ?
-			new RegExp( '^\\s*' + this.getAppealReasonPattern( appealReason.split( '\n' )[ 0 ] ) +
+			new RegExp( '^\\s*' + this.getAppealReasonPattern( appealReason, false, targetRequestPosition !== undefined ) +
 				'(?:[ \\t\\r]|\\]\\]|\\}\\}|\\]|\\x27{2,}|<\\/[a-zA-Z][a-zA-Z0-9:-]*\\s*>)*(?:\\n|$)' ) : null;
 		const matches = [];
+		const targetRange = targetRequestPosition !== undefined ?
+			this.getPositionedOpenRequestRange( wikitext, targetRequestPosition ) :
+			null;
 		const openingPattern = /\{\{\s*unblock[ _]+on[ _]+hold\s*(?=\||\}\})/gi;
 		for ( const opening of wikitext.matchAll( openingPattern ) ) {
 			if ( this.isInsideNowiki( opening.index, excludedRanges ) ) {
 				continue;
 			}
 			const range = this.getTemplateRangeAt( wikitext, opening.index, excludedRanges );
+			if ( targetRange && ( range.start !== targetRange.start || range.closePos !== targetRange.end - 2 ) ) {
+				continue;
+			}
 			const text = wikitext.slice( opening.index + opening[ 0 ].length, range.closePos );
 			const parameters = this.getUnblockParameters( text );
 			const hasReason = Object.prototype.hasOwnProperty.call( parameters, 'reason' ) ||
@@ -329,6 +388,9 @@ export class UnblockReviewWikitext {
 			) {
 				matches.push( { ...range, reason } );
 			}
+		}
+		if ( targetRequestPosition && matches.length === 0 ) {
+			throw new Error( 'The clicked on-hold request reason did not match its wikitext. Refusing to edit.' );
 		}
 		if ( matches.length > 1 ) {
 			throw new Error( 'Too many matching on-hold unblock templates found' );
@@ -349,12 +411,45 @@ export class UnblockReviewWikitext {
 	 * @param {string} paramsAndReason - Rendered username and reason, or reason, identifying the request.
 	 * @param {boolean} hasUsernameParameter - Whether the request has a separate username parameter.
 	 * @param {boolean} unpausing - Whether the lookup is for removing an idletimestamp.
+	 * @param {{index: number, count: number}} [targetRequestPosition] - The clicked request's position among open requests.
 	 * @return {{start: number, closePos: number}} The opening and closing positions of the template.
 	 */
-	getUnblockTemplateRange( wikitext, paramsAndReason, hasUsernameParameter = false, unpausing = false ) {
+	getUnblockTemplateRange( wikitext, paramsAndReason, hasUsernameParameter, unpausing, targetRequestPosition ) {
+		const fullParamsAndReason = paramsAndReason;
 		paramsAndReason = paramsAndReason.split( '\n' )[ 0 ];
 		let matches;
-		if ( !hasUsernameParameter && paramsAndReason.startsWith( 'Please provide a reason as to why you should be unblocked' ) ) {
+		if ( targetRequestPosition !== undefined ) {
+			const targetRange = this.getPositionedOpenRequestRange( wikitext, targetRequestPosition );
+			const targetText = wikitext.slice( targetRange.start, targetRange.end );
+			if ( unpausing && !/\|\s*idletimestamp\s*=\s*\d{14}/i.test( targetText ) ) {
+				throw new Error( 'The clicked request does not have an idletimestamp parameter. Refusing to edit.' );
+			}
+			if ( hasUsernameParameter ) {
+				matches = unpausing ?
+					this.getUsernameUnpauseMatches( wikitext, fullParamsAndReason, true ) :
+					this.getUsernameRequestMatches( wikitext, fullParamsAndReason, true );
+				matches = matches.filter( ( match ) => match.index === targetRange.start );
+				if ( matches.length === 0 ) {
+					throw new Error( 'The clicked request reason did not match its wikitext. Refusing to edit.' );
+				}
+			} else if ( paramsAndReason.startsWith( 'Please provide a reason as to why you should be unblocked' ) ) {
+				const emptyReasonTemplate = unpausing ?
+					/^\{\{\s*unblock(?=\s*(?:\||\}\}))/i :
+					/^\{\{\s*unblock\s*\}\}/i;
+				if ( !emptyReasonTemplate.test( targetText ) ) {
+					throw new Error( 'The clicked request reason did not match its wikitext. Refusing to edit.' );
+				}
+			} else {
+				const reasonPrefix = targetText.match( /^\{\{\s*[^|}]+\|\s*(?:(?:reason|1|2)\s*=\s*)?/i );
+				const reasonPattern = new RegExp(
+					'^' + this.getAppealReasonPattern( fullParamsAndReason, false, true )
+				);
+				if ( !reasonPrefix || !reasonPattern.test( targetText.slice( reasonPrefix[ 0 ].length ) ) ) {
+					throw new Error( 'The clicked request reason did not match its wikitext. Refusing to edit.' );
+				}
+			}
+			return { start: targetRange.start, closePos: targetRange.end - 2 };
+		} else if ( !hasUsernameParameter && paramsAndReason.startsWith( 'Please provide a reason as to why you should be unblocked' ) ) {
 			const nowikiRanges = this.getNowikiRanges( wikitext );
 			const pattern = unpausing ?
 				/\{\{\s*Unblock(?=\s*(?:\||\}\}))/gi :
@@ -396,6 +491,26 @@ export class UnblockReviewWikitext {
 		return this.getTemplateRangeAt( wikitext, matches[ 0 ].index, nowikiRanges );
 	}
 
+	getPositionedOpenRequestRange( wikitext, targetRequestPosition ) {
+		if ( !targetRequestPosition || !Number.isInteger( targetRequestPosition.index ) ||
+			!Number.isInteger( targetRequestPosition.count ) || targetRequestPosition.index < 0 ||
+			targetRequestPosition.count < 1 ) {
+			throw new Error( 'Unable to identify the clicked open unblock request. Refusing to edit.' );
+		}
+		const requestRanges = this.getOpenUnblockRequestRanges( wikitext );
+		if ( requestRanges.length !== targetRequestPosition.count ) {
+			throw new Error(
+				'Open unblock request count mismatch: HTML has ' + targetRequestPosition.count +
+				' requests, but wikitext has ' + requestRanges.length + '. Refusing to edit.'
+			);
+		}
+		const targetRange = requestRanges[ targetRequestPosition.index ];
+		if ( !targetRange ) {
+			throw new Error( 'The clicked open unblock request was not found in wikitext. Refusing to edit.' );
+		}
+		return targetRange;
+	}
+
 	getTemplateRangeAt( wikitext, start, nowikiRanges ) {
 		let depth = 0;
 		let closePos = -1;
@@ -421,6 +536,29 @@ export class UnblockReviewWikitext {
 		return { start, closePos };
 	}
 
+	getOpenUnblockRequestRanges( wikitext ) {
+		const excludedRanges = this.getNowikiRanges( wikitext );
+		for ( const comment of wikitext.matchAll( /<!--[\s\S]*?(?:-->|$)/g ) ) {
+			excludedRanges.push( [ comment.index, comment.index + comment[ 0 ].length ] );
+		}
+
+		const requestRanges = [];
+		const openingPattern = /\{\{\s*(unblock(?:[\s_-]+[A-Za-z0-9_-]+)*)\s*(?=\||\}\})/gi;
+		for ( const opening of wikitext.matchAll( openingPattern ) ) {
+			if ( this.isInsideNowiki( opening.index, excludedRanges ) ) {
+				continue;
+			}
+			const normalizedName = opening[ 1 ].replace( /[_-]+/g, ' ' ).replace( /\s+/g, ' ' ).toLowerCase();
+			if ( normalizedName.split( ' ' ).includes( 'reviewed' ) ||
+				normalizedName === 'unblock auto' || normalizedName.startsWith( 'unblock auto ' ) ) {
+				continue;
+			}
+			const range = this.getTemplateRangeAt( wikitext, opening.index, excludedRanges );
+			requestRanges.push( { start: opening.index, end: range.closePos + 2 } );
+		}
+		return requestRanges;
+	}
+
 	/**
 	 * Find timestamped username-request templates matching the rendered username and reason.
 	 * Allows idletimestamp to appear between those parameters and ignores templates inside nowiki.
@@ -429,7 +567,7 @@ export class UnblockReviewWikitext {
 	 * @param {string} paramsAndReason - Rendered username and reason identifying the request.
 	 * @return {Array<{ index: number, 0: string, 1: string }>} Matching template-opening matches with their source positions.
 	 */
-	getUsernameUnpauseMatches( wikitext, paramsAndReason ) {
+	getUsernameUnpauseMatches( wikitext, paramsAndReason, allowWhitespace = false ) {
 		const separator = paramsAndReason.indexOf( '|' );
 		if ( separator === -1 ) {
 			return [];
@@ -438,7 +576,8 @@ export class UnblockReviewWikitext {
 		const reason = paramsAndReason.slice( separator + 1 );
 		const reasonIsProvided = !reason.startsWith( 'Please provide a reason as to why you should be unblocked' );
 		const usernamePattern = this.getAppealReasonPattern( username );
-		const reasonPattern = reasonIsProvided ? new RegExp( this.getAppealReasonPattern( reason ), 'i' ) : null;
+		const reasonPattern = reasonIsProvided ?
+			new RegExp( this.getAppealReasonPattern( reason, false, allowWhitespace ), 'i' ) : null;
 		const nowikiRanges = this.getNowikiRanges( wikitext );
 		const matches = [];
 		for ( const match of wikitext.matchAll( /\{\{\s*([A-Za-z-]+)\s*\|/gi ) ) {
@@ -515,9 +654,9 @@ export class UnblockReviewWikitext {
 		return escapedText;
 	}
 
-	getUsernameRequestMatches( wikitext, paramsAndReason ) {
+	getUsernameRequestMatches( wikitext, paramsAndReason, allowWhitespace = false ) {
 		const pattern = '(\\{\\{([A-Za-z-]+)\\s*\\|\\s*(?:1\\s*=\\s*)?)(' +
-			this.getAppealReasonPattern( paramsAndReason, true ) + ')';
+			this.getAppealReasonPattern( paramsAndReason, true, allowWhitespace ) + ')';
 		const nowikiRanges = this.getNowikiRanges( wikitext );
 		return [ ...wikitext.matchAll( new RegExp( pattern, 'g' ) ) ].filter( ( match ) => {
 			if ( !this.templatesThatHaveUsernameParameters.includes( match[ 2 ].toLowerCase() ) ||
@@ -707,12 +846,14 @@ export class UnblockReviewWikitext {
 	 * @param {boolean} hasUsernameParameter - Whether the request includes a separate username parameter.
 	 * @return {string} Regex pattern for matching the original wikitext.
 	 */
-	getAppealReasonPattern( appealReason, hasUsernameParameter = false ) {
+	getAppealReasonPattern( appealReason, hasUsernameParameter = false, allowWhitespace = false ) {
 		// Only {{u|...}} is known to render its argument as visible text.
-		const markup = '(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[:?|\\]\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+|(?<=\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+[^\\]\\n]*)\\](?!\\])|\'{2,}(?!\')|\\{[^{}]*\\}|\\{\\{\\s*[uU]\\s*\\|\\s*|\\{\\{[^}]*\\}\\}|\\}\\})*';
+		const markup = ( allowWhitespace ? '\\s*' : '' ) +
+			'(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[:?|\\]\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+|(?<=\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+[^\\]\\n]*)\\](?!\\])|\'{2,}(?!\')|\\{[^{}]*\\}|\\{\\{\\s*[uU]\\s*\\|\\s*|\\{\\{[^}]*\\}\\}|\\}\\}|[#*:]+)*';
 		// The HTML omits parameter names and whitespace around the username separator.
 		let usernameSeparator = hasUsernameParameter;
-		return Array.from( appealReason, ( character ) => {
+		const normalizedAppealReason = allowWhitespace ? appealReason.replace( /\s+/g, ' ' ) : appealReason;
+		return Array.from( normalizedAppealReason, ( character ) => {
 			const isSeparator = usernameSeparator && character === '|';
 			if ( isSeparator ) {
 				usernameSeparator = false;
@@ -721,6 +862,9 @@ export class UnblockReviewWikitext {
 			if ( character === '\u00a0' ) {
 				// MediaWiki can render an ordinary source space as a non-breaking display space.
 				return markup + '[ \u00a0]';
+			}
+			if ( allowWhitespace && character === ' ' ) {
+				return markup + '\\s+';
 			}
 			return markup + this.escapeRegExp( character );
 		} ).join( '' );

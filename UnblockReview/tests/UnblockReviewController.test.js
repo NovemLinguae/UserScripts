@@ -16,9 +16,9 @@ import { readFileSync } from 'fs';
 async function clickReviewButton( wikitext, html, action = 'decline', options = {} ) {
 	document.body.innerHTML = html;
 	let ready;
-	let clickHandler;
-	let unpauseClickHandler;
-	let adminClickHandler;
+	const clickHandlers = new WeakMap();
+	const unpauseClickHandlers = new WeakMap();
+	const adminClickHandlers = new WeakMap();
 	let templateChangeHandler;
 	const $ = ( element ) => {
 		if ( typeof element === 'function' ) {
@@ -32,11 +32,11 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 						return;
 					}
 					if ( selector === '.unblock-review-accept, .unblock-review-decline, .unblock-review-wait-user' && event === 'click' ) {
-						clickHandler = handler;
+						clickHandlers.set( element, handler );
 					} else if ( selector === '.unblock-review-unpause' && event === 'click' ) {
-						unpauseClickHandler = handler;
+						unpauseClickHandlers.set( element, handler );
 					} else if ( selector === '.unblock-review-wait-admin' && event === 'click' ) {
-						adminClickHandler = handler;
+						adminClickHandlers.set( element, handler );
 					} else if ( selector === '#unblock-review-autoadd-template' && event === 'change' ) {
 						templateChangeHandler = handler;
 					}
@@ -77,7 +77,13 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 	runMain( mw, $, UnblockReviewWikitext, document, windowMock );
 	await ready();
 	if ( options.reason !== undefined ) {
-		document.querySelector( '.unblock-review-reason' ).value = options.reason;
+		const reasonContainer = options.buttonSelector ?
+			document.querySelector( options.buttonSelector ).closest( '.unblock-review' ) :
+			document.querySelector( '.unblock-review' );
+		const reasonElement = reasonContainer.querySelector( '.unblock-review-reason' );
+		if ( reasonElement ) {
+			reasonElement.value = options.reason;
+		}
 	}
 	const invokeClickHandler = async ( handler, element, event ) => {
 		const pendingHandler = handler.call( element, event );
@@ -87,9 +93,15 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 		await pendingHandler;
 	};
 	if ( action === 'unpause' ) {
-		await invokeClickHandler( unpauseClickHandler, document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
+		const button = options.buttonSelector ?
+			document.querySelector( options.buttonSelector ) :
+			document.querySelector( '.unblock-review-unpause' );
+		await invokeClickHandler( unpauseClickHandlers.get( button.closest( '.unblock-review' ) ), button, { preventDefault: jest.fn() } );
 	} else if ( action === 'wait-admin' ) {
-		await invokeClickHandler( adminClickHandler, document.querySelector( '.unblock-review-wait-admin' ) );
+		const button = options.buttonSelector ?
+			document.querySelector( options.buttonSelector ) :
+			document.querySelector( '.unblock-review-wait-admin' );
+		await invokeClickHandler( adminClickHandlers.get( button.closest( '.unblock-review' ) ), button );
 	} else if ( action === 'select-template' ) {
 		const select = document.querySelector( '#unblock-review-autoadd-template' );
 		select.value = '{{subst:2nd chance}}';
@@ -99,9 +111,14 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 		const button = options.buttonSelector ?
 			document.querySelector( options.buttonSelector ) :
 			document.querySelector( '.' + buttonClass );
-		await invokeClickHandler( clickHandler, button );
+		await invokeClickHandler( clickHandlers.get( button.closest( '.unblock-review' ) ), button );
 		if ( action === 'wait-unpause' ) {
-			await invokeClickHandler( unpauseClickHandler, document.querySelector( '.unblock-review-unpause' ), { preventDefault: jest.fn() } );
+			const unpauseButton = document.querySelector( '.unblock-review-unpause' );
+			await invokeClickHandler(
+				unpauseClickHandlers.get( unpauseButton.closest( '.unblock-review' ) ),
+				unpauseButton,
+				{ preventDefault: jest.fn() }
+			);
 		}
 	}
 	return { mw, postWithToken, windowMock, revisionGet };
@@ -304,6 +321,94 @@ describe( 'UnblockReviewController', () => {
 		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
 	} );
 
+	test( 'Declines a long unblock-wizard request with paragraph breaks, links, and emoji', async () => {
+		const reason = `<small>The following request was written through the [[Wikipedia:Unblock wizard|unblock wizard]].</small>{{pb}}
+'''''Can you explain, in your own words, what you were blocked for?'''''{{pb}}
+I was edited many articles and the information which was not speculative. I repeatedly added unsourced content and added the future films and television serials before that film and the program starts. When other editors challenged and reverted me I failed to change it. I had received many warning which I did not respond them. {{pb}}
+'''''If unblocked, what edits would you make and what (if applicable) would you do differently?'''''{{pb}}
+I will leave it out if I can't verify that article page very clearly. I will avoid adding future films until the official principal photography was made and the television program also. I will surely change my behavior please give me one last chance.  {{pb}}
+'''''Is there anything else that may be helpful to your unblock request?'''''{{pb}}
+I now understand that Wikipedia is an encyclopedia. This is my 5th time request and I accepted my punishment. Kindly please unblock my account. 🙏🙏🙏{{pb}}
+[[User:Vivekkrishna Ramkumar|Vivekkrishna Ramkumar]] ([[User talk:Vivekkrishna Ramkumar#top|talk]]) 07:52, 17 November 2026 (UTC)`;
+		const wikitext = `{{unblock|reason=${ reason }}}`;
+		const html = `<div class="user-block unblock">
+			<div></div><hr><p><b>Request reason</b>:</p>
+			<div><small>The following request was written through the <a>unblock wizard</a>.</small><div class="paragraphbreak" style="margin-top:0.5em"></div>
+			<i><b>Can you explain, in your own words, what you were blocked for?</b></i><div class="paragraphbreak" style="margin-top:0.5em"></div>
+			I was edited many articles and the information which was not speculative. I repeatedly added unsourced content and added the future films and television serials before that film and the program starts. When other editors challenged and reverted me I failed to change it. I had received many warning which I did not respond them. <div class="paragraphbreak" style="margin-top:0.5em"></div>
+			<i><b>If unblocked, what edits would you make and what (if applicable) would you do differently?</b></i><div class="paragraphbreak" style="margin-top:0.5em"></div>
+			I will leave it out if I can't verify that article page very clearly. I will avoid adding future films until the official principal photography was made and the television program also. I will surely change my behavior please give me one last chance.  <div class="paragraphbreak" style="margin-top:0.5em"></div>
+			<i><b>Is there anything else that may be helpful to your unblock request?</b></i><div class="paragraphbreak" style="margin-top:0.5em"></div>
+			I now understand that Wikipedia is an encyclopedia. This is my 5th time request and I accepted my punishment. Kindly please unblock my account. 🙏🙏🙏<div class="paragraphbreak" style="margin-top:0.5em"></div>
+			<a>Vivekkrishna Ramkumar</a> (<a>talk</a>) <a>07:52, 17 November 2026 (UTC)</div>
+		</div>`;
+		const expected = `{{unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=${ reason }}}`;
+		const { mw, postWithToken } = await clickReviewButton( wikitext, html, 'decline' );
+
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
+	} );
+
+	test( 'Declining the second of two identical open requests only marks the second as reviewed', async () => {
+		const html = `<div id="first" class="user-block unblock"><div></div><hr><p>Request reason</p><div>Test</div></div>
+			<div id="second" class="user-block unblock"><div></div><hr><p>Request reason</p><div>Test</div></div>`;
+		const wikitext = '{{Unblock|reason=Test}}\n{{Unblock|reason=Test}}';
+		const expected = '{{Unblock|reason=Test}}\n{{Unblock reviewed|decline=[DECLINE REASON] ~~~~|1=Test}}';
+		const { mw, postWithToken } = await clickReviewButton( wikitext, html, 'decline', {
+			buttonSelector: '#second .unblock-review-decline',
+			reason: '[DECLINE REASON]'
+		} );
+
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
+	} );
+
+	test( 'Declining the second of two identical username requests only marks the second as reviewed', async () => {
+		const html = `<div id="first" class="user-block unblock unblock-un">
+			<div></div><hr><p><b>Requested username:</b></p><div><a>Alex</a></div>
+			<b>Request reason:</b><div>Test</div>
+		</div>
+		<div id="second" class="user-block unblock unblock-un">
+			<div></div><hr><p><b>Requested username:</b></p><div><a>Alex</a></div>
+			<b>Request reason:</b><div>Test</div>
+		</div>`;
+		const wikitext = '{{unblock-spamun|Alex|Test}}\n{{unblock-spamun|Alex|Test}}';
+		const expected = '{{unblock-spamun|Alex|Test}}\n{{unblock-spamun reviewed|decline={{subst:Decline reason here}} ~~~~|Alex|2=Test}}';
+		const { mw, postWithToken } = await clickReviewButton( wikitext, html, 'decline', {
+			buttonSelector: '#second .unblock-review-decline'
+		} );
+
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
+	} );
+
+	test( 'Logs and refuses an edit when rendered and wikitext request counts differ', async () => {
+		const html = '<div class="user-block unblock"><div></div><hr><p>Request reason</p><div>Test</div></div>';
+		const wikitext = '{{Unblock|reason=Test}}\n{{Unblock|reason=Test}}';
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'decline' );
+		const errorLogCall = postWithToken.mock.calls.find( ( call ) => call[ 1 ].appendtext );
+
+		expect( mw.notify ).toHaveBeenCalledWith(
+			expect.stringContaining( 'Open unblock request count mismatch' ), { type: 'error' }
+		);
+		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+		expect( postWithToken ).not.toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expect.any( String ) } ) );
+		expect( errorLogCall[ 1 ].appendtext ).toContain( 'Open unblock request count mismatch' );
+	} );
+
+	test( 'Logs and refuses an edit when the clicked reason differs from its ordinal wikitext request', async () => {
+		const html = '<div class="user-block unblock"><div></div><hr><p>Request reason</p><div>Test</div></div>';
+		const wikitext = '{{Unblock|reason=Different}}';
+		const { mw, postWithToken } = await clickReviewButton( wikitext, html, 'decline' );
+		const errorLogCall = postWithToken.mock.calls.find( ( call ) => call[ 1 ].appendtext );
+
+		expect( mw.notify ).toHaveBeenCalledWith(
+			expect.stringContaining( 'clicked request reason did not match its wikitext' ), { type: 'error' }
+		);
+		expect( postWithToken ).not.toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expect.any( String ) } ) );
+		expect( errorLogCall[ 1 ].appendtext ).toContain( 'clicked request reason did not match its wikitext' );
+	} );
+
 	test( 'Declines a request with paragraph breaks and a rendered non-breaking space', async () => {
 		const reason = `'''''Can you explain, in your own words, what you were blocked for?'''''{{pb}}I have no clue, I was randomly blocked from editing{{pb}}'''''If unblocked, what edits would you make and what (if applicable) would you do differently?'''''{{pb}}Try to not do anything else on Wikipedia I guess{{pb}}'''''Is there anything else that may be helpful to your unblock request?'''''{{pb}}I was blocked randomly :({{pb}} [[Special:Contributions/~2026-61927-23|~2026-61927-23]] ([[User talk:~2026-61927-23|talk]]) 16:04, 23 November 2026 (UTC)`;
 		const declineReason = `Unfortunately, another person on your [[IP range]] has made abusive edits which necessitate that the range is blocked. Consider creating an account, either by request at [[WP:ACC]] or by creating one on a different network, so you can avoid getting caught up in blocks meant to target others.`;
@@ -427,6 +532,11 @@ describe( 'UnblockReviewController', () => {
 			<div></div><hr><p><b>Requested username:</b></p>
 			<div><a class="userlink">CALorenz</a> (<a class="userlink">talk</a> · <a>account availability check</a> · <a>rename user</a>)</div>
 			<b>Request reason:</b><div><span>Te</span>st</div>
+		</div>
+		<div class="user-block unblock unblock-un">
+			<div></div><hr><p><b>Requested username:</b></p>
+			<div><a class="userlink">CALorenz</a> (<a class="userlink">talk</a>)</div>
+			<b>Request reason:</b><div>Other</div>
 		</div>`;
 		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, action );
 		const response = action === 'decline' ? `{{subst:Decline reason here}} ~~~~` : `~~~~`;
@@ -438,12 +548,22 @@ describe( 'UnblockReviewController', () => {
 
 	test.each( [ 'decline', 'accept' ] )( 'Clicking %s on a spam-unblock request with a newline before the reason', async ( action ) => {
 		const wikitext = `{{unblock|AlexFlooringEditor|I now understand why my account was blocked.}}\n{{unblock-spamun|AlexFlooringEditor|Other}}\n{{unblock-spamun|AlexFlooringEditor|\nI now understand why my account was blocked.}}`;
-		const html = `<div class="user-block unblock unblock-un">
+		const html = `<div id="first" class="user-block unblock">
+			<div></div><hr><p><b>Request reason</b>:</p><div>I now understand why my account was blocked.</div>
+		</div>
+		<div id="second" class="user-block unblock unblock-un">
+			<div></div><hr><p><b>Requested username:</b></p>
+			<div><a class="new userlink">AlexFlooringEditor</a> (<a class="new userlink">talk</a>)</div>
+			<b>Request reason:</b><div>Other</div>
+		</div>
+		<div id="target" class="user-block unblock unblock-un">
 			<div></div><hr><p><b>Requested username:</b></p>
 			<div><a class="new userlink">AlexFlooringEditor</a> (<a class="new userlink">talk</a> · <a>account availability check</a> · <span><a>rename user</a></span>)</div>
 			<b>Request reason:</b><div>\nI now understand why my account was blocked.</div>
 		</div>`;
-		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, action );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, action, {
+			buttonSelector: '#target .unblock-review-' + action
+		} );
 		const response = action === 'decline' ? `{{subst:Decline reason here}} ~~~~` : `~~~~`;
 		const expected = `{{unblock|AlexFlooringEditor|I now understand why my account was blocked.}}\n{{unblock-spamun|AlexFlooringEditor|Other}}\n{{unblock-spamun reviewed|${ action }=${ response }|AlexFlooringEditor|2=\nI now understand why my account was blocked.}}`;
 		expect( mw.notify ).not.toHaveBeenCalled();
@@ -507,6 +627,37 @@ describe( 'UnblockReviewController', () => {
 		} ) );
 	} );
 
+	test( 'Waiting pauses only the first of two identical unblock requests', async () => {
+		const wikitext = '{{Unblock|reason=Test}}\n{{Unblock|reason=Test}}';
+		const html = `<div id="first" class="user-block unblock">
+			<div></div><hr><p><b>Request reason</b>:</p><div>Test</div>
+		</div>
+		<div id="second" class="user-block unblock">
+			<div></div><hr><p><b>Request reason</b>:</p><div>Test</div>
+		</div>`;
+		const { mw, postWithToken } = await clickReviewButton( wikitext, html, 'wait', {
+			buttonSelector: '#first .unblock-review-wait-user'
+		} );
+
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: '{{Unblock|reason=Test|idletimestamp={{subst:CURRENTTIMESTAMP}}}}\n{{Unblock|reason=Test}}'
+		} ) );
+	} );
+
+	test( 'Logs and refuses to pause when rendered and wikitext request counts differ', async () => {
+		const html = '<div class="user-block unblock"><div></div><hr><p>Request reason</p><div>Test</div></div>';
+		const wikitext = '{{Unblock|reason=Test}}\n{{Unblock|reason=Test}}';
+		const { mw, postWithToken } = await clickReviewButton( wikitext, html, 'wait' );
+		const errorLogCall = postWithToken.mock.calls.find( ( call ) => call[ 1 ].appendtext );
+
+		expect( mw.notify ).toHaveBeenCalledWith(
+			expect.stringContaining( 'Open unblock request count mismatch' ), { type: 'error' }
+		);
+		expect( postWithToken ).not.toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expect.any( String ) } ) );
+		expect( errorLogCall[ 1 ].appendtext ).toContain( 'Open unblock request count mismatch' );
+	} );
+
 	test( 'The unpause listener works immediately after pausing', async () => {
 		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
 			<div></div><hr><div></div><div>Please reconsider.</div>
@@ -549,7 +700,10 @@ describe( 'UnblockReviewController', () => {
 	} );
 
 	test( 'Blocking admin selection puts the matching unblock request on hold and reloads', async () => {
-		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
+		const html = `<div class="user-block unblock user-unblock-request">
+			<div></div><hr><div></div><div>Another request</div>
+		</div>
+		<div id="target" class="user-block unblock user-unblock-request">
 			<div></div><hr><div></div><div>Request reason</div>
 		</div>`;
 		const wikitext = '{{unblock|reason=Another request}}\n{{unblock|reason=[[Help:Appeal|Request reason]]|category=}}';
@@ -558,7 +712,9 @@ describe( 'UnblockReviewController', () => {
 			.mockResolvedValueOnce( { query: { logevents: [ { action: 'reblock', user: 'Blocking admin' } ] } } )
 			.mockResolvedValueOnce( { query: { pages: { 1: { revisions: [ { '*': wikitext } ] } } } } );
 		const prompt = jest.fn().mockReturnValue( ' Another admin ' );
-		const { mw, postWithToken, windowMock } = await clickReviewButton( '', html, 'wait-admin', { user: 'Example', get, prompt } );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'wait-admin', {
+			user: 'Example', get, prompt, buttonSelector: '#target .unblock-review-wait-admin'
+		} );
 
 		expect( document.querySelector( '.unblock-review-wait-user' ).nextElementSibling.className ).toContain( 'unblock-review-wait-admin' );
 		expect( get ).toHaveBeenCalledWith( expect.objectContaining( {
@@ -615,17 +771,23 @@ describe( 'UnblockReviewController', () => {
 		}
 	} );
 
-	test( 'An ambiguous request is not edited or reloaded', async () => {
-		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">
+	test( 'Blocking admin selection targets the clicked one of two identical requests', async () => {
+		const html = `<div class="user-block unblock user-unblock-request">
+			<div></div><hr><div></div><div>Request reason</div>
+		</div>
+		<div id="target" class="user-block unblock user-unblock-request">
 			<div></div><hr><div></div><div>Request reason</div>
 		</div>`;
 		const wikitext = '{{unblock|reason=Request reason}}\n{{unblock|reason=Request reason}}';
 		const prompt = jest.fn().mockReturnValue( 'Admin' );
-		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'wait-admin', { prompt } );
-		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'Too many matching' ), { type: 'error' } );
-		expect( postWithToken ).not.toHaveBeenCalled();
-		expect( windowMock.location.reload ).not.toHaveBeenCalled();
-		expect( Array.from( document.querySelectorAll( '.unblock-review button' ) ).every( ( button ) => button.disabled ) ).toBe( true );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'wait-admin', {
+			prompt, buttonSelector: '#target .unblock-review-wait-admin'
+		} );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: '{{unblock|reason=Request reason}}\n{{Unblock on hold|1=Admin|2=Request reason|3=~~~~}}'
+		} ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
 	} );
 
 	test( 'Waiting pauses a username-parameter unblock request', async () => {
@@ -672,8 +834,36 @@ describe( 'UnblockReviewController', () => {
 		expect( document.querySelector( '.unblock-review button' ) ).toBe( document.querySelector( '.unblock-review-unpause' ) );
 	} );
 
-	test( 'An on-hold request displays a warning and takes the matching request off hold', async () => {
+	test( 'On refresh, only the request with idletimestamp displays the paused notice', async () => {
+		const html = `<p about="#mwt1" typeof="mw:Transclusion"
+			data-mw='{"parts":[{"template":{"target":{"wt":"Unblock"},"params":{"reason":{"wt":"Test"}}}}]}'></p>
+		<div id="first" class="user-block unblock" about="#mwt1">
+			<div></div><hr><p><b>Request reason</b>:</p><div>Test</div>
+		</div>
+		<p about="#mwt2" typeof="mw:Transclusion"
+			data-mw='{"parts":[{"template":{"target":{"wt":"Unblock"},"params":{"reason":{"wt":"Test"},"idletimestamp":{"wt":"20261124230541"}}}}]}'>
+		</p>
+		<div id="second" class="user-block unblock" about="#mwt2">
+			<div></div><hr><p><b>Request reason</b>:</p><div>Test</div>
+		</div>`;
+		await clickReviewButton( '', html, 'none' );
+
+		expect( document.querySelector( '#first .unblock-review textarea' ) ).not.toBeNull();
+		expect( document.querySelector( '#first .unblock-review .cdx-message--warning' ) ).toBeNull();
+		expect( document.querySelector( '#second .unblock-review textarea' ) ).toBeNull();
+		expect( document.querySelector( '#second .unblock-review .cdx-message--warning .cdx-message__content' ).textContent )
+			.toContain( 'Idletimestamp is present in this template. This unblock request is paused until the user replies.' );
+	} );
+
+	test( 'An on-hold request displays a warning and takes the clicked request off hold', async () => {
 		const html = `<div class="user-block unblock unblock-on-hold">
+			<div></div><hr>
+			<p>Blocking administrator: <a>Other</a> (talk)</p>
+			<p>Reviewing administrator: Reviewer</p>
+			<p><b>Request reason</b>:</p>
+			<div>Other reason</div>
+		</div>
+		<div id="target" class="user-block unblock unblock-on-hold">
 			<div></div><hr>
 			<p>Blocking administrator: <a>Admin</a> (talk)</p>
 			<p>Reviewing administrator: Reviewer</p>
@@ -682,7 +872,9 @@ describe( 'UnblockReviewController', () => {
 		</div>`;
 		const wikitext = '{{Unblock on hold|1=Other|2=Other reason|3=Signature}}\n' +
 			'{{Unblock on hold|1=Admin|2=Please [[Help:Appeal|reconsider]].|3=Reviewer}}';
-		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'unpause' );
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'unpause', {
+			buttonSelector: '#target .unblock-review-unpause'
+		} );
 		expect( document.querySelector( '.cdx-message--warning' ).textContent ).toContain(
 			'This unblock request is paused until the blocking administrator responds.'
 		);
@@ -697,16 +889,23 @@ describe( 'UnblockReviewController', () => {
 		expect( windowMock.location.reload ).toHaveBeenCalled();
 	} );
 
-	test( 'Taking an ambiguous on-hold request off hold does not edit or reload', async () => {
+	test( 'Taking the clicked request off hold when two identical requests exist', async () => {
 		const html = `<div class="user-block unblock unblock-on-hold">
+			<div></div><hr><p>Blocking administrator: Admin</p><p><b>Request reason</b>:</p><div>Please reconsider.</div>
+		</div>
+		<div id="target" class="user-block unblock unblock-on-hold">
 			<div></div><hr><p>Blocking administrator: Admin</p><p><b>Request reason</b>:</p><div>Please reconsider.</div>
 		</div>`;
 		const wikitext = '{{Unblock on hold|1=One|2=Please reconsider.|3=Reviewer}}\n' +
 			'{{Unblock on hold|1=Two|2=Please reconsider.|3=Reviewer}}';
-		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'unpause' );
-		expect( mw.notify ).toHaveBeenCalledWith( expect.stringContaining( 'Too many matching' ), { type: 'error' } );
-		expect( postWithToken ).not.toHaveBeenCalled();
-		expect( windowMock.location.reload ).not.toHaveBeenCalled();
+		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'unpause', {
+			buttonSelector: '#target .unblock-review-unpause'
+		} );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: '{{Unblock on hold|1=One|2=Please reconsider.|3=Reviewer}}\n{{Unblock|reason=Please reconsider.}}'
+		} ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
 	} );
 
 	test( 'Taking an on-hold request with an empty reason off hold preserves the empty reason', async () => {
@@ -735,6 +934,10 @@ describe( 'UnblockReviewController', () => {
 		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)"
 			data-mw='{"parts":[{"template":{"target":{"wt":"unblock"},"params":{"idletimestamp":{"wt":"20261119101555"}}}}]}'>
 			<div></div><hr><div></div><div>Please reconsider.</div>
+		</div>
+		<div class="user-block unblock user-unblock-request"
+			data-mw='{"parts":[{"template":{"target":{"wt":"unblock"},"params":{"idletimestamp":{"wt":"20261119101556"}}}}]}'>
+			<div></div><hr><div></div><div>Other request.</div>
 		</div>`;
 		const { mw, postWithToken, windowMock } = await clickReviewButton( wikitext, html, 'unpause' );
 
@@ -744,6 +947,27 @@ describe( 'UnblockReviewController', () => {
 			text: `{{unblock|reason=Please reconsider.}}\n{{unblock|reason=Other request.|idletimestamp=20261119101556}}`
 		} ) );
 		expect( windowMock.location.reload ).toHaveBeenCalled();
+	} );
+
+	test( 'Unpausing the second of two identical requests removes only its idletimestamp', async () => {
+		const wikitext = '{{Unblock|reason=Test|idletimestamp=20261119101555}}\n' +
+			'{{Unblock|reason=Test|idletimestamp=20261119101556}}';
+		const html = `<div class="user-block unblock"
+			data-mw='{"parts":[{"template":{"target":{"wt":"Unblock"},"params":{"idletimestamp":{"wt":"20261119101555"}}}}]}'>
+			<div></div><hr><p><b>Request reason</b>:</p><div>Test</div>
+		</div>
+		<div id="target" class="user-block unblock"
+			data-mw='{"parts":[{"template":{"target":{"wt":"Unblock"},"params":{"idletimestamp":{"wt":"20261119101556"}}}}]}'>
+			<div></div><hr><p><b>Request reason</b>:</p><div>Test</div>
+		</div>`;
+		const { mw, postWithToken } = await clickReviewButton( wikitext, html, 'unpause', {
+			buttonSelector: '#target .unblock-review-unpause'
+		} );
+
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: '{{Unblock|reason=Test|idletimestamp=20261119101555}}\n{{Unblock|reason=Test}}'
+		} ) );
 	} );
 
 	test( 'Unpause removes idletimestamp from a request with no authored reason', async () => {

@@ -62,34 +62,36 @@ export class UnblockReviewController {
 			!unblockDiv.classList.contains( 'unblock-auto' );
 	}
 
-	getOpenUnblockRequestOrdinal( container ) {
+	getOpenUnblockRequestPosition( container ) {
 		const clickedRequest = container.closest( 'div.user-block' );
-		const unblockRequests = document.querySelectorAll( 'div.user-block' );
-		let ordinal = 0;
+		const unblockRequests = Array.from( document.querySelectorAll( 'div.user-block' ) )
+			.filter( ( unblockDiv ) => this.isOpenUnblockRequest( unblockDiv ) );
+		const index = unblockRequests.indexOf( clickedRequest );
+		if ( index === -1 ) {
+			return null;
+		}
+		return { index: index, count: unblockRequests.length };
+	}
 
-		for ( let i = 0; i < unblockRequests.length; i++ ) {
-			if ( !this.isOpenUnblockRequest( unblockRequests[ i ] ) ) {
-				continue;
-			}
-			ordinal++;
-			if ( unblockRequests[ i ] === clickedRequest ) {
-				const lastTwoDigits = ordinal % 100;
-				let suffix = 'th';
-				if ( lastTwoDigits < 11 || lastTwoDigits > 13 ) {
-					const lastDigit = ordinal % 10;
-					if ( lastDigit === 1 ) {
-						suffix = 'st';
-					} else if ( lastDigit === 2 ) {
-						suffix = 'nd';
-					} else if ( lastDigit === 3 ) {
-						suffix = 'rd';
-					}
-				}
-				return ordinal + suffix;
+	getOpenUnblockRequestOrdinal( container ) {
+		const position = this.getOpenUnblockRequestPosition( container );
+		if ( !position ) {
+			return null;
+		}
+		const ordinal = position.index + 1;
+		const lastTwoDigits = ordinal % 100;
+		let suffix = 'th';
+		if ( lastTwoDigits < 11 || lastTwoDigits > 13 ) {
+			const lastDigit = ordinal % 10;
+			if ( lastDigit === 1 ) {
+				suffix = 'st';
+			} else if ( lastDigit === 2 ) {
+				suffix = 'nd';
+			} else if ( lastDigit === 3 ) {
+				suffix = 'rd';
 			}
 		}
-
-		return null;
+		return ordinal + suffix;
 	}
 
 	addStyles() {
@@ -119,7 +121,13 @@ export class UnblockReviewController {
 	}
 
 	hasIdletimestampParameter( unblockDiv ) {
-		const dataMw = unblockDiv.getAttribute( 'data-mw' );
+		const about = unblockDiv.getAttribute( 'about' );
+		const matchingDataMwElement = about ?
+			Array.from( document.querySelectorAll( '[about][data-mw]' ) )
+				.find( ( element ) => element.getAttribute( 'about' ) === about ) :
+			null;
+		const dataMwElement = matchingDataMwElement || unblockDiv.closest( '[data-mw]' );
+		const dataMw = dataMwElement && dataMwElement.getAttribute( 'data-mw' );
 		if ( !dataMw ) {
 			return false;
 		}
@@ -274,12 +282,12 @@ export class UnblockReviewController {
 
 		$( container ).find( '.unblock-review-wait-admin' ).on( 'click', () => {
 			controller.disableAllButtons();
-			return controller.handleWaitForAdmin( hrEl, hasUsernameParameter );
+			return controller.handleWaitForAdmin( container, hrEl, hasUsernameParameter );
 		} );
 
 		$( container ).find( '.unblock-review-unpause' ).on( 'click', ( event ) => {
 			this.disableAllButtons();
-			return this.handleUnpause( event, hrEl, hasUsernameParameter, onHold );
+			return this.handleUnpause( event, container, hrEl, hasUsernameParameter, onHold );
 		} );
 
 		$( container ).find( '.unblock-review-accept, .unblock-review-decline, .unblock-review-wait-user' ).on( 'click', function () {
@@ -288,7 +296,8 @@ export class UnblockReviewController {
 		} );
 	}
 
-	async handleWaitForAdmin( hrEl, hasUsernameParameter ) {
+	async handleWaitForAdmin( container, hrEl, hasUsernameParameter ) {
+		const requestPosition = this.getOpenUnblockRequestPosition( container );
 		const blockingAdmin = await this.getBlockingAdmin().catch( ( e ) => {
 			console.error( 'UnblockReview blocking administrator lookup failed:', e );
 			return '';
@@ -305,19 +314,21 @@ export class UnblockReviewController {
 				const title = mw.config.get( 'wgPageName' );
 				const wikitext = await this.getWikitextFromRevisionId( this.revisionId );
 				const updatedWikitext = unblockReview.processWaitForBlockingAdmin(
-					wikitext, appealReason, selectedAdmin.trim(), hasUsernameParameter
+					wikitext, appealReason, selectedAdmin.trim(), hasUsernameParameter, requestPosition
 				);
 				if ( await this.editPage( title, updatedWikitext, 'Putting unblock request on hold' + this.ADVERT ) ) {
 					window.location.reload( true );
 				}
 			} catch ( e ) {
 				mw.notify( 'UnblockReview error: unable to put request on hold: ' + ( e.message || e ), { type: 'error' } );
+				await this.logRequestSelectionError( e, 'wait-admin', appealReason, container );
 			}
 		}
 	}
 
-	async handleUnpause( event, hrEl, hasUsernameParameter, onHold ) {
+	async handleUnpause( event, container, hrEl, hasUsernameParameter, onHold ) {
 		event.preventDefault();
+		const requestPosition = this.getOpenUnblockRequestPosition( container );
 		const appealReason = onHold ? this.getOnHoldAppealReason( hrEl ) : this.getAppealReason( hrEl, hasUsernameParameter );
 		if ( appealReason === undefined || ( !onHold && !appealReason ) ) {
 			mw.notify( 'UnblockReview error: unable to find request reason by scanning HTML', { type: 'error' } );
@@ -328,13 +339,16 @@ export class UnblockReviewController {
 			const title = mw.config.get( 'wgPageName' );
 			const wikitext = await this.getWikitextFromRevisionId( this.revisionId );
 			const updatedWikitext = onHold ?
-				unblockReview.processRemoveHold( wikitext, appealReason ) :
-				unblockReview.processUnpause( wikitext, appealReason, hasUsernameParameter );
+				unblockReview.processRemoveHold( wikitext, appealReason, requestPosition ) :
+				unblockReview.processUnpause( wikitext, appealReason, hasUsernameParameter, requestPosition );
 			if ( await this.editPage( title, updatedWikitext, ( onHold ? 'Taking unblock request off hold' : 'Unpausing unblock request' ) + this.ADVERT ) ) {
 				window.location.reload( true );
 			}
 		} catch ( e ) {
 			mw.notify( 'UnblockReview error: ' + ( e.message || e ), { type: 'error' } );
+			await this.logRequestSelectionError(
+				e, onHold ? 'unpause-on-hold' : 'unpause', appealReason, container
+			);
 		}
 	}
 
@@ -354,6 +368,7 @@ export class UnblockReviewController {
 			mw.notify( 'UnblockReview error: unable to find decline reason by scanning HTML', { type: 'error' } );
 			return;
 		}
+		const requestPosition = this.getOpenUnblockRequestPosition( container );
 
 		// change wikitext
 		const unblockReview = new UnblockReviewWikitext();
@@ -368,9 +383,12 @@ export class UnblockReviewController {
 		if ( acceptOrDecline === 'wait-user' ) {
 			let updatedWikitext;
 			try {
-				updatedWikitext = unblockReview.processWaitForUserResponse( wikitext, appealReason, hasUsernameParameter );
+				updatedWikitext = unblockReview.processWaitForUserResponse(
+					wikitext, appealReason, hasUsernameParameter, requestPosition
+				);
 			} catch ( e ) {
 				mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
+				await this.logRequestSelectionError( e, 'wait-user', appealReason, container );
 				return;
 			}
 			const result = await this.editPage( title, updatedWikitext, 'Pausing unblock request' + this.ADVERT );
@@ -396,7 +414,8 @@ export class UnblockReviewController {
 				acceptDeclineReason,
 				this.DEFAULT_DECLINE_REASON,
 				acceptOrDecline,
-				hasUsernameParameter
+				hasUsernameParameter,
+				requestPosition
 			);
 		} catch ( e ) {
 			mw.notify( 'UnblockReview error: ' + e.message, { type: 'error' } );
@@ -478,6 +497,13 @@ ${ acceptDeclineReason }
 			await this.appendToPage( errorLogTitle, logEntry, 'Logging UnblockReview error' + this.ADVERT );
 		} catch ( logError ) {
 			console.error( 'Failed to log error to wiki:', logError );
+		}
+	}
+
+	async logRequestSelectionError( error, action, appealReason, container ) {
+		const errorMessage = error.message || String( error );
+		if ( /^(?:Unable to identify the clicked open unblock request|Open unblock request count mismatch|The clicked (?:open unblock request|request|on-hold request))/.test( errorMessage ) ) {
+			await this.logErrorToWiki( appealReason, action, errorMessage, container );
 		}
 	}
 
