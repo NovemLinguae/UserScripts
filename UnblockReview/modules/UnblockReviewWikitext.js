@@ -17,7 +17,7 @@ export class UnblockReviewWikitext {
 	 * @return {string} wikitext
 	 */
 	processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter = false ) {
-		// HTML does one line break and wikitext does 2ish. Cut off all text after the first line break to avoid breaking our search algorithm.
+		const fullParamsAndReason = paramsAndReason;
 		paramsAndReason = paramsAndReason.split( '\n' )[ 0 ];
 
 		let initialText = '';
@@ -34,7 +34,26 @@ export class UnblockReviewWikitext {
 			initialText = match[ 1 ];
 			paramsAndReason = '';
 		} else if ( !hasUsernameParameter ) {
-			initialText = this.getLeftHalfOfUnblockTemplate( wikitext, paramsAndReason );
+			// Prefer the full rendered reason to distinguish repeated prompt text; retain the first-line fallback for rendering differences.
+			const reasonCandidates = fullParamsAndReason === paramsAndReason ?
+				[ paramsAndReason ] :
+				[ fullParamsAndReason, paramsAndReason ];
+			let searchError;
+			for ( const reasonCandidate of reasonCandidates ) {
+				try {
+					initialText = this.getLeftHalfOfUnblockTemplate( wikitext, reasonCandidate );
+					paramsAndReason = reasonCandidate;
+					break;
+				} catch ( e ) {
+					if ( e.message !== 'Searching for target text failed' ) {
+						throw e;
+					}
+					searchError = e;
+				}
+			}
+			if ( !initialText ) {
+				throw searchError;
+			}
 		}
 
 		// if reason is blank, use the default decline reason
@@ -550,6 +569,10 @@ export class UnblockReviewWikitext {
 
 		// Try each structured match to see if the reason after it matches appealReason
 		for ( const unblockReasonMatch of structuredMatches ) {
+			// Reviewed requests can retain a reason parameter, but are never valid review targets.
+			if ( /^\{\{\s*unblock\s+reviewed(?:\s|\|)/i.test( unblockReasonMatch[ 0 ] ) ) {
+				continue;
+			}
 			const reasonStartPos = unblockReasonMatch.index + unblockReasonMatch[ 0 ].length;
 			const reasonPattern = new RegExp( this.getAppealReasonPattern( appealReason ) );
 			const reasonText = wikitext.slice( reasonStartPos );

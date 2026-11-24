@@ -286,6 +286,24 @@ describe( 'UnblockReviewController', () => {
 		expect( windowMock.location.reload ).toHaveBeenCalled();
 	} );
 
+	test( 'Declining a multiline request does not edit an earlier reviewed request with the same opening reason', async () => {
+		const openingReason = '<small>The following request was written through the [[Wikipedia:Unblock wizard|unblock wizard]].</small>';
+		const question = "'''''Can you explain, in your own words, what you were blocked for?'''''";
+		const reviewedReason = `${ openingReason }{{pb}}\n${ question }{{pb}}\nCreating disruptive edits.`;
+		const openReason = `${ openingReason }{{pb}}\n${ question }{{pb}}\nI was edited many articles and the information which was not speculative.`;
+		const wikitext = `{{unblock reviewed|reason=${ reviewedReason }}}\n\n{{unblock|reason=${ openReason }}}`;
+		const html = `<div class="user-block unblock"><div></div><hr><p><b>Request reason</b>:</p><div>
+			<small>The following request was written through the <a>unblock wizard</a>.</small>
+			<i><b>Can you explain, in your own words, what you were blocked for?</b></i>
+			I was edited many articles and the information which was not speculative.
+		</div></div>`;
+		const expected = `{{unblock reviewed|reason=${ reviewedReason }}}\n\n{{unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=${ openReason }}}`;
+		const { mw, postWithToken } = await clickReviewButton( wikitext, html, 'decline' );
+
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
+	} );
+
 	test( 'Declines a request with paragraph breaks and a rendered non-breaking space', async () => {
 		const reason = `'''''Can you explain, in your own words, what you were blocked for?'''''{{pb}}I have no clue, I was randomly blocked from editing{{pb}}'''''If unblocked, what edits would you make and what (if applicable) would you do differently?'''''{{pb}}Try to not do anything else on Wikipedia I guess{{pb}}'''''Is there anything else that may be helpful to your unblock request?'''''{{pb}}I was blocked randomly :({{pb}} [[Special:Contributions/~2026-61927-23|~2026-61927-23]] ([[User talk:~2026-61927-23|talk]]) 16:04, 23 November 2026 (UTC)`;
 		const declineReason = `Unfortunately, another person on your [[IP range]] has made abusive edits which necessitate that the range is blocked. Consider creating an account, either by request at [[WP:ACC]] or by creating one on a different network, so you can avoid getting caught up in blocks meant to target others.`;
