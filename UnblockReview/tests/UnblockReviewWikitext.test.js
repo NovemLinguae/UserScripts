@@ -313,6 +313,29 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 } );
 
 describe( 'processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline )', () => {
+	test( 'Matches template links without accepting a different displayed template name', () => {
+		const position = { index: 0, count: 1 };
+		const reason = 'See {{request edit}}';
+		const original = '{{unblock|reason=See {{tl|request edit}}}}';
+		expect( unblockReview.processAcceptOrDecline(
+			original, reason, 'No', DEFAULT_DECLINE_REASON, 'decline', false, position
+		) ).toBe( '{{unblock reviewed|decline=No ~~~~|1=See {{tl|request edit}}}}' );
+		expect( () => unblockReview.processAcceptOrDecline(
+			'{{unblock|reason=See {{tl|different}}}}', reason, 'No', DEFAULT_DECLINE_REASON, 'decline', false, position
+		) ).toThrow( 'clicked request reason did not match its wikitext' );
+	} );
+
+	test( 'Matches template links when selecting by wikitext and when pausing', () => {
+		const original = '{{unblock|reason=See {{tl|request edit}} and {{tl|another}}}}';
+		const reason = 'See {{request edit}} and {{another}}';
+		expect( unblockReview.processAcceptOrDecline(
+			original, reason, 'No', DEFAULT_DECLINE_REASON, 'decline'
+		) ).toBe( '{{unblock reviewed|decline=No ~~~~|1=See {{tl|request edit}} and {{tl|another}}}}' );
+		expect( unblockReview.processWaitForUserResponse(
+			original, reason, false, { index: 0, count: 1 }
+		) ).toBe( '{{unblock|reason=See {{tl|request edit}} and {{tl|another}}|idletimestamp={{subst:CURRENTTIMESTAMP}}}}' );
+	} );
+
 	test( 'Matches rendered non-breaking spaces without ignoring other differences or ambiguity', () => {
 		const appealReason = 'Blocked\u00a0:(';
 		const original = '{{unblock|reason=Blocked :(}}';

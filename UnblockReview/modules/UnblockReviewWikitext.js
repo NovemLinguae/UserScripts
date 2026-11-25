@@ -894,26 +894,35 @@ export class UnblockReviewWikitext {
 	 * @return {string} Regex pattern for matching the original wikitext.
 	 */
 	getAppealReasonPattern( appealReason, hasUsernameParameter = false, allowWhitespace = false ) {
-		// Only {{u|...}} is known to render its argument as visible text.
+		// {{u|...}} renders its argument as visible text.
 		const markup = ( allowWhitespace ? '\\s*' : '' ) +
 			'(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[:?|\\]\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+|(?<=\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+[^\\]\\n]*)\\](?!\\])|\'{2,}(?!\')|\\{[^{}]*\\}|\\{\\{\\s*[uU]\\s*\\|\\s*|\\{\\{[^}]*\\}\\}|\\}\\}|[#*:]+)*';
 		// The HTML omits parameter names and whitespace around the username separator.
 		let usernameSeparator = hasUsernameParameter;
 		const normalizedAppealReason = allowWhitespace ? appealReason.replace( /\s+/g, ' ' ) : appealReason;
-		return Array.from( normalizedAppealReason, ( character ) => {
-			const isSeparator = usernameSeparator && character === '|';
-			if ( isSeparator ) {
-				usernameSeparator = false;
-				return markup + '\\s*\\|\\s*(?:(?:reason|2)\\s*=\\s*)?';
+		return normalizedAppealReason.split( /(\{\{[^{}|\n]+\}\})/g ).map( ( part ) => {
+			const literalPattern = Array.from( part, ( character ) => {
+				const isSeparator = usernameSeparator && character === '|';
+				if ( isSeparator ) {
+					usernameSeparator = false;
+					return markup + '\\s*\\|\\s*(?:(?:reason|2)\\s*=\\s*)?';
+				}
+				if ( character === '\u00a0' ) {
+					// MediaWiki can render an ordinary source space as a non-breaking display space.
+					return markup + '[ \u00a0]';
+				}
+				if ( allowWhitespace && character === ' ' ) {
+					return markup + '\\s+';
+				}
+				return markup + this.escapeRegExp( character );
+			} ).join( '' );
+			if ( /^\{\{[^{}|\n]+\}\}$/.test( part ) ) {
+				// {{tl|name}} displays as {{name}}, but the source must be preserved.
+				const templateName = this.escapeRegExp( part.slice( 2, -2 ) );
+				return '(?:' + markup + '\\{\\{\\s*[tT][lL]\\s*\\|\\s*' + templateName +
+					'\\s*\\}\\}|' + literalPattern + ')';
 			}
-			if ( character === '\u00a0' ) {
-				// MediaWiki can render an ordinary source space as a non-breaking display space.
-				return markup + '[ \u00a0]';
-			}
-			if ( allowWhitespace && character === ' ' ) {
-				return markup + '\\s+';
-			}
-			return markup + this.escapeRegExp( character );
+			return literalPattern;
 		} ).join( '' );
 	}
 

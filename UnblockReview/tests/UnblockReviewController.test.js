@@ -303,6 +303,23 @@ describe( 'UnblockReviewController', () => {
 		expect( windowMock.location.reload ).toHaveBeenCalled();
 	} );
 
+	test( 'Declines a request containing a rendered template link', async () => {
+		const wikitext = ':{{unblock|reason=Test ({{tl|request edit}}) Test}}';
+		const html = `<div class="user-block unblock user-unblock-request">
+			<div></div><hr><p><b>Request reason</b>:</p>
+			<div>Test (<span typeof="mw:Entity">{</span><span typeof="mw:Entity">{</span><a>request edit</a><span typeof="mw:Entity">}</span><span typeof="mw:Entity">}</span>) Test</div>
+		</div>`;
+		const { mw, postWithToken, windowMock } = await clickReviewButton(
+			wikitext, html, 'decline', { reason: '{{subst:Decline-ai}}' }
+		);
+
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: '{{unblock reviewed|decline={{subst:Decline-ai}} ~~~~|1=Test ({{tl|request edit}}) Test}}'
+		} ) );
+		expect( windowMock.location.reload ).toHaveBeenCalled();
+	} );
+
 	test( 'Declining a multiline request does not edit an earlier reviewed request with the same opening reason', async () => {
 		const openingReason = '<small>The following request was written through the [[Wikipedia:Unblock wizard|unblock wizard]].</small>';
 		const question = "'''''Can you explain, in your own words, what you were blocked for?'''''";
