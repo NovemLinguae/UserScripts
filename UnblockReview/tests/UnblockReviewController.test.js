@@ -349,6 +349,32 @@ I now understand that Wikipedia is an encyclopedia. This is my 5th time request 
 		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
 	} );
 
+	test( 'Declines an unblock-wizard request containing an unlabeled external link', async () => {
+		const reason = `<small>The following request was written through the [[Wikipedia:Unblock wizard|unblock wizard]].</small>{{pb}}
+'''''Can you explain, in your own words, what you were blocked for?'''''{{pb}}
+Disrupting edits (reverting my reverted entry on [[Wikipedia:Unusual articles/Popular culture, entertainment and the arts|a section from WP:UA]]) and making personal attacks (reverting someone's edit[https://en.wikipedia.org/w/index.php?title=Wikipedia:Unusual_articles/Popular_culture,_entertainment_and_the_arts&diff=prev&oldid=1384111107] and using curse words){{pb}}
+'''''If unblocked, what edits would you make and what (if applicable) would you do differently?'''''{{pb}}
+Discuss my edit first if I don't understand something from the article (or elsewhere). If my edit was reverted, I won't revert it again. For my conduct, I'll apologise to attacked users{{pb}}
+'''''Is there anything else that may be helpful to your unblock request?'''''{{pb}}
+If my English language poor (per my reasoning), I'll send a message to the Local Embassy{{pb}}
+[[User:Multigammer|Multigammer]] ([[User talk:Multigammer#top|talk]]) 08:41, 22 November 2026 (UTC)`;
+		const wikitext = `{{unblock|reason=${ reason }}}`;
+		const html = `<div class="user-block unblock"><div></div><hr><p><b>Request reason</b>:</p><div>
+			<small>The following request was written through the <a>unblock wizard</a>.</small><div class="paragraphbreak"></div>
+			<i><b>Can you explain, in your own words, what you were blocked for?</b></i><div class="paragraphbreak"></div>
+			Disrupting edits (reverting my reverted entry on <a>a section from WP:UA</a>) and making personal attacks (reverting someone's edit<a class="external autonumber"></a> and using curse words)<div class="paragraphbreak"></div>
+			<i><b>If unblocked, what edits would you make and what (if applicable) would you do differently?</b></i><div class="paragraphbreak"></div>
+			Discuss my edit first if I don't understand something from the article (or elsewhere). If my edit was reverted, I won't revert it again. For my conduct, I'll apologise to attacked users<div class="paragraphbreak"></div>
+			<i><b>Is there anything else that may be helpful to your unblock request?</b></i><div class="paragraphbreak"></div>
+			If my English language poor (per my reasoning), I'll send a message to the Local Embassy<div class="paragraphbreak"></div>
+			<a>Multigammer</a> (<a>talk</a>) 08:41, 22 November 2026 (UTC)</div></div>`;
+		const expected = `{{unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=${ reason }}}`;
+		const { mw, postWithToken } = await clickReviewButton( wikitext, html, 'decline' );
+
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expected } ) );
+	} );
+
 	test( 'Declining the second of two identical open requests only marks the second as reviewed', async () => {
 		const html = `<div id="first" class="user-block unblock"><div></div><hr><p>Request reason</p><div>Test</div></div>
 			<div id="second" class="user-block unblock"><div></div><hr><p>Request reason</p><div>Test</div></div>`;
