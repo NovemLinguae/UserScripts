@@ -1,3 +1,5 @@
+import { UnblockReviewTemplates } from './UnblockReviewTemplates.js';
+
 export class UnblockReviewWikitext {
 	constructor() {
 		this.SIGNATURE = '~~~~';
@@ -148,36 +150,9 @@ export class UnblockReviewWikitext {
 		const templateName = initialText.match( /^\{\{([A-Za-z-]+)/i )[ 1 ];
 		let matchedReason = hasUsernameParameter ? match[ 3 ] : match[ 1 ];
 		let remainingText = wikitext.slice( match.index + match[ 0 ].length );
-		// Preserve the existing plain-text replacement for a leading {{u|...}}.
-		if ( !hasUsernameParameter && /^\{\{\s*u\s*\|/i.test( matchedReason ) ) {
-			const reasonAndRemainingText = matchedReason + remainingText;
-			const userTemplate = reasonAndRemainingText.match( /^(\{\{\s*u\s*\|\s*)([^{}|\n]+?)(\}\})/i );
-			if ( !userTemplate || !matchedReason.startsWith( userTemplate[ 1 ] + userTemplate[ 2 ] ) ) {
-				throw new Error( 'Unable to safely match the nested template in the unblock reason' );
-			}
-			const closeOffset = userTemplate[ 1 ].length + userTemplate[ 2 ].length;
-			const remainingStart = Math.max( matchedReason.length, closeOffset + 2 );
-			matchedReason = userTemplate[ 2 ] + reasonAndRemainingText.slice( closeOffset + 2, remainingStart );
-			remainingText = reasonAndRemainingText.slice( remainingStart );
-		}
-		// If the match starts inside {{u|...}}, unwrap it without assuming how other templates render.
-		const nestedStart = initialText.lastIndexOf( '{{' );
-		if ( nestedStart > 0 && nestedStart > initialText.lastIndexOf( '}}' ) ) {
-			// The opening markup is in initialText, so remove its matching closing braces as well.
-			const nestedTemplate = wikitext.slice( match.index + nestedStart ).match( /^\{\{\s*u\s*\|\s*([^{}|\n]+?)\}\}/i );
-			if ( !nestedTemplate || !matchedReason.startsWith( nestedTemplate[ 1 ] ) ) {
-				throw new Error( 'Unable to safely match the nested template in the unblock reason' );
-			}
-			const closeOffset = nestedTemplate[ 1 ].length;
-			const reasonAndRemainingText = matchedReason + remainingText;
-			if ( reasonAndRemainingText.slice( closeOffset, closeOffset + 2 ) !== '}}' ) {
-				throw new Error( 'Unable to safely match the nested template in the unblock reason' );
-			}
-			const remainingStart = Math.max( matchedReason.length, closeOffset + 2 );
-			matchedReason = reasonAndRemainingText.slice( 0, closeOffset ) +
-				reasonAndRemainingText.slice( closeOffset + 2, remainingStart );
-			remainingText = reasonAndRemainingText.slice( remainingStart );
-		}
+		( { matchedReason, remainingText } = UnblockReviewTemplates.unwrapLeadingUserTemplate(
+			wikitext, match, initialText, matchedReason, remainingText, hasUsernameParameter
+		) );
 		// Always add 1=. That way if there's an unescaped equals sign after it, it won't break things.
 		let replacement = '{{' + templateName + ' reviewed|' + acceptOrDecline + '=' + acceptDeclineReason + '|1=' + matchedReason;
 
@@ -894,13 +869,13 @@ export class UnblockReviewWikitext {
 	 * @return {string} Regex pattern for matching the original wikitext.
 	 */
 	getAppealReasonPattern( appealReason, hasUsernameParameter = false, allowWhitespace = false ) {
-		// {{u|...}} renders its argument as visible text.
 		const markup = ( allowWhitespace ? '\\s*' : '' ) +
-			'(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[:?|\\]\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+|(?<=\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+[^\\]\\n]*)\\](?!\\])|\'{2,}(?!\')|\\{[^{}]*\\}|\\{\\{\\s*[uU]\\s*\\|\\s*|\\{\\{[^}]*\\}\\}|\\}\\}|[#*:]+)*';
+			'(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[:?|\\]\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+|(?<=\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+[^\\]\\n]*)\\](?!\\])|\'{2,}(?!\')|\\{[^{}]*\\}|' +
+			UnblockReviewTemplates.getUserTemplateOpeningPattern() + '|\\{\\{[^}]*\\}\\}|\\}\\}|[#*:]+)*';
 		// The HTML omits parameter names and whitespace around the username separator.
 		let usernameSeparator = hasUsernameParameter;
 		const normalizedAppealReason = allowWhitespace ? appealReason.replace( /\s+/g, ' ' ) : appealReason;
-		return normalizedAppealReason.split( /(\{\{[^{}|\n]+\}\})/g ).map( ( part ) => {
+		return UnblockReviewTemplates.splitRenderedReason( normalizedAppealReason ).map( ( part ) => {
 			const literalPattern = Array.from( part, ( character ) => {
 				const isSeparator = usernameSeparator && character === '|';
 				if ( isSeparator ) {
@@ -916,13 +891,7 @@ export class UnblockReviewWikitext {
 				}
 				return markup + this.escapeRegExp( character );
 			} ).join( '' );
-			if ( /^\{\{[^{}|\n]+\}\}$/.test( part ) ) {
-				// {{tl|name}} displays as {{name}}, but the source must be preserved.
-				const templateName = this.escapeRegExp( part.slice( 2, -2 ) );
-				return '(?:' + markup + '\\{\\{\\s*[tT][lL]\\s*\\|\\s*' + templateName +
-					'\\s*\\}\\}|' + literalPattern + ')';
-			}
-			return literalPattern;
+			return UnblockReviewTemplates.getTemplateLinkPattern( part, literalPattern, markup, this.escapeRegExp );
 		} ).join( '' );
 	}
 
