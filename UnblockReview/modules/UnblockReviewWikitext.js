@@ -18,81 +18,18 @@ export class UnblockReviewWikitext {
 	 * @return {string} wikitext
 	 */
 	processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline, hasUsernameParameter, targetRequestPosition ) {
-		let targetRequestRange;
-		if ( targetRequestPosition !== undefined ) {
-			targetRequestRange = this.getPositionedOpenRequestRange( wikitext, targetRequestPosition );
-		}
-
-		const fullParamsAndReason = paramsAndReason;
-		const firstLineParamsAndReason = paramsAndReason.split( '\n' )[ 0 ];
-		paramsAndReason = targetRequestRange ? fullParamsAndReason : firstLineParamsAndReason;
-
-		let initialText = '';
-		// Special case: If the user didn't provide a reason, the template will display "Please provide a reason as to why you should be unblocked", and this will be detected as the appealReason.
-		const reasonIsProvided = !firstLineParamsAndReason.startsWith( 'Please provide a reason as to why you should be unblocked' );
-		if ( !reasonIsProvided ) {
-			const searchText = targetRequestRange ?
-				wikitext.slice( targetRequestRange.start, targetRequestRange.end ) :
-				wikitext;
-			const nowikiRanges = this.getNowikiRanges( searchText );
-			const match = [ ...searchText.matchAll( /(\{\{Unblock)\}\}/gi ) ].find(
-				( candidate ) => !this.isInsideNowiki( candidate.index, nowikiRanges )
+		const { targetRequestRange, initialText, paramsAndReason: matchedParamsAndReason } =
+			this.getAcceptDeclineSearchInputs(
+				wikitext, paramsAndReason, hasUsernameParameter, targetRequestPosition
 			);
-			if ( !match ) {
-				throw new Error( 'Searching for target text failed' );
-			}
-			initialText = match[ 1 ];
-			paramsAndReason = '';
-		} else if ( targetRequestRange && !hasUsernameParameter ) {
-			const targetText = wikitext.slice( targetRequestRange.start, targetRequestRange.end );
-			const reasonPrefix = targetText.match( /^\{\{\s*[^|}]+\|\s*(?:(?:reason|1|2)\s*=\s*)?/i );
-			if ( !reasonPrefix ) {
-				throw new Error( 'The clicked request does not contain a matching reason parameter. Refusing to edit.' );
-			}
-			const targetReason = targetText.slice( reasonPrefix[ 0 ].length );
-			const reasonPattern = new RegExp(
-				'^' + this.getAppealReasonPattern( fullParamsAndReason, false, true )
-			);
-			if ( !reasonPattern.test( targetReason ) ) {
-				throw new Error( 'The clicked request reason did not match its wikitext. Refusing to edit.' );
-			}
-			initialText = reasonPrefix[ 0 ];
-		} else if ( !hasUsernameParameter ) {
-			// Prefer the full rendered reason. Only unpositioned callers may use a first-line fallback.
-			let reasonCandidates = [ fullParamsAndReason ];
-			if ( !targetRequestRange && fullParamsAndReason !== paramsAndReason ) {
-				reasonCandidates = [ fullParamsAndReason, paramsAndReason ];
-			}
-			let searchError;
-			for ( const reasonCandidate of reasonCandidates ) {
-				try {
-					initialText = this.getLeftHalfOfUnblockTemplate( wikitext, reasonCandidate );
-					paramsAndReason = reasonCandidate;
-					break;
-				} catch ( e ) {
-					if ( e.message !== 'Searching for target text failed' ) {
-						throw e;
-					}
-					searchError = e;
-				}
-			}
-			if ( !initialText ) {
-				throw searchError;
-			}
-		}
 
-		// if reason is blank, use the default decline reason
 		if ( !acceptDeclineReason.trim() && acceptOrDecline === 'decline' ) {
 			acceptDeclineReason = DEFAULT_DECLINE_REASON;
 		}
-
-		// if someone accepts using the default decline reason, blank it.
-		// we can't combine this line with the above because the default decline reason can also be entered by the user, and this is common because it's the default reason in the HTML form.
+		// The decline reason is also the form default for accept, so clear it in that case.
 		if ( acceptOrDecline === 'accept' && acceptDeclineReason === DEFAULT_DECLINE_REASON ) {
 			acceptDeclineReason = '';
 		}
-
-		// add signature if not present, including if the reason is blank
 		if ( acceptDeclineReason && !this.hasSignature( acceptDeclineReason ) ) {
 			acceptDeclineReason += ' ' + this.SIGNATURE;
 		} else if ( !acceptDeclineReason ) {
@@ -100,46 +37,111 @@ export class UnblockReviewWikitext {
 		}
 		acceptDeclineReason = this.escapeUnbalancedTemplateBraces( acceptDeclineReason );
 
-		let matches;
-		if ( hasUsernameParameter ) {
-			matches = this.getUsernameRequestMatches( wikitext, paramsAndReason );
-			if ( targetRequestRange ) {
-				matches = matches.filter( ( match ) => match.index >= targetRequestRange.start &&
-					match.index < targetRequestRange.end
-				);
-			}
-		} else {
-			const regEx = new RegExp(
-				this.escapeRegExp( initialText ) + '(' +
-					this.getAppealReasonPattern( paramsAndReason, false, Boolean( targetRequestRange ) ) + ')',
-				'g'
-			);
-			const searchText = targetRequestRange ?
-				wikitext.slice( targetRequestRange.start, targetRequestRange.end ) :
-				wikitext;
-			const nowikiRanges = this.getNowikiRanges( searchText );
-			matches = [ ...searchText.matchAll( regEx ) ].filter(
-				( match ) => !this.isInsideNowiki( match.index, nowikiRanges )
-			);
-			if ( targetRequestRange ) {
-				matches.forEach( ( match ) => {
-					match.index += targetRequestRange.start;
-				} );
-			}
-		}
+		return this.replaceMatchedAcceptDeclineRequest(
+			wikitext, matchedParamsAndReason, acceptDeclineReason, acceptOrDecline,
+			hasUsernameParameter, targetRequestRange, initialText
+		);
+	}
+
+	/**
+	 * Prepare the wikitext search inputs, using the ordinal when available and a wikitext fallback otherwise.
+	 */
+	getAcceptDeclineSearchInputs( wikitext, paramsAndReason, hasUsernameParameter, targetRequestPosition ) {
+		const fullParamsAndReason = paramsAndReason;
+		const firstLineParamsAndReason = paramsAndReason.split( '\n' )[ 0 ];
+		const targetRequestRange = targetRequestPosition === undefined ?
+			undefined : this.getPositionedOpenRequestRange( wikitext, targetRequestPosition );
+		paramsAndReason = targetRequestRange ? fullParamsAndReason : firstLineParamsAndReason;
+		const reasonIsProvided = !firstLineParamsAndReason.startsWith( 'Please provide a reason as to why you should be unblocked' );
+		let initialText = '';
 		if ( targetRequestRange ) {
-			if ( matches.length === 0 ) {
-				throw new Error( 'The clicked request reason did not match its wikitext. Refusing to edit.' );
-			}
+			// The clicked request's nth open-request position is authoritative.
+			initialText = this.findUnblockTemplateViaNthPosition(
+				wikitext, fullParamsAndReason, targetRequestRange, reasonIsProvided, hasUsernameParameter
+			);
+		} else if ( !reasonIsProvided || !hasUsernameParameter ) {
+			( { initialText, paramsAndReason } = this.findUnblockTemplateViaWikitextFallback(
+				wikitext, fullParamsAndReason, firstLineParamsAndReason, reasonIsProvided
+			) );
 		}
-		if ( matches.length > 1 ) {
-			throw new Error( 'Too many matching unblock templates found' );
-		}
-		if ( matches.length === 0 ) {
-			throw new Error( 'Replacing text with unblock message failed' );
+		if ( !reasonIsProvided ) {
+			paramsAndReason = '';
 		}
 
-		const match = matches[ 0 ];
+		return { targetRequestRange, initialText, paramsAndReason };
+	}
+
+	/**
+	 * Validate the clicked request's reason and return its wikitext template prefix.
+	 */
+	findUnblockTemplateViaNthPosition( wikitext, paramsAndReason, targetRequestRange, reasonIsProvided, hasUsernameParameter ) {
+		const targetText = wikitext.slice( targetRequestRange.start, targetRequestRange.end );
+		if ( !reasonIsProvided ) {
+			const nowikiRanges = this.getNowikiRanges( targetText );
+			const match = [ ...targetText.matchAll( /(\{\{Unblock)\}\}/gi ) ].find(
+				( candidate ) => !this.isInsideNowiki( candidate.index, nowikiRanges )
+			);
+			if ( !match ) {
+				throw new Error( 'Searching for target text failed' );
+			}
+			return match[ 1 ];
+		}
+		if ( hasUsernameParameter ) {
+			return '';
+		}
+
+		const reasonPrefix = targetText.match( /^\{\{\s*[^|}]+\|\s*(?:(?:reason|1|2)\s*=\s*)?/i );
+		if ( !reasonPrefix ) {
+			throw new Error( 'The clicked request does not contain a matching reason parameter. Refusing to edit.' );
+		}
+		const targetReason = targetText.slice( reasonPrefix[ 0 ].length );
+		const reasonPattern = new RegExp(
+			'^' + this.getAppealReasonPattern( paramsAndReason, false, true )
+		);
+		if ( !reasonPattern.test( targetReason ) ) {
+			throw new Error( 'The clicked request reason did not match its wikitext. Refusing to edit.' );
+		}
+		return reasonPrefix[ 0 ];
+	}
+
+	/**
+	 * Find a request by pure wikitext when no ordinal position is available.
+	 */
+	findUnblockTemplateViaWikitextFallback( wikitext, fullParamsAndReason, firstLineParamsAndReason, reasonIsProvided ) {
+		if ( !reasonIsProvided ) {
+			const nowikiRanges = this.getNowikiRanges( wikitext );
+			const match = [ ...wikitext.matchAll( /(\{\{Unblock)\}\}/gi ) ].find(
+				( candidate ) => !this.isInsideNowiki( candidate.index, nowikiRanges )
+			);
+			if ( !match ) {
+				throw new Error( 'Searching for target text failed' );
+			}
+			return { initialText: match[ 1 ], paramsAndReason: '' };
+		}
+
+		const reasonCandidates = fullParamsAndReason === firstLineParamsAndReason ?
+			[ fullParamsAndReason ] : [ fullParamsAndReason, firstLineParamsAndReason ];
+		let searchError;
+		for ( const reasonCandidate of reasonCandidates ) {
+			try {
+				return {
+					initialText: this.getLeftHalfOfUnblockTemplate( wikitext, reasonCandidate ),
+					paramsAndReason: reasonCandidate
+				};
+			} catch ( e ) {
+				if ( e.message !== 'Searching for target text failed' ) {
+					throw e;
+				}
+				searchError = e;
+			}
+		}
+		throw searchError;
+	}
+
+	replaceMatchedAcceptDeclineRequest( wikitext, paramsAndReason, acceptDeclineReason, acceptOrDecline, hasUsernameParameter, targetRequestRange, initialText ) {
+		const match = this.findAcceptDeclineWikitextMatch(
+			wikitext, paramsAndReason, hasUsernameParameter, targetRequestRange, initialText
+		);
 		if ( hasUsernameParameter ) {
 			initialText = match[ 1 ];
 		}
@@ -216,6 +218,51 @@ export class UnblockReviewWikitext {
 		);
 
 		return wikitext2;
+	}
+
+	/**
+	 * Find and validate the wikitext match, restricting it to the ordinal range when supplied.
+	 */
+	findAcceptDeclineWikitextMatch( wikitext, paramsAndReason, hasUsernameParameter, targetRequestRange, initialText ) {
+		let matches;
+		if ( hasUsernameParameter ) {
+			matches = this.getUsernameRequestMatches( wikitext, paramsAndReason );
+			if ( targetRequestRange ) {
+				matches = matches.filter( ( match ) => match.index >= targetRequestRange.start &&
+					match.index < targetRequestRange.end
+				);
+			}
+		} else {
+			const regEx = new RegExp(
+				this.escapeRegExp( initialText ) + '(' +
+					this.getAppealReasonPattern( paramsAndReason, false, Boolean( targetRequestRange ) ) + ')',
+				'g'
+			);
+			const searchText = targetRequestRange ?
+				wikitext.slice( targetRequestRange.start, targetRequestRange.end ) :
+				wikitext;
+			const nowikiRanges = this.getNowikiRanges( searchText );
+			matches = [ ...searchText.matchAll( regEx ) ].filter(
+				( match ) => !this.isInsideNowiki( match.index, nowikiRanges )
+			);
+			if ( targetRequestRange ) {
+				matches.forEach( ( match ) => {
+					match.index += targetRequestRange.start;
+				} );
+			}
+		}
+		if ( targetRequestRange ) {
+			if ( matches.length === 0 ) {
+				throw new Error( 'The clicked request reason did not match its wikitext. Refusing to edit.' );
+			}
+		}
+		if ( matches.length > 1 ) {
+			throw new Error( 'Too many matching unblock templates found' );
+		}
+		if ( matches.length === 0 ) {
+			throw new Error( 'Replacing text with unblock message failed' );
+		}
+		return matches[ 0 ];
 	}
 
 	/**
