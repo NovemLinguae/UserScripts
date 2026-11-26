@@ -882,6 +882,9 @@ export class UnblockReviewWikitext {
 					usernameSeparator = false;
 					return markup + '\\s*\\|\\s*(?:(?:reason|2)\\s*=\\s*)?';
 				}
+				if ( character === '&' ) {
+					return markup + '&(?:amp;|#0*38;|#[xX]0*26;)?';
+				}
 				if ( character === '\u00a0' ) {
 					// MediaWiki can render an ordinary source space as a non-breaking display space.
 					return markup + '[ \u00a0]';

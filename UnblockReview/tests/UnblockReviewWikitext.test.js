@@ -313,6 +313,39 @@ describe( 'getLeftHalfOfUnblockTemplate( wikitext, appealReason )', () => {
 } );
 
 describe( 'processAcceptOrDecline( wikitext, paramsAndReason, acceptDeclineReason, DEFAULT_DECLINE_REASON, acceptOrDecline )', () => {
+	test( 'Declines a request with numeric entities in its signature', () => {
+		const reason = 'Please review [[Draft:HSTX-I]]. [[User:H&#38;M collab|H&#38;M collab]] ([[User talk:H&#38;M collab#top|talk]]) 23:19, 25 November 2026 (UTC)';
+		const rendered = 'Please review Draft:HSTX-I. H&M collab (talk) 23:19, 25 November 2026 (UTC)';
+		const decline = 'Please create individual accounts and see [[User_talk:H%26M_collab|this talk page]].';
+		const original = '{{unblock|reason=' + reason + '}}';
+		expect( unblockReview.processAcceptOrDecline(
+			original, rendered, decline, DEFAULT_DECLINE_REASON, 'decline', false, { index: 0, count: 1 }
+		) ).toBe( '{{unblock reviewed|decline=' + decline + ' ~~~~|1=' + reason + '}}' );
+	} );
+
+	test.each( [ '&#38;', '&#00038;', '&#x26;', '&#X0026;', '&amp;' ] )(
+		'Matches %s only to the same rendered character', ( entity ) => {
+			const original = '{{unblock|reason=H' + entity + 'M}}';
+			expect( unblockReview.processAcceptOrDecline(
+				original, 'H&M', 'No', DEFAULT_DECLINE_REASON, 'decline', false, { index: 0, count: 1 }
+			) ).toBe( '{{unblock reviewed|decline=No ~~~~|1=H' + entity + 'M}}' );
+			expect( () => unblockReview.processAcceptOrDecline(
+				original, 'H#M', 'No', DEFAULT_DECLINE_REASON, 'decline', false, { index: 0, count: 1 }
+			) ).toThrow( 'clicked request reason did not match its wikitext' );
+		}
+	);
+
+	test( 'Matches encoded ampersands without an ordinal and refuses ambiguous matches', () => {
+		const original = '{{unblock|reason=H&#38;M}}';
+		const reviewed = '{{unblock reviewed|decline=No ~~~~|1=H&#38;M}}';
+		expect( unblockReview.processAcceptOrDecline(
+			original, 'H&M', 'No', DEFAULT_DECLINE_REASON, 'decline'
+		) ).toBe( reviewed );
+		expect( () => unblockReview.processAcceptOrDecline(
+			original + '\n' + original, 'H&M', 'No', DEFAULT_DECLINE_REASON, 'decline'
+		) ).toThrow( 'Too many matching unblock templates found' );
+	} );
+
 	test( 'Matches template links without accepting a different displayed template name', () => {
 		const position = { index: 0, count: 1 };
 		const reason = 'See {{request edit}}';
