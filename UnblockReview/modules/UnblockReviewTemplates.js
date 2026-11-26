@@ -1,5 +1,5 @@
 /**
- * Detect {{tl}}, {{u}}, and other common templates in HTML and match them to wikitext.
+ * Detect specific templates in HTML and match them to wikitext.
  */
 export class UnblockReviewTemplates {
 	/**
@@ -7,10 +7,6 @@ export class UnblockReviewTemplates {
 	 */
 	static getUserTemplateOpeningPattern() {
 		return '\\{\\{\\s*[uU]\\s*\\|\\s*';
-	}
-
-	static splitRenderedReason( reason ) {
-		return reason.split( /(\{\{[^{}|\n]+\}\})/g );
 	}
 
 	/**

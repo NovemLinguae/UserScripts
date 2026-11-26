@@ -9,6 +9,13 @@ import { UnblockReviewWikitext } from '../modules/UnblockReviewWikitext.js';
 const unblockReview = new UnblockReviewWikitext();
 const DEFAULT_DECLINE_REASON = `{{subst:Decline reason here}}`;
 
+describe( 'splitRenderedReason', () => {
+	test( 'Separates displayed template links without splitting templates with parameters', () => {
+		expect( unblockReview.splitRenderedReason( 'See {{request edit}} and {{other|value}}.' ) )
+			.toEqual( [ 'See ', '{{request edit}}', ' and {{other|value}}.' ] );
+	} );
+} );
+
 describe( 'processWaitForBlockingAdmin', () => {
 	test.each( [
 		[ '{{unblock|reason=Please reconsider [[Help:Appeal|this]] {{u|Example}}|category=}}', 'Please reconsider [[Help:Appeal|this]] {{u|Example}}' ],

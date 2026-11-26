@@ -861,6 +861,10 @@ export class UnblockReviewWikitext {
 		return ranges.some( ( range ) => position >= range[ 0 ] && position < range[ 1 ] );
 	}
 
+	splitRenderedReason( reason ) {
+		return reason.split( /(\{\{[^{}|\n]+\}\})/g );
+	}
+
 	/**
 	 * Return a regex pattern that matches appeal reason wikitext with tags, links, templates, or emphasis.
 	 *
@@ -875,7 +879,7 @@ export class UnblockReviewWikitext {
 		// The HTML omits parameter names and whitespace around the username separator.
 		let usernameSeparator = hasUsernameParameter;
 		const normalizedAppealReason = allowWhitespace ? appealReason.replace( /\s+/g, ' ' ) : appealReason;
-		return UnblockReviewTemplates.splitRenderedReason( normalizedAppealReason ).map( ( part ) => {
+		return this.splitRenderedReason( normalizedAppealReason ).map( ( part ) => {
 			const literalPattern = Array.from( part, ( character ) => {
 				const isSeparator = usernameSeparator && character === '|';
 				if ( isSeparator ) {

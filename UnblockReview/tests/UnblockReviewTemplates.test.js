@@ -8,13 +8,6 @@ describe( 'getUserTemplateOpeningPattern', () => {
 	} );
 } );
 
-describe( 'splitRenderedReason', () => {
-	test( 'Separates displayed template links without splitting templates with parameters', () => {
-		expect( UnblockReviewTemplates.splitRenderedReason( 'See {{request edit}} and {{other|value}}.' ) )
-			.toEqual( [ 'See ', '{{request edit}}', ' and {{other|value}}.' ] );
-	} );
-} );
-
 describe( 'getTemplateLinkPattern', () => {
 	const escapeRegExp = ( text ) => text.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
 
