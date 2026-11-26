@@ -2,6 +2,9 @@
  * Detect {{tl}}, {{u}}, and other common templates in HTML and match them to wikitext.
  */
 export class UnblockReviewTemplates {
+	/**
+	 * Match the opening of a {{u}} template.
+	 */
 	static getUserTemplateOpeningPattern() {
 		return '\\{\\{\\s*[uU]\\s*\\|\\s*';
 	}
@@ -10,16 +13,31 @@ export class UnblockReviewTemplates {
 		return reason.split( /(\{\{[^{}|\n]+\}\})/g );
 	}
 
+	/**
+	 * Match the displayed form of a {{tl}} template while preserving its source.
+	 */
 	static getTemplateLinkPattern( part, literalPattern, markup, escapeRegExp ) {
 		if ( !/^\{\{[^{}|\n]+\}\}$/.test( part ) ) {
 			return literalPattern;
 		}
-		// {{tl|name}} displays as {{name}}, but the source must be preserved.
 		const templateName = escapeRegExp( part.slice( 2, -2 ) );
 		return '(?:' + markup + '\\{\\{\\s*[tT][lL]\\s*\\|\\s*' + templateName +
 			'\\s*\\}\\}|' + literalPattern + ')';
 	}
 
+	/**
+	 * Unwrap leading templates displaying only their first parameter: {{u}}.
+	 * Unlike {{u}}, {{tl}} displays the parameter surrounded by braces.
+	 */
+	static unwrapCertainTemplates( wikitext, match, initialText, matchedReason, remainingText, hasUsernameParameter ) {
+		return this.unwrapLeadingUserTemplate(
+			wikitext, match, initialText, matchedReason, remainingText, hasUsernameParameter
+		);
+	}
+
+	/**
+	 * Unwrap a leading {{u}} template from a matched reason.
+	 */
 	static unwrapLeadingUserTemplate( wikitext, match, initialText, matchedReason, remainingText, hasUsernameParameter ) {
 		// Preserve the existing plain-text replacement for a leading {{u|...}}.
 		if ( !hasUsernameParameter && /^\{\{\s*u\s*\|/i.test( matchedReason ) ) {

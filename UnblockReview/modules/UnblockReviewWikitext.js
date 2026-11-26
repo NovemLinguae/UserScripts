@@ -150,7 +150,7 @@ export class UnblockReviewWikitext {
 		const templateName = initialText.match( /^\{\{([A-Za-z-]+)/i )[ 1 ];
 		let matchedReason = hasUsernameParameter ? match[ 3 ] : match[ 1 ];
 		let remainingText = wikitext.slice( match.index + match[ 0 ].length );
-		( { matchedReason, remainingText } = UnblockReviewTemplates.unwrapLeadingUserTemplate(
+		( { matchedReason, remainingText } = UnblockReviewTemplates.unwrapCertainTemplates(
 			wikitext, match, initialText, matchedReason, remainingText, hasUsernameParameter
 		) );
 		// Always add 1=. That way if there's an unescaped equals sign after it, it won't break things.
