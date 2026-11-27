@@ -1,6 +1,12 @@
 /**
  * Utilities to help user scripts properly follow English Wikipedia's MOS:ORDER. Most of the methods need wikitext and a specific MOS:ORDER section as parameters, then output something useful related to MOS:ORDER.
  *
+ * Location of main file:
+ *    - https://github.com/NovemLinguae/UserScripts/blob/master/SpeciesHelper/modules/MOSOrderPositionFinder.js
+ * Known locations of forks (to update when the main file gets updated):
+ *    - PageTriage
+ *    - AFC Helper Script
+ *
  * @author Novem Linguae <noveminguae@gmail.com>
  */
 export class MOSOrderPositionFinder {
