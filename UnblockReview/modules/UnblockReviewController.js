@@ -471,6 +471,7 @@ export class UnblockReviewController {
 * Page title: <code>${ pageTitle.replace( /_/g, ' ' ) }</code>
 * Error occurred in ${ requestDescription }.
 * Wikitext: [${ oldidLink }]
+* Suggested test location: [[testwiki:User talk:NovemBot]]
 * AI prompt:
 <pre>UnblockReview: Performing the "${ acceptOrDecline }" action with the below fails. Please write test and fix. Once you are sure of the root cause, you can make test variables such as wikitext and acceptDeclineReason small (like 1 sentence).
 
