@@ -67,7 +67,11 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 		},
 		notify: jest.fn()
 	};
-	const windowMock = { location: { reload: jest.fn() }, prompt: options.prompt || jest.fn() };
+	const windowMock = {
+		location: { reload: jest.fn() },
+		prompt: options.prompt || jest.fn(),
+		SHOW_USER_GENDER: options.genderMarkers
+	};
 	const controllerSource = readFileSync( require.resolve( '../modules/UnblockReviewController.js' ), 'utf8' )
 		.replace( /^import .*\r?\n/m, '' )
 		.replace( /^export /m, '' );
@@ -76,6 +80,9 @@ async function clickReviewButton( wikitext, html, action = 'decline', options = 
 	const runMain = new Function( 'mw', '$', 'UnblockReviewWikitext', 'document', 'window', controllerSource + '\n' + mainSource );
 	runMain( mw, $, UnblockReviewWikitext, document, windowMock );
 	await ready();
+	if ( options.onReady ) {
+		options.onReady();
+	}
 	if ( options.reason !== undefined ) {
 		const reasonContainer = options.buttonSelector ?
 			document.querySelector( options.buttonSelector ).closest( '.unblock-review' ) :
@@ -301,6 +308,82 @@ describe( 'UnblockReviewController', () => {
 			text: `{{unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=331dot I am requesting a reconsideration of this block.}}`
 		} ) );
 		expect( windowMock.location.reload ).toHaveBeenCalled();
+	} );
+
+	test.each( [
+		[ 'localized timestamp', false, true ],
+		[ 'inserted gender marker', true, false ],
+		[ 'both display changes', true, true ]
+	] )( 'Declines a request with %s', async ( description, genderMarker, localizedTime ) => {
+		const reason = 'Please review. [[User:Example|Example]] ([[User talk:Example#top|talk]]) 18:59, 26 November 2026 (UTC)';
+		const wikitext = `:{{unblock|reason=${ reason }}}} Outside signature.`;
+		const timestamp = localizedTime ?
+			'<span class="localcomments" title="18:59, 26 November 2026 (UTC)">10:59 am, Today (UTC−8)</span>' :
+			'18:59, 26 November 2026 (UTC)';
+		const html = `<div class="user-block unblock user-unblock-request"><div></div><hr><p><b>Request reason</b>:</p>
+			<div>Please review. <span data-mw-comment-sig="c-Example"></span><a class="userlink" href="/wiki/User:Example">Example</a> (<a class="userlink">talk</a>) <a class="ext-discussiontools-init-timestamplink">${ timestamp }</a><span class="ext-discussiontools-init-replylink-buttons">reply</span></div></div>`;
+		const { mw, postWithToken } = await clickReviewButton( wikitext, html, 'decline', {
+			reason: 'Please read [[WP:GAB]].',
+			genderMarkers: genderMarker ? { male: '♂', female: '♀', unknown: '☉' } : undefined,
+			onReady: () => {
+				if ( genderMarker ) {
+					const userLink = document.querySelector( 'a[href="/wiki/User:Example"]' );
+					userLink.parentNode.insertBefore( document.createTextNode( '☉' ), userLink.nextSibling );
+				}
+			}
+		} );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{unblock reviewed|decline=Please read [[WP:GAB]]. ~~~~|1=${ reason }}}} Outside signature.`
+		} ) );
+		if ( genderMarker ) {
+			expect( document.querySelector( 'a[href="/wiki/User:Example"]' ).nextSibling.textContent ).toBe( '☉' );
+		}
+	} );
+
+	test( 'Preserves an authored symbol after an inserted gender marker', async () => {
+		const reason = 'Please review. [[User:Example|Example]]☉ (talk)';
+		const html = '<div class="user-block unblock"><div></div><hr><p>Request reason</p>' +
+			'<div>Please review. <a class="userlink" href="/wiki/User:Example">Example</a>☉ (talk)</div></div>';
+		const { mw, postWithToken } = await clickReviewButton( `{{unblock|reason=${ reason }}}}`, html, 'decline', {
+			genderMarkers: { unknown: '☉' },
+			onReady: () => {
+				const userLink = document.querySelector( 'a[href="/wiki/User:Example"]' );
+				userLink.parentNode.insertBefore( document.createTextNode( '☉' ), userLink.nextSibling );
+			}
+		} );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=${ reason }}}}`
+		} ) );
+	} );
+
+	test( 'Does not treat an unrecognized local timestamp as a matching reason', async () => {
+		const html = '<div class="user-block unblock"><div></div><hr><p>Request reason</p>' +
+			'<div>Please review. <span class="localcomments" title="not a UTC timestamp">Tomorrow</span></div></div>';
+		const { mw, postWithToken } = await clickReviewButton(
+			'{{unblock|reason=Please review. 18:59, 26 November 2026 (UTC)}}', html
+		);
+		expect( mw.notify ).toHaveBeenCalledWith(
+			expect.stringContaining( 'clicked request reason did not match its wikitext' ), { type: 'error' }
+		);
+		expect( postWithToken ).not.toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expect.any( String ) } ) );
+	} );
+
+	test( 'Does not remove a gender symbol after a user talk link', async () => {
+		const html = '<div class="user-block unblock"><div></div><hr><p>Request reason</p>' +
+			'<div>Please <a class="userlink" href="/wiki/User_talk:Example">talk</a><span>.</span></div></div>';
+		const { mw, postWithToken } = await clickReviewButton( '{{unblock|reason=Please [[User talk:Example|talk]].}}', html, 'decline', {
+			genderMarkers: { unknown: '☉' },
+			onReady: () => {
+				const talkLink = document.querySelector( 'a[href="/wiki/User_talk:Example"]' );
+				talkLink.parentNode.insertBefore( document.createTextNode( '☉' ), talkLink.nextSibling );
+			}
+		} );
+		expect( mw.notify ).toHaveBeenCalledWith(
+			expect.stringContaining( 'clicked request reason did not match its wikitext' ), { type: 'error' }
+		);
+		expect( postWithToken ).not.toHaveBeenCalledWith( 'csrf', expect.objectContaining( { text: expect.any( String ) } ) );
 	} );
 
 	test( 'Declines a request containing a rendered template link', async () => {

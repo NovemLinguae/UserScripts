@@ -232,7 +232,34 @@ export class UnblockReviewController {
 		for ( let i = 0; i < controls.length; i++ ) {
 			controls[ i ].remove();
 		}
+		this.compensateForDisplayScripts( copy );
 		return copy.textContent.trim();
+	}
+
+	compensateForDisplayScripts( copy ) {
+		// ShowLocalTime gadget changes the timestamp in the signature
+		const localizedTimes = copy.querySelectorAll( 'span.localcomments[title]' );
+		for ( let i = 0; i < localizedTimes.length; i++ ) {
+			const originalTime = localizedTimes[ i ].getAttribute( 'title' );
+			if ( /^\d{1,2}:\d{2}, \d{1,2} [A-Z][a-z]+ \d{4} \(UTC\)$/.test( originalTime ) ) {
+				localizedTimes[ i ].textContent = originalTime;
+			}
+		}
+		// ShowUserGender user script inserts its configured text as a separate node after user links.
+		if ( window.SHOW_USER_GENDER && typeof window.SHOW_USER_GENDER === 'object' ) {
+			const markers = Object.values( window.SHOW_USER_GENDER ).filter(
+				( value ) => typeof value === 'string' && value !== '' && !/[<>]/.test( value )
+			);
+			const userLinks = copy.querySelectorAll( 'a.userlink' );
+			for ( let i = 0; i < userLinks.length; i++ ) {
+				const marker = userLinks[ i ].nextSibling;
+				const href = userLinks[ i ].getAttribute( 'href' ) || '';
+				if ( /(?:\/wiki\/|[?&]title=)User(?::|%3a)/i.test( href ) &&
+					marker && marker.nodeType === 3 && markers.includes( marker.nodeValue ) ) {
+					marker.remove();
+				}
+			}
+		}
 	}
 
 	getAppealReason( hrEl, hasUsernameParameter ) {
