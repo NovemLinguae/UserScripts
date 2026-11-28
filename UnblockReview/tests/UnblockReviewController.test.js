@@ -550,6 +550,17 @@ If my English language poor (per my reasoning), I'll send a message to the Local
 		expect( windowMock.location.reload ).toHaveBeenCalled();
 	} );
 
+	test( 'Declining ignores a revealed IPv6 address and /64 link after a temporary account name', async () => {
+		const wikitext = `{{Unblock|reason=Overboard. [[Special:Contributions/~2026-11111-11|~2026-11111-11]] ([[User talk:~2026-11111-11|talk]]) 02:04, 28 November 2026 (UTC)}}`;
+		const html = `<div class="user-block unblock user-unblock-request"><div></div><hr><p><b>Request reason</b>:</p>
+			<div>Overboard. <a class="mw-tempuserlink userlink">~2026-11111-11</a><span class="ext-checkuser-tempaccount-reveal-ip"><a href="/wiki/Special:IPContributions/2001:db8:1:2:3:4:5:6">2001:db8:1:2:3:4:5:6</a> | <a href="/wiki/Special:IPContributions/2001:db8:1:2:3:4:5:6/64">/64</a></span> (<a>talk</a>) <a>02:04, 28 November 2026 (UTC)</a></div></div>`;
+		const { mw, postWithToken } = await clickReviewButton( wikitext, html );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{Unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=Overboard. [[Special:Contributions/~2026-11111-11|~2026-11111-11]] ([[User talk:~2026-11111-11|talk]]) 02:04, 28 November 2026 (UTC)}}`
+		} ) );
+	} );
+
 	test( 'Clicking decline ignores DiscussionTools reply controls after the signature', async () => {
 		const wikitext = `{{unblock|reason=Nythar was mass reverting my edits and seriously griefing pages. A lot of work was put in to them pages. Nythar seems to want to go to war for some reason?[[Special:Contributions/109.157.92.138|109.157.92.138]] ([[User talk:109.157.92.138#top|talk]]) 10:24, 22 June 2023 (UTC)}}`;
 		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">

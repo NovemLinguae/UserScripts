@@ -228,7 +228,7 @@ export class UnblockReviewController {
 	getAppealText( element ) {
 		const copy = element.cloneNode( true );
 		// Remove interface controls that are not part of the wikitext.
-		const controls = copy.querySelectorAll( '.ext-discussiontools-init-replylink-buttons, .ext-checkuser-tempaccount-reveal-ip-button' );
+		const controls = copy.querySelectorAll( '.ext-discussiontools-init-replylink-buttons, .ext-checkuser-tempaccount-reveal-ip-button, .ext-checkuser-tempaccount-reveal-ip' );
 		for ( let i = 0; i < controls.length; i++ ) {
 			controls[ i ].remove();
 		}
