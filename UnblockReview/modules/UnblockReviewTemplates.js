@@ -10,6 +10,13 @@ export class UnblockReviewTemplates {
 	}
 
 	/**
+	 * Match the opening of a {{URL}} template, including its URL parameter when a display text follows.
+	 */
+	static getUrlTemplateOpeningPattern() {
+		return '\\{\\{\\s*URL\\s*\\|(?:[^|{}\\n]*\\|)?';
+	}
+
+	/**
 	 * Match the displayed form of a {{tl}} template while preserving its source.
 	 */
 	static getTemplateLinkPattern( part, literalPattern, markup, escapeRegExp ) {

@@ -561,6 +561,36 @@ If my English language poor (per my reasoning), I'll send a message to the Local
 		} ) );
 	} );
 
+	test( 'Declines a request whose reason contains an unrendered subst template', async () => {
+		const reason = `{{subst: no such template|\nSee this.\n}} [[User:Example|Example]] ([[User talk:Example#top|talk]]) 02:50, 28 November 2026 (UTC)`;
+		const html = `<div class="user-block unblock user-unblock-request"><div></div><hr><p><b>Request reason</b>:</p><div>{{subst: no such template|\n<p>See this.</p>\n}} <a>Example</a> (<a>talk</a>) <a>02:50, 28 November 2026 (UTC)</a></div></div>`;
+		const { mw, postWithToken } = await clickReviewButton( `{{Unblock|reason=${ reason }}}`, html );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{Unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=${ reason }}}`
+		} ) );
+	} );
+
+	test( 'Declines a request whose reason contains an HTML comment', async () => {
+		const reason = `Intro.\n<!-- Place your reason below. -->\nSee this. [[User:Example|Example]] ([[User talk:Example#top|talk]]) 02:50, 28 November 2026 (UTC)`;
+		const html = `<div class="user-block unblock user-unblock-request"><div></div><hr><p><b>Request reason</b>:</p><div>Intro.\n\nSee this. <a>Example</a> (<a>talk</a>) <a>02:50, 28 November 2026 (UTC)</a></div></div>`;
+		const { mw, postWithToken } = await clickReviewButton( `{{Unblock|reason=${ reason }}}`, html );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{Unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=${ reason }}}`
+		} ) );
+	} );
+
+	test( 'Declines a request whose reason contains a {{URL}} template with display text', async () => {
+		const reason = `See {{URL|https://example.org/x|some pages}}. [[User:Example|Example]] ([[User talk:Example#top|talk]]) 02:50, 28 November 2026 (UTC)`;
+		const html = `<div class="user-block unblock user-unblock-request"><div></div><hr><p><b>Request reason</b>:</p><div>See <span class="url"><a>some pages</a></span>. <a>Example</a> (<a>talk</a>) <a>02:50, 28 November 2026 (UTC)</a></div></div>`;
+		const { mw, postWithToken } = await clickReviewButton( `{{Unblock|reason=${ reason }}}`, html );
+		expect( mw.notify ).not.toHaveBeenCalled();
+		expect( postWithToken ).toHaveBeenCalledWith( 'csrf', expect.objectContaining( {
+			text: `{{Unblock reviewed|decline={{subst:Decline reason here}} ~~~~|1=${ reason }}}`
+		} ) );
+	} );
+
 	test( 'Clicking decline ignores DiscussionTools reply controls after the signature', async () => {
 		const wikitext = `{{unblock|reason=Nythar was mass reverting my edits and seriously griefing pages. A lot of work was put in to them pages. Nythar seems to want to go to war for some reason?[[Special:Contributions/109.157.92.138|109.157.92.138]] ([[User talk:109.157.92.138#top|talk]]) 10:24, 22 June 2023 (UTC)}}`;
 		const html = `<div class="user-block unblock user-unblock-request" style="background-color: rgb(235, 244, 255)">

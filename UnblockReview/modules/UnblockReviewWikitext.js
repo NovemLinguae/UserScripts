@@ -752,8 +752,8 @@ export class UnblockReviewWikitext {
 	 */
 	getAppealReasonPattern( appealReason, hasUsernameParameter = false, allowWhitespace = false ) {
 		const markup = ( allowWhitespace ? '\\s*' : '' ) +
-			'(?:<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[:?|\\]\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+|(?<=\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+[^\\]\\n]*)\\](?!\\])|\'{2,}(?!\')|\\{[^{}]*\\}|' +
-			UnblockReviewTemplates.getUserTemplateOpeningPattern() + '|\\{\\{[^}]*\\}\\}|\\}\\}|[#*:]+)*';
+			'(?:<!--[\\s\\S]*?-->|<\\/?[a-zA-Z][a-zA-Z0-9:-]*(?:\\s+(?:"[^"]*"|\'[^\']*\'|[^\'"<>])*)?\\s*\\/?>|\\[\\[[^\\[\\]|\\n]*\\||\\[\\[:?|\\]\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+\\]|\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+|(?<=\\[(?:https?:)?\\/\\/[^\\s\\]\\n]+[ \\t]+[^\\]\\n]*)\\](?!\\])|\'{2,}(?!\')|\\{[^{}]*\\}|' +
+			UnblockReviewTemplates.getUserTemplateOpeningPattern() + '|' + UnblockReviewTemplates.getUrlTemplateOpeningPattern() + '|\\{\\{[^}]*\\}\\}|\\}\\}|[#*:]+)*';
 		// The HTML omits parameter names and whitespace around the username separator.
 		let usernameSeparator = hasUsernameParameter;
 		const normalizedAppealReason = allowWhitespace ? appealReason.replace( /\s+/g, ' ' ) : appealReason;
