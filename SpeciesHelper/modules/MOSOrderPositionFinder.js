@@ -95,7 +95,7 @@ export class MOSOrderPositionFinder {
 
 		if ( section === 'shortDescription' ) {
 			// if template beneath the insertion point, don't put a blank line between SD and other template
-			this.wikitext = this.wikitext.replace( /(\{\{(?:Short description|Shortdesc|Shortdescription|Short desc)\|[^}]+\}\}\n)\n(\{\{)/is, '$1$2' );
+			this.wikitext = this.wikitext.replace( /(\{\{(?:Short description|Shortdesc|Shortdescription|Short desc)\|[^}]+\}\}\n)\n(\{\{)/i, '$1$2' );
 		}
 
 		this.wikitext = this.wikitext.trim() + '\n';
@@ -932,7 +932,11 @@ export class MOSOrderPositionFinder {
 		}
 		regExString = regExString.slice( 0, -1 ); // delete last character |
 		regExString += ')(?![ -\\|]section)'; // don't match section maintenance tags, e.g. {{More citations needed section}} and {{More citations needed|section}}
-		const matches = haystack.match( new RegExp( regExString, 'i' ) );
+		const searchableText = haystack.replace(
+			/<!--[\s\S]*?(?:-->|$)|<(?:nowiki|pre|source|syntaxhighlight|math)\b[^>]*\/\s*>|<(nowiki|pre|source|syntaxhighlight|math)\b[^>]*>[\s\S]*?(?:<\/\1\s*>|$)/gi,
+			( match ) => match.replace( /[^\r\n]/g, ' ' )
+		);
+		const matches = searchableText.match( new RegExp( regExString, 'i' ) );
 		return matches ? matches.index : -1;
 	}
 

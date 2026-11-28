@@ -5,6 +5,13 @@ import { MOSOrderPositionFinder } from '../modules/MOSOrderPositionFinder.js';
 // Babel tutorial: https://www.sitepoint.com/babel-beginners-guide/
 
 describe( 'hasSection(wikicode, section)', () => {
+	test( 'ignores templates in comments and literal tags while preserving positions of active templates', () => {
+		const mopf = new MOSOrderPositionFinder();
+		const wikicode = '<!-- {{Orphan}} -->\n<nowiki>{{Copy edit}}</nowiki>\n{{Infobox person}}\nLead.';
+		expect( mopf.hasSection( wikicode, 'maintenanceTags' ) ).toBe( false );
+		expect( mopf.getSectionPosition( wikicode, 'infoboxes' ) ).toBe( wikicode.indexOf( '{{Infobox person}}' ) );
+	} );
+
 	test( 'Section exists', () => {
 		const mopf = new MOSOrderPositionFinder();
 		const wikicode =
